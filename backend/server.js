@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 require("dotenv").config();
 const MongoURI = process.env.MONGO_URI ;
-const {createTourist} = require("./routes/touristController");
+const {createTourist} = require("./Routes/touristController");
 
 
 const app = express();
 const port = process.env.PORT || "8000";
-const tourist = require('./models/tourist');
+const tourist = require('./Models/Tourist');
 
 
 mongoose.connect(MongoURI)

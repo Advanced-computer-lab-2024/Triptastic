@@ -1,4 +1,4 @@
-const touristModel = require('../models/tourist.js');
+const touristModel = require('../Models/Tourist.js');
 const { default: mongoose } = require('mongoose');
 const createTourist = async(req,res) => {
 
