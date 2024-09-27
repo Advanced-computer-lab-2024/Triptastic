@@ -17,7 +17,7 @@ const createSeller = async(req,res) => {
 
     const{Username,Name,Description}=req.body;
     try{
-       const seller=await sellerModel.findOneAndUpdate({Username: Username },{$set:{Name: Name,Description:Description}});
+       const seller=await sellerModel.findOneAndUpdate({Username: Username },{$set:{Name: Name,Description:Description}},{ new: true });
        res.status(200).json(seller);
     }
     catch{
@@ -29,8 +29,8 @@ const createSeller = async(req,res) => {
     const Username=req.params.Username;
     const update=req.body;
     try{
-       await sellerModel.updateOne({Username: Username},{$set: update});
-       res.status(200).json({msg:" Seller is updated"});
+       const seller = await sellerModel.updateOne({Username: Username},{$set: update},{new:true});
+       res.status(200).json(seller);
     }
     catch (error){
        res.status(400).json({error: error.message});
