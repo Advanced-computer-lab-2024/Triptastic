@@ -3,10 +3,13 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 require("dotenv").config();
 const MongoURI = process.env.MONGO_URI ;
+const {createTourist} = require("./routes/touristController");
 
 
 const app = express();
 const port = process.env.PORT || "8000";
+const tourist = require('./models/tourist');
+
 
 mongoose.connect(MongoURI)
 .then(()=>{
@@ -17,4 +20,6 @@ mongoose.connect(MongoURI)
   })
 })
 .catch(err => console.log(err));
+app.use(express.json())
+app.post("/addTourist",createTourist);
 
