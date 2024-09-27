@@ -18,10 +18,17 @@ const advertiserSchema = new Schema({
   },
   website_Link:
   {
-    type: String
+    type: String,
+    required: false,
   },
   Hotline:{
-    type:String
+    type:Number,
+    required: false,
+  },
+  Company_Profile:{
+    type:String,
+    required: false,
+
   },
 
 
