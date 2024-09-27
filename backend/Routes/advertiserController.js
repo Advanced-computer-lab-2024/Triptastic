@@ -16,7 +16,7 @@ const createAdvertiser = async(req,res) => {
 
    const{Username,website_Link,Hotline,Company_Profile}=req.body;
    try{
-      const advertiser=await advertiserModel.findOneAndUpdate({Username: Username },{$set:{website_Link:website_Link,Hotline:Hotline,Company_Profile:Company_Profile}});
+      const advertiser=await advertiserModel.findOneAndUpdate({Username: Username },{$set:{website_Link:website_Link,Hotline:Hotline,Company_Profile:Company_Profile}},{new:true});
       res.status(200).json(advertiser);
    }
    catch{
@@ -44,8 +44,8 @@ const updateAdvertiser= async(req,res)=>{
   const Username=req.params.Username;
   const updates=req.body;
   try{
-     await advertiserModel.updateOne({Username: Username},{$set: updates});
-     res.status(200).json({msg:" user is updated"});
+     const advertiser= await advertiserModel.updateOne({Username: Username},{$set: updates},{new:true});
+     res.status(200).json(advertiser);
   }
   catch (error){
      res.status(400).json({error: error.message});
