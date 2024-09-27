@@ -25,9 +25,10 @@ const createTourGuideInfo = async(req,res) => {
     }
  }
  const updateTourGuide= async(req,res)=>{
-   const{Username,Email,Password,mobileNumber,yearsOfExperience,previousWork}=req.body;
+   const Username=req.params.Username;
+   const updates=req.body;
    try{
-      await tourGuideModel.updateOne({Username: Username},{$set:{Username: Username, Email: Email,Password: Password,mobileNuber: mobileNumber,yearsOfExperience: yearsOfExperience, previousWork: previousWork}});
+      await tourGuideModel.updateOne({Username: Username},{$set: updates});
       res.status(200).json({msg:" user is updated"});
    }
    catch (error){
