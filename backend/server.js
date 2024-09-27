@@ -12,7 +12,7 @@ const {getTourGuide}=require("./routes/tourGuideController");
 const {createTourist} = require("./Routes/touristController");
 
 //Advertiser
-const{createAdvertiser,createAdvertiserInfo}=require("./routes/advertiserController");
+const{createAdvertiser,createAdvertiserInfo,getAdvertiser,updateAdvertiser}=require("./routes/advertiserController");
 
 //Seller
 const{createSellerInfo, createSeller,getSeller,updateSeller}=require("./Routes/sellerController");
