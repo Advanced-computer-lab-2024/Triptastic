@@ -3,19 +3,27 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 require("dotenv").config();
 const MongoURI = process.env.MONGO_URI ;
-const {createTourist} = require("./Routes/touristController");
+//Tour Guide
 const {createTourGuideInfo}=require("./routes/tourGuideController");
 const {updateTourGuide}=require("./routes/tourGuideController");
 const {getTourGuide}=require("./routes/tourGuideController");
-const{createAdvertiser}=require("./routes/advertiserController");
+
+//Tourist
+const {createTourist} = require("./Routes/touristController");
+
+//Advertiser
+const{createAdvertiser,createAdvertiserInfo}=require("./routes/advertiserController");
+
+//Seller
+const{createSellerInfo, createSeller,getSeller,updateSeller}=require("./Routes/sellerController");
 
 
 const app = express();
 const port = process.env.PORT || "8000";
-const tourist = require('./Models/Tourist');
-const tourGuide=require('./models/tourGuide');
+const tourist = require("./Models/Tourist");
+const tourGuide=require("./models/tourGuide");
 const advertiser=require("./models/Advertiser");
-
+const seller=require("./Models/Seller");
 
 mongoose.connect(MongoURI)
 .then(()=>{
@@ -27,8 +35,27 @@ mongoose.connect(MongoURI)
 })
 .catch(err => console.log(err));
 app.use(express.json())
+
+//Tourist
 app.post("/addTourist",createTourist);
+
+//TourGuide
 app.patch("/addTourGuide",createTourGuideInfo);
-app.post("/addAdvertiser",createAdvertiser);
 app.get("/getTourGuide",getTourGuide);
 app.patch("/updateTourGuide",updateTourGuide);
+
+//Advertiser
+app.post("/addAdvertiser",createAdvertiser);
+app.patch("/createAdvertiserInfo",createAdvertiserInfo);
+app.patch("/updateAdvertiser",updateAdvertiser);
+app.get("/getAdvertiser",getAdvertiser);
+
+//Seller
+app.post("/createSeller",createSeller);
+app.patch("/createSellerInfo",createSellerInfo);
+app.patch("/updateSeller",updateSeller);
+app.get("/getSeller",getSeller);
+
+
+
+

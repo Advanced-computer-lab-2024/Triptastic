@@ -2,10 +2,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const sellerSchema = new Schema({
-  Name: {
-    type: String,
-    required: true,
-  },
   User_name: {
     type: String,
     required: true,
@@ -19,9 +15,13 @@ const sellerSchema = new Schema({
     type: String,
     required: true,
   },
+  Name: {
+    type: String,
+    required: false,
+  },
   Description: {
     type: String,
-    required: true,
+    required: false,
   }
 }, { timestamps: true });
 
