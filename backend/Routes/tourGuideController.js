@@ -1,10 +1,10 @@
 const tourGuideModel = require('../models/tourGuide.js');
 const { default: mongoose } = require('mongoose');
-const createTourGuide = async(req,res) => {
+const createTourGuideInfo = async(req,res) => {
 
-    const{Username,Email,Password,mobileNumber,yearsOfExperience,previousWork}=req.body;
+    const{Username,mobileNumber,yearsOfExperience,previousWork}=req.body;
     try{
-       const tourGuide=await tourGuideModel.create({UsernameEmail,Password,mobileNumber,yearsOfExperience,previousWork});
+       const tourGuide=await tourGuideModel.findOneAndUpdate({Username: Username },{$set:{mobileNumber: mobileNumber,yearsOfExperience: yearsOfExperience,previousWork: previousWork}});
        res.status(200).json(tourGuide);
     }
     catch{
@@ -35,4 +35,4 @@ const createTourGuide = async(req,res) => {
    }
 
  }
- module.exports = {createTourGuide,getTourGuide,updateTourGuide};
+ module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide};

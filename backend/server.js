@@ -4,7 +4,7 @@ mongoose.set('strictQuery', false);
 require("dotenv").config();
 const MongoURI = process.env.MONGO_URI ;
 const {createTourist} = require("./Routes/touristController");
-const {createTourGuide}=require("./routes/tourGuideController");
+const {createTourGuideInfo}=require("./routes/tourGuideController");
 const{createAdvertiser}=require("./routes/advertiserController");
 
 
@@ -26,6 +26,6 @@ mongoose.connect(MongoURI)
 .catch(err => console.log(err));
 app.use(express.json())
 app.post("/addTourist",createTourist);
-app.post("/addTourGuide",createTourGuide);
+app.patch("/addTourGuide",createTourGuideInfo);
 app.post("/addAdvertiser",createAdvertiser)
 
