@@ -1,10 +1,10 @@
-const tourGuideModel = require('../Models/tourGuide.js');
+const tourGuideModel = require('../models/tourGuide.js');
 const { default: mongoose } = require('mongoose');
 const createTourGuide = async(req,res) => {
 
-    const{Name,Username,Email,Password,mobileNumber,yearsOfExperience,previousWork}=req.body;
+    const{Username,Email,Password}=req.body;
     try{
-       const tourGuide=await tourGuideModel.create({Name,UsernameEmail,Password,mobileNumber,yearsOfExperience,previousWork});
+       const tourGuide=await tourGuideModel.create({Username,Email,Password});
        res.status(200).json(tourGuide);
     }
     catch{
@@ -13,10 +13,10 @@ const createTourGuide = async(req,res) => {
     }
  }
  const getTourGuide= async(req,res) =>{
-    const name= req.params.name;
+    const Username= req.params.Username;
     
     try {
-        const tourGuide = await tourGuideModel.findOne({ Name: name }); 
+        const tourGuide = await tourGuideModel.findOne({ Userame: Username }); 
 
             res.status(200).json(tourGuide);
     } 
@@ -24,3 +24,4 @@ const createTourGuide = async(req,res) => {
         res.status(400).json({ error: error.message }); 
     }
  }
+ module.exports = {createTourGuide,getTourGuide};

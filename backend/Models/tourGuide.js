@@ -2,9 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const tourGuideSchema = new Schema({
-    Name: {
-        type: String, required : true,
-    },
+   
     Username: {
         type: String, required: true,
     },
@@ -15,13 +13,13 @@ const tourGuideSchema = new Schema({
         type: String, required: true,
     },
     mobileNumber: {
-        type: Number, required: true,
+        type: Number
     },
     yearsOfExperience: {
-        type: Number, required: true, 
+        type: Number
     },
     previousWork: {
-        type: String, required: true,
+        type: String
     }
       },{ timestamps: true });
        
