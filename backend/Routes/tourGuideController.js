@@ -74,6 +74,38 @@ const createTourGuideInfo = async(req,res) => {
 
    }
  }
+ const getItinerary= async(req,res)=>{
+   const location=req.body;
+   try{
+      const x=await itineraryModel.findOne({Location: location});
+      res.status(200).json(x);
+   }
+   catch (error){
+      res.status(400).json({error: error.message});
+   }
+ }
+ const updateItinerary= async(req,res)=>{
+   const location= req.params.Location;
+   const date= req.params.DatesTimes
+   const update= req.body;
+   try{
+      await itineraryModel.updateOne({Locaton: location, DatesTimes: date},{$set: updates});
+      res.status(200).json({msg:" Itinerary is updated"});
+   }
+   catch (error){
+      res.status(400).json({error: error.message});
+   }
+ }
+ const deleteItinerary = async (req, res) => {
+   const location= req.params.Location;
+   const date= req.params.DatesTimes
+   try {
+       const tourGuide = await itineraryModel.deleteOne({ Location: location, DatesTimes: date });
+       res.status(200).json({ msg: "Itinerary has been deleted successfully" });
+   } catch (error) {
+       res.status(400).json({ error: error.message });
+   }
+};
  
- module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,deleteTourGuide};
+ module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,deleteTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary};
  
