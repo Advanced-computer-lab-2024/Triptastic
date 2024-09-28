@@ -1,4 +1,4 @@
-const adminModel = require('../Models/Admin.js');
+const adminModel = require('../models/Admin.js');
 const { default: mongoose } = require('mongoose');
 const createAdmin = async (req, res) => {
     

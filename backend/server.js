@@ -23,11 +23,11 @@ const{createAdmin,getAdmin}=require("./Routes/adminController")
 
 const app = express();
 const port = process.env.PORT || "8000";
-const tourist = require("./Models/Tourist");
+const tourist = require("./models/Tourist");
 const tourGuide=require("./models/tourGuide");
 const advertiser=require("./models/Advertiser");
-const seller=require("./Models/Seller");
-const admin=require("./Models/Admin");
+const seller=require("./models/Seller");
+const admin=require("./models/Admin");
 
 mongoose.connect(MongoURI)
 .then(()=>{
