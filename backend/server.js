@@ -19,13 +19,16 @@ const {createTourist,deleteTourist} = require("./routes/touristController");
 const{createAdvertiser,getAdvertiser,updateAdvertiser,deleteAdvertiser}=require("./routes/advertiserController");
 
 //Seller
-const{createSellerInfo, createSeller,getSeller,updateSeller}=require("./routes/sellerController");
+const{ createSeller,getSeller,updateSeller}=require("./routes/sellerController");
 
 //Admin
 const{createAdmin}=require("./routes/adminController");
 
 //Activities 
 const{createActivity,getActivity,updateActivity,deleteActivity}=require("./routes/activitiesController");
+
+//TourismGoverner
+const{createMuseum,updateMuseum,getMuseum,deleteMuseum}=require("./routes/tourismGovController");
 
 
 
@@ -37,7 +40,9 @@ const tourGuide=require("./models/tourGuide");
 const advertiser=require("./models/Advertiser");
 const seller=require("./models/Seller");
 const admin=require("./models/Admin");
-const activities=require("./models/Activities")
+const activities=require("./models/Activities");
+const museum=require("./models/Museum");
+const tourismGov=require("./models/tourismGov");
 
 
 mongoose.connect(MongoURI)
@@ -85,6 +90,12 @@ app.post("/createActivity",createActivity);
 app.delete("/deleteActivity",deleteActivity);
 app.patch("/updateActivity",updateActivity);
 app.get("/getActivity",getActivity);
+
+//TourismGoverner
+app.post("/createMuseum",createMuseum);
+app.patch("/updateMuseum",updateMuseum);
+app.get("/getMuseum",getMuseum);
+app.delete("/deleteMuseum",deleteMuseum);
 
 
 

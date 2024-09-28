@@ -43,7 +43,7 @@ const getMuseum= async(req,res) =>{
  
 
 const deleteMuseum = async (req, res) => {
-    const{Name}=req.bdoy;
+    const{Name}=req.body;
    try {
       const museum = await museumModel.deleteOne({Name:Name}); 
       if (!museum) {
