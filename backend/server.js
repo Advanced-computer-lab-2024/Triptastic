@@ -7,23 +7,24 @@ const MongoURI = process.env.MONGO_URI ;
 const {createTourGuideInfo}=require("./routes/tourGuideController");
 const {updateTourGuide}=require("./routes/tourGuideController");
 const {getTourGuide}=require("./routes/tourGuideController");
+const {deleteTourGuide}=require("./routes/tourGuideController");
 
 //Tourist
-const {createTourist} = require("./Routes/touristController");
+const {createTourist,deleteTourist} = require("./routes/touristController");
 
 //Advertiser
-const{createAdvertiser,createAdvertiserInfo,getAdvertiser,updateAdvertiser}=require("./routes/advertiserController");
+const{createAdvertiser,createAdvertiserInfo,getAdvertiser,updateAdvertiser,deleteAdvertiser}=require("./routes/advertiserController");
 
 //Seller
-const{createSellerInfo, createSeller,getSeller,updateSeller}=require("./Routes/sellerController");
+const{createSellerInfo, createSeller,getSeller,updateSeller,deleteSeller}=require("./routes/sellerController");
 
 
 const app = express();
 const port = process.env.PORT || "8000";
-const tourist = require("./Models/Tourist");
+const tourist = require("./models/Tourist");
 const tourGuide=require("./models/tourGuide");
 const advertiser=require("./models/Advertiser");
-const seller=require("./Models/Seller");
+const seller=require("./models/Seller");
 
 mongoose.connect(MongoURI)
 .then(()=>{
@@ -38,23 +39,26 @@ app.use(express.json())
 
 //Tourist
 app.post("/addTourist",createTourist);
-
+app.delete("/deleteTourist",deleteTourist);
 //TourGuide
-app.patch("/addTourGuide",createTourGuideInfo);
+app.post("/addTourGuide",createTourGuideInfo);
 app.get("/getTourGuide",getTourGuide);
 app.patch("/updateTourGuide",updateTourGuide);
+app.delete("/deleteTourGuide",deleteTourGuide);
 
 //Advertiser
 app.post("/addAdvertiser",createAdvertiser);
 app.patch("/createAdvertiserInfo",createAdvertiserInfo);
 app.patch("/updateAdvertiser",updateAdvertiser);
 app.get("/getAdvertiser",getAdvertiser);
+app.delete("/deleteAdvertiser",deleteAdvertiser);
 
 //Seller
 app.post("/createSeller",createSeller);
 app.patch("/createSellerInfo",createSellerInfo);
 app.patch("/updateSeller",updateSeller);
 app.get("/getSeller",getSeller);
+app.delete("/deleteSeller",deleteSeller);
 
 
 
