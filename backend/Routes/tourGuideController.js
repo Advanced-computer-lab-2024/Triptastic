@@ -1,4 +1,5 @@
 const tourGuideModel = require('../models/tourGuide.js');
+const itineraryModel = require('../Models/Itinerary.js');
 const { default: mongoose } = require('mongoose');
 const createTourGuideInfo = async(req,res) => {
 
@@ -36,4 +37,17 @@ const createTourGuideInfo = async(req,res) => {
    }
 
  }
+ const createItinerary=async(req,res)=>{
+   const{Activities,Location,Timeline,DurationOfActivity,Language,Price,DatesTimes,Accesibility,pickUpDropOff}=req.body;
+   try{
+      const itinerary=await itineraryModel.create({Activities,Location,Timeline,DurationOfActivity,Language,Price,DatesTimes,Accesibility,pickUpDropOff});
+      res.status(200).json(itinerary);
+   }
+   catch{
+      res.status(400).json({error:error.message})
+
+   }
+ }
+ 
  module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide};
+ 
