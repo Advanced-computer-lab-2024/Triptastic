@@ -1,6 +1,18 @@
 const tourGuideModel = require('../models/tourGuide.js');
 const itineraryModel = require('../Models/Itinerary.js');
 const { default: mongoose } = require('mongoose');
+const createTourGuide = async(req,res) => {
+
+   const{Username,Email,Password}=req.body;
+   try{
+      const tourGuide=await tourGuideModel.create({Username,Email,Password});
+      res.status(200).json(tourGuide);
+   }
+   catch{
+      res.status(400).json({error:error.message})
+
+   }
+}
 const createTourGuideInfo = async(req,res) => {
 
     const{Username,mobileNumber,yearsOfExperience,previousWork}=req.body;
@@ -49,5 +61,5 @@ const createTourGuideInfo = async(req,res) => {
    }
  }
  
- module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide};
+ module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide};
  

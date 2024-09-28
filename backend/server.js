@@ -1,10 +1,11 @@
 const express = require("express");
 const mongoose = require('mongoose');
+const cors = require("cors");
 mongoose.set('strictQuery', false);
 require("dotenv").config();
 const MongoURI = process.env.MONGO_URI ;
 //Tour Guide
-const {createTourGuideInfo}=require("./routes/tourGuideController");
+const {createTourGuideInfo,createTourGuide}=require("./routes/tourGuideController");
 const {updateTourGuide}=require("./routes/tourGuideController");
 const {getTourGuide}=require("./routes/tourGuideController");
 
@@ -38,13 +39,15 @@ mongoose.connect(MongoURI)
   })
 })
 .catch(err => console.log(err));
-app.use(express.json())
+app.use(express.json());
+app.use(cors());
 
 //Tourist
 app.post("/addTourist",createTourist);
 
 //TourGuide
-app.patch("/addTourGuide",createTourGuideInfo);
+app.post("/addTourGuide",createTourGuide);
+app.patch("/addTourGuideInfo",createTourGuideInfo);
 app.get("/getTourGuide",getTourGuide);
 app.patch("/updateTourGuide",updateTourGuide);
 
