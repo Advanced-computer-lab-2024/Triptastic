@@ -6,18 +6,20 @@ const AdminSchema = new Schema({
   Username: {
     type: String,
     required: true,
+    unique: true,
   },
 
   Password: {
     type: String,
     required: true,
+    unique: true,
   },
 
   //admin,tourism governer and so on
   
   Role: {
     type: String,
-    required: true,
+    required: false,
   },
 
 }, { timestamps: true });
