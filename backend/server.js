@@ -17,7 +17,7 @@ const {createTourist,deleteTourist} = require("./routes/touristController");
 const{createAdvertiser,createAdvertiserInfo,getAdvertiser,updateAdvertiser,deleteAdvertiser}=require("./routes/advertiserController");
 
 //Seller
-const{createSellerInfo, createSeller,getSeller,updateSeller}=require("./routes/sellerController");
+const{createSeller,getSeller,updateSeller}=require("./routes/sellerController");
 
 
 const app = express();
@@ -26,6 +26,9 @@ const tourist = require("./models/Tourist");
 const tourGuide=require("./models/tourGuide");
 const advertiser=require("./models/Advertiser");
 const seller=require("./models/Seller");
+const admin=require("./models/Admin");
+const tourismGov=require("./models/tourismGov");
+
 
 mongoose.connect(MongoURI)
 .then(()=>{
@@ -58,7 +61,6 @@ app.delete("/deleteAdvertiser",deleteAdvertiser);
 
 //Seller
 app.post("/createSeller",createSeller);
-app.patch("/createSellerInfo",createSellerInfo);
 app.patch("/updateSeller",updateSeller);
 app.get("/getSeller",getSeller);
 

@@ -50,6 +50,7 @@ const createTourGuideInfo = async(req,res) => {
 
  }
  const deleteTourGuide = async (req, res) => {
+   
    try {
        const tourGuide = await tourGuideModel.deleteOne({ Username: req.params.Username });
        
