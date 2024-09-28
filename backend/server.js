@@ -16,7 +16,7 @@ const {createItinerary,getItinerary,updateItinerary,deleteItinerary}=require("./
 const {createTourist,deleteTourist} = require("./routes/touristController");
 
 //Advertiser
-const{createAdvertiser,createAdvertiserInfo,getAdvertiser,updateAdvertiser,deleteAdvertiser}=require("./routes/advertiserController");
+const{createAdvertiser,getAdvertiser,updateAdvertiser,deleteAdvertiser}=require("./routes/advertiserController");
 
 //Seller
 const{createSellerInfo, createSeller,getSeller,updateSeller}=require("./routes/sellerController");
@@ -67,7 +67,7 @@ app.patch("/updateItinerary/:location/:datesTimes",updateItinerary);
 app.delete("/deleteItinerary/:location/:datesTimes",deleteItinerary);
 //Advertiser
 app.post("/addAdvertiser",createAdvertiser);
-app.patch("/createAdvertiserInfo",createAdvertiserInfo);
+
 app.patch("/updateAdvertiser",updateAdvertiser);
 app.get("/getAdvertiser",getAdvertiser);
 app.delete("/deleteAdvertiser",deleteAdvertiser);
