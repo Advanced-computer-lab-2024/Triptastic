@@ -49,6 +49,21 @@ const createTourGuideInfo = async(req,res) => {
    }
 
  }
+ const deleteTourGuide = async (req, res) => {
+   try {
+       const tourGuide = await tourGuideModel.deleteOne({ Username: req.params.Username });
+       
+       if (!tourGuide) {
+           return res.status(404).json({ msg: "Tour Guide not found" });
+       }
+       
+       res.status(200).json({ msg: "Tour Guide has been deleted successfully" });
+   } catch (error) {
+       res.status(400).json({ error: error.message });
+   }
+};
+ module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,deleteTourGuide};
+
  const createItinerary=async(req,res)=>{
    const{Activities,Location,Timeline,DurationOfActivity,Language,Price,DatesTimes,Accesibility,pickUpDropOff}=req.body;
    try{

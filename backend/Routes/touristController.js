@@ -12,4 +12,18 @@ const createTourist = async(req,res) => {
  
     }
  }
- module.exports = {createTourist};
+
+ const deleteTourist = async (req, res) => {
+     try {
+         const tourist = await touristModel.deleteOne({ Username: req.params.Username }); 
+         if (!tourist) {
+             return res.status(404).json({ msg: "Tourist not found" });
+         }
+         res.status(200).json({ msg: "Tourist has been deleted successfully" });
+     } catch (error) {
+         res.status(400).json({ error: error.message });
+     }
+ };
+ 
+ 
+ module.exports = {createTourist,deleteTourist};
