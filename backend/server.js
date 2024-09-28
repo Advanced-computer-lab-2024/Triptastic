@@ -11,6 +11,7 @@ const {getTourGuide}=require("./Routes/tourGuideController");
 const {deleteTourGuide}=require("./Routes/tourGuideController");
 const {createItinerary,getItinerary,updateItinerary,deleteItinerary}=require("./Routes/tourGuideController");
 
+
 //Tourist
 const {createTourist,deleteTourist} = require("./routes/touristController");
 
@@ -20,6 +21,14 @@ const{createAdvertiser,createAdvertiserInfo,getAdvertiser,updateAdvertiser,delet
 //Seller
 const{createSellerInfo, createSeller,getSeller,updateSeller}=require("./routes/sellerController");
 
+//Admin
+const{createAdmin}=require("./routes/adminController");
+
+//Activities 
+const{createActivity,getActivity,updateActivity,deleteActivity}=require("./routes/activitiesController");
+
+
+
 
 const app = express();
 const port = process.env.PORT || "8000";
@@ -27,6 +36,9 @@ const tourist = require("./models/Tourist");
 const tourGuide=require("./models/tourGuide");
 const advertiser=require("./models/Advertiser");
 const seller=require("./models/Seller");
+const admin=require("./models/Admin");
+const activities=require("./models/Activities")
+
 
 mongoose.connect(MongoURI)
 .then(()=>{
@@ -65,6 +77,18 @@ app.post("/createSeller",createSeller);
 app.patch("/createSellerInfo",createSellerInfo);
 app.patch("/updateSeller",updateSeller);
 app.get("/getSeller",getSeller);
+
+//Admin
+app.post("/createAdmin",createAdmin);
+
+//Actvities
+app.post("/createActivity",createActivity);
+app.delete("/deleteActivity",deleteActivity);
+app.patch("/updateActivity",updateActivity);
+app.get("/getActivity",getActivity);
+
+
+
 
 
 
