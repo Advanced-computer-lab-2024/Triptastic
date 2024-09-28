@@ -51,8 +51,8 @@ app.patch("/updateTourGuide",updateTourGuide);
 app.delete("/deleteTourGuide",deleteTourGuide);
 app.post("/addItinerary",createItinerary);
 app.get("/getItinerary",getItinerary);
-app.patch("/updateItinerary",updateItinerary);
-app.delete("/deleteItinerary",deleteItinerary);
+app.patch("/updateItinerary/:location/:datesTimes",updateItinerary);
+app.delete("/deleteItinerary/:location/:datesTimes",deleteItinerary);
 //Advertiser
 app.post("/addAdvertiser",createAdvertiser);
 app.patch("/createAdvertiserInfo",createAdvertiserInfo);

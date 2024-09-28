@@ -89,7 +89,7 @@ const createTourGuideInfo = async(req,res) => {
    const date= req.params.DatesTimes
    const update= req.body;
    try{
-      await itineraryModel.updateOne({Locaton: location, DatesTimes: date},{$set: updates});
+      await itineraryModel.updateOne({Location: location, DatesTimes: date},{$set: update});
       res.status(200).json({msg:" Itinerary is updated"});
    }
    catch (error){
