@@ -20,10 +20,19 @@ Name: {
     required: false,
   },
   TicketPrices: {
-    type: String,
-    required: false,
-  },
-
+    Foreigner: {
+      type: Number,
+      required: true
+    },
+    Native: {
+      type: Number,
+      required: true
+    },
+    Student: {
+      type: Number,
+      required: true
+    }
+  }
 }, { timestamps: true });
 
 const Museum = mongoose.model('Museum', museumSchema);
