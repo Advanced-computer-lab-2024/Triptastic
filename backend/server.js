@@ -5,19 +5,29 @@ mongoose.set('strictQuery', false);
 require("dotenv").config();
 const MongoURI = process.env.MONGO_URI ;
 //Tour Guide
-const {createTourGuideInfo,createTourGuide}=require("./routes/tourGuideController");
-const {updateTourGuide}=require("./routes/tourGuideController");
-const {getTourGuide}=require("./routes/tourGuideController");
-const {deleteTourGuide}=require("./routes/tourGuideController");
+const {createTourGuideInfo,createTourGuide}=require("./Routes/tourGuideController");
+const {updateTourGuide}=require("./Routes/tourGuideController");
+const {getTourGuide}=require("./Routes/tourGuideController");
+const {deleteTourGuide}=require("./Routes/tourGuideController");
+const {createItinerary,getItinerary,updateItinerary,deleteItinerary}=require("./Routes/tourGuideController");
+
 
 //Tourist
 const {createTourist,deleteTourist} = require("./routes/touristController");
 
 //Advertiser
-const{createAdvertiser,createAdvertiserInfo,getAdvertiser,updateAdvertiser,deleteAdvertiser}=require("./routes/advertiserController");
+const{createAdvertiser,getAdvertiser,updateAdvertiser,deleteAdvertiser}=require("./routes/advertiserController");
 
 //Seller
-const{createSeller,getSeller,updateSeller}=require("./routes/sellerController");
+const{createSellerInfo, createSeller,getSeller,updateSeller}=require("./routes/sellerController");
+
+//Admin
+const{createAdmin}=require("./routes/adminController");
+
+//Activities 
+const{createActivity,getActivity,updateActivity,deleteActivity}=require("./routes/activitiesController");
+
+
 
 
 const app = express();
@@ -27,7 +37,7 @@ const tourGuide=require("./models/tourGuide");
 const advertiser=require("./models/Advertiser");
 const seller=require("./models/Seller");
 const admin=require("./models/Admin");
-const tourismGov=require("./models/tourismGov");
+const activities=require("./models/Activities")
 
 
 mongoose.connect(MongoURI)
@@ -48,13 +58,16 @@ app.delete("/deleteTourist",deleteTourist);
 //TourGuide
 app.post("/addTourGuide",createTourGuide);
 app.patch("/addTourGuideInfo",createTourGuideInfo);
-app.get("/getTourGuide",getTourGuide);
-app.patch("/updateTourGuide",updateTourGuide);
+app.get("/getTourGuide/:Username",getTourGuide);
+app.patch("/updateTourGuide/:Username",updateTourGuide);
 app.delete("/deleteTourGuide",deleteTourGuide);
-
+app.post("/addItinerary",createItinerary);
+app.get("/getItinerary",getItinerary);
+app.patch("/updateItinerary/:location/:datesTimes",updateItinerary);
+app.delete("/deleteItinerary/:location/:datesTimes",deleteItinerary);
 //Advertiser
 app.post("/addAdvertiser",createAdvertiser);
-app.patch("/createAdvertiserInfo",createAdvertiserInfo);
+
 app.patch("/updateAdvertiser",updateAdvertiser);
 app.get("/getAdvertiser",getAdvertiser);
 app.delete("/deleteAdvertiser",deleteAdvertiser);
@@ -63,6 +76,18 @@ app.delete("/deleteAdvertiser",deleteAdvertiser);
 app.post("/createSeller",createSeller);
 app.patch("/updateSeller",updateSeller);
 app.get("/getSeller",getSeller);
+
+//Admin
+app.post("/createAdmin",createAdmin);
+
+//Actvities
+app.post("/createActivity",createActivity);
+app.delete("/deleteActivity",deleteActivity);
+app.patch("/updateActivity",updateActivity);
+app.get("/getActivity",getActivity);
+
+
+
 
 
 
