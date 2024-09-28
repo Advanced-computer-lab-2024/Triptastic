@@ -5,10 +5,11 @@ mongoose.set('strictQuery', false);
 require("dotenv").config();
 const MongoURI = process.env.MONGO_URI ;
 //Tour Guide
-const {createTourGuideInfo,createTourGuide}=require("./routes/tourGuideController");
-const {updateTourGuide}=require("./routes/tourGuideController");
-const {getTourGuide}=require("./routes/tourGuideController");
-const {deleteTourGuide}=require("./routes/tourGuideController");
+const {createTourGuideInfo,createTourGuide}=require("./Routes/tourGuideController");
+const {updateTourGuide}=require("./Routes/tourGuideController");
+const {getTourGuide}=require("./Routes/tourGuideController");
+const {deleteTourGuide}=require("./Routes/tourGuideController");
+const {createItinerary,getItinerary,updateItinerary,deleteItinerary}=require("./Routes/tourGuideController");
 
 //Tourist
 const {createTourist,deleteTourist} = require("./routes/touristController");
@@ -48,7 +49,10 @@ app.patch("/addTourGuideInfo",createTourGuideInfo);
 app.get("/getTourGuide",getTourGuide);
 app.patch("/updateTourGuide",updateTourGuide);
 app.delete("/deleteTourGuide",deleteTourGuide);
-
+app.post("/addItinerary",createItinerary);
+app.get("/getItinerary",getItinerary);
+app.patch("/updateItinerary",updateItinerary);
+app.delete("/deleteItinerary",deleteItinerary);
 //Advertiser
 app.post("/addAdvertiser",createAdvertiser);
 app.patch("/createAdvertiserInfo",createAdvertiserInfo);
