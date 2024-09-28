@@ -17,6 +17,9 @@ const{createAdvertiser,createAdvertiserInfo,getAdvertiser,updateAdvertiser}=requ
 //Seller
 const{createSellerInfo, createSeller,getSeller,updateSeller}=require("./Routes/sellerController");
 
+//Admin
+const{createAdmin,getAdmin}=require("./Routes/adminController")
+
 
 const app = express();
 const port = process.env.PORT || "8000";
@@ -24,6 +27,7 @@ const tourist = require("./Models/Tourist");
 const tourGuide=require("./models/tourGuide");
 const advertiser=require("./models/Advertiser");
 const seller=require("./Models/Seller");
+const admin=require("./Models/Admin");
 
 mongoose.connect(MongoURI)
 .then(()=>{
@@ -55,6 +59,10 @@ app.post("/createSeller",createSeller);
 app.patch("/createSellerInfo",createSellerInfo);
 app.patch("/updateSeller",updateSeller);
 app.get("/getSeller",getSeller);
+
+//Admin
+app.get("/createAdmin",createAdmin);
+app.post("/getAdmin",getAdmin);
 
 
 
