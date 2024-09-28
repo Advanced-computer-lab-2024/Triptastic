@@ -75,7 +75,7 @@ const createTourGuideInfo = async(req,res) => {
    }
  }
  const getItinerary= async(req,res)=>{
-   const location=req.body;
+   const {location}=req.body;
    try{
       const x=await itineraryModel.findOne({Location: location});
       res.status(200).json(x);
