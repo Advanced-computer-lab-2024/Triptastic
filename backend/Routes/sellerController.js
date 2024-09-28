@@ -1,4 +1,5 @@
-const sellerModel = require('../models/Seller')
+
+const sellerModel = require('../models/Seller.js');
 const { default: mongoose } = require('mongoose');
 const createSeller = async(req,res) => {
 

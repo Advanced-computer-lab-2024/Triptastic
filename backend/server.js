@@ -16,7 +16,7 @@ const {createTourist,deleteTourist} = require("./routes/touristController");
 const{createAdvertiser,createAdvertiserInfo,getAdvertiser,updateAdvertiser,deleteAdvertiser}=require("./routes/advertiserController");
 
 //Seller
-const{createSellerInfo, createSeller,getSeller,updateSeller,deleteSeller}=require("./routes/sellerController");
+const{createSellerInfo, createSeller,getSeller,updateSeller}=require("./routes/sellerController");
 
 
 const app = express();
@@ -58,7 +58,6 @@ app.post("/createSeller",createSeller);
 app.patch("/createSellerInfo",createSellerInfo);
 app.patch("/updateSeller",updateSeller);
 app.get("/getSeller",getSeller);
-app.delete("/deleteSeller",deleteSeller);
 
 
 
