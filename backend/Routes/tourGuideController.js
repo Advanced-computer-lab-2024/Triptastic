@@ -41,7 +41,9 @@ const createTourGuideInfo = async(req,res) => {
    const Username=req.params.Username;
    const updates=req.body;
    try{
-      await tourGuideModel.updateOne({Username: Username},{$set: updates});
+      const result=await tourGuideModel.updateOne({Username: Username},{$set: updates});
+      if (result.modifiedCount === 0) {
+         return res.status(404).json({ msg: "No user found " });}
       res.status(200).json({msg:" user is updated"});
    }
    catch (error){

@@ -58,8 +58,8 @@ app.delete("/deleteTourist",deleteTourist);
 //TourGuide
 app.post("/addTourGuide",createTourGuide);
 app.patch("/addTourGuideInfo",createTourGuideInfo);
-app.get("/getTourGuide",getTourGuide);
-app.patch("/updateTourGuide",updateTourGuide);
+app.get("/getTourGuide/:Username",getTourGuide);
+app.patch("/updateTourGuide/:Username",updateTourGuide);
 app.delete("/deleteTourGuide",deleteTourGuide);
 app.post("/addItinerary",createItinerary);
 app.get("/getItinerary",getItinerary);
