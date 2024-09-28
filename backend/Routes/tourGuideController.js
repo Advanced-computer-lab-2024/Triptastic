@@ -62,7 +62,6 @@ const createTourGuideInfo = async(req,res) => {
        res.status(400).json({ error: error.message });
    }
 };
- module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,deleteTourGuide};
 
  const createItinerary=async(req,res)=>{
    const{Activities,Location,Timeline,DurationOfActivity,Language,Price,DatesTimes,Accesibility,pickUpDropOff}=req.body;
@@ -76,5 +75,5 @@ const createTourGuideInfo = async(req,res) => {
    }
  }
  
- module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide};
+ module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,deleteTourGuide};
  
