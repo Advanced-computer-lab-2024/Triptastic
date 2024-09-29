@@ -26,7 +26,7 @@ const{createAdmin,createActivity,getActivity,updateActivity,deleteActivity}=requ
 
 
 //Activities 
-const{createActivity,getActivity,updateActivity,deleteActivity}=require("./routes/activitiesController");
+
 
 //TourismGoverner
 const{createMuseum,updateMuseum,getMuseum,deleteMuseum}=require("./routes/tourismGovController");
@@ -40,8 +40,7 @@ const tourist = require("./models/Tourist");
 const tourGuide=require("./models/tourGuide");
 const advertiser=require("./models/Advertiser");
 const seller=require("./models/Seller");
-const admin=require("./models/Admin");
-const activities=require("./models/Activities");
+const admin=require("./models/Admin")
 const museum=require("./models/Museum");
 const tourismGov=require("./models/tourismGov");
 const activities=require("./models/Activitiescategory")
