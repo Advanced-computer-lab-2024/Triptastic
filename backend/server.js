@@ -16,15 +16,20 @@ const {createItinerary,getItinerary,updateItinerary,deleteItinerary}=require("./
 const {createTourist,deleteTourist} = require("./routes/touristController");
 
 //Advertiser
-const{createAdvertiser,createAdvertiserInfo,getAdvertiser,updateAdvertiser,deleteAdvertiser}=require("./routes/advertiserController");
+const{createAdvertiser,getAdvertiser,updateAdvertiser,deleteAdvertiser}=require("./routes/advertiserController");
 
 //Seller
-const{createSellerInfo, createSeller,getSeller,updateSeller}=require("./routes/sellerController");
+const{ createSeller,getSeller,updateSeller}=require("./routes/sellerController");
 
 //Admin
 const{createAdmin,createActivity,getActivity,updateActivity,deleteActivity}=require("./routes/adminController");
 
 
+//Activities 
+const{createActivity,getActivity,updateActivity,deleteActivity}=require("./routes/activitiesController");
+
+//TourismGoverner
+const{createMuseum,updateMuseum,getMuseum,deleteMuseum}=require("./routes/tourismGovController");
 
 
 
@@ -36,6 +41,9 @@ const tourGuide=require("./models/tourGuide");
 const advertiser=require("./models/Advertiser");
 const seller=require("./models/Seller");
 const admin=require("./models/Admin");
+const activities=require("./models/Activities");
+const museum=require("./models/Museum");
+const tourismGov=require("./models/tourismGov");
 const activities=require("./models/Activitiescategory")
 
 
@@ -58,24 +66,25 @@ app.delete("/deleteTourist",deleteTourist);
 //TourGuide
 app.post("/addTourGuide",createTourGuide);
 app.patch("/addTourGuideInfo",createTourGuideInfo);
-app.get("/getTourGuide",getTourGuide);
-app.patch("/updateTourGuide",updateTourGuide);
+app.get("/getTourGuide/:Username",getTourGuide);
+app.patch("/updateTourGuide/:Username",updateTourGuide);
 app.delete("/deleteTourGuide",deleteTourGuide);
 app.post("/addItinerary",createItinerary);
 app.get("/getItinerary",getItinerary);
+app.patch("/updateItinerary/:location/:datesTimes",updateItinerary);
+app.delete("/deleteItinerary/:location/:datesTimes",deleteItinerary);
 app.patch("/updateItinerary",updateItinerary);
 app.delete("/deleteItinerary",deleteItinerary);
 
 //Advertiser
 app.post("/addAdvertiser",createAdvertiser);
-app.patch("/createAdvertiserInfo",createAdvertiserInfo);
+
 app.patch("/updateAdvertiser",updateAdvertiser);
 app.get("/getAdvertiser",getAdvertiser);
 app.delete("/deleteAdvertiser",deleteAdvertiser);
 
 //Seller
 app.post("/createSeller",createSeller);
-app.patch("/createSellerInfo",createSellerInfo);
 app.patch("/updateSeller",updateSeller);
 app.get("/getSeller",getSeller);
 
@@ -85,6 +94,12 @@ app.post("/createActivity",createActivity);
 app.delete("/deleteActivity",deleteActivity);
 app.patch("/updateActivity",updateActivity);
 app.get("/getActivity",getActivity);
+
+//TourismGoverner
+app.post("/createMuseum",createMuseum);
+app.patch("/updateMuseum",updateMuseum);
+app.get("/getMuseum",getMuseum);
+app.delete("/deleteMuseum",deleteMuseum);
 
 
 
