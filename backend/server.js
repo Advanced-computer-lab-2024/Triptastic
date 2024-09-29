@@ -13,19 +13,19 @@ const {createItinerary,getItinerary,updateItinerary,deleteItinerary}=require("./
 
 
 //Tourist
-const {createTourist,deleteTourist,gethistoricalLocationByName} = require("./Routes/touristController");
+const {createTourist,deleteTourist,gethistoricalLocationByName,createProductTourist} = require("./Routes/touristController");
 
 //Advertiser
 const{createAdvertiser,getAdvertiser,updateAdvertiser,deleteAdvertiser}=require("./Routes/advertiserController");
 
 //Seller
-const{ createSeller,getSeller,updateSeller}=require("./Routes/sellerController");
+const{ createSeller,getSeller,updateSeller,createProductseller}=require("./Routes/sellerController");
 
 //Admin
 const{createAdmin,createCategory,
   getCategory,
   updateCategory,
-  deleteCategory,createPrefTag,getPrefTag,updatePreftag,deletePreftag}=require("./routes/adminController");
+  deleteCategory,createPrefTag,getPrefTag,updatePreftag,deletePreftag,createProduct}=require("./routes/adminController");
 
 
 //Activities 
@@ -67,6 +67,8 @@ app.use(cors());
 app.post("/addTourist",createTourist);
 app.delete("/deleteTourist",deleteTourist);
 app.get("/getHistoricalLocationByName",gethistoricalLocationByName);
+app.post("/createProductTourist",createProductTourist);
+
 //TourGuide
 app.post("/addTourGuide",createTourGuide);
 app.patch("/addTourGuideInfo",createTourGuideInfo);
@@ -91,6 +93,7 @@ app.delete("/deleteAdvertiser",deleteAdvertiser);
 app.post("/createSeller",createSeller);
 app.patch("/updateSeller",updateSeller);
 app.get("/getSeller",getSeller);
+app.post("/createProductseller",createProductseller);
 
 //Admin
 app.post("/createAdmin",createAdmin);
@@ -100,8 +103,9 @@ app.patch("/updateCategory",updateCategory);
 app.get("/getCategory",getCategory);
 app.post("/createPrefTag",createPrefTag);
 app.get("/getPrefTag",getPrefTag);
-app.patch("/updatePreftag",updatePreftag);deletePreftag
+app.patch("/updatePreftag",updatePreftag);
 app.delete("/deletePreftag",deletePreftag);
+app.post("/createProduct",createProduct);
 
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);

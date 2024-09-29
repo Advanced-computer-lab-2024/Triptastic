@@ -1,5 +1,6 @@
 const touristModel = require('../models/Tourist.js');
 const historicalLocationModel = require('../models/historicalLocation.js');
+const productModel= require('../models/Product.js');
 
 const { default: mongoose } = require('mongoose');
 const createTourist = async(req,res) => {
@@ -38,6 +39,17 @@ const createTourist = async(req,res) => {
         res.status(400).json({ error: error.message }); 
     }
  }
+
+ const createProductTourist = async (req, res) => {
+    const { productName } = req.body;
+  
+    try {
+      const product = await productModel.create({ productName });
+      res.status(201).json(product);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  };
  
  
- module.exports = {createTourist,deleteTourist,gethistoricalLocationByName};
+ module.exports = {createTourist,deleteTourist,gethistoricalLocationByName,createProductTourist};
