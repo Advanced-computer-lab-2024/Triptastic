@@ -22,10 +22,9 @@ const{createAdvertiser,createAdvertiserInfo,getAdvertiser,updateAdvertiser,delet
 const{createSellerInfo, createSeller,getSeller,updateSeller}=require("./routes/sellerController");
 
 //Admin
-const{createAdmin}=require("./routes/adminController");
+const{createAdmin,createActivity,getActivity,updateActivity,deleteActivity}=require("./routes/adminController");
 
-//Activities 
-const{createActivity,getActivity,updateActivity,deleteActivity}=require("./routes/activitiesController");
+
 
 
 
@@ -37,7 +36,7 @@ const tourGuide=require("./models/tourGuide");
 const advertiser=require("./models/Advertiser");
 const seller=require("./models/Seller");
 const admin=require("./models/Admin");
-const activities=require("./models/Activities")
+const activities=require("./models/Activitiescategory")
 
 
 mongoose.connect(MongoURI)
@@ -55,6 +54,7 @@ app.use(cors());
 //Tourist
 app.post("/addTourist",createTourist);
 app.delete("/deleteTourist",deleteTourist);
+
 //TourGuide
 app.post("/addTourGuide",createTourGuide);
 app.patch("/addTourGuideInfo",createTourGuideInfo);
@@ -65,6 +65,7 @@ app.post("/addItinerary",createItinerary);
 app.get("/getItinerary",getItinerary);
 app.patch("/updateItinerary",updateItinerary);
 app.delete("/deleteItinerary",deleteItinerary);
+
 //Advertiser
 app.post("/addAdvertiser",createAdvertiser);
 app.patch("/createAdvertiserInfo",createAdvertiserInfo);
@@ -80,12 +81,13 @@ app.get("/getSeller",getSeller);
 
 //Admin
 app.post("/createAdmin",createAdmin);
-
-//Actvities
 app.post("/createActivity",createActivity);
 app.delete("/deleteActivity",deleteActivity);
 app.patch("/updateActivity",updateActivity);
 app.get("/getActivity",getActivity);
+
+
+
 
 
 
