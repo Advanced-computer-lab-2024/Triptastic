@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 
-const museumSchema = new Schema({
+const historicalLocationSchema = new Schema({
 Name: {
     type: String,
     required: true,
@@ -35,5 +35,5 @@ Name: {
   }
 }, { timestamps: true });
 
-const Museum = mongoose.model('Museum', museumSchema);
-module.exports = Museum;
+const historicalLocation = mongoose.model('historicalLocation', historicalLocationSchema);
+module.exports = historicalLocation;

@@ -13,22 +13,26 @@ const {createItinerary,getItinerary,updateItinerary,deleteItinerary}=require("./
 
 
 //Tourist
-const {createTourist,deleteTourist} = require("./routes/touristController");
+const {createTourist,deleteTourist,gethistoricalLocationByName} = require("./Routes/touristController");
 
 //Advertiser
-const{createAdvertiser,getAdvertiser,updateAdvertiser,deleteAdvertiser}=require("./routes/advertiserController");
+const{createAdvertiser,getAdvertiser,updateAdvertiser,deleteAdvertiser}=require("./Routes/advertiserController");
 
 //Seller
-const{ createSeller,getSeller,updateSeller}=require("./routes/sellerController");
+const{ createSeller,getSeller,updateSeller}=require("./Routes/sellerController");
 
 //Admin
-const{createAdmin}=require("./routes/adminController");
+const{createAdmin,createCategory,
+  getCategory,
+  updateCategory,
+  deleteCategory,createPrefTag,getPrefTag,updatePreftag,deletePreftag}=require("./routes/adminController");
+
 
 //Activities 
-const{createActivity,getActivity,updateActivity,deleteActivity}=require("./routes/activitiesController");
+const{createActivity,getActivity,updateActivity,deleteActivity}=require("./Routes/activitiesController");
 
 //TourismGoverner
-const{createMuseum,updateMuseum,getMuseum,deleteMuseum}=require("./routes/tourismGovController");
+const{createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,deletehistoricalLocation}=require("./Routes/tourismGovController");
 
 
 
@@ -36,13 +40,15 @@ const{createMuseum,updateMuseum,getMuseum,deleteMuseum}=require("./routes/touris
 const app = express();
 const port = process.env.PORT || "8000";
 const tourist = require("./models/Tourist");
-const tourGuide=require("./models/tourGuide");
-const advertiser=require("./models/Advertiser");
-const seller=require("./models/Seller");
-const admin=require("./models/Admin");
-const activities=require("./models/Activities");
-const museum=require("./models/Museum");
+const tourGuide=require("./Models/tourGuide");
+const advertiser=require("./Models/Advertiser");
+const seller=require("./Models/Seller");
+const admin=require("./models/Admin")
+const museum=require("./models/historicalLocation");
 const tourismGov=require("./models/tourismGov");
+const categories=require("./models/Activitiescategory");
+const activities=require("./models/Activities");
+const prefTag=require("./models/PreferenceTags");
 
 
 mongoose.connect(MongoURI)
@@ -60,6 +66,7 @@ app.use(cors());
 //Tourist
 app.post("/addTourist",createTourist);
 app.delete("/deleteTourist",deleteTourist);
+app.get("/getHistoricalLocationByName",gethistoricalLocationByName);
 //TourGuide
 app.post("/addTourGuide",createTourGuide);
 app.patch("/addTourGuideInfo",createTourGuideInfo);
@@ -70,6 +77,9 @@ app.post("/addItinerary",createItinerary);
 app.get("/getItinerary",getItinerary);
 app.patch("/updateItinerary/:location/:datesTimes",updateItinerary);
 app.delete("/deleteItinerary/:location/:datesTimes",deleteItinerary);
+app.patch("/updateItinerary",updateItinerary);
+app.delete("/deleteItinerary",deleteItinerary);
+
 //Advertiser
 app.post("/addAdvertiser",createAdvertiser);
 
@@ -84,22 +94,28 @@ app.get("/getSeller",getSeller);
 
 //Admin
 app.post("/createAdmin",createAdmin);
+app.post("/createCategory",createCategory);
+app.delete("/deleteCategory",deleteCategory);
+app.patch("/updateCategory",updateCategory);
+app.get("/getCategory",getCategory);
+app.post("/createPrefTag",createPrefTag);
+app.get("/getPrefTag",getPrefTag);
+app.patch("/updatePreftag",updatePreftag);deletePreftag
+app.delete("/deletePreftag",deletePreftag);
 
-//Actvities
+//TourismGoverner
+app.post("/createHistoricalLocation",createhistoricalLocation);
+app.patch("/updateHistoricalLocation",updatehistoricalLocation);
+app.get("/getHistoricalLocation",gethistoricalLocation);
+app.delete("/deleteHistoricalLocation",deletehistoricalLocation);
+
+
+//Activity
+
 app.post("/createActivity",createActivity);
 app.delete("/deleteActivity",deleteActivity);
 app.patch("/updateActivity",updateActivity);
 app.get("/getActivity",getActivity);
-
-//TourismGoverner
-app.post("/createMuseum",createMuseum);
-app.patch("/updateMuseum",updateMuseum);
-app.get("/getMuseum",getMuseum);
-app.delete("/deleteMuseum",deleteMuseum);
-
-
-
-
 
 
 
