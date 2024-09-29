@@ -1,6 +1,8 @@
 const adminModel = require('../models/Admin.js');
 const activitiescategoryModel = require('../models/Activitiescategory.js');
 const prefTagModel = require('../models/PreferenceTags.js');
+const productModel= require('../models/Product.js');
+
 const { default: mongoose } = require('mongoose');
 
 const createAdmin = async (req, res) => {
@@ -13,6 +15,7 @@ const createAdmin = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 }
+
 const createCategory = async (req, res) => {
     const { Name } = req.body;
     try {
@@ -22,6 +25,7 @@ const createCategory = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
 
 const getCategory = async (req, res) => {
     const {Name} = req.body; // Use Name as a parameter to find the category
@@ -79,6 +83,7 @@ const deleteCategory = async (req, res) => {
     }
 };
 
+
 const createPrefTag = async (req, res) => {
     const { PrefTagName } = req.body;
     try {
@@ -107,6 +112,7 @@ const getPrefTag = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
 
 const updatePreftag = async (req, res) => {
     const {PrefTagName, newPrefTagName }= req.body; // The current category name from the URL parameter
@@ -145,6 +151,16 @@ const deletePreftag = async (req, res) => {
 
 
 
+const createProduct = async (req, res) => {
+    const { productName } = req.body;
+  
+    try {
+      const product = await productModel.create({ productName });
+      res.status(201).json(product);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  };
 
 
 
@@ -154,5 +170,4 @@ const deletePreftag = async (req, res) => {
 
 
 
-
-module.exports = {createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createPrefTag,getPrefTag,updatePreftag,deletePreftag};
+module.exports = {createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createPrefTag,getPrefTag,updatePreftag,deletePreftag,createProduct};
