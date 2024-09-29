@@ -22,7 +22,7 @@ const{createAdvertiser,getAdvertiser,updateAdvertiser,deleteAdvertiser}=require(
 const{ createSeller,getSeller,updateSeller}=require("./routes/sellerController");
 
 //Admin
-const{createAdmin,createActivity,getActivity,updateActivity,deleteActivity}=require("./routes/adminController");
+const{createAdmin,createActivity,getActivity,updateActivity,deleteActivity,createPrefTag}=require("./routes/adminController");
 
 
 //Activities 
@@ -36,14 +36,15 @@ const{createMuseum,updateMuseum,getMuseum,deleteMuseum}=require("./routes/touris
 
 const app = express();
 const port = process.env.PORT || "8000";
-const tourist = require("./models/Tourist");
-const tourGuide=require("./models/tourGuide");
-const advertiser=require("./models/Advertiser");
-const seller=require("./models/Seller");
-const admin=require("./models/Admin")
-const museum=require("./models/Museum");
-const tourismGov=require("./models/tourismGov");
-const activities=require("./models/Activitiescategory")
+const tourist = require("./Models/Tourist");
+const tourGuide=require("./Models/tourGuide");
+const advertiser=require("./Models/Advertiser");
+const seller=require("./Models/Seller");
+const admin=require("./Models/Admin")
+const museum=require("./Models/Museum");
+const tourismGov=require("./Models/tourismGov");
+const activities=require("./Models/Activitiescategory")
+const preferenceTags= require("./Models/PreferenceTags")
 
 
 mongoose.connect(MongoURI)
@@ -93,8 +94,10 @@ app.post("/createActivity",createActivity);
 app.delete("/deleteActivity",deleteActivity);
 app.patch("/updateActivity",updateActivity);
 app.get("/getActivity",getActivity);
+app.post("/createPrefTag",createPrefTag);
 
-//TourismGoverner
+
+//TourismGoverner 
 app.post("/createMuseum",createMuseum);
 app.patch("/updateMuseum",updateMuseum);
 app.get("/getMuseum",getMuseum);
