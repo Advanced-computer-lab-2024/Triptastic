@@ -13,19 +13,19 @@ const {createItinerary,getItinerary,updateItinerary,deleteItinerary}=require("./
 
 
 //Tourist
-const {createTourist,deleteTourist,gethistoricalLocationByName,createProductTourist} = require("./Routes/touristController");
+const {createTourist,deleteTourist,gethistoricalLocationByName,createProductTourist,getProductTourist} = require("./Routes/touristController");
 
 //Advertiser
 const{createAdvertiser,getAdvertiser,updateAdvertiser,deleteAdvertiser}=require("./Routes/advertiserController");
 
 //Seller
-const{ createSeller,getSeller,updateSeller,createProductseller}=require("./Routes/sellerController");
+const{ createSeller,getSeller,updateSeller,createProductseller,getProductSeller}=require("./Routes/sellerController");
 
 //Admin
 const{createAdmin,createCategory,
   getCategory,
   updateCategory,
-  deleteCategory,createPrefTag,getPrefTag,updatePreftag,deletePreftag,createProduct}=require("./routes/adminController");
+  deleteCategory,createPrefTag,getPrefTag,updatePreftag,deletePreftag,createProduct,getProduct}=require("./routes/adminController");
 
 
 //Activities 
@@ -68,6 +68,7 @@ app.post("/addTourist",createTourist);
 app.delete("/deleteTourist",deleteTourist);
 app.get("/getHistoricalLocationByName",gethistoricalLocationByName);
 app.post("/createProductTourist",createProductTourist);
+app.get("/getProductTourist",getProductTourist);
 
 //TourGuide
 app.post("/addTourGuide",createTourGuide);
@@ -94,6 +95,7 @@ app.post("/createSeller",createSeller);
 app.patch("/updateSeller",updateSeller);
 app.get("/getSeller",getSeller);
 app.post("/createProductseller",createProductseller);
+app.get("/getProductSeller",getProductSeller);
 
 //Admin
 app.post("/createAdmin",createAdmin);
@@ -106,6 +108,7 @@ app.get("/getPrefTag",getPrefTag);
 app.patch("/updatePreftag",updatePreftag);
 app.delete("/deletePreftag",deletePreftag);
 app.post("/createProduct",createProduct);
+app.get("/getProduct",getProduct);
 
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);

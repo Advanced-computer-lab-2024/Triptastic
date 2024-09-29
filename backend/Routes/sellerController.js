@@ -76,5 +76,23 @@ const createProductseller = async (req, res) => {
    }
  };
 
+ const getProductSeller = async (req, res) => {
+   const {productName} = req.body; // Use Name as a parameter to find the category
+   try {
+       if (productName) {
+           const Product = await productModel.findOne({ productName });
+           if (!Product) {
+               return res.status(404).json({ msg: "Product not found" });
+           }
+           res.status(200).json(Product);
+       } else {
+           const Products = await productModel.find();
+           res.status(200).json(Products); // Return all categories if no Name is provided
+       }
+   } catch (error) {
+       res.status(400).json({ error: error.message });
+   }
+};
 
- module.exports = {createSeller,updateSeller,getSeller,deleteSeller,createProductseller};
+
+ module.exports = {createSeller,updateSeller,getSeller,deleteSeller,createProductseller,getProductSeller};
