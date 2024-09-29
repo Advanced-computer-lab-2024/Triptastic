@@ -1,4 +1,6 @@
 const touristModel = require('../models/Tourist.js');
+const historicalLocationModel = require('../models/historicalLocation.js');
+
 const { default: mongoose } = require('mongoose');
 const createTourist = async(req,res) => {
 
@@ -24,6 +26,18 @@ const createTourist = async(req,res) => {
          res.status(400).json({ error: error.message });
      }
  };
+ const gethistoricalLocationByName= async(req,res) =>{
+    const {Name}= req.body;
+    
+    try {
+        const historicalLocation = await historicalLocationModel.findOne({ Name: Name }); 
+
+            res.status(200).json(historicalLocation);
+    } 
+    catch (error) {
+        res.status(400).json({ error: error.message }); 
+    }
+ }
  
  
- module.exports = {createTourist,deleteTourist};
+ module.exports = {createTourist,deleteTourist,gethistoricalLocationByName};
