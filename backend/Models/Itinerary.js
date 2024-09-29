@@ -28,7 +28,12 @@ const itinerarySchema = new Schema({
     },
     pickUpDropOff:{
         type: String, required: true
+    },
+    Booked:{
+        type: Boolean,
+        default: false
     }
+
 },{timestamps: true})
 
 const Itinerary = mongoose.models.Itinerary || mongoose.model('Itinerary', itinerarySchema);

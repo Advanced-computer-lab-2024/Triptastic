@@ -52,6 +52,7 @@ const createTourGuideInfo = async(req,res) => {
 
  }
  const deleteTourGuide = async (req, res) => {
+   
    try {
        const tourGuide = await tourGuideModel.deleteOne({ Username: req.params.Username });
        
@@ -102,8 +103,14 @@ const createTourGuideInfo = async(req,res) => {
    const location= req.params.Location;
    const date= req.params.DatesTimes
    try {
+      const itinerary = await itinerary.findOne({ Location: location, DatesTimes: date  });
+      if(itinerary.booked==false){
        const tourGuide = await itineraryModel.deleteOne({ Location: location, DatesTimes: date });
        res.status(200).json({ msg: "Itinerary has been deleted successfully" });
+      }
+   else{
+      res.status(409).json({ msg: "Itinerary cannot be deleted because it is booked." });
+   }
    } catch (error) {
        res.status(400).json({ error: error.message });
    }

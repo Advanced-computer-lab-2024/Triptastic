@@ -14,7 +14,7 @@ const createSeller = async(req,res) => {
     }
  }
 
- const createSellerInfo = async(req,res) => {
+ const updateSeller = async(req,res) => {
 
     const{Username,Name,Description}=req.body;
     try{
@@ -26,20 +26,20 @@ const createSeller = async(req,res) => {
  
     }
  }
- const updateSeller= async(req,res)=>{
-    const Username=req.params.Username;
-    const update=req.body;
-    try{
-       const seller = await sellerModel.updateOne({Username: Username},{$set: update},{new:true});
-       res.status(200).json(seller);
-    }
-    catch (error){
-       res.status(400).json({error: error.message});
-    }
+//  const updateSeller= async(req,res)=>{
+//     const {Username,update}=req.body;
+    
+//     try{
+//        const seller = await sellerModel.findOneAndUpdate({Username: Username},{$set: update},{new:true});
+//        res.status(200).json(seller);
+//     }
+//     catch (error){
+//        res.status(400).json({error: error.message});
+//     }
  
-  }
+//  }
  const getSeller= async(req,res) =>{
-    const Username= req.params.Username;
+    const {Username}= req.body;
     
     try {
         const seller = await sellerModel.findOne({ Username: Username }); 
@@ -64,4 +64,4 @@ const deleteSeller = async (req, res) => {
    }
 }
 
- module.exports = {createSeller,createSellerInfo,updateSeller,getSeller,deleteSeller};
+ module.exports = {createSeller,updateSeller,getSeller,deleteSeller};
