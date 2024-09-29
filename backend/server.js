@@ -39,13 +39,13 @@ const{createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,de
 
 const app = express();
 const port = process.env.PORT || "8000";
-const tourist = require("./Models/Tourist");
+const tourist = require("./models/Tourist");
 const tourGuide=require("./Models/tourGuide");
 const advertiser=require("./Models/Advertiser");
 const seller=require("./Models/Seller");
 const admin=require("./models/Admin")
 const museum=require("./models/historicalLocation");
-const tourismGov=require("./Models/tourismGov");
+const tourismGov=require("./models/tourismGov");
 const categories=require("./models/Activitiescategory");
 const activities=require("./models/Activities")
 
@@ -105,8 +105,12 @@ app.get("/getHistoricalLocation",gethistoricalLocation);
 app.delete("/deleteHistoricalLocation",deletehistoricalLocation);
 
 
+//Activity
 
-
+app.post("/createActivity",createActivity);
+app.delete("/deleteActivity",deleteActivity);
+app.patch("/updateActivity",updateActivity);
+app.get("/getActivity",getActivity);
 
 
 
