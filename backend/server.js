@@ -39,13 +39,13 @@ const{createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,de
 
 const app = express();
 const port = process.env.PORT || "8000";
-const tourist = require("./models/Tourist");
+const tourist = require("./Models/Tourist");
 const tourGuide=require("./Models/tourGuide");
 const advertiser=require("./Models/Advertiser");
 const seller=require("./Models/Seller");
 const admin=require("./models/Admin")
 const museum=require("./models/historicalLocation");
-const tourismGov=require("./models/tourismGov");
+const tourismGov=require("./Models/tourismGov");
 const categories=require("./models/Activitiescategory");
 const activities=require("./models/Activities")
 
