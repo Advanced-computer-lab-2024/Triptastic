@@ -6,6 +6,7 @@ const PrefTagsSchema = new Schema({
   PrefTagName: {
     type: String,
     required: true,
+    unique: true // Ensures no duplicate preference tag names
   
   },
 
