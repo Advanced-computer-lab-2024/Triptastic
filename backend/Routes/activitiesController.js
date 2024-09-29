@@ -1,4 +1,4 @@
-const activitiesModel = require('../models/Activities.js');
+const activitiesModel = require('../Models/Activities.js');
 const { default: mongoose } = require('mongoose');
 
 

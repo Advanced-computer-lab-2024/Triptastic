@@ -1,17 +1,31 @@
-const adminModel = require('../models/Admin.js');
-const activitiescategoryModel = require('../models/Activitiescategory.js');
+const adminModel = require('../Models/Admin.js');
+const activitiescategoryModel = require('../Models/Activitiescategory.js');
 const { default: mongoose } = require('mongoose');
+const touristModel = require('../Models/Tourist');
+const tourGuideModel = require('../Models/tourGuide');
+const sellerModel = require('../Models/Seller');
+const advertiserModel = require('../Models/Advertiser');
+const tourismGovModel = require('../Models/tourismGov');
+
+
 
 const createAdmin = async (req, res) => {
-    
     const { Username, Password, Role } = req.body;
+
     try {
+        const existingAdmin = await adminModel.findOne({ Username });
+        
+        if (existingAdmin) {
+            return res.status(400).json({ error: "Username already exists" });
+        }
+
         const admin = await adminModel.create({ Username, Password, Role });
-        res.status(200).json(admin);
+        res.status(201).json(admin);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 }
+
 const createCategory = async (req, res) => {
     const { Name } = req.body;
     try {
@@ -89,8 +103,67 @@ const deleteCategory = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+const deleteAdvertiser = async (req, res) => {
+    try {
+       const Advertiser = await advertiserModel.deleteOne({Username: req.params.Username}); 
+       if (!Advertiser) {
+          return res.status(404).json({ msg: "Advertiser not found" });
+       }
+       res.status(200).json({ msg: "Advertiser has been deleted successfully" });
+    } catch (error) {
+       res.status(400).json({ error:error.message });
+    }
+ }
+ const deleteSeller = async (req, res) => {
+    try {
+       const seller = await sellerModel.deleteOne({Username: req.params.Username}); 
+       if (!seller) {
+          return res.status(404).json({ msg: "Seller not found" });
+       }
+       res.status(200).json({ msg: "Seller has been deleted successfully" });
+    } catch (error) {
+       res.status(400).json({ error: error.message });
+    }
+ }
+
+ const deleteTourGuide = async (req, res) => {
+   
+    try {
+        const tourGuide = await tourGuideModel.deleteOne({ Username: req.params.Username });
+        
+        if (!tourGuide) {
+            return res.status(404).json({ msg: "Tour Guide not found" });
+        }
+        
+        res.status(200).json({ msg: "Tour Guide has been deleted successfully" });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+ };
+ 
+ const deleteTourist = async (req, res) => {
+    try {
+        const tourist = await touristModel.deleteOne({ Username: req.params.Username }); 
+        if (!tourist) {
+            return res.status(404).json({ msg: "Tourist not found" });
+        }
+        res.status(200).json({ msg: "Tourist has been deleted successfully" });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+const deleteTourismGov = async (req, res) => {
+    try {
+        const tourismGov = await tourismGovModel.deleteOne({ Username: req.params.Username }); 
+        if (!tourismGov) {
+            return res.status(404).json({ msg: "Tourism Governor not found" });
+        }
+        res.status(200).json({ msg: "Tourism Governor has been deleted successfully" });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
 
 
-
-
-module.exports = {createAdmin ,createCategory, getCategory, updateCategory, deleteCategory};
+module.exports = {createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourist,deleteTourismGov};
