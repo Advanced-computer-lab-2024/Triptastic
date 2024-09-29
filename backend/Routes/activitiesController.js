@@ -31,6 +31,10 @@ const getActivity = async (req, res) => {
     }
 };
 
+
+
+
+
 // const updateActivity = async (req, res) => {
 //     const {Name}= req.body;
 //     const {update} = req.body;
@@ -86,6 +90,7 @@ module.exports = {
     createActivity,
     getActivity,
     updateActivity,
-    deleteActivity
+    deleteActivity,
+    
 };
 
