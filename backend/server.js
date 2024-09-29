@@ -22,11 +22,14 @@ const{createAdvertiser,getAdvertiser,updateAdvertiser,deleteAdvertiser}=require(
 const{ createSeller,getSeller,updateSeller}=require("./routes/sellerController");
 
 //Admin
-const{createAdmin}=require("./routes/adminController");
+const{createAdmin,createCategory,
+  getCategory,
+  updateCategory,
+  deleteCategory}=require("./routes/adminController");
 
 
 //Activities 
-
+const{createActivity, getActivity, updateActivity, deleteActivity}=require("./routes/activitiesController");
 
 //TourismGoverner
 const{createMuseum,updateMuseum,getMuseum,deleteMuseum}=require("./routes/tourismGovController");
@@ -43,7 +46,8 @@ const seller=require("./models/Seller");
 const admin=require("./models/Admin")
 const museum=require("./models/Museum");
 const tourismGov=require("./models/tourismGov");
-const activities=require("./models/Activitiescategory")
+const categories=require("./models/Activitiescategory");
+const activities=require("./models/Activities")
 
 
 mongoose.connect(MongoURI)
@@ -89,10 +93,10 @@ app.get("/getSeller",getSeller);
 
 //Admin
 app.post("/createAdmin",createAdmin);
-app.post("/createActivity",createActivity);
-app.delete("/deleteActivity",deleteActivity);
-app.patch("/updateActivity",updateActivity);
-app.get("/getActivity",getActivity);
+app.post("/createCategory",createCategory);
+app.delete("/deleteCategory",deleteCategory);
+app.patch("/updateCategory",updateCategory);
+app.get("/getCategory",getCategory);
 
 //TourismGoverner
 app.post("/createMuseum",createMuseum);
@@ -102,6 +106,7 @@ app.delete("/deleteMuseum",deleteMuseum);
 
 
 
+//activity
 
 
 
