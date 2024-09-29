@@ -1,5 +1,7 @@
 const touristModel = require('../Models/Tourist.js');
 const historicalLocationModel = require('../Models/historicalLocation.js');
+const productModel= require('../Models/Product.js');
+
 
 const { default: mongoose } = require('mongoose');
 const createTourist = async(req,res) => {
@@ -30,4 +32,4 @@ const createTourist = async(req,res) => {
  }
  
  
- module.exports = {createTourist,gethistoricalLocationByName};
+ module.exports = {createTourist,deleteTourist,gethistoricalLocationByName};

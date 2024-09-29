@@ -3,6 +3,7 @@ const historicalLocationModel = require('../Models/historicalLocation.js');
 const { default: mongoose } = require('mongoose');
 
 
+<<<<<<< HEAD
 const createhistoricalLocation = async (req, res) => {
    const { Name, Description, Location, OpeningHours, TicketPrices, Tags } = req.body;
    const validTagTypes = ["Monuments", "Museums", "Religious Sites", "Palaces","Castles"];
@@ -21,11 +22,21 @@ const createhistoricalLocation = async (req, res) => {
        res.status(400).json({ error: error.message });
    }
 };
+=======
+const{Name,Description,Location,OpeningHours,TicketPrices}=req.body;
+try{
+   const historicalLocation=await historicalLocationModel.create({Name,Description,Location,OpeningHours,TicketPrices});
+   res.status(200).json(historicalLocation);
+}
+catch{
+   res.status(400).json({error:error.message})
+>>>>>>> 57e9cd58f08f1b28435546f6908b3e59f95424b7
 
 
 const updatehistoricalLocation = async (req, res) => {
    const { Name, Description, Location, OpeningHours, TicketPrices, Tags } = req.body;
 
+<<<<<<< HEAD
    const validTagTypes = ["Monuments", "Museums", "Religious Sites", "Palaces","Castles"];
 
    try {
@@ -58,6 +69,15 @@ const updatehistoricalLocation = async (req, res) => {
        res.status(400).json({ error: error.message });
    }
 };
+=======
+const{Name,Description,Location,OpeningHours,TicketPrices}=req.body;
+try{
+   const historicalLocation=await historicalLocationModel.findOneAndUpdate({Name:Name },{$set:{Description:Description,Location:Location,OpeningHours:OpeningHours,TicketPrices:TicketPrices}},{ new: true });
+   res.status(200).json(historicalLocation);
+}
+catch{
+   res.status(400).json({error:error.message})
+>>>>>>> 57e9cd58f08f1b28435546f6908b3e59f95424b7
 
 
 const gethistoricalLocation= async(req,res) =>{
