@@ -1,20 +1,45 @@
 const activitiesModel = require('../models/Activities.js');
+const activitiescategoryModel = require('../models/Activitiescategory.js');
+const advertiserModel = require('../Models/Advertiser.js');
 const { default: mongoose } = require('mongoose');
 
 
-
 const createActivity = async (req, res) => {
-    const { Name } = req.body;
+    const { Category,date,time,location,price,tags,specialDiscounts,bookingOpen,Advertiser } = req.body;
+
     try {
-        const category = await activitiesModel.create({ Name });
-        res.status(200).json(category);
+        // Find the category by name or by its _id
+        const foundCategory = await activitiescategoryModel.findOne({ Name: Category }) ;
+
+        if (!foundCategory) {
+            return res.status(400).json({ error: 'Category not found' });
+        }
+        console.log(foundCategory);
+
+
+        // Create a new activity
+        const activity = await activitiesModel.create({Category: foundCategory.Name,date,time,location,price,tags,specialDiscounts,bookingOpen,Advertiser });
+        res.status(200).json(activity);
+        
+        
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        console.error('Error creating activity:', error);
+        res.status(500).json({ error: 'Server error' });
     }
 };
+// const createActivity = async (req, res) => {
+//     const {Category,date,time,location,price,tags,specialDiscounts,bookingOpen,Advertiser} = req.body;
+    
+//     try {
+//         const category = await activitiesModel.create({ Category,date,time,location,price,tags,specialDiscounts,bookingOpen,Advertiser });
+//         res.status(200).json(category);
+//     } catch (error) {
+//         res.status(400).json({ error: error.message });
+//     }
+// };
 
 const getActivity = async (req, res) => {
-    const Name = req.body; // Use Name as a parameter to find the category
+    const Category = req.body; // Use Name as a parameter to find the category
     try {
         if (Name) {
             const category = await activitiesModel.findOne({ Name });

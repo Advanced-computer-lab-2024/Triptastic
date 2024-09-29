@@ -5,8 +5,11 @@ const Schema = mongoose.Schema;
 const ActivitiesSchema = new Schema({
   
 Category: {
-    type: String,
+    type:String,
+    
     required: true
+
+   
   
   },
   date: {
@@ -39,9 +42,11 @@ bookingOpen: {
     default: true // Default to open for booking
 },
 Advertiser: {
-  type: String,
-  required: false
-},
+    type: String,
+    
+    required: false
+}
+
 
 
 

@@ -114,8 +114,12 @@ app.get("/getHistoricalLocation",gethistoricalLocation);
 app.delete("/deleteHistoricalLocation",deletehistoricalLocation);
 
 
+//Activity
 
-
+app.post("/createActivity",createActivity);
+app.delete("/deleteActivity",deleteActivity);
+app.patch("/updateActivity",updateActivity);
+app.get("/getActivity",getActivity);
 
 
 

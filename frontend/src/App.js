@@ -4,9 +4,14 @@ import TouristReg from './pages/touristReg';
 import TourGuideReg from './pages/tourGuideReg';
 import AdvertiserReg from './pages/advertiserReg';
 import SellerReg from './pages/sellerReg';
+import SellerProfile from './pages/sellerProfile';
+
+
 
 function Home() {
   const navigate = useNavigate();
+  console.log({ TouristReg, TourGuideReg, AdvertiserReg, SellerReg, SellerProfile });
+
 
   return (
     <div className="App">
@@ -33,6 +38,7 @@ function App() {
         <Route path="/tour-guide-register" element={<TourGuideReg />} />
         <Route path="/advertiser-register" element={<AdvertiserReg />} />
         <Route path="/seller-register" element={<SellerReg />} />
+        <Route path="/seller-profile" element={<SellerProfile />} />
       </Routes>
     </Router>
   );
