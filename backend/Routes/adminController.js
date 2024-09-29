@@ -1,6 +1,7 @@
 const adminModel = require('../models/Admin.js');
 const activitiescategoryModel = require('../models/Activitiescategory.js');
 const { default: mongoose } = require('mongoose');
+
 const createAdmin = async (req, res) => {
     
     const { Username, Password, Role } = req.body;

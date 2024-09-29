@@ -1,5 +1,5 @@
-const tourismGovModel = require('../models/tourismGov.js');
-const museumModel = require('../models/Museum.js');
+const tourismGovModel = require('../Models/tourismGov.js');
+const museumModel = require('../Models/Museum.js');
 const { default: mongoose } = require('mongoose');
 
 const createMuseum = async(req,res)=>{
