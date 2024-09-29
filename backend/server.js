@@ -13,13 +13,13 @@ const {createItinerary,getItinerary,updateItinerary,deleteItinerary}=require("./
 
 
 //Tourist
-const {createTourist,deleteTourist} = require("./routes/touristController");
+const {createTourist,deleteTourist,gethistoricalLocationByName} = require("./Routes/touristController");
 
 //Advertiser
-const{createAdvertiser,getAdvertiser,updateAdvertiser,deleteAdvertiser}=require("./routes/advertiserController");
+const{createAdvertiser,getAdvertiser,updateAdvertiser,deleteAdvertiser}=require("./Routes/advertiserController");
 
 //Seller
-const{ createSeller,getSeller,updateSeller}=require("./routes/sellerController");
+const{ createSeller,getSeller,updateSeller}=require("./Routes/sellerController");
 
 //Admin
 const{createAdmin,createCategory,
@@ -29,10 +29,10 @@ const{createAdmin,createCategory,
 
 
 //Activities 
-const{createActivity, getActivity, updateActivity, deleteActivity}=require("./routes/activitiesController");
+const{createActivity,getActivity,updateActivity,deleteActivity}=require("./Routes/activitiesController");
 
 //TourismGoverner
-const{createMuseum,updateMuseum,getMuseum,deleteMuseum}=require("./routes/tourismGovController");
+const{createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,deletehistoricalLocation}=require("./Routes/tourismGovController");
 
 
 
@@ -40,11 +40,11 @@ const{createMuseum,updateMuseum,getMuseum,deleteMuseum}=require("./routes/touris
 const app = express();
 const port = process.env.PORT || "8000";
 const tourist = require("./models/Tourist");
-const tourGuide=require("./models/tourGuide");
-const advertiser=require("./models/Advertiser");
-const seller=require("./models/Seller");
+const tourGuide=require("./Models/tourGuide");
+const advertiser=require("./Models/Advertiser");
+const seller=require("./Models/Seller");
 const admin=require("./models/Admin")
-const museum=require("./models/Museum");
+const museum=require("./models/historicalLocation");
 const tourismGov=require("./models/tourismGov");
 const categories=require("./models/Activitiescategory");
 const activities=require("./models/Activities")
@@ -65,7 +65,7 @@ app.use(cors());
 //Tourist
 app.post("/addTourist",createTourist);
 app.delete("/deleteTourist",deleteTourist);
-
+app.get("/getHistoricalLocationByName",gethistoricalLocationByName);
 //TourGuide
 app.post("/addTourGuide",createTourGuide);
 app.patch("/addTourGuideInfo",createTourGuideInfo);
@@ -99,15 +99,10 @@ app.patch("/updateCategory",updateCategory);
 app.get("/getCategory",getCategory);
 
 //TourismGoverner
-app.post("/createMuseum",createMuseum);
-app.patch("/updateMuseum",updateMuseum);
-app.get("/getMuseum",getMuseum);
-app.delete("/deleteMuseum",deleteMuseum);
-
-
-
-//activity
-
+app.post("/createHistoricalLocation",createhistoricalLocation);
+app.patch("/updateHistoricalLocation",updatehistoricalLocation);
+app.get("/getHistoricalLocation",gethistoricalLocation);
+app.delete("/deleteHistoricalLocation",deletehistoricalLocation);
 
 
 
