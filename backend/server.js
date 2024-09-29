@@ -22,7 +22,11 @@ const{createAdvertiser,getAdvertiser,updateAdvertiser,deleteAdvertiser}=require(
 const{ createSeller,getSeller,updateSeller}=require("./Routes/sellerController");
 
 //Admin
-const{createAdmin}=require("./Routes/adminController");
+const{createAdmin,createCategory,
+  getCategory,
+  updateCategory,
+  deleteCategory}=require("./routes/adminController");
+
 
 //Activities 
 const{createActivity,getActivity,updateActivity,deleteActivity}=require("./Routes/activitiesController");
@@ -36,13 +40,14 @@ const{createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,de
 const app = express();
 const port = process.env.PORT || "8000";
 const tourist = require("./models/Tourist");
-const tourGuide=require("./models/tourGuide");
-const advertiser=require("./models/Advertiser");
-const seller=require("./models/Seller");
-const admin=require("./models/Admin");
-const activities=require("./models/Activities");
+const tourGuide=require("./Models/tourGuide");
+const advertiser=require("./Models/Advertiser");
+const seller=require("./Models/Seller");
+const admin=require("./models/Admin")
 const museum=require("./models/historicalLocation");
 const tourismGov=require("./models/tourismGov");
+const categories=require("./models/Activitiescategory");
+const activities=require("./models/Activities")
 
 
 mongoose.connect(MongoURI)
@@ -71,6 +76,9 @@ app.post("/addItinerary",createItinerary);
 app.get("/getItinerary",getItinerary);
 app.patch("/updateItinerary/:location/:datesTimes",updateItinerary);
 app.delete("/deleteItinerary/:location/:datesTimes",deleteItinerary);
+app.patch("/updateItinerary",updateItinerary);
+app.delete("/deleteItinerary",deleteItinerary);
+
 //Advertiser
 app.post("/addAdvertiser",createAdvertiser);
 
@@ -85,12 +93,10 @@ app.get("/getSeller",getSeller);
 
 //Admin
 app.post("/createAdmin",createAdmin);
-
-//Actvities
-app.post("/createActivity",createActivity);
-app.delete("/deleteActivity",deleteActivity);
-app.patch("/updateActivity",updateActivity);
-app.get("/getActivity",getActivity);
+app.post("/createCategory",createCategory);
+app.delete("/deleteCategory",deleteCategory);
+app.patch("/updateCategory",updateCategory);
+app.get("/getCategory",getCategory);
 
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);

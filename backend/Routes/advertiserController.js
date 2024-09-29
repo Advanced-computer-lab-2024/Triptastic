@@ -1,4 +1,4 @@
-const advertiserModel = require('../models/Advertiser.js');
+const advertiserModel = require('../Models/Advertiser.js');
 const { default: mongoose } = require('mongoose');
 const createAdvertiser = async(req,res) => {
 
