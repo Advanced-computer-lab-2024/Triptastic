@@ -25,7 +25,7 @@ const{ createSeller,getSeller,updateSeller}=require("./Routes/sellerController")
 const{createAdmin,createCategory,
   getCategory,
   updateCategory,
-  deleteCategory}=require("./routes/adminController");
+  deleteCategory,createPrefTag,getPrefTag,updatePreftag,deletePreftag}=require("./routes/adminController");
 
 
 //Activities 
@@ -47,7 +47,8 @@ const admin=require("./models/Admin")
 const museum=require("./models/historicalLocation");
 const tourismGov=require("./models/tourismGov");
 const categories=require("./models/Activitiescategory");
-const activities=require("./models/Activities")
+const activities=require("./models/Activities");
+const prefTag=require("./models/PreferenceTags");
 
 
 mongoose.connect(MongoURI)
@@ -97,6 +98,10 @@ app.post("/createCategory",createCategory);
 app.delete("/deleteCategory",deleteCategory);
 app.patch("/updateCategory",updateCategory);
 app.get("/getCategory",getCategory);
+app.post("/createPrefTag",createPrefTag);
+app.get("/getPrefTag",getPrefTag);
+app.patch("/updatePreftag",updatePreftag);deletePreftag
+app.delete("/deletePreftag",deletePreftag);
 
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);
