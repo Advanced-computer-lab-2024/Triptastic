@@ -9,15 +9,16 @@ const createActivity = async (req, res) => {
     try {
         // Find the category by name or by its _id
         const foundCategory = await activitiescategoryModel.findOne({ Name: Category }) ;
+        const foundAdvertiser = await advertiserModel.findOne({ Username: Advertiser })
 
-        if (!foundCategory) {
-            return res.status(400).json({ error: 'Category not found' });
+        if (!foundCategory||!foundAdvertiser) {
+            return res.status(400).json({ error: 'Category not found or advertiser not found' });
         }
         console.log(foundCategory);
-
+        console.log('Found Advertiser:', foundAdvertiser);
 
         // Create a new activity
-        const activity = await activitiesModel.create({Category: foundCategory.Name,date,time,location,price,tags,specialDiscounts,bookingOpen,Advertiser });
+        const activity = await activitiesModel.create({Category: foundCategory.Name,date,time,location,price,tags,specialDiscounts,bookingOpen,Advertiser:foundAdvertiser.Username });
         res.status(200).json(activity);
         
         
@@ -26,69 +27,40 @@ const createActivity = async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 };
-// const createActivity = async (req, res) => {
-//     const {Category,date,time,location,price,tags,specialDiscounts,bookingOpen,Advertiser} = req.body;
-    
-//     try {
-//         const category = await activitiesModel.create({ Category,date,time,location,price,tags,specialDiscounts,bookingOpen,Advertiser });
-//         res.status(200).json(category);
-//     } catch (error) {
-//         res.status(400).json({ error: error.message });
-//     }
-// };
 
 const getActivity = async (req, res) => {
-    const Category = req.body; // Use Name as a parameter to find the category
+    const { Advertiser } = req.body; // Use Advertiser as a parameter to find the activities
+
     try {
-        if (Name) {
-            const category = await activitiesModel.findOne({ Name });
-            if (!category) {
-                return res.status(404).json({ msg: "Category not found" });
-            }
-            res.status(200).json(category);
-        } else {
-            const categories = await activitiesModel.find();
-            res.status(200).json(categories); // Return all categories if no Name is provided
+        // Find all activities for the given Advertiser
+        const activities = await activitiesModel.find({ Advertiser: Advertiser });
+
+        if (!activities.length) {
+            return res.status(404).json({ message: 'No activities found for this advertiser' });
         }
+
+        res.status(200).json(activities);
+        
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
 
 
-
-
-
-// const updateActivity = async (req, res) => {
-//     const {Name}= req.body;
-//     const {update} = req.body;
-//     try {
-//         const category = await activitiesModel.findOneAndUpdate({ Name }, { $set: update }, { new: true });
-//         if (!category) {
-//             return res.status(404).json({ msg: "Category not found" });
-//         }
-//         res.status(200).json(category);
-//     } catch (error) {
-//         res.status(400).json({ error: error.message });
-//     }
-// };
-
 const updateActivity = async (req, res) => {
-    const {Name, newName }= req.body; // The current category name from the URL parameter
+    const { Category,date,time,location,price,tags,specialDiscounts,bookingOpen,Advertiser }= req.body; // The current category name from the URL parameter
    // The new name to be updated, taken directly from the request body
 
     try {
-        const category = await activitiesModel.findOneAndUpdate(
-            { Name: Name }, // Find category by the current name
-            { $set: { Name: newName } }, // Update to the new name
+        const activity = await activitiesModel.findOneAndUpdate(
+            { Advertiser:Advertiser }, // Find category by the current name
+            { $set: { Category:Category,date:date,time:time,location:location,price:price,tags:tags,specialDiscounts:specialDiscounts,bookingOpen:bookingOpen  } }, // Update to the new name
             { new: true } // Return the updated document
         );
 
-        if (!category) {
-            return res.status(404).json({ msg: "Category not found" });
-        }
+      
 
-        res.status(200).json(category); // Return the updated category
+        res.status(200).json(activity); // Return the updated category
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
@@ -97,12 +69,10 @@ const updateActivity = async (req, res) => {
 
 
 const deleteActivity = async (req, res) => {
-    const {Name }= req.body;
+    const {Advertiser}= req.body;
     try {
-        const category = await activitiesModel.findOneAndDelete({ Name });
-        if (!category) {
-            return res.status(404).json({ msg: "Category not found" });
-        }
+        const activity = await activitiesModel.findOneAndDelete({ Advertiser });
+       
         res.status(200).json({ msg: "Category deleted successfully" });
     } catch (error) {
         res.status(400).json({ error: error.message });
