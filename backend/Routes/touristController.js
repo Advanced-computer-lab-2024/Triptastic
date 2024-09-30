@@ -69,18 +69,15 @@ const filterActivities =async (req, res) => {
       filter.Category = Category;
     }
  
-   // Add budget filter if provided
-   if (minBudget && maxBudget) {
-     filter.price = { $gte: minBudget, $lte: maxBudget };
-   }
- 
- 
-   // Add date filter if provided
+    if (minBudget !== undefined && maxBudget !== undefined) {
+      filter.price = {
+        $gte: Number(minBudget), 
+        $lte: Number(maxBudget), 
+      };
+    }
    if (date) {
      filter.date = new Date(date);
    }
- 
-   // Add rating filter if provided
    if (rating) {
      filter.rating = { $gte: rating };
    }
