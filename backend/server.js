@@ -68,7 +68,7 @@ app.get("/getHistoricalLocationByName",gethistoricalLocationByName);
 app.post("/createProductTourist",createProductTourist);
 app.get("/getProductTourist",getProductTourist);
 app.get("/filterActivities",filterActivities);
-app.get("viewProductsTourist",viewProductsTourist);
+app.get("/viewProductsTourist",viewProductsTourist);
 
 //TourGuide
 app.post("/addTourGuide",createTourGuide);
