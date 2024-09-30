@@ -93,6 +93,16 @@ const filterActivities =async (req, res) => {
    }
  };
  
+
+ const viewProductsTourist = async (req, res) => {
+   try {
+     const products = await productModel.find(); 
+     res.json(products); 
+   } catch (error) {
+     res.status(400).json({ error: error.message });
+   }
+ };
  
  
- module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities};
+ 
+ module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist};

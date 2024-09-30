@@ -12,20 +12,21 @@ const {createItinerary,getItinerary,updateItinerary,deleteItinerary}=require("./
 
 
 //Tourist
-const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist} = require("./Routes/touristController");
+const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist} = require("./Routes/touristController");
 
 //Advertiser
 const{createAdvertiser,getAdvertiser,updateAdvertiser}=require("./Routes/advertiserController");
 
 //Seller
-const{ createSeller,getSeller,updateSeller,createProductseller,getProductSeller}=require("./Routes/sellerController");
+const{ createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller}=require("./Routes/sellerController");
 
 //Admin
 const{createAdmin,createCategory,
   getCategory,
   updateCategory,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
-,createPrefTag,updatePreftag,deletePreftag,getPrefTag}=require("./routes/adminController");
+,createPrefTag,updatePreftag,deletePreftag,getPrefTag,
+viewProducts}=require("./routes/adminController");
 
 
 //Activities 
@@ -68,6 +69,7 @@ app.get("/getHistoricalLocationByName",gethistoricalLocationByName);
 app.post("/createProductTourist",createProductTourist);
 app.get("/getProductTourist",getProductTourist);
 app.get("/filterActivities",filterActivities);
+app.get("viewProductsTourist",viewProductsTourist);
 
 //TourGuide
 app.post("/addTourGuide",createTourGuide);
@@ -92,6 +94,7 @@ app.patch("/updateSeller",updateSeller);
 app.get("/getSeller",getSeller);
 app.post("/createProductseller",createProductseller);
 app.get("/getProductSeller",getProductSeller);
+app.get("/viewProductsSeller",viewProductsSeller);
 
 //Admin
 app.delete("/deleteTourGuide",deleteTourGuide);
@@ -110,6 +113,7 @@ app.patch("/updatePreftag",updatePreftag);
 app.delete("/deletePreftag",deletePreftag);
 app.post("/createProduct",createProduct);
 app.get("/getProduct",getProduct);
+app.get("/viewProducts",viewProducts);
 
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);
