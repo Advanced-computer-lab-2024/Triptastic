@@ -15,7 +15,7 @@ const {createItinerary,getItinerary,updateItinerary,deleteItinerary}=require("./
 const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist} = require("./Routes/touristController");
 
 //Advertiser
-const{createAdvertiser,getAdvertiser,updateAdvertiser}=require("./Routes/advertiserController");
+const{createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity}=require("./Routes/advertiserController");
 
 //Seller
 const{ createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller}=require("./Routes/sellerController");
@@ -29,8 +29,7 @@ const{createAdmin,createCategory,
 viewProducts}=require("./routes/adminController");
 
 
-//Activities 
-const{createActivity,getActivity,updateActivity,deleteActivity}=require("./Routes/activitiesController");
+
 
 //TourismGoverner
 const{createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,deletehistoricalLocation}=require("./Routes/tourismGovController");
@@ -87,6 +86,10 @@ app.delete("/deleteItinerary",deleteItinerary);
 app.post("/addAdvertiser",createAdvertiser);
 app.patch("/updateAdvertiser",updateAdvertiser);
 app.get("/getAdvertiser",getAdvertiser);
+app.post("/createActivity",createActivity);
+app.delete("/deleteActivity",deleteActivity);
+app.patch("/updateActivity",updateActivity);
+app.get("/getActivity",getActivity);
 
 //Seller
 app.post("/createSeller",createSeller);
@@ -124,10 +127,10 @@ app.delete("/deleteHistoricalLocation",deletehistoricalLocation);
 
 //Activity
 
-app.post("/createActivity",createActivity);
-app.delete("/deleteActivity",deleteActivity);
-app.patch("/updateActivity",updateActivity);
-app.get("/getActivity",getActivity);
+// app.post("/createActivity",createActivity);
+// app.delete("/deleteActivity",deleteActivity);
+// app.patch("/updateActivity",updateActivity);
+// app.get("/getActivity",getActivity);
 
 
 
