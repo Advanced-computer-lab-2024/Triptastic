@@ -44,7 +44,7 @@ bookingOpen: {
 Advertiser: {
     type: String,
     
-    required: false
+    required: true
 }
 
 
