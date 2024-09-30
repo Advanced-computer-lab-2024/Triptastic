@@ -28,6 +28,10 @@ price: {
     type: Number,
     required: false
 },
+rating:{
+    type:Number,
+    required:false
+},
 
 tags: {
     type: [String], // Array of strings for tags

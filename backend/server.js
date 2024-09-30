@@ -12,7 +12,7 @@ const {createItinerary,getItinerary,updateItinerary,deleteItinerary}=require("./
 
 
 //Tourist
-const {createTourist,gethistoricalLocationByName} = require("./Routes/touristController");
+const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist} = require("./Routes/touristController");
 
 //Advertiser
 const{createAdvertiser,getAdvertiser,updateAdvertiser}=require("./Routes/advertiserController");
@@ -24,7 +24,8 @@ const{ createSeller,getSeller,updateSeller,createProductseller,getProductSeller}
 const{createAdmin,createCategory,
   getCategory,
   updateCategory,
-  deleteCategory}=require("./routes/adminController");
+  deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
+,createPrefTag,updatePreftag,deletePreftag,getPrefTag}=require("./routes/adminController");
 
 
 //Activities 
@@ -38,15 +39,15 @@ const{createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,de
 
 const app = express();
 const port = process.env.PORT || "8000";
-const tourist = require("./models/Tourist");
+const tourist = require("./Models/Tourist");
 const tourGuide=require("./Models/tourGuide");
 const advertiser=require("./Models/Advertiser");
 const seller=require("./Models/Seller");
-const admin=require("./models/Admin")
-const museum=require("./models/historicalLocation");
+const admin=require("./Models/Admin");
+const museum=require("./Models/historicalLocation");
 const tourismGov=require("./Models/tourismGov");
-const categories=require("./models/Activitiescategory");
-const activities=require("./models/Activities")
+const categories=require("./Models/Activitiescategory");
+const activities=require("./Models/Activities");
 
 
 mongoose.connect(MongoURI)
@@ -66,6 +67,7 @@ app.post("/addTourist",createTourist);
 app.get("/getHistoricalLocationByName",gethistoricalLocationByName);
 app.post("/createProductTourist",createProductTourist);
 app.get("/getProductTourist",getProductTourist);
+app.get("/filterActivities",filterActivities);
 
 //TourGuide
 app.post("/addTourGuide",createTourGuide);
