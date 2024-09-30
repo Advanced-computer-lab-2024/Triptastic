@@ -1,4 +1,4 @@
-const tagsModel = require('../models/Tags.js');
+const tagsModel = require('../Models/Tags.js');
 const { default: mongoose } = require('mongoose');
 
 

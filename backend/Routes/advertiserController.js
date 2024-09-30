@@ -44,19 +44,4 @@ const updateAdvertiser = async(req,res) => {
 
 
 
-
-
-const deleteAdvertiser = async (req, res) => {
-   try {
-      const Advertiser = await advertiserModel.deleteOne({Username: req.params.Username}); 
-      if (!Advertiser) {
-         return res.status(404).json({ msg: "Advertiser not found" });
-      }
-      res.status(200).json({ msg: "Advertiser has been deleted successfully" });
-   } catch (error) {
-      res.status(400).json({ error:error.message });
-   }
-}
-
-
- module.exports = {createAdvertiser,getAdvertiser,updateAdvertiser,deleteAdvertiser};
+ module.exports = {createAdvertiser,getAdvertiser,updateAdvertiser};

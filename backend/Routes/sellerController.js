@@ -1,5 +1,6 @@
 
 const sellerModel = require('../Models/Seller.js');
+const productModel= require('../models/Product.js');
 const { default: mongoose } = require('mongoose');
 const createSeller = async(req,res) => {
 
@@ -52,16 +53,6 @@ const createSeller = async(req,res) => {
  }
  
 
-const deleteSeller = async (req, res) => {
-   try {
-      const seller = await sellerModel.deleteOne({Username: req.params.Username}); 
-      if (!seller) {
-         return res.status(404).json({ msg: "Seller not found" });
-      }
-      res.status(200).json({ msg: "Seller has been deleted successfully" });
-   } catch (error) {
-      res.status(400).json({ error: error.message });
-   }
-}
 
- module.exports = {createSeller,updateSeller,getSeller,deleteSeller};
+
+ module.exports = {createSeller,updateSeller,getSeller};

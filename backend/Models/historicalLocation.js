@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-
 const historicalLocationSchema = new Schema({
 Name: {
     type: String,
@@ -18,7 +17,8 @@ Name: {
   OpeningHours: {
     type: String,
     required: false,
-  },
+  }
+  ,
   TicketPrices: {
     Foreigner: {
       type: Number,
@@ -32,6 +32,16 @@ Name: {
       type: Number,
       required: true
     }
+  }
+  ,
+  Tags:{
+    Types:{
+      type:String,
+      required :false
+    },
+    HistoricalPeriod:{
+    type:String,
+    required :false}
   }
 }, { timestamps: true });
 

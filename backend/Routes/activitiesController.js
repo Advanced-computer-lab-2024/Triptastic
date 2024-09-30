@@ -1,8 +1,7 @@
-const activitiesModel = require('../models/Activities.js');
-const activitiescategoryModel = require('../models/Activitiescategory.js');
-const advertiserModel = require('../Models/Advertiser.js');
+const activitiesModel = require('../Models/Activities.js');
 const { default: mongoose } = require('mongoose');
-
+const activitiescategoryModel = require('../Models/Activitiescategory.js');
+const advertiserModel = require('../Models/Advertiser.js');
 
 const createActivity = async (req, res) => {
     const { Category,date,time,location,price,tags,specialDiscounts,bookingOpen,Advertiser } = req.body;

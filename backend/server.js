@@ -8,24 +8,23 @@ const MongoURI = process.env.MONGO_URI ;
 const {createTourGuideInfo,createTourGuide}=require("./Routes/tourGuideController");
 const {updateTourGuide}=require("./Routes/tourGuideController");
 const {getTourGuide}=require("./Routes/tourGuideController");
-const {deleteTourGuide}=require("./Routes/tourGuideController");
 const {createItinerary,getItinerary,updateItinerary,deleteItinerary}=require("./Routes/tourGuideController");
 
 
 //Tourist
-const {createTourist,deleteTourist,gethistoricalLocationByName} = require("./Routes/touristController");
+const {createTourist,gethistoricalLocationByName} = require("./Routes/touristController");
 
 //Advertiser
-const{createAdvertiser,getAdvertiser,updateAdvertiser,deleteAdvertiser}=require("./Routes/advertiserController");
+const{createAdvertiser,getAdvertiser,updateAdvertiser}=require("./Routes/advertiserController");
 
 //Seller
-const{ createSeller,getSeller,updateSeller}=require("./Routes/sellerController");
+const{ createSeller,getSeller,updateSeller,createProductseller,getProductSeller}=require("./Routes/sellerController");
 
 //Admin
 const{createAdmin,createCategory,
   getCategory,
   updateCategory,
-  deleteCategory,createPrefTag,getPrefTag,updatePreftag,deletePreftag}=require("./routes/adminController");
+  deleteCategory}=require("./routes/adminController");
 
 
 //Activities 
@@ -45,10 +44,9 @@ const advertiser=require("./Models/Advertiser");
 const seller=require("./Models/Seller");
 const admin=require("./models/Admin")
 const museum=require("./models/historicalLocation");
-const tourismGov=require("./models/tourismGov");
+const tourismGov=require("./Models/tourismGov");
 const categories=require("./models/Activitiescategory");
-const activities=require("./models/Activities");
-const prefTag=require("./models/PreferenceTags");
+const activities=require("./models/Activities")
 
 
 mongoose.connect(MongoURI)
@@ -65,14 +63,15 @@ app.use(cors());
 
 //Tourist
 app.post("/addTourist",createTourist);
-app.delete("/deleteTourist",deleteTourist);
 app.get("/getHistoricalLocationByName",gethistoricalLocationByName);
+app.post("/createProductTourist",createProductTourist);
+app.get("/getProductTourist",getProductTourist);
+
 //TourGuide
 app.post("/addTourGuide",createTourGuide);
 app.patch("/addTourGuideInfo",createTourGuideInfo);
 app.get("/getTourGuide/:Username",getTourGuide);
 app.patch("/updateTourGuide/:Username",updateTourGuide);
-app.delete("/deleteTourGuide",deleteTourGuide);
 app.post("/addItinerary",createItinerary);
 app.get("/getItinerary",getItinerary);
 app.patch("/updateItinerary/:location/:datesTimes",updateItinerary);
@@ -82,17 +81,22 @@ app.delete("/deleteItinerary",deleteItinerary);
 
 //Advertiser
 app.post("/addAdvertiser",createAdvertiser);
-
 app.patch("/updateAdvertiser",updateAdvertiser);
 app.get("/getAdvertiser",getAdvertiser);
-app.delete("/deleteAdvertiser",deleteAdvertiser);
 
 //Seller
 app.post("/createSeller",createSeller);
 app.patch("/updateSeller",updateSeller);
 app.get("/getSeller",getSeller);
+app.post("/createProductseller",createProductseller);
+app.get("/getProductSeller",getProductSeller);
 
 //Admin
+app.delete("/deleteTourGuide",deleteTourGuide);
+app.delete("/deleteAdvertiser",deleteAdvertiser);
+app.delete("/deleteTourist",deleteTourist);
+app.delete("/deleteSeller",deleteSeller);
+app.delete("/deleteTourismGov",deleteTourismGov);
 app.post("/createAdmin",createAdmin);
 app.post("/createCategory",createCategory);
 app.delete("/deleteCategory",deleteCategory);
@@ -100,8 +104,10 @@ app.patch("/updateCategory",updateCategory);
 app.get("/getCategory",getCategory);
 app.post("/createPrefTag",createPrefTag);
 app.get("/getPrefTag",getPrefTag);
-app.patch("/updatePreftag",updatePreftag);deletePreftag
+app.patch("/updatePreftag",updatePreftag);
 app.delete("/deletePreftag",deletePreftag);
+app.post("/createProduct",createProduct);
+app.get("/getProduct",getProduct);
 
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);
