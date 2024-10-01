@@ -81,7 +81,17 @@ const getProductSeller = async (req, res) => {
    }
 };
 
+const viewProductsSeller = async (req, res) => {
+   try {
+     const products = await productModel.find(); 
+     res.json(products); 
+   } catch (error) {
+     res.status(400).json({ error: error.message });
+   }
+ };
+ 
 
 
 
- module.exports = {createSeller,updateSeller,getSeller,createProductseller,getProductSeller};
+
+ module.exports = {createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller};

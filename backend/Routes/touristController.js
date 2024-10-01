@@ -69,18 +69,15 @@ const filterActivities =async (req, res) => {
       filter.Category = Category;
     }
  
-   // Add budget filter if provided
-   if (minBudget && maxBudget) {
-     filter.price = { $gte: minBudget, $lte: maxBudget };
-   }
- 
- 
-   // Add date filter if provided
+    if (minBudget !== undefined && maxBudget !== undefined) {
+      filter.price = {
+        $gte: Number(minBudget), 
+        $lte: Number(maxBudget), 
+      };
+    }
    if (date) {
      filter.date = new Date(date);
    }
- 
-   // Add rating filter if provided
    if (rating) {
      filter.rating = { $gte: rating };
    }
@@ -93,6 +90,16 @@ const filterActivities =async (req, res) => {
    }
  };
  
+
+ const viewProductsTourist = async (req, res) => {
+   try {
+     const products = await productModel.find(); 
+     res.json(products); 
+   } catch (error) {
+     res.status(400).json({ error: error.message });
+   }
+ };
  
  
- module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities};
+ 
+ module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist};
