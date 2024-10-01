@@ -8,28 +8,28 @@ const MongoURI = process.env.MONGO_URI ;
 const {createTourGuideInfo,createTourGuide}=require("./Routes/tourGuideController");
 const {updateTourGuide}=require("./Routes/tourGuideController");
 const {getTourGuide}=require("./Routes/tourGuideController");
+const {deleteTourGuide}=require("./Routes/tourGuideController");
 const {createItinerary,getItinerary,updateItinerary,deleteItinerary}=require("./Routes/tourGuideController");
 
 
 //Tourist
-const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivities,viewAllUpcomingItineraries,viewAllUpcomingHistoricalPlaces} = require("./Routes/touristController");
+const {createTourist,deleteTourist,gethistoricalLocationByName} = require("./Routes/touristController");
 
 //Advertiser
-const{createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity}=require("./Routes/advertiserController");
+const{createAdvertiser,getAdvertiser,updateAdvertiser,deleteAdvertiser}=require("./Routes/advertiserController");
 
 //Seller
-const{ createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller}=require("./Routes/sellerController");
+const{ createSeller,getSeller,updateSeller}=require("./Routes/sellerController");
 
 //Admin
 const{createAdmin,createCategory,
   getCategory,
   updateCategory,
-  deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
-,createPrefTag,updatePreftag,deletePreftag,getPrefTag,
-viewProducts}=require("./routes/adminController");
+  deleteCategory,createPrefTag,getPrefTag,updatePreftag,deletePreftag}=require("./routes/adminController");
 
 
-
+//Activities 
+const{createActivity,getActivity,updateActivity,deleteActivity}=require("./Routes/activitiesController");
 
 //TourismGoverner
 const{createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,deletehistoricalLocation}=require("./Routes/tourismGovController");
@@ -41,13 +41,14 @@ const app = express();
 const port = process.env.PORT || "8000";
 const tourist = require("./Models/Tourist");
 const tourGuide=require("./Models/tourGuide");
-const advertiser=require("./Models/Advertiser");
-const seller=require("./Models/Seller");
-const admin=require("./Models/Admin");
+const advertiser=require("./models/Advertiser");
+const seller=require("./models/Seller");
+const admin=require("./models/Admin")
 const museum=require("./Models/historicalLocation");
 const tourismGov=require("./Models/tourismGov");
-const categories=require("./Models/Activitiescategory");
+const categories=require("./models/Activitiescategory");
 const activities=require("./Models/Activities");
+const prefTag=require("./models/PreferenceTags");
 
 
 mongoose.connect(MongoURI)
@@ -64,21 +65,14 @@ app.use(cors());
 
 //Tourist
 app.post("/addTourist",createTourist);
+app.delete("/deleteTourist",deleteTourist);
 app.get("/getHistoricalLocationByName",gethistoricalLocationByName);
-app.post("/createProductTourist",createProductTourist);
-app.get("/getProductTourist",getProductTourist);
-app.post("/filterActivities",filterActivities);
-app.get("/viewProductsTourist",viewProductsTourist);
-app.get("/viewAllUpcomingActivities",viewAllUpcomingActivities);
-app.get("/viewAllUpcomingItineraries",viewAllUpcomingItineraries);
-app.get("/viewAllUpcomingHistoricalPlaces",viewAllUpcomingHistoricalPlaces);
-
-
 //TourGuide
 app.post("/addTourGuide",createTourGuide);
 app.patch("/addTourGuideInfo",createTourGuideInfo);
 app.get("/getTourGuide/:Username",getTourGuide);
 app.patch("/updateTourGuide/:Username",updateTourGuide);
+app.delete("/deleteTourGuide",deleteTourGuide);
 app.post("/addItinerary",createItinerary);
 app.get("/getItinerary",getItinerary);
 app.patch("/updateItinerary/:location/:datesTimes",updateItinerary);
@@ -88,27 +82,17 @@ app.delete("/deleteItinerary",deleteItinerary);
 
 //Advertiser
 app.post("/addAdvertiser",createAdvertiser);
+
 app.patch("/updateAdvertiser",updateAdvertiser);
 app.get("/getAdvertiser",getAdvertiser);
-app.post("/createActivity",createActivity);
-app.delete("/deleteActivity",deleteActivity);
-app.patch("/updateActivity",updateActivity);
-app.get("/getActivity",getActivity);
+app.delete("/deleteAdvertiser",deleteAdvertiser);
 
 //Seller
 app.post("/createSeller",createSeller);
 app.patch("/updateSeller",updateSeller);
 app.get("/getSeller",getSeller);
-app.post("/createProductseller",createProductseller);
-app.get("/getProductSeller",getProductSeller);
-app.get("/viewProductsSeller",viewProductsSeller);
 
 //Admin
-app.delete("/deleteTourGuide",deleteTourGuide);
-app.delete("/deleteAdvertiser",deleteAdvertiser);
-app.delete("/deleteTourist",deleteTourist);
-app.delete("/deleteSeller",deleteSeller);
-app.delete("/deleteTourismGov",deleteTourismGov);
 app.post("/createAdmin",createAdmin);
 app.post("/createCategory",createCategory);
 app.delete("/deleteCategory",deleteCategory);
@@ -116,11 +100,8 @@ app.patch("/updateCategory",updateCategory);
 app.get("/getCategory",getCategory);
 app.post("/createPrefTag",createPrefTag);
 app.get("/getPrefTag",getPrefTag);
-app.patch("/updatePreftag",updatePreftag);
+app.patch("/updatePreftag",updatePreftag);deletePreftag
 app.delete("/deletePreftag",deletePreftag);
-app.post("/createProduct",createProduct);
-app.get("/getProduct",getProduct);
-app.get("/viewProducts",viewProducts);
 
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);
@@ -131,10 +112,10 @@ app.delete("/deleteHistoricalLocation",deletehistoricalLocation);
 
 //Activity
 
-// app.post("/createActivity",createActivity);
-// app.delete("/deleteActivity",deleteActivity);
-// app.patch("/updateActivity",updateActivity);
-// app.get("/getActivity",getActivity);
+app.post("/createActivity",createActivity);
+app.delete("/deleteActivity",deleteActivity);
+app.patch("/updateActivity",updateActivity);
+app.get("/getActivity",getActivity);
 
 
 
