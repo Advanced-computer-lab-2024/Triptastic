@@ -142,8 +142,7 @@ const sortItinerary= async (req,res)=>{
  }
 
  
- 
- module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist,sortItinerary,viewAllUpcomingActivities,viewAllUpcomingItineraries,viewAllUpcomingHistoricalPlaces};
+
 
 const sortProductsByRatingTourist = async (req, res) => {
 try {
@@ -155,4 +154,4 @@ try {
 }
 };
  
- module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist};
+ module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinerary};
