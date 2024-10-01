@@ -2,6 +2,7 @@ const touristModel = require('../Models/Tourist.js');
 const historicalLocationModel = require('../Models/historicalLocation.js');
 const productModel= require('../Models/Product.js');
 const activitiesModel=require('../Models/Activities.js');
+const itineraryModel= require('../Models/Itinerary.js');
 
 
 const { default: mongoose } = require('mongoose');
@@ -102,6 +103,32 @@ const filterActivities =async (req, res) => {
    }
  };
  
+ const viewAllUpcomingActivities = async (req, res) => {
+  try {
+    const currentDate = new Date();
+    
+    const activities = await activitiesModel.find({ date: { $gte: currentDate } });
+    res.status(200).json(activities);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching upcoming activities' });
+  }
+};
+const viewAllUpcomingItineraries = async (req, res) => {
+  try {
+    
+      const itineraries = await itineraryModel.find({});
+      res.status(200).json(itineraries);
+  } catch (error) {
+      res.status(500).json({ error: 'Error fetching itineraries' });
+  }
+};
+const viewAllUpcomingHistoricalPlaces = async (req, res) => {
+  try {
+      const places = await historicalLocationModel.find({});
+      res.status(200).json(places);
+  } catch (error) {
+      res.status(500).json({ error: 'Error fetching historical places and museums' });
+  }
+};
  
- 
- module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist};
+ module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist,viewAllUpcomingActivities,viewAllUpcomingItineraries,viewAllUpcomingHistoricalPlaces};
