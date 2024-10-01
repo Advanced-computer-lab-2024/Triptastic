@@ -17,7 +17,7 @@ const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActi
 
 //Tourist
 const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
-  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist} = require("./Routes/touristController");
+  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortActivity,sortItinerary} = require("./Routes/touristController");
 
 //Advertiser
 const{createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity}=require("./Routes/advertiserController");
@@ -78,7 +78,8 @@ app.get("/viewAllUpcomingActivitiesTourist",viewAllUpcomingActivitiesTourist);
 app.get("/viewAllItinerariesTourist",viewAllItinerariesTourist);
 app.get("/viewAllHistoricalPlacesTourist",viewAllHistoricalPlacesTourist);
 app.get("/sortProductsByRatingTourist",sortProductsByRatingTourist);
-
+app.get("/sortItinerary",sortItinerary);
+app.get("/sortActivity",sortActivity);
 
 
 //TourGuide
