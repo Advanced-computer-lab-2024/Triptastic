@@ -2,7 +2,7 @@ const touristModel = require('../Models/Tourist.js');
 const historicalLocationModel = require('../Models/historicalLocation.js');
 const productModel= require('../Models/Product.js');
 const activitiesModel=require('../Models/Activities.js');
-
+const itineraryModel= require('../Models/Itinerary.js');
 
 const { default: mongoose } = require('mongoose');
 const createTourist = async(req,res) => {
@@ -101,7 +101,16 @@ const filterActivities =async (req, res) => {
      res.status(400).json({ error: error.message });
    }
  };
+ const sortItinerary= async (req,res)=>{
+  try{
+   const currentDate= new Date();
+   const sortField=req.body.sortField || 1 ; // 1 asc -1 dsc
+   const data = await itineraryModel.find().find({ date: { $gt: currentDate } }).sort({ Price: sortField }); 
+   res.status(200).json(data);
+  }catch(error){
+   res.status(400).json({ error: error.message })
+   }
+ }
  
  
- 
- module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist};
+ module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist,sortItinerary};

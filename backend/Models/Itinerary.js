@@ -21,7 +21,7 @@ const itinerarySchema = new Schema({
         type: Number, required: true
     },
     DatesTimes:{
-        type: String, required: true
+        type: Date , required: true
     },
     Accesibility:{
         type: String, required: true
