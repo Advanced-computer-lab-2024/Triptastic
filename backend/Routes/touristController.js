@@ -70,18 +70,20 @@ const filterActivities =async (req, res) => {
     }
  
     if (minBudget !== undefined && maxBudget !== undefined) {
-      filter.price = {
-        $gte: Number(minBudget), 
-        $lte: Number(maxBudget), 
-      };
+      filter.minPrice = { $lte: Number(maxBudget) }; 
+      filter.maxPrice = { $gte: Number(minBudget) }; 
     }
-   if (date) {
-     filter.date = new Date(date);
-   }
+    if (date) {
+      filter.date = new Date(date);
+    }
    if (rating) {
      filter.rating = { $gte: rating };
    }
  
+   const today = new Date();
+   today.setHours(0, 0, 0, 0); 
+   filter.date = { $gte: today };
+  
    try {
      const activities = await activitiesModel.find(filter);
      res.json(activities);
