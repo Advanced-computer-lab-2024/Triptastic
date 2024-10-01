@@ -17,7 +17,7 @@ const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActi
 
 //Tourist
 const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
-  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,filterHistoricalLocationsByTag} = require("./Routes/touristController");
+  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,filterHistoricalLocationsByTag,getActivityByCategory} = require("./Routes/touristController");
 
 //Advertiser
 const{createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity}=require("./Routes/advertiserController");
@@ -31,7 +31,7 @@ const{createAdmin,createCategory,
   updateCategory,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
 ,createPrefTag,updatePreftag,deletePreftag,getPrefTag,
-viewProducts,sortProductsByRatingAdmin}=require("./routes/adminController");
+viewProducts,sortProductsByRatingAdmin}=require("./Routes/adminController");
 
 
 
@@ -46,8 +46,8 @@ const app = express();
 const port = process.env.PORT || "8000";
 const tourist = require("./Models/Tourist");
 const tourGuide=require("./Models/tourGuide");
-const advertiser=require("./models/Advertiser");
-const seller=require("./models/Seller");
+const advertiser=require("./Models/Advertiser");
+const seller=require("./Models/Seller");
 const admin=require("./Models/Admin");
 const museum=require("./Models/historicalLocation");
 const tourismGov=require("./Models/tourismGov");
@@ -73,6 +73,7 @@ app.get("/getHistoricalLocationByName",gethistoricalLocationByName);
 app.post("/createProductTourist",createProductTourist);
 app.get("/getProductTourist",getProductTourist);
 app.get("/filterActivities",filterActivities);
+app.get("/getActivityByCategory",getActivityByCategory);
 
 //TourGuide
 app.post("/addTourGuide",createTourGuide);

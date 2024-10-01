@@ -162,7 +162,21 @@ const sortActivity= async(req,res)=>{
    res.status(400).json({ error: error.message })
  }
 }
+const getActivityByCategory= async(req,res) =>{
+  const {Category}= req.body;
+  
+  try {
+      const activity = await activitiesModel.findOne({ Category: Category }); 
+
+          res.status(200).json(activity);
+  } 
+  catch (error) {
+      res.status(400).json({ error: error.message }); 
+  }
+}
+const viewAllUpcomingItineraries= async(req,res) =>{}
+
 
  
  
- module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist,sortItinerary,viewAllUpcomingActivities,viewAllUpcomingItineraries,viewAllUpcomingHistoricalPlaces,filterHistoricalLocationsByTag};
+ module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist,sortItinerary,viewAllUpcomingActivities,viewAllUpcomingItineraries,viewAllUpcomingHistoricalPlaces,filterHistoricalLocationsByTag,getActivityByCategory};
