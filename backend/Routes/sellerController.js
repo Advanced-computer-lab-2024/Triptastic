@@ -90,8 +90,16 @@ const viewProductsSeller = async (req, res) => {
    }
  };
  
+ const sortProductsByRatingSeller = async (req, res) => {
+   try {
+     const products = await productModel.find({}).sort({ rating: -1 }); // -1 for descending order
+     res.status(200).json(products);
+   } catch (error) {
+     
+     res.status(500).json({ error: 'Server error' });
+   }
+   };
 
 
 
-
- module.exports = {createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller};
+ module.exports = {createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller};

@@ -2,6 +2,7 @@ const touristModel = require('../Models/Tourist.js');
 const historicalLocationModel = require('../Models/historicalLocation.js');
 const productModel= require('../Models/Product.js');
 const activitiesModel=require('../Models/Activities.js');
+const itineraryModel= require('../Models/Itinerary.js');
 
 
 const { default: mongoose } = require('mongoose');
@@ -92,16 +93,91 @@ const filterActivities =async (req, res) => {
    }
  };
  
+ const filterHistoricalLocationsByTag = async (req, res) => {
+  const { Types } = req.query;
+  const validTagTypes = ["Monuments", "Museums", "Religious Sites", "Palaces","Castles"];
 
- const viewProductsTourist = async (req, res) => {
-   try {
-     const products = await productModel.find(); 
-     res.json(products); 
-   } catch (error) {
-     res.status(400).json({ error: error.message });
+  try {
+      if (!validTagTypes.includes(Types)) {
+          return res.status(400).json({ error: `Invalid tag type. Valid types are: ${validTagTypes.join(', ')}` });
+      }
+      const filteredLocations = await historicalLocationModel.find({ 'Tags.Types': Types });
+
+      if (filteredLocations.length === 0) {
+          return res.status(404).json({ msg: "No historical locations found with the specified tag type." });
+      }
+      res.status(200).json(filteredLocations);
+  } catch (error) {
+      res.status(400).json({ error: error.message });
+  }
+};
+
+
+ 
+const viewProductsTourist = async (req, res) => {
+  try {
+    const products = await productModel.find(); 
+    res.json(products); 
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const viewAllUpcomingActivities = async (req, res) => {
+ try {
+   const currentDate = new Date();
+   
+   const activities = await activitiesModel.find({ date: { $gte: currentDate } });
+   res.status(200).json(activities);
+ } catch (error) {
+   res.status(500).json({ error: 'Error fetching upcoming activities' });
+ }
+};
+
+const viewAllUpcomingHistoricalPlaces = async (req, res) => {
+ try {
+     const places = await historicalLocationModel.find({});
+     res.status(200).json(places);
+ } catch (error) {
+     res.status(500).json({ error: 'Error fetching historical places and museums' });
+ }
+};
+const sortItinerary= async (req,res)=>{
+ try{
+  const currentDate= new Date();
+  const sortField=req.body.sortField || 1 ; // 1 asc -1 dsc
+  const data = await itineraryModel.find({ date: { $gte: currentDate } }).sort({ Price: sortField }); 
+  res.status(200).json(data);
+ }catch(error){
+  res.status(400).json({ error: error.message })
+  }
+}
+const sortActivity= async(req,res)=>{
+ try{
+  const currentDate= new Date();
+
+  try{
+   const currentDate= new Date();
+   const sortField=req.body.sortField || 1 ; // 1 asc -1 dsc
+   const data = await itineraryModel.find({ date: { $gte: currentDate } }).sort({ Price: sortField }); 
+   res.status(200).json(data);
+  }catch(error){
+   res.status(400).json({ error: error.message })
    }
- };
+ }
+ const sortActivity= async(req,res)=>{
+  try{
+   const currentDate= new Date();
+   const sortCriteria= req.body.sortCriteria;
+   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort(sortCriteria); 
+   res.status(200).json(data);
+
+ }
+ catch(error){
+   res.status(400).json({ error: error.message })
+ }
+}
+
  
  
- 
- module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist};
+ module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist,sortItinerary,viewAllUpcomingActivities,viewAllUpcomingItineraries,viewAllUpcomingHistoricalPlaces,filterHistoricalLocationsByTag};

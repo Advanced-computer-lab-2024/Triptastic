@@ -11,14 +11,20 @@ const {getTourGuide}=require("./Routes/tourGuideController");
 const {createItinerary,getItinerary,updateItinerary,deleteItinerary}=require("./Routes/tourGuideController");
 
 
+//Guest
+const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActivitiesGuest}=require("./Routes/guestController");
+
+
 //Tourist
-const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist} = require("./Routes/touristController");
+const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
+  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,filterHistoricalLocationsByTag} = require("./Routes/touristController");
+  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortActivity,sortItinerary} = require("./Routes/touristController");
 
 //Advertiser
 const{createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity}=require("./Routes/advertiserController");
 
 //Seller
-const{ createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller}=require("./Routes/sellerController");
+const{ createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller}=require("./Routes/sellerController");
 
 //Admin
 const{createAdmin,createCategory,
@@ -26,7 +32,7 @@ const{createAdmin,createCategory,
   updateCategory,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
 ,createPrefTag,updatePreftag,deletePreftag,getPrefTag,
-viewProducts}=require("./routes/adminController");
+viewProducts,sortProductsByRatingAdmin}=require("./routes/adminController");
 
 
 
@@ -41,8 +47,8 @@ const app = express();
 const port = process.env.PORT || "8000";
 const tourist = require("./Models/Tourist");
 const tourGuide=require("./Models/tourGuide");
-const advertiser=require("./Models/Advertiser");
-const seller=require("./Models/Seller");
+const advertiser=require("./models/Advertiser");
+const seller=require("./models/Seller");
 const admin=require("./Models/Admin");
 const museum=require("./Models/historicalLocation");
 const tourismGov=require("./Models/tourismGov");
@@ -67,8 +73,16 @@ app.post("/addTourist",createTourist);
 app.get("/getHistoricalLocationByName",gethistoricalLocationByName);
 app.post("/createProductTourist",createProductTourist);
 app.get("/getProductTourist",getProductTourist);
+app.get("/filterActivities",filterActivities);
 app.post("/filterActivities",filterActivities);
 app.get("/viewProductsTourist",viewProductsTourist);
+app.get("/viewAllUpcomingActivitiesTourist",viewAllUpcomingActivitiesTourist);
+app.get("/viewAllItinerariesTourist",viewAllItinerariesTourist);
+app.get("/viewAllHistoricalPlacesTourist",viewAllHistoricalPlacesTourist);
+app.get("/sortProductsByRatingTourist",sortProductsByRatingTourist);
+app.get("/sortItinerary",sortItinerary);
+app.get("/sortActivities",sortActivity);
+
 
 //TourGuide
 app.post("/addTourGuide",createTourGuide);
@@ -98,6 +112,7 @@ app.get("/getSeller",getSeller);
 app.post("/createProductseller",createProductseller);
 app.get("/getProductSeller",getProductSeller);
 app.get("/viewProductsSeller",viewProductsSeller);
+app.get("/sortProductsByRatingSeller",sortProductsByRatingSeller);
 
 //Admin
 app.delete("/deleteTourGuide",deleteTourGuide);
@@ -117,6 +132,8 @@ app.delete("/deletePreftag",deletePreftag);
 app.post("/createProduct",createProduct);
 app.get("/getProduct",getProduct);
 app.get("/viewProducts",viewProducts);
+app.get("/sortProductsByRatingAdmin",sortProductsByRatingAdmin);
+
 
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);
@@ -125,12 +142,11 @@ app.get("/getHistoricalLocation",gethistoricalLocation);
 app.delete("/deleteHistoricalLocation",deletehistoricalLocation);
 
 
-//Activity
+//Guest
+app.get("/viewAllUpcomingActivitiesGuest",viewAllUpcomingActivitiesGuest);
+app.get("/viewAllItinerariesGuest",viewAllItinerariesGuest);
+app.get("/viewAllHistoricalPlacesGuest",viewAllHistoricalPlacesGuest);
 
-// app.post("/createActivity",createActivity);
-// app.delete("/deleteActivity",deleteActivity);
-// app.patch("/updateActivity",updateActivity);
-// app.get("/getActivity",getActivity);
 
 
 

@@ -5,8 +5,8 @@ const productModel= require('../Models/Product.js');
 const { default: mongoose } = require('mongoose');
 const touristModel = require('../Models/Tourist');
 const tourGuideModel = require('../Models/tourGuide');
-const sellerModel = require('../Models/Seller');
-const advertiserModel = require('../Models/Advertiser');
+const sellerModel = require('../models/Seller');
+const advertiserModel = require('../models/Advertiser');
 const tourismGovModel = require('../Models/tourismGov');
 
 
@@ -264,12 +264,20 @@ const viewProducts = async (req, res) => {
   }
 };
 
-
+const sortProductsByRatingAdmin = async (req, res) => {
+    try {
+      const products = await productModel.find({}).sort({ rating: -1 }); // -1 for descending order
+      res.status(200).json(products);
+    } catch (error) {
+     
+      res.status(500).json({ error: 'Server error' });
+    }
+    };
 
 
 
 
 
 module.exports = {createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
-    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts
+    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin
 };
