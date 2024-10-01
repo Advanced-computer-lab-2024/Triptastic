@@ -156,6 +156,21 @@ const sortActivity= async(req,res)=>{
  try{
   const currentDate= new Date();
 
+  try{
+   const currentDate= new Date();
+   const sortField=req.body.sortField || 1 ; // 1 asc -1 dsc
+   const data = await itineraryModel.find({ date: { $gte: currentDate } }).sort({ Price: sortField }); 
+   res.status(200).json(data);
+  }catch(error){
+   res.status(400).json({ error: error.message })
+   }
+ }
+ const sortActivity= async(req,res)=>{
+  try{
+   const currentDate= new Date();
+   const sortCriteria= req.body.sortCriteria;
+   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort(sortCriteria); 
+   res.status(200).json(data);
 
  }
  catch(error){

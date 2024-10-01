@@ -17,7 +17,7 @@ const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActi
 
 //Tourist
 const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
-  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,filterHistoricalLocationsByTag,getActivityByCategory} = require("./Routes/touristController");
+  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,filterHistoricalLocationsByTag,getActivityByCategory  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,filterHistoricalLocationsByTag,sortActivity,sortItinerary} = require("./Routes/touristController");
 
 //Advertiser
 const{createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity}=require("./Routes/advertiserController");
@@ -74,6 +74,14 @@ app.post("/createProductTourist",createProductTourist);
 app.get("/getProductTourist",getProductTourist);
 app.get("/filterActivities",filterActivities);
 app.get("/getActivityByCategory",getActivityByCategory);
+app.post("/filterActivities",filterActivities);
+app.get("/viewProductsTourist",viewProductsTourist);
+app.get("/viewAllUpcomingActivitiesTourist",viewAllUpcomingActivitiesTourist);
+app.get("/viewAllItinerariesTourist",viewAllItinerariesTourist);
+app.get("/viewAllHistoricalPlacesTourist",viewAllHistoricalPlacesTourist);
+app.get("/sortProductsByRatingTourist",sortProductsByRatingTourist);
+app.get("/sortItinerary",sortItinerary);
+app.get("/sortActivities",sortActivity);
 
 //TourGuide
 app.post("/addTourGuide",createTourGuide);
