@@ -1,6 +1,7 @@
 const advertiserModel = require('../Models/Advertiser.js');
 const activitiescategoryModel = require('../Models/Activitiescategory.js');
 const activitiesModel = require('../Models/Activities.js');
+const PreferenceTagsModel = require('../Models/PreferenceTags.js');
 const { default: mongoose } = require('mongoose');
 const createAdvertiser = async(req,res) => {
 
@@ -44,7 +45,7 @@ const updateAdvertiser = async(req,res) => {
    }
 }
 const createActivity = async (req, res) => {
-   const { Category,date,time,location,price,tags,specialDiscounts,bookingOpen,Advertiser } = req.body;
+   const { Category,name,date,time,location,minPrice,maxPrice,tags,rating,specialDiscounts,bookingOpen,Advertiser } = req.body;
 
    try {
        // Find the category by name or by its _id
@@ -56,11 +57,27 @@ const createActivity = async (req, res) => {
        }
        console.log(foundCategory);
        console.log('Found Advertiser:', foundAdvertiser);
+       
+        // Get all available preference tags
+        const availableTags = await PreferenceTagsModel.find({}, { PrefTagName: 1 });
+        const availableTagNames = availableTags.map(tag => tag.PrefTagName);
+
+        // Validate the provided tags against the available tags
+        const validTags = tags.filter(tag => availableTagNames.includes(tag));
+        const invalidTags = tags.filter(tag => !availableTagNames.includes(tag));
+
+        // If there are invalid tags, return an error message along with available tags
+        if (invalidTags.length > 0) {
+            return res.status(400).json({
+                error: `The following tags are invalid: ${invalidTags.join(', ')}`,
+                availableTags: availableTagNames
+            });
+        }else{
 
        // Create a new activity
-       const activity = await activitiesModel.create({Category: foundCategory.Name,date,time,location,price,tags,specialDiscounts,bookingOpen,Advertiser:foundAdvertiser.Username });
+       const activity = await activitiesModel.create({Category: foundCategory.Name,name,date,time,location,minPrice,maxPrice,tags,rating,specialDiscounts,bookingOpen,Advertiser:foundAdvertiser.Username });
        res.status(200).json(activity);
-       
+    }
        
    } catch (error) {
        console.error('Error creating activity:', error);
@@ -88,13 +105,13 @@ const getActivity = async (req, res) => {
 
 
 const updateActivity = async (req, res) => {
-   const { Category,date,time,location,price,tags,specialDiscounts,bookingOpen,Advertiser }= req.body; // The current category name from the URL parameter
+   const { Category,name,date,time,location,minPrice,maxPrice,tags,rating,specialDiscounts,bookingOpen,Advertiser }= req.body; // The current category name from the URL parameter
   // The new name to be updated, taken directly from the request body
 
    try {
        const activity = await activitiesModel.findOneAndUpdate(
            { Advertiser:Advertiser }, // Find category by the current name
-           { $set: { Category:Category,date:date,time:time,location:location,price:price,tags:tags,specialDiscounts:specialDiscounts,bookingOpen:bookingOpen  } }, // Update to the new name
+           { $set: { Category:Category,name:name,date:date,time:time,location:location,minPrice:minPrice,maxPrice:maxPrice,tags:tags,rating:rating,specialDiscounts:specialDiscounts,bookingOpen:bookingOpen  } }, // Update to the new name
            { new: true } // Return the updated document
        );
 
@@ -109,9 +126,9 @@ const updateActivity = async (req, res) => {
 
 
 const deleteActivity = async (req, res) => {
-   const {Advertiser}= req.body;
+   const {Advertiser,name}= req.body;
    try {
-       const activity = await activitiesModel.findOneAndDelete({ Advertiser });
+       const activity = await activitiesModel.findOneAndDelete({ Advertiser:Advertiser,name:name });
       
        res.status(200).json({ msg: "activity deleted successfully" });
    } catch (error) {

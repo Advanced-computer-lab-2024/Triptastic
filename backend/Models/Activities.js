@@ -3,7 +3,14 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ActivitiesSchema = new Schema({
-  
+name: {
+        type:String,
+        
+        required: true
+    
+       
+      
+      },
 Category: {
     type:String,
     
@@ -11,8 +18,8 @@ Category: {
 
    
   
-  },
-  date: {
+},
+date: {
     type: Date,
     required: false
 },
@@ -24,10 +31,14 @@ location: {
     type: String,
     required: false
 },
-price: {
+minPrice: {
     type: Number,
-    required: false
-},
+    required: false // Ensure at least the minimum price is set
+  },
+  maxPrice: {
+    type: Number,
+    required: false // Ensure at least the maximum price is set
+  },
 rating:{
     type:Number,
     required:false
