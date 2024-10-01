@@ -103,7 +103,7 @@ const filterActivities =async (req, res) => {
    }
  };
  
- const viewAllUpcomingActivitiesTourist = async (req, res) => {
+ const viewAllUpcomingActivities = async (req, res) => {
   try {
     const currentDate = new Date();
     
@@ -113,7 +113,7 @@ const filterActivities =async (req, res) => {
     res.status(500).json({ error: 'Error fetching upcoming activities' });
   }
 };
-const viewAllItinerariesTourist = async (req, res) => {
+const viewAllUpcomingItineraries = async (req, res) => {
   try {
     
       const itineraries = await itineraryModel.find({});
@@ -122,7 +122,7 @@ const viewAllItinerariesTourist = async (req, res) => {
       res.status(500).json({ error: 'Error fetching itineraries' });
   }
 };
-const viewAllHistoricalPlacesTourist = async (req, res) => {
+const viewAllUpcomingHistoricalPlaces = async (req, res) => {
   try {
       const places = await historicalLocationModel.find({});
       res.status(200).json(places);
@@ -134,24 +134,23 @@ const sortItinerary= async (req,res)=>{
   try{
    const currentDate= new Date();
    const sortField=req.body.sortField || 1 ; // 1 asc -1 dsc
-   const data = await itineraryModel.find().find({ date: { $gte: currentDate } }).sort({ Price: sortField }); 
+   const data = await itineraryModel.find({ date: { $gte: currentDate } }).sort({ Price: sortField }); 
    res.status(200).json(data);
   }catch(error){
    res.status(400).json({ error: error.message })
    }
  }
+ const sortActivity= async(req,res)=>{
+  try{
+   const currentDate= new Date();
+
+
+  }
+  catch(error){
+    res.status(400).json({ error: error.message })
+  }
+ }
 
  
-
-
-const sortProductsByRatingTourist = async (req, res) => {
-try {
-  const products = await productModel.find({}).sort({ rating: -1 }); // -1 for descending order
-  res.status(200).json(products);
-} catch (error) {
-  
-  res.status(500).json({ error: 'Server error' });
-}
-};
  
- module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinerary};
+ module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist,sortItinerary,viewAllUpcomingActivities,viewAllUpcomingItineraries,viewAllUpcomingHistoricalPlaces};
