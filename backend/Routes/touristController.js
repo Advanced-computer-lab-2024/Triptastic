@@ -98,9 +98,9 @@ const filterActivities =async (req, res) => {
   const validTagTypes = ["Monuments", "Museums", "Religious Sites", "Palaces","Castles"];
 
   try {
-      if (!validTagTypes.includes(Types)) {
-          return res.status(400).json({ error: `Invalid tag type. Valid types are: ${validTagTypes.join(', ')}` });
-      }
+    if (!validTagTypes.includes(Types)) {
+      return res.status(400).json({ error: `Invalid tag type. Valid types are: ${validTagTypes.join(', ')}` }); 
+  }
       const filteredLocations = await historicalLocationModel.find({ 'Tags.Types': Types });
 
       if (filteredLocations.length === 0) {
@@ -108,9 +108,10 @@ const filterActivities =async (req, res) => {
       }
       res.status(200).json(filteredLocations);
   } catch (error) {
-      res.status(400).json({ error: error.message });
-  }
+      res.status(400).json({ error: error.message });
+  }
 };
+
 
 
  

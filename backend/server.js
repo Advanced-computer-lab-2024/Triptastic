@@ -31,7 +31,7 @@ const{createAdmin,createCategory,
   updateCategory,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
 ,createPrefTag,updatePreftag,deletePreftag,getPrefTag,
-viewProducts,sortProductsByRatingAdmin}=require("./routes/adminController");
+viewProducts,sortProductsByRatingAdmin}=require("./Routes/adminController");
 
 
 
