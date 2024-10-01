@@ -143,7 +143,9 @@ const sortItinerary= async (req,res)=>{
  const sortActivity= async(req,res)=>{
   try{
    const currentDate= new Date();
-
+   const sortCriteria= req.body.sortCriteria;
+   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort(sortCriteria); 
+   res.status(200).json(data);
 
   }
   catch(error){
@@ -153,4 +155,4 @@ const sortItinerary= async (req,res)=>{
 
  
  
- module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist,sortItinerary,viewAllUpcomingActivities,viewAllUpcomingItineraries,viewAllUpcomingHistoricalPlaces};
+ module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist,sortItinerary,viewAllUpcomingActivities,viewAllUpcomingItineraries,viewAllUpcomingHistoricalPlaces,sortActivity};
