@@ -17,6 +17,7 @@ const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActi
 
 //Tourist
 const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
+  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,filterHistoricalLocationsByTag} = require("./Routes/touristController");
   ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortActivity,sortItinerary} = require("./Routes/touristController");
 
 //Advertiser
@@ -72,6 +73,7 @@ app.post("/addTourist",createTourist);
 app.get("/getHistoricalLocationByName",gethistoricalLocationByName);
 app.post("/createProductTourist",createProductTourist);
 app.get("/getProductTourist",getProductTourist);
+app.get("/filterActivities",filterActivities);
 app.post("/filterActivities",filterActivities);
 app.get("/viewProductsTourist",viewProductsTourist);
 app.get("/viewAllUpcomingActivitiesTourist",viewAllUpcomingActivitiesTourist);
