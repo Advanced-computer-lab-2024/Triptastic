@@ -37,6 +37,9 @@ function SellerReg() {
 
       if (response.ok) {
         const data = await response.json();
+        localStorage.setItem('Username', data.Username);
+      localStorage.setItem('Email', data.Email);
+      localStorage.setItem('Password', data.Password);
         setSuccessMessage('Seller registered successfully!');
         setErrorMessage('');
         // Optionally, reset form data

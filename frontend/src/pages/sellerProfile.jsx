@@ -1,148 +1,66 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
-function SellerProfile() {
-  const [formData, setFormData] = useState({
-    Username: '',
-    Email: '',
-    Password: '',
-    Name: '', // Additional fields
-    Description: ''
-  });
+const SellerProfile = () => {
+  const [sellerInfo, setSellerInfo] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  // Fetch seller information on component mount
-  useEffect(() => {
-    fetchSellerInfo(); // Fetch initially if needed
-  }, []);
-
-  // Function to fetch seller information
   const fetchSellerInfo = async () => {
-    console.log("Fetching seller information..."); // Debugging log
-    try {
-      const response = await fetch('http://localhost:8000/getSeller');
-      
-      console.log("Response Status:", response.status); // Debugging log
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Fetched Data:", data); // Debugging log
-        
-        setFormData({
-          Username: data.Username || '',
-          Email: data.Email || '',
-          Password: data.Password || '',
-          Name: data.Name || '',
-          Description: data.Description || ''
+    setLoading(true);
+    const Username = localStorage.getItem('Username'); // Get the username from local storage
+
+    if (Username) {
+      try {
+        const response = await fetch('http://localhost:8000/getSeller', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}` // Include the token if you're using authentication
+          },
         });
-        setSuccessMessage('Seller information fetched successfully!');
-        setErrorMessage('');
-      } else {
-        console.error("Error fetching seller information:", response.status); // Debugging log
-        setErrorMessage('Failed to fetch seller information.');
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data) {
+            setSellerInfo(data); // Set the fetched information
+            setErrorMessage('');
+          } else {
+            setErrorMessage('No seller information found.');
+          }
+        } else {
+          throw new Error('Failed to fetch seller information');
+        }
+      } catch (error) {
+        setErrorMessage('An error occurred while fetching seller information');
+        console.error(error);
       }
-    } catch (error) {
-      console.error("Fetch error:", error); // Debugging log
-      setErrorMessage('Something went wrong while fetching seller information.');
+    } else {
+      setErrorMessage('No seller information found.');
     }
-  };
-  
-
-  // Handle input changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value
-    }));
-  };
-
-  // Handle form submission for updating seller information
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await fetch('http://localhost:8000/updateSeller', {
-        method: 'PATCH', // Use PATCH for partial updates
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
-        setSuccessMessage('Seller information updated successfully!');
-        setErrorMessage('');
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(errorData.error || 'Update failed');
-        setSuccessMessage('');
-      }
-    } catch (error) {
-      setErrorMessage('Something went wrong while updating seller information.');
-    }
+    setLoading(false);
   };
 
   return (
     <div>
       <h2>Seller Profile</h2>
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-      
-      {/* Button to fetch and display seller information */}
+      {loading ? (
+        <p>Loading seller information...</p>
+      ) : (
+        sellerInfo ? (
+          <div>
+            <p><strong>Username:</strong> {sellerInfo.Username}</p>
+            <p><strong>Email:</strong> {sellerInfo.Email}</p>
+            {/* Don't display the password for security reasons */}
+          </div>
+        ) : (
+          <p>No seller information found.</p>
+        )
+      )}
       <button onClick={fetchSellerInfo}>View My Information</button>
-
-      <form onSubmit={handleUpdate}>
-        <div>
-          <label>Username:</label>
-          <input
-            type="text"
-            name="Username"
-            value={formData.Username}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            name="Email"
-            value={formData.Email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            name="Password"
-            value={formData.Password}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Name:</label>
-          <input
-            type="text"
-            name="Name"
-            value={formData.Name}
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <label>Description:</label>
-          <textarea
-            name="Description"
-            value={formData.Description}
-            onChange={handleChange}
-          />
-        </div>
-        <button type="submit">Update Seller Information</button>
-      </form>
     </div>
   );
-}
+};
 
 export default SellerProfile;
+
