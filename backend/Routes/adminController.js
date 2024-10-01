@@ -5,8 +5,8 @@ const productModel= require('../Models/Product.js');
 const { default: mongoose } = require('mongoose');
 const touristModel = require('../Models/Tourist');
 const tourGuideModel = require('../Models/tourGuide');
-const sellerModel = require('../Models/Seller');
-const advertiserModel = require('../Models/Advertiser');
+const sellerModel = require('../models/Seller');
+const advertiserModel = require('../models/Advertiser');
 const tourismGovModel = require('../Models/tourismGov');
 
 
