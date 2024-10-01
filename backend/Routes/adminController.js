@@ -255,6 +255,29 @@ const deletePreftag = async (req, res) => {
 
 
 
+const viewProducts = async (req, res) => {
+  try {
+    const products = await productModel.find(); 
+    res.json(products); 
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+const sortProductsByRatingAdmin = async (req, res) => {
+    try {
+      const products = await productModel.find({}).sort({ rating: -1 }); // -1 for descending order
+      res.status(200).json(products);
+    } catch (error) {
+     
+      res.status(500).json({ error: 'Server error' });
+    }
+    };
+
+
+
+
+
 module.exports = {createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
-    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag
+    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin
 };
