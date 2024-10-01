@@ -12,7 +12,7 @@ const {createItinerary,getItinerary,updateItinerary,deleteItinerary}=require("./
 
 
 //Tourist
-const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist} = require("./Routes/touristController");
+const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,filterHistoricalLocationsByTag} = require("./Routes/touristController");
 
 //Advertiser
 const{createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity}=require("./Routes/advertiserController");
@@ -67,7 +67,7 @@ app.get("/getHistoricalLocationByName",gethistoricalLocationByName);
 app.post("/createProductTourist",createProductTourist);
 app.get("/getProductTourist",getProductTourist);
 app.get("/filterActivities",filterActivities);
-
+app.get("/filterHistoricalLocationsByTag",filterHistoricalLocationsByTag);
 //TourGuide
 app.post("/addTourGuide",createTourGuide);
 app.patch("/addTourGuideInfo",createTourGuideInfo);
