@@ -17,8 +17,8 @@ const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActi
 
 //Tourist
 const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
-  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,filterHistoricalLocationsByTag} = require("./Routes/touristController");
-  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortActivity,sortItinerary} = require("./Routes/touristController");
+  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,filterHistoricalLocationsByTag ,sortActivity,sortItinerary} = require("./Routes/touristController");
+
 
 //Advertiser
 const{createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity}=require("./Routes/advertiserController");
@@ -47,8 +47,8 @@ const app = express();
 const port = process.env.PORT || "8000";
 const tourist = require("./Models/Tourist");
 const tourGuide=require("./Models/tourGuide");
-const advertiser=require("./models/Advertiser");
-const seller=require("./models/Seller");
+const advertiser=require("./Models/Advertiser");
+const seller=require("./Models/Seller");
 const admin=require("./Models/Admin");
 const museum=require("./Models/historicalLocation");
 const tourismGov=require("./Models/tourismGov");
