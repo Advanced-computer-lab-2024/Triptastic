@@ -130,6 +130,20 @@ const viewAllHistoricalPlacesTourist = async (req, res) => {
       res.status(500).json({ error: 'Error fetching historical places and museums' });
   }
 };
+const sortItinerary= async (req,res)=>{
+  try{
+   const currentDate= new Date();
+   const sortField=req.body.sortField || 1 ; // 1 asc -1 dsc
+   const data = await itineraryModel.find().find({ date: { $gte: currentDate } }).sort({ Price: sortField }); 
+   res.status(200).json(data);
+  }catch(error){
+   res.status(400).json({ error: error.message })
+   }
+ }
+
+ 
+ 
+ module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist,sortItinerary,viewAllUpcomingActivities,viewAllUpcomingItineraries,viewAllUpcomingHistoricalPlaces};
 
 const sortProductsByRatingTourist = async (req, res) => {
 try {
