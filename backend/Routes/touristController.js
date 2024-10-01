@@ -103,7 +103,7 @@ const filterActivities =async (req, res) => {
    }
  };
  
- const viewAllUpcomingActivities = async (req, res) => {
+ const viewAllUpcomingActivitiesTourist = async (req, res) => {
   try {
     const currentDate = new Date();
     
@@ -113,7 +113,7 @@ const filterActivities =async (req, res) => {
     res.status(500).json({ error: 'Error fetching upcoming activities' });
   }
 };
-const viewAllUpcomingItineraries = async (req, res) => {
+const viewAllItinerariesTourist = async (req, res) => {
   try {
     
       const itineraries = await itineraryModel.find({});
@@ -122,7 +122,7 @@ const viewAllUpcomingItineraries = async (req, res) => {
       res.status(500).json({ error: 'Error fetching itineraries' });
   }
 };
-const viewAllUpcomingHistoricalPlaces = async (req, res) => {
+const viewAllHistoricalPlacesTourist = async (req, res) => {
   try {
       const places = await historicalLocationModel.find({});
       res.status(200).json(places);
@@ -130,5 +130,15 @@ const viewAllUpcomingHistoricalPlaces = async (req, res) => {
       res.status(500).json({ error: 'Error fetching historical places and museums' });
   }
 };
+
+const sortProductsByRatingTourist = async (req, res) => {
+try {
+  const products = await productModel.find({}).sort({ rating: -1 }); // -1 for descending order
+  res.status(200).json(products);
+} catch (error) {
+  
+  res.status(500).json({ error: 'Server error' });
+}
+};
  
- module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist,viewAllUpcomingActivities,viewAllUpcomingItineraries,viewAllUpcomingHistoricalPlaces};
+ module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist};

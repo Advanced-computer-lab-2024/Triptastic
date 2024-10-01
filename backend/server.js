@@ -11,14 +11,19 @@ const {getTourGuide}=require("./Routes/tourGuideController");
 const {createItinerary,getItinerary,updateItinerary,deleteItinerary}=require("./Routes/tourGuideController");
 
 
+//Guest
+const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActivitiesGuest}=require("./Routes/guestController");
+
+
 //Tourist
-const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivities,viewAllUpcomingItineraries,viewAllUpcomingHistoricalPlaces} = require("./Routes/touristController");
+const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
+  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist} = require("./Routes/touristController");
 
 //Advertiser
 const{createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity}=require("./Routes/advertiserController");
 
 //Seller
-const{ createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller}=require("./Routes/sellerController");
+const{ createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller}=require("./Routes/sellerController");
 
 //Admin
 const{createAdmin,createCategory,
@@ -26,7 +31,7 @@ const{createAdmin,createCategory,
   updateCategory,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
 ,createPrefTag,updatePreftag,deletePreftag,getPrefTag,
-viewProducts}=require("./routes/adminController");
+viewProducts,sortProductsByRatingAdmin}=require("./routes/adminController");
 
 
 
@@ -69,9 +74,11 @@ app.post("/createProductTourist",createProductTourist);
 app.get("/getProductTourist",getProductTourist);
 app.post("/filterActivities",filterActivities);
 app.get("/viewProductsTourist",viewProductsTourist);
-app.get("/viewAllUpcomingActivities",viewAllUpcomingActivities);
-app.get("/viewAllUpcomingItineraries",viewAllUpcomingItineraries);
-app.get("/viewAllUpcomingHistoricalPlaces",viewAllUpcomingHistoricalPlaces);
+app.get("/viewAllUpcomingActivitiesTourist",viewAllUpcomingActivitiesTourist);
+app.get("/viewAllItinerariesTourist",viewAllItinerariesTourist);
+app.get("/viewAllHistoricalPlacesTourist",viewAllHistoricalPlacesTourist);
+app.get("/sortProductsByRatingTourist",sortProductsByRatingTourist);
+
 
 
 //TourGuide
@@ -102,6 +109,7 @@ app.get("/getSeller",getSeller);
 app.post("/createProductseller",createProductseller);
 app.get("/getProductSeller",getProductSeller);
 app.get("/viewProductsSeller",viewProductsSeller);
+app.get("/sortProductsByRatingSeller",sortProductsByRatingSeller);
 
 //Admin
 app.delete("/deleteTourGuide",deleteTourGuide);
@@ -121,6 +129,8 @@ app.delete("/deletePreftag",deletePreftag);
 app.post("/createProduct",createProduct);
 app.get("/getProduct",getProduct);
 app.get("/viewProducts",viewProducts);
+app.get("/sortProductsByRatingAdmin",sortProductsByRatingAdmin);
+
 
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);
@@ -129,12 +139,11 @@ app.get("/getHistoricalLocation",gethistoricalLocation);
 app.delete("/deleteHistoricalLocation",deletehistoricalLocation);
 
 
-//Activity
+//Guest
+app.get("/viewAllUpcomingActivitiesGuest",viewAllUpcomingActivitiesGuest);
+app.get("/viewAllItinerariesGuest",viewAllItinerariesGuest);
+app.get("/viewAllHistoricalPlacesGuest",viewAllHistoricalPlacesGuest);
 
-// app.post("/createActivity",createActivity);
-// app.delete("/deleteActivity",deleteActivity);
-// app.patch("/updateActivity",updateActivity);
-// app.get("/getActivity",getActivity);
 
 
 
