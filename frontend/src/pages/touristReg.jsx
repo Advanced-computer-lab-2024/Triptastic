@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+
 
 function TouristReg() {
   const [formData, setFormData] = useState({
@@ -11,6 +13,8 @@ function TouristReg() {
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const navigate = useNavigate();
+
 
   // Handle input changes
   const handleChange = (e) => {
@@ -36,6 +40,16 @@ function TouristReg() {
 
       if (response.ok) {
         const data = await response.json();
+        localStorage.setItem('Username', formData.Username);
+        localStorage.setItem('Email', formData.Email);
+        localStorage.setItem('Password', formData.Password);
+        localStorage.setItem('Nationality', formData.Nationality);
+        localStorage.setItem('DOB', formData.DOB);
+        localStorage.setItem('Occupation', formData.Occupation);
+
+
+
+
         setSuccessMessage('Tourist registered successfully!');
         setErrorMessage('');
         // Optionally, reset form data
@@ -47,6 +61,8 @@ function TouristReg() {
           DOB: '',
           Occupation: ''
         });
+        navigate('/tourist-profile');
+
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.error || 'Registration failed');
