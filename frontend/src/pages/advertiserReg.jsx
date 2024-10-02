@@ -2,9 +2,13 @@ import React, { useState } from 'react';
 
 function AdvertiserReg() {
   const [formData, setFormData] = useState({
-    Username: '',
-    Email: '',
-    Password: '',
+    Username:'',
+    Email:'',
+    Password:'',
+    website_Link:'',
+    Hotline:'',
+    Company_Profile:'',
+      
     
   });
   const [errorMessage, setErrorMessage] = useState('');
@@ -40,7 +44,10 @@ function AdvertiserReg() {
         setFormData({
           Username: '',
           Email: '',
-          Password: ''
+          Password: '',
+          website_Link:'',
+          Hotline:'',
+          Company_Profile:''
         });
       } else {
         const errorData = await response.json();
@@ -84,6 +91,36 @@ function AdvertiserReg() {
             type="password"
             name="Password"
             value={formData.Password}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <label>website_Link:</label>
+          <input
+            type="text"
+            name="website_Link"
+            value={formData.website_Link}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <label>Hotline:</label>
+          <input
+            type="text"
+            name="Hotline"
+            value={formData.Hotline}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <label>Company_Profile:</label>
+          <input
+            type="text"
+            name="Company_Profile"
+            value={formData.Company_Profile}
             onChange={handleChange}
             required
           />
