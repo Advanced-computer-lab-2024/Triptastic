@@ -21,7 +21,7 @@ const createTourist = async(req,res) => {
 
 
  const gethistoricalLocationByName= async(req,res) =>{
-    const {Name}= req.body;
+    const {Name}= req.query;
     
     try {
         const historicalLocation = await historicalLocationModel.findOne({ Name: Name }); 
