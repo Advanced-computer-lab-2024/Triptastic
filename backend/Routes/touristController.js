@@ -158,22 +158,61 @@ const viewAllItinerariesTourist = async (req, res) => {
 
 
 
-const sortItinerary= async (req,res)=>{
+const sortItinPASC= async (req,res)=>{
  try{
-  const currentDate= new Date();
-  const sortField=req.body.sortField || 1 ; // 1 asc -1 dsc
-  const data = await itineraryModel.find({ date: { $gte: currentDate } }).sort({ Price: sortField }); 
+  const currentDate= new Date(); // 1 asc -1 dsc
+  const data = await itineraryModel.find({ date: { $gte: currentDate } }).sort({ Price:1}); 
   res.status(200).json(data);
  }catch(error){
   res.status(400).json({ error: error.message })
   }
 }
-
- const sortActivity= async(req,res)=>{
+const sortItinPDSC= async (req,res)=>{
+  try{
+   const currentDate= new Date(); // 1 asc -1 dsc
+   const data = await itineraryModel.find({ date: { $gte: currentDate } }).sort({ Price:-1}); 
+   res.status(200).json(data);
+  }catch(error){
+   res.status(400).json({ error: error.message })
+   }
+ }
+ const sortActPASCRASC= async(req,res)=>{
   try{
    const currentDate= new Date();
-   const sortCriteria= req.body.sortCriteria;
-   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort(sortCriteria); 
+   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort({Price : 1, Rating : 1}); 
+   res.status(200).json(data);
+
+ }
+ catch(error){
+   res.status(400).json({ error: error.message })
+ }
+}
+const sortActPASCRDSC= async(req,res)=>{
+  try{
+   const currentDate= new Date();
+   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort({Price : 1, Rating : -1}); 
+   res.status(200).json(data);
+
+ }
+ catch(error){
+   res.status(400).json({ error: error.message })
+ }
+}
+const sortActPDSCRASC= async(req,res)=>{
+  try{
+   const currentDate= new Date();
+   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort({Price : -1, Rating : 1}); 
+   res.status(200).json(data);
+
+ }
+ catch(error){
+   res.status(400).json({ error: error.message })
+ }
+}
+const sortActPDSCRDSC= async(req,res)=>{
+  try{
+   const currentDate= new Date();
+   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort({Price : -1, Rating : -1}); 
    res.status(200).json(data);
 
  }
@@ -206,4 +245,4 @@ const sortProductsByRatingTourist = async (req, res) => {
   };
  
  
- module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist,sortItinerary,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,filterHistoricalLocationsByTag,getActivityByCategory,sortActivity,sortProductsByRatingTourist};
+ module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,filterHistoricalLocationsByTag,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,sortProductsByRatingTourist,sortItinPDSC};
