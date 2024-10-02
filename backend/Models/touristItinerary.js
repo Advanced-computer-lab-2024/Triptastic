@@ -7,7 +7,7 @@ const touristItinerarySchema = new Schema({
         type:[Activites], required: true
     },
     Locations:{
-        type: String, required :true 
+        type: [String], required :true 
     },
     startDate:{
         type: Date, required:true

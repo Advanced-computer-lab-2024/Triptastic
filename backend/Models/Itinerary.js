@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
+const {Activities}=require("./Models/Activities.js")
 const Schema = mongoose.Schema;
 
 const itinerarySchema = new Schema({
     Activities:{ 
-        type: String ,required: true
+        type: [Activities] ,required: true
     },
-    Location:{
-        type: String, required:true
+    Locations:{
+        type: [String], required:true
     },
     Timeline:{
         type:String, required: true

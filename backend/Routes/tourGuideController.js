@@ -1,6 +1,6 @@
 const tourGuideModel = require('../Models/tourGuide.js');
 const itineraryModel = require('../Models/Itinerary.js');
-const touristItinerary= require('../Models/touristItinerary.js');
+const touristItineraryModel= require('../Models/touristItinerary.js');
 const { default: mongoose } = require('mongoose');
 const createTourGuide = async(req,res) => {
 
@@ -65,10 +65,9 @@ const createTourGuideInfo = async(req,res) => {
    }
  }
  const getItinerary= async(req,res)=>{
-   const Location=req.query.Location;
-   const DatesTimes= req.query.DatesTimes;
+   const {id}=req.params.id
    try{
-      const x=await itineraryModel.findOne({Location: location, DatesTimes: DatesTimes});
+      const x=await itineraryModel.findById(id);
       res.status(200).json(x);
    }
    catch (error){
@@ -76,11 +75,10 @@ const createTourGuideInfo = async(req,res) => {
    }
  }
  const updateItinerary= async(req,res)=>{
-   const location= req.params.Location;
-   const date= req.params.DatesTimes
+   const {id}=req.params.id;
    const update= req.body;
    try{
-      await itineraryModel.updateOne({Location: location, DatesTimes: date},{$set: update});
+      await itineraryModel.findByIdAndUpdate(id,{$set: update});
       res.status(200).json({msg:" Itinerary is updated"});
    }
    catch (error){
@@ -88,12 +86,11 @@ const createTourGuideInfo = async(req,res) => {
    }
  }
  const deleteItinerary = async (req, res) => {
-   const location= req.params.Location;
-   const date= req.params.DatesTimes
+   const {id}=req.params.id;
    try {
-      const itinerary = await itinerary.findOne({ Location: location, DatesTimes: date  });
+      const itinerary = await itinerary.findById(id);
       if(itinerary.booked==false){
-       const tourGuide = await itineraryModel.deleteOne({ Location: location, DatesTimes: date });
+       const tourGuide = await itineraryModel.findByIdAndDelete(id);
        res.status(200).json({ msg: "Itinerary has been deleted successfully" });
       }
    else{
@@ -103,6 +100,47 @@ const createTourGuideInfo = async(req,res) => {
        res.status(400).json({ error: error.message });
    }
 };
- 
- module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary};
+const createTouristItinerary=async(req,res)=>{
+   const{Activities, Locations, startDate, endDate, Tags}=req.body;
+   try{
+      const touristItinerary=await touristItineraryModel.create({Activities, Locations, startDate, endDate, Tags});
+      res.status(200).json(touristItineraryt);
+   }
+   catch{
+      res.status(400).json({error:error.message})
+
+   }
+ }
+ const getTouristItinerary= async(req,res)=>{
+   const {id}=req.params.id;
+   try{
+      const x=await touristItineraryModel.findById(id);
+      res.status(200).json(x);
+   }
+   catch (error){
+      res.status(400).json({error: error.message});
+   }
+ }
+ const updateTouristItinerary= async(req,res)=>{
+   const {id}=req.params.id;
+   const update= req.body;
+   try{
+      await touristItineraryModel.findByIdAndUpdate(id,{$set: update});
+      res.status(200).json({msg:" Tourist itinerary is updated"});
+   }
+   catch (error){
+      res.status(400).json({error: error.message});
+   }
+ }
+ const deleteTouristItinerary = async (req, res) => {
+   const {id}=req.params.id;
+   try {
+      
+       const tourGuide = await touristItineraryModel.findByIdAndDelete(id);
+       res.status(200).json({ msg: "Itinerary has been deleted successfully" });
+   } catch (error) {
+       res.status(400).json({ error: error.message });
+   }
+};
+ module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary};
  
