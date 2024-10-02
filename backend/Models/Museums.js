@@ -35,10 +35,7 @@ Name: {
   }
   ,
   Tags:{
-    Types:{
-      type:String,
-      required :false
-    },
+    
     HistoricalPeriod:{
     type:String,
     required :false}

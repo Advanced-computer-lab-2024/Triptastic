@@ -3,8 +3,7 @@ const historicalLocationModel = require('../Models/historicalLocation.js');
 const productModel= require('../Models/Product.js');
 const activitiesModel=require('../Models/Activities.js');
 const itineraryModel= require('../Models/Itinerary.js');
-
-
+const museumsModel=require('../Models/Museums.js');
 const { default: mongoose } = require('mongoose');
 const createTourist = async(req,res) => {
 
@@ -94,8 +93,8 @@ const filterActivities =async (req, res) => {
      res.status(500).json({ error: 'Server error' });
    }
  };
- 
- const filterHistoricalLocationsByTag = async (req, res) => {
+
+ const filterHistoricalLocationsByTagsTourist = async (req, res) => {
   const { Types } = req.query;
   const validTagTypes = ["Monuments", "Museums", "Religious Sites", "Palaces","Castles"];
 
@@ -112,6 +111,22 @@ const filterActivities =async (req, res) => {
   } catch (error) {
       res.status(400).json({ error: error.message });
   }
+};
+
+const filterMuseumsByTagsTourist = async (req, res) => {
+  const { Tags } = req.query; // Extracting HistoricalPeriod from query parameters
+
+  try {
+      const filteredMuseums = await museumsModel.find({ 'Tags.HistoricalPeriod': Tags });
+
+      if (filteredMuseums.length === 0) {
+          return res.status(404).json({ msg: "No museums found with the specified historical period." });
+      }
+      
+      res.status(200).json(filteredMuseums);
+  } catch (error) {
+      res.status(400).json({ error: error.message });
+  }
 };
 
 
@@ -245,4 +260,7 @@ const sortProductsByRatingTourist = async (req, res) => {
   };
  
  
- module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,filterHistoricalLocationsByTag,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,sortProductsByRatingTourist,sortItinPDSC};
+ module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+  viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
+  ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
+  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist};
