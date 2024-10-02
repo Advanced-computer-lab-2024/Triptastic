@@ -12,12 +12,12 @@ const {createItinerary,getItinerary,updateItinerary,deleteItinerary,getTouristIt
 
 
 //Guest
-const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActivitiesGuest,filterActivitiesGuest}=require("./Routes/guestController");
+const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActivitiesGuest,filterActivitiesGuest,filterHistoricalLocationsByTagsGuest,filterMuseumsByTagsGuest}=require("./Routes/guestController");
 
 
 //Tourist
 const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
-  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC} = require("./Routes/touristController");
+  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist} = require("./Routes/touristController");
 
 //Advertiser
 const{createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity}=require("./Routes/advertiserController");
@@ -38,7 +38,7 @@ viewProducts,sortProductsByRatingAdmin}=require("./Routes/adminController");
 
 //TourismGoverner
 const{createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,deletehistoricalLocation,
-  createMuseum,getMuseum,deleteMuseum,updatedMuseum
+  createMuseum,getMuseum,deleteMuseum,updateMuseum
 }=require("./Routes/tourismGovController");
 
 
@@ -87,6 +87,10 @@ app.get("/sortActPASCRASC",sortActPASCRASC);
 app.get("/sortActPASCRDSC",sortActPASCRDSC);
 app.get("/sortActPDSCRASC",sortActPDSCRASC);
 app.get("/sortActPDSCRDSC",sortActPDSCRDSC);
+app.get("/filterHistoricalLocationsByTagsTourist",filterHistoricalLocationsByTagsTourist);
+app.get("/filterMuseumsByTagsTourist",filterMuseumsByTagsTourist);
+
+
 //TourGuide
 app.post("/addTourGuide",createTourGuide);
 app.patch("/addTourGuideInfo",createTourGuideInfo);
@@ -146,7 +150,7 @@ app.patch("/updateHistoricalLocation",updatehistoricalLocation);
 app.get("/getHistoricalLocation",gethistoricalLocation);
 app.delete("/deleteHistoricalLocation",deletehistoricalLocation);
 app.post("/createMuseum",createMuseum);
-app.patch("/updateMuseum",updatedMuseum);
+app.patch("/updateMuseum",updateMuseum);
 app.get("/getMuseum",getMuseum);
 app.delete("/deleteMuseum",deleteMuseum);
 
@@ -156,7 +160,8 @@ app.get("/viewAllUpcomingActivitiesGuest",viewAllUpcomingActivitiesGuest);
 app.get("/viewAllItinerariesGuest",viewAllItinerariesGuest);
 app.get("/viewAllHistoricalPlacesGuest",viewAllHistoricalPlacesGuest);
 app.post("/filterActivities",filterActivitiesGuest);
-
+app.get("/filterHistoricalLocationsByTagsGuest",filterHistoricalLocationsByTagsGuest);
+app.get("/filterMuseumsByTagsGuest",filterMuseumsByTagsGuest);
 
 
 
