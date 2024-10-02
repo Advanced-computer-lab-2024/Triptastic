@@ -126,8 +126,9 @@ const createProduct = async (req, res) => {
 
 
 const deleteAdvertiser = async (req, res) => {
+    const{Username}=req.body;
     try {
-       const Advertiser = await advertiserModel.deleteOne({Username: req.params.Username}); 
+       const Advertiser = await advertiserModel.deleteOne({Username:Username}); 
        if (!Advertiser) {
           return res.status(404).json({ msg: "Advertiser not found" });
        }
@@ -136,6 +137,7 @@ const deleteAdvertiser = async (req, res) => {
        res.status(400).json({ error:error.message });
     }
  }
+
  const deleteSeller = async (req, res) => {
     try {
        const seller = await sellerModel.deleteOne({Username: req.params.Username}); 

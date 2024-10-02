@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 
 function AdvertiserReg() {
   const [formData, setFormData] = useState({
@@ -13,6 +14,8 @@ function AdvertiserReg() {
   });
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const navigate = useNavigate();
+
 
   // Handle input changes
   const handleChange = (e) => {
@@ -49,6 +52,7 @@ function AdvertiserReg() {
           Hotline:'',
           Company_Profile:''
         });
+        navigate('/advertiser-profile');
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.error || 'Registration failed');
