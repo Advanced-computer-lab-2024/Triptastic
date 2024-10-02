@@ -26,7 +26,7 @@ const createTourGuideInfo = async(req,res) => {
     }
  }
  const getTourGuide= async(req,res) =>{
-    const Username= req.params.Username;
+    const Username= req.query.Username;
     
     try {
         const tourGuide = await tourGuideModel.findOne({ Username: Username }); 
@@ -64,9 +64,10 @@ const createTourGuideInfo = async(req,res) => {
    }
  }
  const getItinerary= async(req,res)=>{
-   const {location}=req.body;
+   const Location=req.query.Location;
+   const DatesTimes= req.query.DatesTimes;
    try{
-      const x=await itineraryModel.findOne({Location: location});
+      const x=await itineraryModel.findOne({Location: location, DatesTimes: DatesTimes});
       res.status(200).json(x);
    }
    catch (error){

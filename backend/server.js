@@ -88,7 +88,7 @@ app.get("/getActivityByCategory",getActivityByCategory);
 //TourGuide
 app.post("/addTourGuide",createTourGuide);
 app.patch("/addTourGuideInfo",createTourGuideInfo);
-app.get("/getTourGuide/:Username",getTourGuide);
+app.get("/getTourGuide",getTourGuide);
 app.patch("/updateTourGuide/:Username",updateTourGuide);
 app.post("/addItinerary",createItinerary);
 app.get("/getItinerary",getItinerary);
