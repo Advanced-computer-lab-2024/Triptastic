@@ -1,5 +1,6 @@
 const tourGuideModel = require('../Models/tourGuide.js');
 const itineraryModel = require('../Models/Itinerary.js');
+const touristItinerary= require('../Models/touristItinerary.js');
 const { default: mongoose } = require('mongoose');
 const createTourGuide = async(req,res) => {
 

@@ -81,7 +81,6 @@ app.get("/viewAllItinerariesTourist",viewAllItinerariesTourist);
 app.get("/viewAllHistoricalPlacesTourist",viewAllHistoricalPlacesTourist);
 app.get("/sortProductsByRatingTourist",sortProductsByRatingTourist);
 app.get("/sortItinPASC",sortItinPASC);
-app.get("/sortActivity",sortActivity);
 app.get("/getActivityByCategory",getActivityByCategory);
 app.get("/sortItinPDSC",sortItinPDSC);
 app.get("/sortActPASCRASC",sortActPASCRASC);
