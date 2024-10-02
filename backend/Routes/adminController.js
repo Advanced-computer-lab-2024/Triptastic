@@ -126,68 +126,71 @@ const createProduct = async (req, res) => {
 
 
 const deleteAdvertiser = async (req, res) => {
-    const{Username}=req.body;
+    const { Username } = req.body;  // Getting Username from req.body
     try {
-       const Advertiser = await advertiserModel.deleteOne({Username:Username}); 
-       if (!Advertiser) {
-          return res.status(404).json({ msg: "Advertiser not found" });
-       }
-       res.status(200).json({ msg: "Advertiser has been deleted successfully" });
+      const result = await advertiserModel.deleteOne({ Username: Username }); 
+      if (result.deletedCount === 0) {
+        return res.status(404).json({ msg: "Advertiser not found" });
+      }
+      res.status(200).json({ msg: "Advertiser has been deleted successfully" });
     } catch (error) {
-       res.status(400).json({ error:error.message });
+      res.status(400).json({ error: error.message });
     }
- }
+  };
+  
 
- const deleteSeller = async (req, res) => {
+  const deleteSeller = async (req, res) => {
+    const { Username } = req.body;  // Accessing Username from request body
     try {
-       const seller = await sellerModel.deleteOne({Username: req.params.Username}); 
-       if (!seller) {
-          return res.status(404).json({ msg: "Seller not found" });
-       }
-       res.status(200).json({ msg: "Seller has been deleted successfully" });
+      const result = await sellerModel.deleteOne({ Username: Username }); 
+      if (result.deletedCount === 0) {
+        return res.status(404).json({ msg: "Seller not found" });
+      }
+      res.status(200).json({ msg: "Seller has been deleted successfully" });
     } catch (error) {
-       res.status(400).json({ error: error.message });
+      res.status(400).json({ error: error.message });
     }
- }
-
- const deleteTourGuide = async (req, res) => {
-   
+  };
+  
+  const deleteTourGuide = async (req, res) => {
+    const { Username } = req.body;  // Accessing Username from request body
     try {
-        const tourGuide = await tourGuideModel.deleteOne({ Username: req.params.Username });
-        
-        if (!tourGuide) {
-            return res.status(404).json({ msg: "Tour Guide not found" });
-        }
-        
-        res.status(200).json({ msg: "Tour Guide has been deleted successfully" });
+      const result = await tourGuideModel.deleteOne({ Username: Username }); 
+      if (result.deletedCount === 0) {
+        return res.status(404).json({ msg: "Tour Guide not found" });
+      }
+      res.status(200).json({ msg: "Tour Guide has been deleted successfully" });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+      res.status(400).json({ error: error.message });
     }
- };
- 
- const deleteTourist = async (req, res) => {
+  };
+  
+  const deleteTourist = async (req, res) => {
+    const { Username } = req.body;  // Accessing Username from request body
     try {
-        const tourist = await touristModel.deleteOne({ Username: req.params.Username }); 
-        if (!tourist) {
-            return res.status(404).json({ msg: "Tourist not found" });
-        }
-        res.status(200).json({ msg: "Tourist has been deleted successfully" });
+      const result = await touristModel.deleteOne({ Username: Username }); 
+      if (result.deletedCount === 0) {
+        return res.status(404).json({ msg: "Tourist not found" });
+      }
+      res.status(200).json({ msg: "Tourist has been deleted successfully" });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+      res.status(400).json({ error: error.message });
     }
-};
-
+  };
+  
 const deleteTourismGov = async (req, res) => {
+    const { Username } = req.body;  // Accessing Username from request body
     try {
-        const tourismGov = await tourismGovModel.deleteOne({ Username: req.params.Username }); 
-        if (!tourismGov) {
-            return res.status(404).json({ msg: "Tourism Governor not found" });
-        }
-        res.status(200).json({ msg: "Tourism Governor has been deleted successfully" });
+      const result = await tourismGovModel.deleteOne({ Username: Username }); 
+      if (result.deletedCount === 0) {
+        return res.status(404).json({ msg: "Tourism Governor not found" });
+      }
+      res.status(200).json({ msg: "Tourism Governor has been deleted successfully" });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+      res.status(400).json({ error: error.message });
     }
-};
+  };
+  
 
 const createPrefTag = async (req, res) => {
     const { PrefTagName } = req.body;
