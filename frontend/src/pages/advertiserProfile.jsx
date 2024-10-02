@@ -14,13 +14,15 @@ const AdvertiserProfile = () => {
         const response = await fetch('http://localhost:8000/getAdvertiser', {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}` // Include the token if you're using authentication
+            'Content-Type': 'application/json'
+           // 'Authorization': `Bearer ${localStorage.getItem()}` // Include the token if you're using authentication
           },
         });
+       
 
         if (response.ok) {
           const data = await response.json();
+          console.log('Fetched Data:', data);
           if (data) {
             setAdvertiserInfo(data); // Set the fetched information
             setErrorMessage('');
