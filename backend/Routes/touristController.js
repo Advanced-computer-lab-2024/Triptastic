@@ -71,8 +71,10 @@ const filterActivities =async (req, res) => {
     }
  
     if (minBudget !== undefined && maxBudget !== undefined) {
-      filter.minPrice = { $lte: Number(maxBudget) }; 
-      filter.maxPrice = { $gte: Number(minBudget) }; 
+      filter.price = {
+        $gte: Number(minBudget), 
+        $lte: Number(maxBudget), 
+      };
     }
     if (date) {
       filter.date = new Date(date);

@@ -12,7 +12,7 @@ const {createItinerary,getItinerary,updateItinerary,deleteItinerary}=require("./
 
 
 //Guest
-const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActivitiesGuest}=require("./Routes/guestController");
+const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActivitiesGuest,filterActivitiesGuest}=require("./Routes/guestController");
 
 
 //Tourist
@@ -145,6 +145,8 @@ app.delete("/deleteHistoricalLocation",deletehistoricalLocation);
 app.get("/viewAllUpcomingActivitiesGuest",viewAllUpcomingActivitiesGuest);
 app.get("/viewAllItinerariesGuest",viewAllItinerariesGuest);
 app.get("/viewAllHistoricalPlacesGuest",viewAllHistoricalPlacesGuest);
+app.post("/filterActivities",filterActivitiesGuest);
+
 
 
 
