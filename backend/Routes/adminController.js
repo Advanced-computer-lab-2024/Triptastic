@@ -96,10 +96,10 @@ const deleteCategory = async (req, res) => {
 };
 
 const createProduct = async (req, res) => {
-    const { productName } = req.body;
+    const { productName,description,price,rating,seller,review,stock,image } = req.body;
   
     try {
-      const product = await productModel.create({ productName });
+      const product = await productModel.create({ productName,description,price,rating,seller,review,stock,image });
       res.status(201).json(product);
     } catch (error) {
       res.status(400).json({ error: error.message });

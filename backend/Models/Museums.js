@@ -33,16 +33,20 @@ Name: {
       required: true
     }
   }
-//   ,
-//   Tags:{
-//     Types:{
-//       type:String,
-//       required :false
-//     },
-//     HistoricalPeriod:{
-//     type:String,
-//     required :false}
-//   }
+  ,
+  Tags:{
+    Types:{
+      type:String,
+      required :false
+    },
+    HistoricalPeriod:{
+    type:String,
+    required :false}
+  },
+  image: {  
+    type: String,  
+    required: false,
+  }
 }, { timestamps: true });
 
 const museum = mongoose.model('museum', museumSchema);
