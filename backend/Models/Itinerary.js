@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const {Activities}=require("./Models/Activities.js")
+const {Activities}=require("./Activities.js")
 const Schema = mongoose.Schema;
 
 const itinerarySchema = new Schema({

@@ -236,10 +236,22 @@ const sortActPDSCRDSC= async(req,res)=>{
  }
 }
 const getActivityByCategory= async(req,res) =>{
-  const {Category}= req.body;
+  const {Category}= req.query;
   
   try {
-      const activity = await activitiesModel.findOne({ Category: Category }); 
+      const activity = await activitiesModel.find({ Category: Category }); 
+
+          res.status(200).json(activity);
+  } 
+  catch (error) {
+      res.status(400).json({ error: error.message }); 
+  }
+}
+const getActivityByname= async(req,res) =>{
+  const {name}= req.query;
+  
+  try {
+      const activity = await activitiesModel.find({ name: name }); 
 
           res.status(200).json(activity);
   } 
@@ -263,4 +275,4 @@ const sortProductsByRatingTourist = async (req, res) => {
  module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
-  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist};
+  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname};

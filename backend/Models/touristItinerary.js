@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const {Activities}=require("./Models/Activities.js")
-;const {Tags}= require("./Models/Tags.js");
+const {Activities}=require("./Activities.js")
+;const {Tags}= require("./Tags.js");
 const touristItinerarySchema = new Schema({
     Activities:{
-        type:[Activites], required: true
+        type:[Activities], required: true
     },
     Locations:{
         type: [String], required :true 
