@@ -7,15 +7,15 @@ const SellerProfile = () => {
 
   const fetchSellerInfo = async () => {
     setLoading(true);
-    const Username = localStorage.getItem('Username'); // Get the username from local storage
+    const Username = localStorage.getItem('Username');
+    console.log(Username); // Get the username from local storage
 
     if (Username) {
       try {
-        const response = await fetch('http://localhost:8000/getSeller', {
+        const response = await fetch(`http://localhost:8000/getSeller?Username=${Username}`, {
           method: 'GET',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}` // Include the token if you're using authentication
+            'Content-Type': 'application/json'
           },
         });
 

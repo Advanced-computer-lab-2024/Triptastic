@@ -40,7 +40,7 @@ const createSeller = async(req,res) => {
  
 //  }
  const getSeller= async(req,res) =>{
-    const {Username}= req.body;
+    const {Username}= req.query;
     
     try {
         const seller = await sellerModel.findOne({ Username: Username }); 
