@@ -12,5 +12,5 @@ const tagsSchema = new Schema({
 
 }, { timestamps: true });
 
-const Activities = mongoose.model('Activities', tagsSchema);
-module.exports = Activities;
+const Tags = mongoose.model('Tags', tagsSchema);
+module.exports = Tags;
