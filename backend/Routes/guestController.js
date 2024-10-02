@@ -32,4 +32,37 @@ const viewAllUpcomingActivitiesGuest = async (req, res) => {
     }
   };
 
-  module.exports = {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActivitiesGuest};
+  const filterActivitiesGuest =async (req, res) => {
+    const { Category, date,minBudget, maxBudget, rating } = req.body;
+    
+    let filter = {};
+    if (Category) {
+       filter.Category = Category;
+     }
+  
+     if (minBudget !== undefined && maxBudget !== undefined) {
+       filter.price = {
+         $gte: Number(minBudget), 
+         $lte: Number(maxBudget), 
+       };
+     }
+     if (date) {
+       filter.date = new Date(date);
+     }
+    if (rating) {
+      filter.rating = { $gte: rating };
+    }
+  
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); 
+    filter.date = { $gte: today };
+   
+    try {
+      const activities = await activitiesModel.find(filter);
+      res.json(activities);
+    } catch (error) {
+      res.status(500).json({ error: 'Server error' });
+    }
+  };
+
+  module.exports = {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActivitiesGuest,filterActivitiesGuest};
