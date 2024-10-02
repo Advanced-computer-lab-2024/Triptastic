@@ -31,14 +31,11 @@ location: {
     type: String,
     required: false
 },
-minPrice: {
+price: {
     type: Number,
     required: false // Ensure at least the minimum price is set
   },
-  maxPrice: {
-    type: Number,
-    required: false // Ensure at least the maximum price is set
-  },
+
 rating:{
     type:Number,
     required:false
