@@ -17,7 +17,30 @@ const createTourist = async(req,res) => {
  
     }
  }
+ const getTourist= async(req,res) =>{
+  const {Username}= req.query;
+  
+  try {
+      const tourist = await touristModel.findOne({ Username: Username }); 
 
+          res.status(200).json(tourist);
+  } 
+  catch (error) {
+      res.status(400).json({ error: error.message }); 
+  }
+}
+const updateTourist = async(req,res) => {
+
+  const{Username,Email,Password,Nationality,DOB,Occupation}=req.body;
+  try{
+     const tourist=await touristModel.findOneAndUpdate({Username: Username },{$set:{Email: Email,Password:Password,Nationality:Nationality,DOB:DOB,Occupation:Occupation}},{ new: true });
+     res.status(200).json(tourist);
+  }
+  catch{
+     res.status(400).json({error:error.message})
+
+  }
+}
 
 
 
