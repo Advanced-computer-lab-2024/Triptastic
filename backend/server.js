@@ -38,7 +38,7 @@ viewProducts,sortProductsByRatingAdmin}=require("./Routes/adminController");
 
 //TourismGoverner
 const{createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,deletehistoricalLocation,
-  createMuseum,getMuseum,deleteMuseum,updateMuseum
+  createMuseum,getMuseum,deleteMuseum,updatedMuseum
 }=require("./Routes/tourismGovController");
 
 
@@ -154,7 +154,7 @@ app.patch("/updateHistoricalLocation",updatehistoricalLocation);
 app.get("/getHistoricalLocation",gethistoricalLocation);
 app.delete("/deleteHistoricalLocation",deletehistoricalLocation);
 app.post("/createMuseum",createMuseum);
-app.patch("/updateMuseum",updateMuseum);
+app.patch("/updatedMuseum",updatedMuseum);
 app.get("/getMuseum",getMuseum);
 app.delete("/deleteMuseum",deleteMuseum);
 
