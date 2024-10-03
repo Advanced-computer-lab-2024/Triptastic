@@ -120,7 +120,7 @@ app.get("/getActivity",getActivity);
 
 //Seller
 app.post("/createSeller",createSeller);
-app.patch("/updateSeller",updateSeller);
+app.patch('/updateSeller', updateSeller);
 app.get("/getSeller",getSeller);
 app.post("/createProductseller",createProductseller);
 app.get("/getProductSeller",getProductSeller);
