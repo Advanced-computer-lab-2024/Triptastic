@@ -6,7 +6,7 @@ const { default: mongoose } = require('mongoose');
 
 const createhistoricalLocation = async (req, res) => {
    const { Name, Description, Location, OpeningHours, TicketPrices, Tags,image } = req.body;
-   const validTagTypes = ["Monuments", "Museums", "Religious Sites", "Palaces","Castles"];
+   const validTagTypes = ["Monuments", "Religious Sites", "Palaces","Castles"];
    if (!Tags || !Tags.Types) {
        return res.status(400).json({ error: "Tags and Tags.Types are required." });
    }
@@ -27,7 +27,7 @@ const createhistoricalLocation = async (req, res) => {
 const updatehistoricalLocation = async (req, res) => {
    const { Name, Description, Location, OpeningHours, TicketPrices, Tags } = req.body;
 
-   const validTagTypes = ["Monuments", "Museums", "Religious Sites", "Palaces","Castles"];
+   const validTagTypes = ["Monuments", "Religious Sites", "Palaces","Castles"];
 
    try {
        if (Tags && Tags.Types) {
@@ -90,35 +90,25 @@ const deletehistoricalLocation = async (req, res) => {
    
 const createMuseum = async (req, res) => {
     const { Name, Description, Location, OpeningHours, TicketPrices, Tags,image } = req.body;
-    const validTagTypes = ["Monuments", "Museums", "Religious Sites", "Palaces","Castles"];
-    if (!Tags || !Tags.Types) {
-        return res.status(400).json({ error: "Tags and Tags.Types are required." });
-    }
-    if (!validTagTypes.includes(Tags.Types)) {
-        return res.status(400).json({ error: `Invalid tag type. Valid types are: ${validTagTypes.join(', ')}` });
-    }
+    
     try {
-        const museum = await museumModel.create({
+        const Museums = await museumModel.create({
            Name,Description,Location,OpeningHours,TicketPrices,Tags,image
         });
-        res.status(200).json(museumModel);
+        res.status(200).json(Museums);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
  };
  
  
- const updatedMuseum = async (req, res) => {
+ const updateMuseum = async (req, res) => {
     const { Name, Description, Location, OpeningHours, TicketPrices, Tags } = req.body;
  
-    const validTagTypes = ["Monuments", "Museums", "Religious Sites", "Palaces","Castles"];
+    
  
     try {
-        if (Tags && Tags.Types) {
-            if (!validTagTypes.includes(Tags.Types)) {
-                return res.status(400).json({ error: `Invalid tag type. Valid types are: ${validTagTypes.join(', ')}` });
-            }
-        }
+        
  
         const updatedMuseum = await museumModel.findOneAndUpdate(
             { Name: Name },
@@ -128,7 +118,7 @@ const createMuseum = async (req, res) => {
                     Location: Location,
                     OpeningHours: OpeningHours,
                     TicketPrices: TicketPrices,
-                    ...(Tags && { Tags }) 
+                    Tags:Tags 
                 }
             },
             { new: true }
@@ -186,4 +176,4 @@ const createMuseum = async (req, res) => {
 
 
 
-module.exports = {createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,deletehistoricalLocation,createMuseum,updatedMuseum,getMuseum,deleteMuseum};
+module.exports = {createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,deletehistoricalLocation,createMuseum,updateMuseum,getMuseum,deleteMuseum};
