@@ -27,6 +27,11 @@ const touristSchema = new Schema({
   Occupation:{
     type: String,
     required: true,
+  },
+  Wallet:{
+    type:Number,
+    required:false
+
   }
 }, { timestamps: true });
 
