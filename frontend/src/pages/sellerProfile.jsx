@@ -54,7 +54,7 @@ const SellerProfile = () => {
             {/* Don't display the password for security reasons */}
           </div>
         ) : (
-          <p>No seller information found.</p>
+          <p></p>
         )
       )}
       <button onClick={fetchSellerInfo}>View My Information</button>
