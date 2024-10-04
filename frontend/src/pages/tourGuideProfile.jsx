@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 function TourGuideProfile() {
   const [tourGuideInfo, setTourGuideInfo] = useState(null);
-  const [itineraries, setItineraries] = useState([]); // New state for itineraries
+  const [itineraries, setItineraries] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -15,10 +14,22 @@ function TourGuideProfile() {
     yearsOfExperience: '',
     previousWork: '',
   });
+  const [selectedItinerary, setSelectedItinerary] = useState(null); // State to store selected itinerary
+  const [itineraryData, setItineraryData] = useState({
+    Activities: '',
+    Locations: '',
+    Timeline: '',
+    DurationOfActivity: '',
+    Language: '',
+    Price: 0,
+    DatesTimes: '',
+    Accesibility: '',
+    pickUpDropOff: '',
+  });
+  const [isCreatingItinerary, setIsCreatingItinerary] = useState(false);
+  const [isEditingItinerary, setIsEditingItinerary] = useState(false); // New state for editing itinerary
 
-  // Function to fetch tour guide data from the server
   const fetchTourGuideData = async () => {
-    setLoading(true);
     const Username = localStorage.getItem('Username');
 
     if (Username) {
@@ -33,8 +44,8 @@ function TourGuideProfile() {
         if (response.ok) {
           const data = await response.json();
           if (data) {
-            setTourGuideInfo(data); // Set the fetched information
-            setFormData(data); // Initialize formData with fetched data
+            setTourGuideInfo(data);
+            setFormData(data);
             setErrorMessage('');
           } else {
             setErrorMessage('No tour guide information found.');
@@ -49,19 +60,17 @@ function TourGuideProfile() {
     } else {
       setErrorMessage('No tour guide information found.');
     }
-    setLoading(false);
   };
 
-  // Function to fetch itineraries
   const fetchItineraries = async () => {
     const Username = localStorage.getItem('Username');
-    
+
     if (Username) {
       try {
         const response = await fetch(`http://localhost:8000/getMyItineraries?Username=${Username}`);
         if (response.ok) {
           const data = await response.json();
-          setItineraries(data); // Set the fetched itineraries
+          setItineraries(data);
         } else {
           throw new Error('Failed to fetch itineraries');
         }
@@ -71,23 +80,20 @@ function TourGuideProfile() {
     }
   };
 
-  // useEffect to fetch data on component mount
   useEffect(() => {
     fetchTourGuideData();
-    fetchItineraries(); // Fetch itineraries when the component mounts
+    fetchItineraries();
+    setLoading(false);
   }, []);
 
-  // Toggle visibility of profile details
-  const toggle = () => {
+  const toggleProfileDetails = () => {
     setIsVisible((prevState) => !prevState);
   };
 
-  // Toggle the edit form visibility
   const handleEditToggle = () => {
     setIsEditing((prev) => !prev);
   };
 
-  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -96,7 +102,14 @@ function TourGuideProfile() {
     }));
   };
 
-  // Handle form submission for updating tour guide info
+  const handleItineraryChange = (e) => {
+    const { name, value } = e.target;
+    setItineraryData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const Username = localStorage.getItem('Username');
@@ -111,17 +124,141 @@ function TourGuideProfile() {
       });
 
       if (response.ok) {
-        // Fetch updated tour guide data after successful update
-        await fetchTourGuideData(); // Refetch data to update the state
+        await fetchTourGuideData();
         setErrorMessage('');
-        setIsEditing(false); // Hide the form after successful update
-        setIsVisible(true); // Show the profile details immediately after update
+        setIsEditing(false);
       } else {
         throw new Error('Failed to update tour guide information');
       }
     } catch (error) {
       setErrorMessage('An error occurred while updating tour guide information');
       console.error(error);
+    }
+  };
+
+  const handleItinerarySubmit = async (e) => {
+    e.preventDefault();
+    const Username = localStorage.getItem('Username');
+
+    const activitiesArray = itineraryData.Activities.split(',').map((activity) => activity.trim());
+    const locationsArray = itineraryData.Locations.split(',').map((location) => location.trim());
+
+    const updatedItineraryData = {
+      ...itineraryData,
+      Activities: activitiesArray,
+      Locations: locationsArray,
+      TourGuide: Username,
+    };
+
+    try {
+      const response = await fetch('http://localhost:8000/addItinerary', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedItineraryData),
+      });
+
+      if (response.ok) {
+        await fetchItineraries();
+        setErrorMessage('');
+        setIsCreatingItinerary(false);
+        setItineraryData({
+          Activities: '',
+          Locations: '',
+          Timeline: '',
+          DurationOfActivity: '',
+          Language: '',
+          Price: 0,
+          DatesTimes: '',
+          Accesibility: '',
+          pickUpDropOff: '',
+        });
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(`Error: ${response.status} - ${errorData.message || 'Unknown error occurred'}`);
+        console.error('Error response:', errorData);
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while adding the itinerary');
+      console.error('Error occurred while adding the itinerary:', error);
+    }
+  };
+
+  const handleViewItinerary = (itinerary) => {
+    setSelectedItinerary(itinerary);
+    setIsEditingItinerary(false); // Reset editing state
+  };
+
+  const handleEditItinerary = (itinerary) => {
+    setItineraryData({
+      Activities: itinerary.Activities.join(', '),
+      Locations: itinerary.Locations.join(', '),
+      Timeline: itinerary.Timeline,
+      DurationOfActivity: itinerary.DurationOfActivity,
+      Language: itinerary.Language,
+      Price: itinerary.Price,
+      DatesTimes: itinerary.DatesTimes,
+      Accesibility: itinerary.Accesibility,
+      pickUpDropOff: itinerary.pickUpDropOff,
+    });
+    setSelectedItinerary(itinerary);
+    setIsEditingItinerary(true); // Set editing state to true
+  };
+
+  const handleDeleteItinerary = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8000/deleteItinerary/${id}`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        await fetchItineraries();
+        setSelectedItinerary(null);
+        
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(`Error: ${response.status} - ${errorData.message || 'Unknown error occurred'}`);
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while deleting the itinerary');
+      console.error('Error occurred while deleting the itinerary:', error);
+    }
+  };
+
+  const handleUpdateItinerary = async (e) => {
+    e.preventDefault();
+
+    const activitiesArray = itineraryData.Activities.split(',').map((activity) => activity.trim());
+    const locationsArray = itineraryData.Locations.split(',').map((location) => location.trim());
+
+    const updatedItineraryData = {
+      ...itineraryData,
+      Activities: activitiesArray,
+      Locations: locationsArray,
+    };
+
+    try {
+      const response = await fetch(`http://localhost:8000/updateItinerary/${selectedItinerary._id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedItineraryData),
+      });
+
+      if (response.ok) {
+        await fetchItineraries();
+        setIsEditingItinerary(false);
+        setSelectedItinerary(null);
+        setErrorMessage('');
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(`Error: ${response.status} - ${errorData.message || 'Unknown error occurred'}`);
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while updating the itinerary');
+      console.error('Error occurred while updating the itinerary:', error);
     }
   };
 
@@ -133,7 +270,7 @@ function TourGuideProfile() {
         <p>Loading tour guide information...</p>
       ) : (
         <>
-          <button onClick={toggle}>{isVisible ? 'Hide' : 'Show'} Profile Details</button>
+          <button onClick={toggleProfileDetails}>{isVisible ? 'Hide' : 'Show'} Profile Details</button>
           {isVisible && (
             <div>
               <p><strong>Username:</strong> {tourGuideInfo?.Username}</p>
@@ -141,9 +278,10 @@ function TourGuideProfile() {
               <p><strong>Mobile Number:</strong> {tourGuideInfo?.mobileNumber}</p>
               <p><strong>Years of Experience:</strong> {tourGuideInfo?.yearsOfExperience}</p>
               <p><strong>Previous Work:</strong> {tourGuideInfo?.previousWork}</p>
+              <button onClick={handleEditToggle}>{isEditing ? 'Cancel Edit' : 'Edit Data'}</button>
             </div>
           )}
-          <button onClick={handleEditToggle}>{isEditing ? 'Cancel' : 'Edit Data'}</button>
+
           {isEditing && (
             <form onSubmit={handleSubmit}>
               <div>
@@ -169,7 +307,7 @@ function TourGuideProfile() {
               <div>
                 <label>Mobile Number:</label>
                 <input
-                  type="number"
+                  type="text"
                   name="mobileNumber"
                   value={formData.mobileNumber}
                   onChange={handleChange}
@@ -200,29 +338,234 @@ function TourGuideProfile() {
             </form>
           )}
 
-          {/* Section to display itineraries */}
-          <h3>My Itineraries</h3>
+          <h3>Itineraries</h3>
+          <button onClick={() => setIsCreatingItinerary((prev) => !prev)}>
+            {isCreatingItinerary ? 'Cancel Creating Itinerary' : 'Create Itinerary'}
+          </button>
+
+          {isCreatingItinerary && (
+            <form onSubmit={handleItinerarySubmit}>
+              <div>
+                <label>Activities:</label>
+                <input
+                  type="text"
+                  name="Activities"
+                  value={itineraryData.Activities}
+                  onChange={handleItineraryChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>Locations:</label>
+                <input
+                  type="text"
+                  name="Locations"
+                  value={itineraryData.Locations}
+                  onChange={handleItineraryChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>Timeline:</label>
+                <input
+                  type="text"
+                  name="Timeline"
+                  value={itineraryData.Timeline}
+                  onChange={handleItineraryChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>Duration Of Activity:</label>
+                <input
+                  type="text"
+                  name="DurationOfActivity"
+                  value={itineraryData.DurationOfActivity}
+                  onChange={handleItineraryChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>Language:</label>
+                <input
+                  type="text"
+                  name="Language"
+                  value={itineraryData.Language}
+                  onChange={handleItineraryChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>Price:</label>
+                <input
+                  type="number"
+                  name="Price"
+                  value={itineraryData.Price}
+                  onChange={handleItineraryChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>Dates/Times:</label>
+                <input
+                  type="text"
+                  name="DatesTimes"
+                  value={itineraryData.DatesTimes}
+                  onChange={handleItineraryChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>Accessibility:</label>
+                <input
+                  type="text"
+                  name="Accesibility"
+                  value={itineraryData.Accesibility}
+                  onChange={handleItineraryChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>Pick Up/Drop Off:</label>
+                <input
+                  type="text"
+                  name="pickUpDropOff"
+                  value={itineraryData.pickUpDropOff}
+                  onChange={handleItineraryChange}
+                  required
+                />
+              </div>
+              <button type="submit">Add Itinerary</button>
+            </form>
+          )}
+
           {itineraries.length > 0 ? (
-            <ul>
-              {itineraries.map((itinerary) => (
-                <li key={itinerary._id}>
-                  <strong>
-                    {itinerary.Activities.length > 0 
-                      ? itinerary.Activities.join(', ') 
-                      : 'No Activities'}
-                  </strong> - 
-                  <span>
-                    {itinerary.Locations.length > 0 
-                      ? `Locations: ${itinerary.Locations.join(', ')}`
-                      : 'No Locations'}
-                  </span> - 
-                  Price: ${itinerary.Price} - 
-                  Date: {new Date(itinerary.DatesTimes).toLocaleDateString()}
-                </li>
-              ))}
-            </ul>
+            itineraries.map((itinerary) => (
+              <div key={itinerary._id}>
+                <h4>Locations: {itinerary.Locations.join(', ')}</h4>
+                <p>Dates: {itinerary.DatesTimes}</p>
+                <button onClick={() => handleViewItinerary(itinerary)}>View Details</button>
+                <button onClick={() => handleEditItinerary(itinerary)}>Edit Itinerary</button>
+                <button onClick={() => handleDeleteItinerary(itinerary._id)}>Delete Itinerary</button>
+              </div>
+            ))
           ) : (
             <p>No itineraries found.</p>
+          )}
+
+          {selectedItinerary && isEditingItinerary && (
+            <div>
+              <h3>Edit Itinerary</h3>
+              <form onSubmit={handleUpdateItinerary}>
+                <div>
+                  <label>Activities:</label>
+                  <input
+                    type="text"
+                    name="Activities"
+                    value={itineraryData.Activities}
+                    onChange={handleItineraryChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <label>Locations:</label>
+                  <input
+                    type="text"
+                    name="Locations"
+                    value={itineraryData.Locations}
+                    onChange={handleItineraryChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <label>Timeline:</label>
+                  <input
+                    type="text"
+                    name="Timeline"
+                    value={itineraryData.Timeline}
+                    onChange={handleItineraryChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <label>Duration Of Activity:</label>
+                  <input
+                    type="text"
+                    name="DurationOfActivity"
+                    value={itineraryData.DurationOfActivity}
+                    onChange={handleItineraryChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <label>Language:</label>
+                  <input
+                    type="text"
+                    name="Language"
+                    value={itineraryData.Language}
+                    onChange={handleItineraryChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <label>Price:</label>
+                  <input
+                    type="number"
+                    name="Price"
+                    value={itineraryData.Price}
+                    onChange={handleItineraryChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <label>Dates/Times:</label>
+                  <input
+                    type="text"
+                    name="DatesTimes"
+                    value={itineraryData.DatesTimes}
+                    onChange={handleItineraryChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <label>Accessibility:</label>
+                  <input
+                    type="text"
+                    name="Accesibility"
+                    value={itineraryData.Accesibility}
+                    onChange={handleItineraryChange}
+                    required
+                  />
+                </div>
+                <div>
+                  <label>Pick Up/Drop Off:</label>
+                  <input
+                    type="text"
+                    name="pickUpDropOff"
+                    value={itineraryData.pickUpDropOff}
+                    onChange={handleItineraryChange}
+                    required
+                  />
+                </div>
+                <button type="submit">Update Itinerary</button>
+                <button type="button" onClick={() => setIsEditingItinerary(false)}>Cancel</button>
+              </form>
+            </div>
+          )}
+
+          {selectedItinerary && !isEditingItinerary && (
+            <div>
+              <h3>Selected Itinerary Details</h3>
+              <p><strong>Activities:</strong> {selectedItinerary.Activities.join(', ')}</p>
+              <p><strong>Locations:</strong> {selectedItinerary.Locations.join(', ')}</p>
+              <p><strong>Timeline:</strong> {selectedItinerary.Timeline}</p>
+              <p><strong>Duration Of Activity:</strong> {selectedItinerary.DurationOfActivity}</p>
+              <p><strong>Language:</strong> {selectedItinerary.Language}</p>
+              <p><strong>Price:</strong> {selectedItinerary.Price}</p>
+              <p><strong>Dates/Times:</strong> {selectedItinerary.DatesTimes}</p>
+              <p><strong>Accessibility:</strong> {selectedItinerary.Accesibility}</p>
+              <p><strong>Pick Up/Drop Off:</strong> {selectedItinerary.pickUpDropOff}</p>
+            </div>
           )}
         </>
       )}
@@ -231,3 +574,4 @@ function TourGuideProfile() {
 }
 
 export default TourGuideProfile;
+
