@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function TourGuideReg() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     Username: '',
     Email: '',
@@ -41,6 +43,7 @@ function TourGuideReg() {
           Email: '',
           Password: ''
         });
+        navigate('/tour-guide-profile');
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.error || 'Registration failed');

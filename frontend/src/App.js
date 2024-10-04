@@ -7,7 +7,7 @@ import SellerReg from './pages/sellerReg';
 import SellerProfile from './pages/sellerProfile';
 import AdvertiserProfile from './pages/advertiserProfile';
 import TouristProfile from './pages/touristProfile';
-
+import TourGuideProfile from './pages/tourGuideProfile';
 
 
 function Home() {
@@ -43,6 +43,7 @@ function App() {
         <Route path="/seller-profile" element={<SellerProfile />} />
         <Route path="/advertiser-profile" element={<AdvertiserProfile />} />
         <Route path="/tourist-profile" element={<TouristProfile />} />
+        <Route path="/tour-guide-profile" element={<TourGuideProfile />} />
 
       </Routes>
     </Router>
