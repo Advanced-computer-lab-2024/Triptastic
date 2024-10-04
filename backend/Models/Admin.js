@@ -15,13 +15,8 @@ const AdminSchema = new Schema({
     unique: true,
   },
 
-  //admin,tourism governer and so on
   
-  Role: {
-    type: String,
-    required: false,
-  },
-
+  
 }, { timestamps: true });
 
 const Admin = mongoose.model('Admin', AdminSchema);

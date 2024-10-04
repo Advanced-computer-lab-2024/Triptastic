@@ -24,40 +24,41 @@ const createhistoricalLocation = async (req, res) => {
 };
 
 
-const updatehistoricalLocation = async (req, res) => {
-   const { Name, Description, Location, OpeningHours, TicketPrices, Tags } = req.body;
+const updatehistoricalLocation  = async (req, res) => {
+    const { Description, Location, OpeningHours, TicketPrices, Tags } = req.body;
+    const { Name } = req.query;  // Extract Name from query parameters
 
-   const validTagTypes = ["Monuments", "Religious Sites", "Palaces","Castles"];
+    const validTagTypes = ["Monuments", "Religious Sites", "Palaces", "Castles"];
 
-   try {
-       if (Tags && Tags.Types) {
-           if (!validTagTypes.includes(Tags.Types)) {
-               return res.status(400).json({ error: `Invalid tag type. Valid types are: ${validTagTypes.join(', ')}` });
-           }
-       }
+    try {
+        if (Tags && Tags.Types) {
+            if (!validTagTypes.includes(Tags.Types)) {
+                return res.status(400).json({ error: `Invalid tag type. Valid types are: ${validTagTypes.join(', ')}` });
+            }
+        }
 
-       const updatedHistoricalLocation = await historicalLocationModel.findOneAndUpdate(
-           { Name: Name },
-           {
-               $set: {
-                   Description: Description,
-                   Location: Location,
-                   OpeningHours: OpeningHours,
-                   TicketPrices: TicketPrices,
-                   ...(Tags && { Tags }) 
-               }
-           },
-           { new: true }
-       );
+        const updatehistoricalLocation = await historicalLocationModel.findOneAndUpdate(
+            { Name: Name },
+            {
+                $set: {
+                    Description: Description,
+                    Location: Location,
+                    OpeningHours: OpeningHours,
+                    TicketPrices: TicketPrices,
+                    Tags:Tags // Only update Tags if they are provided
+                }
+            },
+            { new: true } // Return the updated document
+        );
 
-       if (!updatedHistoricalLocation) {
-           return res.status(404).json({ msg: "Historical Location not found" });
-       }
+        if (!updatehistoricalLocation ) {
+            return res.status(404).json({ msg: "Historical Location not found" });
+        }
 
-       res.status(200).json(updatedHistoricalLocation);
-   } catch (error) {
-       res.status(400).json({ error: error.message });
-   }
+        res.status(200).json(updatehistoricalLocation );
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
 };
 
 const gethistoricalLocation= async(req,res) =>{
@@ -103,14 +104,13 @@ const createMuseum = async (req, res) => {
  
  
  const updateMuseum = async (req, res) => {
-    const { Name, Description, Location, OpeningHours, TicketPrices, Tags } = req.body;
- 
-    
- 
+    const { Description, Location, OpeningHours, TicketPrices, Tags } = req.body;
+    const { Name } = req.query;  // Extract Name from query parameters
+
     try {
         
  
-        const updatedMuseum = await museumModel.findOneAndUpdate(
+        const updateMuseum = await museumModel.findOneAndUpdate(
             { Name: Name },
             {
                 $set: {
@@ -124,11 +124,11 @@ const createMuseum = async (req, res) => {
             { new: true }
         );
  
-        if (!updatedMuseum) {
+        if (!updateMuseum) {
             return res.status(404).json({ msg: "Museum not found" });
         }
  
-        res.status(200).json(updatedMuseum);
+        res.status(200).json(updateMuseum);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
