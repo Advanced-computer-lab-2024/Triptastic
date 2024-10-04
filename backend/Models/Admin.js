@@ -12,11 +12,15 @@ const AdminSchema = new Schema({
   Password: {
     type: String,
     required: true,
-    unique: true,
+    unique: false,
+  },
+  
+  Role: {
+    type: String,
+    required: false,
+    
   },
 
-  
-  
 }, { timestamps: true });
 
 const Admin = mongoose.model('Admin', AdminSchema);

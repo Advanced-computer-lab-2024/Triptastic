@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+
 
 const SellerProfile = () => {
   const [sellerInfo, setSellerInfo] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
+
 
   const fetchSellerInfo = async () => {
     setLoading(true);

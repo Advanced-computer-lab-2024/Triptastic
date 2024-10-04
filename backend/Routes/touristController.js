@@ -81,42 +81,62 @@ const updateTourist = async(req,res) => {
 };
 
 
-const filterActivities =async (req, res) => {
-   const { Category, date,minBudget, maxBudget, rating } = req.body;
-   
-   let filter = {};
-   if (Category) {
-      filter.Category = Category;
-    }
- 
-    if (minBudget !== undefined && maxBudget !== undefined) {
-      filter.price = {
-        $gte: Number(minBudget), 
-        $lte: Number(maxBudget), 
-      };
-    }
-    if (date) {
-      filter.date = new Date(date);
-    }
-   if (rating) {
-     filter.rating = { $gte: rating };
-   }
- 
-   const today = new Date();
-   today.setHours(0, 0, 0, 0); 
-   filter.date = { $gte: today };
+const filterActivities = async (req, res) => {
+  // Extract parameters from the query string for GET requests
+  const { Category, date, minBudget, maxBudget, rating } = req.query;
   
-   try {
+  let filter = {};
+
+  // Filter by category if provided
+  if (Category) {
+     filter.Category = Category;
+  }
+
+  // Filter by price (minBudget and maxBudget)
+  if (minBudget !== undefined && maxBudget !== undefined) {
+     filter.price = {
+        $gte: Number(minBudget), // Convert to number for comparison
+        $lte: Number(maxBudget), // Convert to number for comparison
+     };
+  }
+
+  if (date) {
+    // If a date is provided, filter by that specific date (exact match)
+    const inputDate = new Date(date);
+    const localDate = new Date(inputDate.setHours(0, 0, 0, 0)); // Normalize to local time start of the day
+    filter.date = {
+        $gte: localDate,  // Activities on or after the provided date (local time)
+        $lt: new Date(localDate.getTime() + 24 * 60 * 60 * 1000) // Before the next day
+    };
+} else {
+    // If no date is provided, filter activities from today onwards (local time)
+    const today = new Date();
+    const localToday = new Date(today.setHours(0, 0, 0, 0)); // Normalize to local time start of today
+    filter.date = { $gte: localToday }; // Activities today or later
+}
+
+
+
+  // Filter by rating (if provided)
+  if (rating) {
+     filter.rating = { $gte: Number(rating) }; // Convert to number for comparison
+  }
+
+  try {
+     
      const activities = await activitiesModel.find(filter);
-     res.json(activities);
-   } catch (error) {
+     console.log("Filter object:", filter);
+     res.json(activities); // Return the filtered activities
+  } catch (error) {
      res.status(500).json({ error: 'Server error' });
-   }
- };
+  }
+};
+
+
 
  const filterHistoricalLocationsByTagsTourist = async (req, res) => {
   const { Types } = req.query;
-  const validTagTypes = ["Monuments", "Museums", "Religious Sites", "Palaces","Castles"];
+  const validTagTypes = ["Monuments", "Religious Sites", "Palaces","Castles"];
 
   try {
     if (!validTagTypes.includes(Types)) {

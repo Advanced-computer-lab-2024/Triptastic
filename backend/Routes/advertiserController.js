@@ -31,41 +31,53 @@ const getAdvertiser= async(req,res) =>{
    }
 }
 
+const updateAdvertiser = async(req,res) => {
 
-
-const updateAdvertiser = async (req, res) => {
-    const { Username } = req.query.Username; 
-    const { Password,Email,website_Link,Hotline,Company_Profile } = req.body; 
-    try {
- 
-       if (req.body.Username) {
-          return res.status(400).json({ error: 'Username cannot be changed' });
-      }
-        
-        const updates = {};
-        if (Password) updates.Password = Password;
-        if (website_Link) updates.website_Link = website_Link;
-        if (Email) updates.Email = Email;
-        if (Password) updates.Password = Password;
-        if(Hotline) updates.Hotline=Hotline;
-        if(Company_Profile) updates.Company_Profile=Company_Profile;
-
-        
-        const advertiser = await advertiserModel.findOneAndUpdate(
-            { Username: Username }, 
-            { $set: updates }, 
-            { new: true } 
-        );
- 
-        if (!advertiser) {
-            return res.status(404).json({ error: 'Advertiser not found' });
-        }
- 
-        res.status(200).json(advertiser); 
-    } catch (error) {
-        res.status(400).json({ error: error.message }); 
+    const {Username, Password,Email,Website_Link,Hotline,Company_Profile } = req.body; 
+    try{
+       const advertiser=await advertiserModel.findOneAndUpdate({Username: Username },{$set:{Email: Email,Password:Password,Website_Link:Website_Link,Hotline:Hotline,Company_Profile:Company_Profile}},{ new: true });
+       res.status(200).json(advertiser);
     }
- };
+    catch{
+       res.status(400).json({error:error.message})
+  
+    }
+  }
+
+
+// const updateAdvertiser = async (req, res) => {
+   
+//     const {Username, Password,Email,website_Link,Hotline,Company_Profile } = req.body; 
+//     try {
+ 
+//        if (req.body.Username) {
+//           return res.status(400).json({ error: 'Username cannot be changed' });
+//       }
+        
+//         const updates = {};
+//         if (Password) updates.Password = Password;
+//         if (website_Link) updates.website_Link = website_Link;
+//         if (Email) updates.Email = Email;
+//         if (Password) updates.Password = Password;
+//         if(Hotline) updates.Hotline=Hotline;
+//         if(Company_Profile) updates.Company_Profile=Company_Profile;
+
+        
+//         const advertiser = await advertiserModel.findOneAndUpdate(
+//             { Username: Username }, 
+//             { $set: updates }, 
+//             { new: true } 
+//         );
+ 
+//         if (!advertiser) {
+//             return res.status(404).json({ error: 'Advertiser not found' });
+//         }
+ 
+//         res.status(200).json(advertiser); 
+//     } catch (error) {
+//         res.status(400).json({ error: error.message }); 
+//     }
+//  };
 const createActivity = async (req, res) => {
    const { Category,name,date,time,location,price,tags,rating,specialDiscounts,bookingOpen,Advertiser } = req.body;
 

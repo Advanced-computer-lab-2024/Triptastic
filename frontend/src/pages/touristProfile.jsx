@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import './TouristProfile.css'; // Assuming you create a CSS file for styling
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+
 
 const TouristProfile = () => {
+
   const [touristInfo, setTouristInfo] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -14,6 +18,7 @@ const TouristProfile = () => {
     Occupation: '',
     Wallet: '' // Read-only Wallet attribute
   });
+  const navigate = useNavigate();
 
   const fetchTouristInfo = async () => {
     setLoading(true);
@@ -88,75 +93,88 @@ const TouristProfile = () => {
   };
 
   return (
-    <div>
-      <h2>Tourist Profile</h2>
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      {loading ? (
-        <p>Loading tourist information...</p>
-      ) : (
-        touristInfo && (
-          <div>
+    <div className="tourist-profile-container">
+      <div className="profile-content">
+        <h2>Tourist Profile</h2>
+        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        {loading ? (
+          <p>Loading tourist information...</p>
+        ) : (
+          touristInfo && (
             <div>
-              <label><strong>Username:</strong></label>
-              <p>{touristInfo.Username}</p> {/* Display Username as text */}
-            </div>
-            <div>
-              <label><strong>Email:</strong></label>
-              <input
-                type="email"
-                name="Email"
-                value={formData.Email}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <label><strong>Password:</strong></label>
-              <input
-                type="text" // Visible password
-                name="Password"
-                value={formData.Password}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <label><strong>Nationality:</strong></label>
-              <input
-                type="text"
-                name="Nationality"
-                value={formData.Nationality}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <label><strong>Date of Birth:</strong></label>
-              <input
-                type="text" // Display DOB as a string
-                name="DOB"
-                value={formData.DOB}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <label><strong>Occupation:</strong></label>
-              <input
-                type="text"
-                name="Occupation"
-                value={formData.Occupation}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <label><strong>Wallet:</strong></label>
-              <p>{touristInfo.Wallet}</p> {/* Display Wallet as text */}
-            </div>
+              <div>
+                <label><strong>Username:</strong></label>
+                <p>{touristInfo.Username}</p> {/* Display Username as text */}
+              </div>
+              <div>
+                <label><strong>Email:</strong></label>
+                <input
+                  type="email"
+                  name="Email"
+                  value={formData.Email}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                <label><strong>Password:</strong></label>
+                <input
+                  type="text" // Visible password
+                  name="Password"
+                  value={formData.Password}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                <label><strong>Nationality:</strong></label>
+                <input
+                  type="text"
+                  name="Nationality"
+                  value={formData.Nationality}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                <label><strong>Date of Birth:</strong></label>
+                <input
+                  type="text" // Display DOB as a string
+                  name="DOB"
+                  value={formData.DOB}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                <label><strong>Occupation:</strong></label>
+                <input
+                  type="text"
+                  name="Occupation"
+                  value={formData.Occupation}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                <label><strong>Wallet:</strong></label>
+                <p>{touristInfo.Wallet}</p> {/* Display Wallet as text */}
+              </div>
 
-            <button onClick={handleUpdate} disabled={updating}>
-              {updating ? 'Updating...' : 'Update Information'}
-            </button>
-          </div>
-        )
-      )}
-      <button onClick={fetchTouristInfo}>Refresh My Information</button>
+              <button onClick={handleUpdate} disabled={updating}>
+                {updating ? 'Updating...' : 'Update Information'}
+              </button>
+            </div>
+          )
+        )}
+        <button onClick={fetchTouristInfo}>Refresh My Information</button>
+      </div>
+
+      {/* Sidebar */}
+      <div className="sidebar">
+        <h3>Explore</h3>
+        <ul>
+          <li onClick={() => navigate('/historical-locations')}>Historical Locations</li>
+          <li onClick={() => navigate('/museums')}>Museums</li>
+          <li onClick={() => navigate('/products')}>Products</li>
+          <li onClick={() => navigate('/itineraries')}>Itineraries</li>
+        </ul>
+      </div>
     </div>
   );
 };

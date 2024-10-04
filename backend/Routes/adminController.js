@@ -9,6 +9,21 @@ const sellerModel = require('../Models/Seller');
 const advertiserModel = require('../Models/Advertiser');
 const tourismGovModel = require('../Models/tourismGov');
 
+const AdminLogin = async (req, res) => {
+  const { Username, Password } = req.body;
+
+  try {
+      const admin = await adminModel.findOne({ Username, Password });
+
+      if (!admin) {
+          return res.status(401).json({ error: "Invalid username, password" });
+      }
+      res.status(200).json({ message: "Login successful", admin });
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+};
+
 
 
 const createAdmin = async (req, res) => {
@@ -113,7 +128,7 @@ const getProduct = async (req, res) => {
 };
 
 const deleteAdvertiser = async (req, res) => {
-    const { Username } = req.body;  // Getting Username from req.body
+    const { Username } = req.query;  
     try {
       const result = await advertiserModel.deleteOne({ Username: Username }); 
       if (result.deletedCount === 0) {
@@ -127,7 +142,7 @@ const deleteAdvertiser = async (req, res) => {
   
 
   const deleteSeller = async (req, res) => {
-    const { Username } = req.body;  // Accessing Username from request body
+    const { Username } = req.query;  
     try {
       const result = await sellerModel.deleteOne({ Username: Username }); 
       if (result.deletedCount === 0) {
@@ -140,7 +155,7 @@ const deleteAdvertiser = async (req, res) => {
   };
   
   const deleteTourGuide = async (req, res) => {
-    const { Username } = req.body;  // Accessing Username from request body
+    const { Username } = req.query;  
     try {
       const result = await tourGuideModel.deleteOne({ Username: Username }); 
       if (result.deletedCount === 0) {
@@ -153,7 +168,7 @@ const deleteAdvertiser = async (req, res) => {
   };
   
   const deleteTourist = async (req, res) => {
-    const { Username } = req.body;  // Accessing Username from request body
+    const { Username } = req.query;  
     try {
       const result = await touristModel.deleteOne({ Username: Username }); 
       if (result.deletedCount === 0) {
@@ -166,7 +181,7 @@ const deleteAdvertiser = async (req, res) => {
   };
   
 const deleteTourismGov = async (req, res) => {
-    const { Username } = req.body;  // Accessing Username from request body
+    const { Username } = req.query;  
     try {
       const result = await tourismGovModel.deleteOne({ Username: Username }); 
       if (result.deletedCount === 0) {
@@ -266,5 +281,5 @@ const sortProductsByRatingAdmin = async (req, res) => {
 
 
 module.exports = {createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
-    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin
+    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin
 };
