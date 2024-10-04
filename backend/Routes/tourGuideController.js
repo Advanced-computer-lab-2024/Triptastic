@@ -59,7 +59,7 @@ const createTourGuideInfo = async(req,res) => {
       const itinerary=await itineraryModel.create({Activities,Locations,Timeline,DurationOfActivity,Language,Price,DatesTimes,Accesibility,pickUpDropOff,TourGuide});
       res.status(200).json(itinerary);
    }
-   catch{
+   catch(error){
       res.status(400).json({error:error.message})
 
    }
@@ -75,7 +75,7 @@ const createTourGuideInfo = async(req,res) => {
    }
  }
  const updateItinerary= async(req,res)=>{
-   const {id}=req.params.id;
+   const {id}=req.params;
    const update= req.body;
    try{
       await itineraryModel.findByIdAndUpdate(id,{$set: update});
@@ -86,16 +86,16 @@ const createTourGuideInfo = async(req,res) => {
    }
  }
  const deleteItinerary = async (req, res) => {
-   const {id}=req.params.id;
+   const {id}=req.params;
    try {
-      const itinerary = await itinerary.findById(id);
-      if(itinerary.booked==false){
-       const tourGuide = await itineraryModel.findByIdAndDelete(id);
+      const itinerary = await itineraryModel.findById(id);
+      if(itinerary.Booked===false){
+       await itineraryModel.findByIdAndDelete(id);
        res.status(200).json({ msg: "Itinerary has been deleted successfully" });
       }
-   else{
+     else{
       res.status(409).json({ msg: "Itinerary cannot be deleted because it is booked." });
-   }
+     }
    } catch (error) {
        res.status(400).json({ error: error.message });
    }

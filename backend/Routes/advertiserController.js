@@ -93,25 +93,34 @@ const createActivity = async (req, res) => {
        console.log('Found Advertiser:', foundAdvertiser);
        
         // Get all available preference tags
-        const availableTags = await PreferenceTagsModel.find({}, { PrefTagName: 1 });
-        const availableTagNames = availableTags.map(tag => tag.PrefTagName);
+        if(tags){
+            const availableTags = await PreferenceTagsModel.find({}, { PrefTagName: 1 });
+            const availableTagNames = availableTags.map(tag => tag.PrefTagName);
+            const validTags = tags.filter(tag => availableTagNames.includes(tag));
+            const invalidTags = tags.filter(tag => !availableTagNames.includes(tag));
+    
+            // If there are invalid tags, return an error message along with available tags
+            if (invalidTags.length > 0) {
+                return res.status(400).json({
+                    error: `The following tags are invalid: ${invalidTags.join(', ')}`,
+                    availableTags: availableTagNames
+                });
+            }else{
+    
+           // Create a new activity
+           const activity = await activitiesModel.create({Category: foundCategory.Name,name,date,time,location,price,tags,rating,specialDiscounts,bookingOpen,Advertiser:foundAdvertiser.Username });
+           res.status(200).json(activity);
+        }
+
+        }
+        else{
+            const activity = await activitiesModel.create({Category: foundCategory.Name,name,date,time,location,price,tags,rating,specialDiscounts,bookingOpen,Advertiser:foundAdvertiser.Username });
+            res.status(200).json(activity);
+        }
+
 
         // Validate the provided tags against the available tags
-        const validTags = tags.filter(tag => availableTagNames.includes(tag));
-        const invalidTags = tags.filter(tag => !availableTagNames.includes(tag));
 
-        // If there are invalid tags, return an error message along with available tags
-        if (invalidTags.length > 0) {
-            return res.status(400).json({
-                error: `The following tags are invalid: ${invalidTags.join(', ')}`,
-                availableTags: availableTagNames
-            });
-        }else{
-
-       // Create a new activity
-       const activity = await activitiesModel.create({Category: foundCategory.Name,name,date,time,location,price,tags,rating,specialDiscounts,bookingOpen,Advertiser:foundAdvertiser.Username });
-       res.status(200).json(activity);
-    }
        
    } catch (error) {
        console.error('Error creating activity:', error);

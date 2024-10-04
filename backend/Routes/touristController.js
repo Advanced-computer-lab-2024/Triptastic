@@ -253,7 +253,7 @@ const viewAllItinerariesTourist = async (req, res) => {
 const sortItinPASC= async (req,res)=>{
  try{
   const currentDate= new Date(); // 1 asc -1 dsc
-  const data = await itineraryModel.find({ date: { $gte: currentDate } }).sort({ Price:1}); 
+  const data = await itineraryModel.find({ DatesTimes: { $gte: currentDate } }).sort({ Price:1}); 
   res.status(200).json(data);
  }catch(error){
   res.status(400).json({ error: error.message })
@@ -262,7 +262,7 @@ const sortItinPASC= async (req,res)=>{
 const sortItinPDSC= async (req,res)=>{
   try{
    const currentDate= new Date(); // 1 asc -1 dsc
-   const data = await itineraryModel.find({ date: { $gte: currentDate } }).sort({ Price:-1}); 
+   const data = await itineraryModel.find({ DatesTimes: { $gte: currentDate } }).sort({ Price:-1}); 
    res.status(200).json(data);
   }catch(error){
    res.status(400).json({ error: error.message })
