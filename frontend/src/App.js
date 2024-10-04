@@ -15,11 +15,12 @@ import Itineraries from './pages/Itineraries';
 import AdminPage from './pages/adminPage';
 import Admin from './pages/adminLogin';
 import AdminLogin from './pages/adminLogin';
+import TourismGov from './pages/tourismGov';
 
 
 function Home() {
   const navigate = useNavigate();
-  console.log({ TouristReg, TourGuideReg, AdvertiserReg, SellerReg, SellerProfile, Admin ,AdminPage });
+  console.log({ TouristReg, TourGuideReg, AdvertiserReg, SellerReg, SellerProfile, Admin ,TourismGov });
 
 
   return (
@@ -60,6 +61,9 @@ function App() {
         <Route path="/products" element={<Products />} />
         <Route path="/itineraries" element={<Itineraries />} />
         <Route path="/adminLogin" element={<AdminLogin />} />
+        <Route path="/adminPage" element={<AdminPage />} />
+        <Route path="/tourism-gov" element={<TourismGov />} />
+
 
       </Routes>
     </Router>
