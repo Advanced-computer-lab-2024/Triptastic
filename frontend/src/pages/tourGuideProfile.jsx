@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 function TourGuideProfile() {
   const [tourGuideInfo, setTourGuideInfo] = useState(null);
+  const [itineraries, setItineraries] = useState([]); // New state for itineraries
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -51,9 +52,29 @@ function TourGuideProfile() {
     setLoading(false);
   };
 
+  // Function to fetch itineraries
+  const fetchItineraries = async () => {
+    const Username = localStorage.getItem('Username');
+    
+    if (Username) {
+      try {
+        const response = await fetch(`http://localhost:8000/getMyItineraries?Username=${Username}`);
+        if (response.ok) {
+          const data = await response.json();
+          setItineraries(data); // Set the fetched itineraries
+        } else {
+          throw new Error('Failed to fetch itineraries');
+        }
+      } catch (error) {
+        console.error('Error fetching itineraries:', error);
+      }
+    }
+  };
+
   // useEffect to fetch data on component mount
   useEffect(() => {
     fetchTourGuideData();
+    fetchItineraries(); // Fetch itineraries when the component mounts
   }, []);
 
   // Toggle visibility of profile details
@@ -178,6 +199,31 @@ function TourGuideProfile() {
               <button type="submit">Update Data</button>
             </form>
           )}
+
+          {/* Section to display itineraries */}
+          <h3>My Itineraries</h3>
+          {itineraries.length > 0 ? (
+            <ul>
+              {itineraries.map((itinerary) => (
+                <li key={itinerary._id}>
+                  <strong>
+                    {itinerary.Activities.length > 0 
+                      ? itinerary.Activities.join(', ') 
+                      : 'No Activities'}
+                  </strong> - 
+                  <span>
+                    {itinerary.Locations.length > 0 
+                      ? `Locations: ${itinerary.Locations.join(', ')}`
+                      : 'No Locations'}
+                  </span> - 
+                  Price: ${itinerary.Price} - 
+                  Date: {new Date(itinerary.DatesTimes).toLocaleDateString()}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No itineraries found.</p>
+          )}
         </>
       )}
     </div>
@@ -185,5 +231,3 @@ function TourGuideProfile() {
 }
 
 export default TourGuideProfile;
-
-
