@@ -75,18 +75,22 @@ const gethistoricalLocation= async(req,res) =>{
  }
  
 
-const deletehistoricalLocation = async (req, res) => {
-    const{Name}=req.body;
-   try {
-      const historicalLocation = await historicalLocationModel.deleteOne({Name:Name}); 
-      if (!historicalLocation) {
-         return res.status(404).json({ msg: "Historical Location not found" });
-      }
-      res.status(200).json({ msg: "Historical Location has been deleted successfully" });
-   } catch (error) {
-      res.status(400).json({ error: error.message });
-   }
-}
+ const deletehistoricalLocation = async (req, res) => {
+    const { Name } = req.query; // Extract Name from req.query
+    try {
+        // Use deleteOne and check if a museum was actually deleted
+        const result = await historicalLocationModel.deleteOne({ Name: Name });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ msg: "Historical Location not found" });
+        }
+
+        res.status(200).json({ msg: "Historical Location has been deleted successfully" });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
 
    
 const createMuseum = async (req, res) => {
@@ -148,18 +152,22 @@ const createMuseum = async (req, res) => {
   }
   
  
- const deleteMuseum = async (req, res) => {
-     const{Name}=req.body;
+  const deleteMuseum = async (req, res) => {
+    const { Name } = req.query; // Extract Name from req.query
     try {
-       const museum = await museumModel.deleteOne({Name:Name}); 
-       if (!museum) {
-          return res.status(404).json({ msg: "Museum not found" });
-       }
-       res.status(200).json({ msg: "Museum has been deleted successfully" });
+        // Use deleteOne and check if a museum was actually deleted
+        const result = await museumModel.deleteOne({ Name: Name });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ msg: "Museum not found" });
+        }
+
+        res.status(200).json({ msg: "Museum has been deleted successfully" });
     } catch (error) {
-       res.status(400).json({ error: error.message });
+        res.status(400).json({ error: error.message });
     }
- }
+};
+
  
     
  
