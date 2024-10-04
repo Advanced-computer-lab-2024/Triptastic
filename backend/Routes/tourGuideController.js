@@ -54,9 +54,9 @@ const createTourGuideInfo = async(req,res) => {
  }
 
  const createItinerary=async(req,res)=>{
-   const{Activities,Location,Timeline,DurationOfActivity,Language,Price,DatesTimes,Accesibility,pickUpDropOff}=req.body;
+   const{Activities,Locations,Timeline,DurationOfActivity,Language,Price,DatesTimes,Accesibility,pickUpDropOff,TourGuide}=req.body;
    try{
-      const itinerary=await itineraryModel.create({Activities,Location,Timeline,DurationOfActivity,Language,Price,DatesTimes,Accesibility,pickUpDropOff});
+      const itinerary=await itineraryModel.create({Activities,Locations,Timeline,DurationOfActivity,Language,Price,DatesTimes,Accesibility,pickUpDropOff,TourGuide});
       res.status(200).json(itinerary);
    }
    catch{
@@ -142,5 +142,17 @@ const createTouristItinerary=async(req,res)=>{
        res.status(400).json({ error: error.message });
    }
 };
- module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary};
+const getMyItineraries= async(req,res) =>{
+   const {Username}= req.query;
+   
+   try {
+       const itineraries = await itineraryModel.find({ TourGuide: Username }); 
+
+           res.status(200).json(itineraries);
+   } 
+   catch (error) {
+       res.status(400).json({ error: error.message }); 
+   }
+}
+ module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries};
  

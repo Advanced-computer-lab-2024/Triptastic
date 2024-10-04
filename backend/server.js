@@ -8,7 +8,7 @@ const MongoURI = process.env.MONGO_URI ;
 const {createTourGuideInfo,createTourGuide}=require("./Routes/tourGuideController");
 const {updateTourGuide}=require("./Routes/tourGuideController");
 const {getTourGuide}=require("./Routes/tourGuideController");
-const {createItinerary,getItinerary,updateItinerary,deleteItinerary,getTouristItinerary,createTouristItinerary,updateTouristItinerary,deleteTouristItinerary}=require("./Routes/tourGuideController");
+const {createItinerary,getItinerary,updateItinerary,deleteItinerary,getTouristItinerary,createTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries}=require("./Routes/tourGuideController");
 
 
 //Guest
@@ -111,6 +111,7 @@ app.post("/addtouristItinerary",createTouristItinerary);
 app.get("/gettouristItinerary/:id",getTouristItinerary);
 app.patch("/updatetouristItinerary/:id",updateTouristItinerary);
 app.delete("/deletetouristItinerary/:id",deleteTouristItinerary);
+app.get("/getMyItineraries",getMyItineraries);
 
 //Advertiser
 app.post("/addAdvertiser",createAdvertiser);

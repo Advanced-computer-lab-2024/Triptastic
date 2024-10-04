@@ -33,6 +33,10 @@ const itinerarySchema = new Schema({
     Booked:{
         type: Boolean,
         default: false
+    },
+    TourGuide: {
+        type: String,  // Store the username directly
+        required: true
     }
 
 },{timestamps: true})
