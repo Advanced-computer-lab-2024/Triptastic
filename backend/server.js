@@ -75,7 +75,7 @@ app.post("/addTourist",createTourist);
 app.get("/getHistoricalLocationByName",gethistoricalLocationByName);
 app.post("/createProductTourist",createProductTourist);
 app.get("/getProductTourist",getProductTourist);
-app.post("/filterActivities",filterActivities);
+app.get("/filterActivities",filterActivities);
 app.get("/viewProductsTourist",viewProductsTourist);
 app.get("/viewAllUpcomingActivitiesTourist",viewAllUpcomingActivitiesTourist);
 app.get("/viewAllItinerariesTourist",viewAllItinerariesTourist);
@@ -166,7 +166,7 @@ app.delete("/deleteMuseum",deleteMuseum);
 app.get("/viewAllUpcomingActivitiesGuest",viewAllUpcomingActivitiesGuest);
 app.get("/viewAllItinerariesGuest",viewAllItinerariesGuest);
 app.get("/viewAllHistoricalPlacesGuest",viewAllHistoricalPlacesGuest);
-app.post("/filterActivities",filterActivitiesGuest);
+app.get("/filterActivitiesGuest",filterActivitiesGuest);
 app.get("/filterHistoricalLocationsByTagsGuest",filterHistoricalLocationsByTagsGuest);
 app.get("/filterMuseumsByTagsGuest",filterMuseumsByTagsGuest);viewAllMuseumsGuest
 app.get("/viewAllMuseumsGuest",viewAllMuseumsGuest);
