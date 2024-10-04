@@ -165,6 +165,34 @@ const viewProductsTourist = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+const filterProductsByPriceRange = async (req, res) => {
+  const { minPrice, maxPrice } = req.query;
+
+  try {
+    // Set up filter criteria based on provided min and max prices
+    let filter = {};
+    
+    if (minPrice && maxPrice) {
+      filter.price = { $gte: parseFloat(minPrice), $lte: parseFloat(maxPrice) }; // Price between min and max
+    } else if (minPrice) {
+      filter.price = { $gte: parseFloat(minPrice) }; // Price greater than or equal to minPrice
+    } else if (maxPrice) {
+      filter.price = { $lte: parseFloat(maxPrice) }; // Price less than or equal to maxPrice
+    }
+
+    // Find products that match the filter criteria
+    const products = await productModel.find(filter);
+
+    if (products.length === 0) {
+      return res.status(404).json({ msg: 'No products found within the specified price range.' });
+    }
+
+    // Return filtered products
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 const viewAllUpcomingActivitiesTourist = async (req, res) => {
  try {
@@ -309,4 +337,4 @@ const sortProductsByRatingTourist = async (req, res) => {
  module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
-  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist};
+  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange};
