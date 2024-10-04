@@ -8,6 +8,10 @@ import SellerProfile from './pages/sellerProfile';
 import AdvertiserProfile from './pages/advertiserProfile';
 import TouristProfile from './pages/touristProfile';
 import TourGuideProfile from './pages/tourGuideProfile';
+import HistoricalLocations from './pages/historicalLocations';
+import Museums from './pages/Museums';
+import Products from './pages/Products';
+import Itineraries from './pages/Itineraries';
 
 
 function Home() {
@@ -44,6 +48,10 @@ function App() {
         <Route path="/advertiser-profile" element={<AdvertiserProfile />} />
         <Route path="/tourist-profile" element={<TouristProfile />} />
         <Route path="/tour-guide-profile" element={<TourGuideProfile />} />
+        <Route path="/historical-locations" element={<HistoricalLocations />} />
+        <Route path="/museums" element={<Museums />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/itineraries" element={<Itineraries />} />
 
       </Routes>
     </Router>
