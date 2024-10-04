@@ -7,14 +7,25 @@ const AdminPage = () => {
     Password: ''
   });
 
-  const [usernameToDelete, setUsernameToDelete] = useState(''); // State for username to delete
-  const [userType, setUserType] = useState(''); // State for user type to delete
+  const [usernameToDelete, setUsernameToDelete] = useState('');
+  const [userType, setUserType] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState(''); // State for success message
+  const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [addingProduct, setAddingProduct] = useState(false);
+  const [productFormData, setProductFormData] = useState({
+    productName: '',
+    description: '',
+    price: '',
+    rating: '',
+    seller: '', // This will be auto-filled with the admin's username
+    review: '',
+    stock: '',
+    image: ''
+  });
   const navigate = useNavigate();
 
-  // Handle input changes
+  // Handle input changes for admin creation form
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -25,25 +36,22 @@ const AdminPage = () => {
 
   // Function to create a new admin
   const createAdmin = async () => {
-    const { Username, Password } = formData; // Get username and password from state
+    const { Username, Password } = formData;
     setLoading(true);
-    setErrorMessage(''); // Clear previous error messages
+    setErrorMessage('');
 
     try {
-      // Call your existing function to create an admin
       const response = await fetch('http://localhost:8000/createAdmin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ Username, Password }) // Send username and password
+        body: JSON.stringify({ Username, Password })
       });
 
       if (response.ok) {
-        // If creation is successful, show an alert
         alert('Admin created successfully!');
-        // Optionally, you can reset the form here
-        setFormData({ Username: '', Password: '' }); // Reset the form fields
+        setFormData({ Username: '', Password: '' });
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.error || 'Failed to create admin.');
@@ -52,11 +60,11 @@ const AdminPage = () => {
       setErrorMessage('An error occurred while creating admin.');
       console.error(error);
     } finally {
-      setLoading(false); // Stop loading state
+      setLoading(false);
     }
   };
 
-  // Function to handle deletion based on user type
+  // Handle deletion based on user type
   const handleDeleteUser = async () => {
     setErrorMessage('');
     setSuccessMessage('');
@@ -77,8 +85,8 @@ const AdminPage = () => {
       if (response.ok) {
         const data = await response.json();
         setSuccessMessage(data.msg);
-        setUsernameToDelete(''); // Clear input after successful deletion
-        setUserType(''); // Reset the user type
+        setUsernameToDelete('');
+        setUserType('');
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.error || `Failed to delete ${userType}.`);
@@ -89,68 +97,202 @@ const AdminPage = () => {
     }
   };
 
+  // Handle product form input changes
+  const handleProductInputChange = (e) => {
+    const { name, value } = e.target;
+    setProductFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+
+  // Function to auto-fill seller field with admin's username
+  const handleAddProduct = () => {
+    setProductFormData((prevData) => ({
+      ...prevData,
+      seller: formData.Username // Use the admin's username for the seller field
+    }));
+    setAddingProduct(true);
+  };
+
+  // Handle product submission
+  const handleProductSubmit = async (e) => {
+    e.preventDefault();
+
+    // Ensure the seller field is set to the admin's username
+    const productData = {
+      ...productFormData,
+      seller: formData.Username // Explicitly set the seller field to the admin's username
+    };
+
+    try {
+      const response = await fetch('http://localhost:8000/createProduct', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(productData), // Use updated productData here
+      });
+
+      if (response.ok) {
+        const newProduct = await response.json();
+        alert('Product added successfully!');
+        setProductFormData({
+          productName: '',
+          description: '',
+          price: '',
+          rating: '',
+          seller: formData.Username, // Reset to admin's username
+          review: '',
+          stock: '',
+          image: ''
+        });
+        setErrorMessage('');
+        setAddingProduct(false);
+      } else {
+        throw new Error('Failed to create product');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while creating the product');
+      console.error(error);
+    }
+  };
+
   return (
-    <div>
-      <h1>Admin Dashboard</h1>
-      <p>Welcome to the Admin Dashboard! Here you can manage users and view statistics.</p>
+    <div className="admin-dashboard-container">
+      <div className="admin-content">
+        <h1>Admin Dashboard</h1>
+        <p>Welcome to the Admin Dashboard! Here you can manage users and view statistics.</p>
 
-      <h2>Create Admin</h2>
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      
-      <form onSubmit={(e) => { e.preventDefault(); createAdmin(); }}>
+        <h2>Create Admin</h2>
+        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        
+        <form onSubmit={(e) => { e.preventDefault(); createAdmin(); }}>
+          <div>
+            <label>Username:</label>
+            <input
+              type="text"
+              name="Username"
+              value={formData.Username}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div>
+            <label>Password:</label>
+            <input
+              type="password"
+              name="Password"
+              value={formData.Password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <button type="submit" disabled={loading}>
+            {loading ? 'Creating...' : 'Create Admin'}
+          </button>
+        </form>
+
+        <h2>Delete User</h2>
+        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+
         <div>
-          <label>Username:</label>
-          <input
-            type="text"
-            name="Username"
-            value={formData.Username}
-            onChange={handleChange}
-            required
-          />
+          <label>Select User Type:</label>
+          <select value={userType} onChange={(e) => setUserType(e.target.value)}>
+            <option value="">Select...</option>
+            <option value="Advertiser">Advertiser</option>
+            <option value="Seller">Seller</option>
+            <option value="TourGuide">Tour Guide</option>
+            <option value="Tourist">Tourist</option>
+            <option value="TourismGov">Tourism Governor</option>
+          </select>
         </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            name="Password"
-            value={formData.Password}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? 'Creating...' : 'Create Admin'}
+
+        {userType && (
+          <div>
+            <input
+              type="text"
+              placeholder="Enter Username to delete"
+              value={usernameToDelete}
+              onChange={(e) => setUsernameToDelete(e.target.value)}
+              required
+            />
+            <button onClick={handleDeleteUser}>Delete</button>
+          </div>
+        )}
+
+        {/* Button to toggle product form */}
+        <button onClick={handleAddProduct}>
+          {addingProduct ? 'Cancel' : 'Add Product'}
         </button>
-      </form>
 
-      <h2>Delete User</h2>
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-
-      <div>
-        <label>Select User Type:</label>
-        <select value={userType} onChange={(e) => setUserType(e.target.value)}>
-          <option value="">Select...</option>
-          <option value="Advertiser">Advertiser</option>
-          <option value="Seller">Seller</option>
-          <option value="TourGuide">Tour Guide</option>
-          <option value="Tourist">Tourist</option>
-          <option value="TourismGov">Tourism Governor</option>
-        </select>
+        {/* Add Product Form */}
+        {addingProduct && (
+          <form onSubmit={handleProductSubmit}>
+            <h3>Add a Product</h3>
+            <div>
+              <label>Product Name:</label>
+              <input
+                type="text"
+                name="productName"
+                value={productFormData.productName}
+                onChange={handleProductInputChange}
+                required
+              />
+            </div>
+            <div>
+              <label>Description:</label>
+              <input
+                type="text"
+                name="description"
+                value={productFormData.description}
+                onChange={handleProductInputChange}
+                required
+              />
+            </div>
+            <div>
+              <label>Price:</label>
+              <input
+                type="number"
+                name="price"
+                value={productFormData.price}
+                onChange={handleProductInputChange}
+                required
+              />
+            </div>
+            <div>
+              <label>Stock:</label>
+              <input
+                type="number"
+                name="stock"
+                value={productFormData.stock}
+                onChange={handleProductInputChange}
+                required
+              />
+            </div>
+            <div>
+              <label>Image URL:</label>
+              <input
+                type="text"
+                name="image"
+                value={productFormData.image}
+                onChange={handleProductInputChange}
+                required
+              />
+            </div>
+            <button type="submit">Submit Product</button>
+          </form>
+        )}
       </div>
 
-      {userType && (
-        <div>
-          <input
-            type="text"
-            placeholder="Enter Username to delete"
-            value={usernameToDelete}
-            onChange={(e) => setUsernameToDelete(e.target.value)}
-            required
-          />
-          <button onClick={handleDeleteUser}>Delete</button>
-        </div>
-      )}
+      {/* Sidebar for Navigation */}
+      <div className="sidebar">
+        <h3>Navigation</h3>
+        <ul>
+          <li onClick={() => navigate('/products')}>All Products</li>
+        </ul>
+      </div>
     </div>
   );
 };

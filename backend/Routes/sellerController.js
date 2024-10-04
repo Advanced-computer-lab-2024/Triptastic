@@ -42,14 +42,14 @@ const createSeller = async(req,res) => {
  }
 
  const createProductseller = async (req, res) => {
-   const { productName } = req.body;
- 
-   try {
-     const product = await productModel.create({ productName });
-     res.status(201).json(product);
-   } catch (error) {
-     res.status(400).json({ error: error.message });
-   }
+  const { productName,description,price,rating,seller,review,stock,image } = req.body;
+
+  try {
+    const product = await productModel.create({ productName,description,price,rating,seller,review,stock,image });
+    res.status(201).json(product);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 };
 
 const getProductSeller = async (req, res) => {
