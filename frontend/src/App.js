@@ -12,16 +12,22 @@ import HistoricalLocations from './pages/historicalLocations';
 import Museums from './pages/Museums';
 import Products from './pages/Products';
 import Itineraries from './pages/Itineraries';
+import AdminPage from './pages/adminPage';
+import Admin from './pages/adminLogin';
 
 
 function Home() {
   const navigate = useNavigate();
-  console.log({ TouristReg, TourGuideReg, AdvertiserReg, SellerReg, SellerProfile });
+  console.log({ TouristReg, TourGuideReg, AdvertiserReg, SellerReg, SellerProfile, Admin ,AdminPage });
 
 
   return (
     <div className="App">
       <header className="App-header">
+        <button className="admin-login-btn"  onClick={() => navigate('/adminLogin')}>
+        Login as Admin
+        </button>
+
         <h1>Welcome to Triptastic!</h1>
         <p>Please register as one of the following:</p>
         <div className="registration-options">

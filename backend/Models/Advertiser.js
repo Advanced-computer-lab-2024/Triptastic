@@ -16,7 +16,7 @@ const advertiserSchema = new Schema({
     type: String,
     required: true,
   },
-  website_Link:
+  Website_Link:
   {
     type: String,
     required: false,

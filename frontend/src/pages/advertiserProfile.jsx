@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const AdvertiserProfile = () => {
 
@@ -6,8 +6,16 @@ const AdvertiserProfile = () => {
   const [advertiserInfo, setAdvertiserInfo] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [updatedAdvertiserInfo, setUpdatedAdvertiserInfo] = useState({});
+  const [updating, setUpdating] = useState(false); // Track update status
+  const [formData, setFormData] = useState({
+    Username: '',
+    Email: '',
+    Password: '',
+    Website_Link: '',
+    Hotline: '',
+    Company_Profile: '',
+   
+  });
 
   const fetchAdvertiserInfo = async () => {
     setLoading(true);
@@ -46,31 +54,39 @@ const AdvertiserProfile = () => {
     setLoading(false);
   };
 
+
+
+  useEffect(() => {
+    fetchAdvertiserInfo();
+  }, []);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setUpdatedAdvertiserInfo((prevInfo) => ({
-      ...prevInfo,
-      [name]: value,
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
     }));
   };
-  const handleProfileUpdate = async () => {
-    setLoading(true);
-    const Username = localStorage.getItem('Username'); // Get the username from local storage
+ 
+
+  const handleUpdate = async () => {
+    setUpdating(true);
+   // const Username = localStorage.getItem('Username'); // Get the username from local storage
 
     try {
-      const response = await fetch(`http://localhost:8000/updateAdvertiser/${Username}`, {
+      const response = await fetch(`http://localhost:8000/updateAdvertiser`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updatedAdvertiserInfo),
+        body: JSON.stringify(formData),
       });
 
       if (response.ok) {
         const updatedData = await response.json();
         setAdvertiserInfo(updatedData); // Update the UI with new information
         setErrorMessage('');
-        setIsEditing(false); // Switch back to view mode
+        alert('Information updated successfully!');
       } else {
         throw new Error('Failed to update advertiser profile');
       }
@@ -79,7 +95,7 @@ const AdvertiserProfile = () => {
       console.error(error);
     }
 
-    setLoading(false);
+    setUpdating(false);
   };
 
   return (
@@ -89,75 +105,61 @@ const AdvertiserProfile = () => {
       {loading ? (
         <p>Loading advertiser information...</p>
       ) : (
-        advertiserInfo ? (
+        advertiserInfo && (
           <div>
-            {!isEditing ? (
-              <>
-                <p><strong>Username:</strong> {advertiserInfo.Username}</p>
-                <p><strong>Email:</strong> {advertiserInfo.Email}</p>
-                <p><strong>Website Link:</strong> {advertiserInfo.website_Link}</p>
-                <p><strong>Hotline:</strong> {advertiserInfo.Hotline}</p>
-                <p><strong>Company Profile:</strong> {advertiserInfo.Company_Profile}</p>
-                <button onClick={() => setIsEditing(true)}>Edit Profile</button>
-              </>
-            ) : (
-              <div>
-                <label>
-                  <strong>Email:</strong>
-                  <input
-                    type="email"
-                    name="Email"
-                    value={updatedAdvertiserInfo.Email || advertiserInfo.Email}
-                    onChange={handleInputChange}
-                  />
-                </label>
-                <label>
-                  <strong>Website Link:</strong>
-                  <input
-                    type="text"
-                    name="website_Link"
-                    value={updatedAdvertiserInfo.website_Link || advertiserInfo.website_Link}
-                    onChange={handleInputChange}
-                  />
-                </label>
-                <label>
-                  <strong>Hotline:</strong>
+            <div>
+              <label><strong>Username:</strong></label>
+              <p>{advertiserInfo.Username}</p> {/* Display Username as text */}
+            </div>
+            <div>
+              <label><strong>Website Link:</strong></label>
+              <input
+                 type="text"
+                  name="website_Link"
+                value={formData.website_Link}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div>
+              <label><strong>Password:</strong></label>
+              <input
+                type="text" // Visible password
+                name="Password"
+                value={formData.Password}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div>
+           <label> <strong>Hotline:</strong></label>
                   <input
                     type="text"
                     name="Hotline"
-                    value={updatedAdvertiserInfo.Hotline || advertiserInfo.Hotline}
-                    onChange={handleInputChange}
-                  />
-                </label>
-                <label>
-                  <strong>Company Profile:</strong>
-                  <textarea
-                    name="Company_Profile"
-                    value={updatedAdvertiserInfo.Company_Profile || advertiserInfo.Company_Profile}
-                    onChange={handleInputChange}
-                  />
-                </label>
+                value={formData.Hotline}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div>
+              <label><strong>Company Profile:</strong></label>
+              <input
+                type="text" 
+                name="Company_Profile"
+                value={formData.Company_Profile}
+                onChange={handleInputChange}
+              />
+            </div>
+           
+           
 
-                <button onClick={handleProfileUpdate}>Save</button>
-                <button onClick={() => setIsEditing(false)}>Cancel</button>
-              </div>
-            )}
+            <button onClick={handleUpdate} disabled={updating}>
+              {updating ? 'Updating...' : 'Update Information'}
+            </button>
           </div>
-        ) : (
-          <p>No profile information to display.</p>
         )
       )}
-
-      {/* Button to manually fetch the advertiser's info */}
-      <button onClick={fetchAdvertiserInfo}>View My Information</button>
+      <button onClick={fetchAdvertiserInfo}>Refresh My Information</button>
     </div>
   );
 };
 
 export default AdvertiserProfile;
-
-
-
-
-
 
