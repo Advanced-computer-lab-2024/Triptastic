@@ -43,7 +43,9 @@ function TourGuideReg() {
           Email: '',
           Password: ''
         });
+        localStorage.setItem('Username', formData.Username);
         navigate('/tour-guide-profile');
+        
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.error || 'Registration failed');

@@ -101,7 +101,7 @@ app.get("/filterProductsByPriceRange",filterProductsByPriceRange);
 //TourGuide
 app.post("/addTourGuide",createTourGuide);
 app.patch("/addTourGuideInfo",createTourGuideInfo);
-app.get("/getTourGuide",getTourGuide);
+app.get("/getTourGuide/",getTourGuide);
 app.patch("/updateTourGuide/:Username",updateTourGuide);
 app.post("/addItinerary",createItinerary);
 app.get("/getItinerary/:id",getItinerary);
