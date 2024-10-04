@@ -1,4 +1,4 @@
-const Itineraries = () =>{
+/*const Itineraries = () =>{
 
     return(
 <div>
@@ -8,4 +8,4 @@ const Itineraries = () =>{
         
     )
 }
-export default Itineraries;
+export default Itineraries; */
