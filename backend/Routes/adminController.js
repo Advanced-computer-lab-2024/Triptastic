@@ -191,22 +191,17 @@ const createPrefTag = async (req, res) => {
 
 
 const getPrefTag = async (req, res) => {
-    const {PrefTagName} = req.body; // Use Name as a parameter to find the category
-    try {
-        if (PrefTagName) {
-            const category = await prefTagModel.findOne({ PrefTagName });
-            if (!category) {
-                return res.status(404).json({ msg: "Category not found" });
-            }
-            res.status(200).json(category);
-        } else {
-            const categories = await prefTagModel.find();
-            res.status(200).json(categories); // Return all categories if no Name is provided
-        }
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
+  const { PrefTagName } = req.query;
+
+  try {
+      const category = await prefTagModel.findOne({ PrefTagName: PrefTagName });
+      res.status(200).json(category);
+  } 
+  catch (error) {
+      res.status(400).json({ error: error.message });
+  }
 };
+
 
 const updatePreftag = async (req, res) => {
     const {PrefTagName, newPrefTagName }= req.body; // The current category name from the URL parameter
