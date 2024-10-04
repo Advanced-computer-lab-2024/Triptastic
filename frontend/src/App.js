@@ -14,6 +14,7 @@ import Products from './pages/Products';
 import Itineraries from './pages/Itineraries';
 import AdminPage from './pages/adminPage';
 import Admin from './pages/adminLogin';
+import AdminLogin from './pages/adminLogin';
 
 
 function Home() {
@@ -58,6 +59,7 @@ function App() {
         <Route path="/museums" element={<Museums />} />
         <Route path="/products" element={<Products />} />
         <Route path="/itineraries" element={<Itineraries />} />
+        <Route path="/adminLogin" element={<AdminLogin />} />
 
       </Routes>
     </Router>
