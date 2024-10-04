@@ -6,16 +6,19 @@ function TourGuideProfile() {
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    Username: '',
+    Email: '',
+    mobileNumber: '',
+    yearsOfExperience: '',
+    previousWork: '',
+  });
 
-
-  useEffect(() => {
-    fetchTourGuideData();
-  }, []); 
-
+  // Function to fetch tour guide data from the server
   const fetchTourGuideData = async () => {
     setLoading(true);
     const Username = localStorage.getItem('Username');
-    console.log(Username);
 
     if (Username) {
       try {
@@ -30,6 +33,7 @@ function TourGuideProfile() {
           const data = await response.json();
           if (data) {
             setTourGuideInfo(data); // Set the fetched information
+            setFormData(data); // Initialize formData with fetched data
             setErrorMessage('');
           } else {
             setErrorMessage('No tour guide information found.');
@@ -47,8 +51,57 @@ function TourGuideProfile() {
     setLoading(false);
   };
 
+  // useEffect to fetch data on component mount
+  useEffect(() => {
+    fetchTourGuideData();
+  }, []);
+
+  // Toggle visibility of profile details
   const toggle = () => {
     setIsVisible((prevState) => !prevState);
+  };
+
+  // Toggle the edit form visibility
+  const handleEditToggle = () => {
+    setIsEditing((prev) => !prev);
+  };
+
+  // Handle form input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  // Handle form submission for updating tour guide info
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const Username = localStorage.getItem('Username');
+
+    try {
+      const response = await fetch(`http://localhost:8000/updateTourGuide/${Username}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        // Fetch updated tour guide data after successful update
+        await fetchTourGuideData(); // Refetch data to update the state
+        setErrorMessage('');
+        setIsEditing(false); // Hide the form after successful update
+        setIsVisible(true); // Show the profile details immediately after update
+      } else {
+        throw new Error('Failed to update tour guide information');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while updating tour guide information');
+      console.error(error);
+    }
   };
 
   return (
@@ -59,17 +112,71 @@ function TourGuideProfile() {
         <p>Loading tour guide information...</p>
       ) : (
         <>
-          <button onClick={toggle}>
-            {isVisible ? 'Hide' : 'Show'} Profile Details
-          </button>
-          {isVisible && tourGuideInfo && (
+          <button onClick={toggle}>{isVisible ? 'Hide' : 'Show'} Profile Details</button>
+          {isVisible && (
             <div>
-              <p><strong>Username:</strong> {tourGuideInfo.Username}</p>
-              <p><strong>Email:</strong> {tourGuideInfo.Email}</p>
-              <p><strong>Mobile Number:</strong> {tourGuideInfo.mobileNumber}</p>
-              <p><strong>Years of Experience:</strong> {tourGuideInfo.yearsOfExperience}</p>
-              <p><strong>Previous Work:</strong> {tourGuideInfo.previousWork}</p>
+              <p><strong>Username:</strong> {tourGuideInfo?.Username}</p>
+              <p><strong>Email:</strong> {tourGuideInfo?.Email}</p>
+              <p><strong>Mobile Number:</strong> {tourGuideInfo?.mobileNumber}</p>
+              <p><strong>Years of Experience:</strong> {tourGuideInfo?.yearsOfExperience}</p>
+              <p><strong>Previous Work:</strong> {tourGuideInfo?.previousWork}</p>
             </div>
+          )}
+          <button onClick={handleEditToggle}>{isEditing ? 'Cancel' : 'Edit Data'}</button>
+          {isEditing && (
+            <form onSubmit={handleSubmit}>
+              <div>
+                <label>Username:</label>
+                <input
+                  type="text"
+                  name="Username"
+                  value={formData.Username}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>Email:</label>
+                <input
+                  type="email"
+                  name="Email"
+                  value={formData.Email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>Mobile Number:</label>
+                <input
+                  type="number"
+                  name="mobileNumber"
+                  value={formData.mobileNumber}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>Years of Experience:</label>
+                <input
+                  type="number"
+                  name="yearsOfExperience"
+                  value={formData.yearsOfExperience}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div>
+                <label>Previous Work:</label>
+                <input
+                  type="text"
+                  name="previousWork"
+                  value={formData.previousWork}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <button type="submit">Update Data</button>
+            </form>
           )}
         </>
       )}
