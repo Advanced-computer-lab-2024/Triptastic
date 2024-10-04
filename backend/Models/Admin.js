@@ -12,14 +12,13 @@ const AdminSchema = new Schema({
   Password: {
     type: String,
     required: true,
-    unique: true,
+    unique: false,
   },
-
-  //admin,tourism governer and so on
   
   Role: {
     type: String,
     required: false,
+    
   },
 
 }, { timestamps: true });

@@ -7,17 +7,21 @@ import SellerReg from './pages/sellerReg';
 import SellerProfile from './pages/sellerProfile';
 import AdvertiserProfile from './pages/advertiserProfile';
 import TouristProfile from './pages/touristProfile';
-
-
+import Admin from './pages/adminLogin';
+import AdminPage from './pages/adminPage';
 
 function Home() {
   const navigate = useNavigate();
-  console.log({ TouristReg, TourGuideReg, AdvertiserReg, SellerReg, SellerProfile });
+  console.log({ TouristReg, TourGuideReg, AdvertiserReg, SellerReg, SellerProfile, Admin ,AdminPage });
 
 
   return (
     <div className="App">
       <header className="App-header">
+        <button className="admin-login-btn"  onClick={() => navigate('/adminLogin')}>
+        Login as Admin
+        </button>
+
         <h1>Welcome to Triptastic!</h1>
         <p>Please register as one of the following:</p>
         <div className="registration-options">
@@ -43,6 +47,8 @@ function App() {
         <Route path="/seller-profile" element={<SellerProfile />} />
         <Route path="/advertiser-profile" element={<AdvertiserProfile />} />
         <Route path="/tourist-profile" element={<TouristProfile />} />
+        <Route path="/adminLogin" element={<Admin/>} />
+        <Route path="/adminPage" element={<AdminPage/>} />
 
       </Routes>
     </Router>
