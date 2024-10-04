@@ -93,6 +93,28 @@ const viewAllUpcomingActivitiesGuest = async (req, res) => {
     }
   };
   
+  const filterHistoricalLocationsByTagsGuest = async (req, res) => {
+    const { Types } = req.query;
+    const validTagTypes = ["Monuments", "Museums", "Religious Sites", "Palaces", "Castles"];
+  
+    try {
+        if (!validTagTypes.includes(Types)) {
+            return res.status(400).json({ error: `Invalid tag type. Valid types are: ${validTagTypes.join(', ')}` }); 
+        }
+
+        const filteredLocations = await historicalLocationModel.find({ 'Tags.Types': Types });
+  
+        if (filteredLocations.length === 0) {
+            return res.status(404).json({ msg: "No historical locations found with the specified tag type." });
+        }
+
+        res.status(200).json(filteredLocations);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+
 
 const filterMuseumsByTagsGuest = async (req, res) => {
   const { Tags } = req.query; // Extracting HistoricalPeriod from query parameters
