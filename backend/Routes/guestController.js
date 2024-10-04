@@ -33,6 +33,15 @@ const viewAllUpcomingActivitiesGuest = async (req, res) => {
     }
   };
 
+  const viewAllMuseumsGuest = async (req, res) => {
+    try {
+        const places = await museumsModel.find({});
+        res.status(200).json(places);
+    } catch (error) {
+        res.status(500).json({ error: 'Error fetching  museums' });
+    }
+   };
+
   const filterActivitiesGuest =async (req, res) => {
     const { Category, date,minBudget, maxBudget, rating } = req.body;
     
@@ -102,4 +111,4 @@ const filterMuseumsByTagsGuest = async (req, res) => {
 };
 
 
-  module.exports = {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActivitiesGuest,filterActivitiesGuest,filterHistoricalLocationsByTagsGuest,filterMuseumsByTagsGuest};
+  module.exports = {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActivitiesGuest,filterActivitiesGuest,filterHistoricalLocationsByTagsGuest,filterMuseumsByTagsGuest,viewAllMuseumsGuest};

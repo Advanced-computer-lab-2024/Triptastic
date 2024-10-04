@@ -12,12 +12,12 @@ const {createItinerary,getItinerary,updateItinerary,deleteItinerary,getTouristIt
 
 
 //Guest
-const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActivitiesGuest,filterActivitiesGuest,filterHistoricalLocationsByTagsGuest,filterMuseumsByTagsGuest}=require("./Routes/guestController");
+const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActivitiesGuest,filterActivitiesGuest,filterHistoricalLocationsByTagsGuest,filterMuseumsByTagsGuest,viewAllMuseumsGuest}=require("./Routes/guestController");
 
 
 //Tourist
 const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
-  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist} = require("./Routes/touristController");
+  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist} = require("./Routes/touristController");
 
 //Advertiser
 const{createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity}=require("./Routes/advertiserController");
@@ -55,6 +55,7 @@ const museum=require("./Models/historicalLocation");
 const tourismGov=require("./Models/tourismGov");
 const categories=require("./Models/Activitiescategory");
 const activities=require("./Models/Activities");
+const museums=require("./Models/Museums");
 
 
 mongoose.connect(MongoURI)
@@ -91,7 +92,8 @@ app.get("/filterHistoricalLocationsByTagsTourist",filterHistoricalLocationsByTag
 app.get("/filterMuseumsByTagsTourist",filterMuseumsByTagsTourist);
 app.get("/getActivityByname",getActivityByname);
 app.get("/getTourist",getTourist);
-app.patch("/updateTourist",updateTourist);
+app.patch("/updateTourist",updateTourist);viewAllMuseumsTourist
+app.get("/viewAllMuseumsTourist",viewAllMuseumsTourist);
 
 
 
@@ -165,7 +167,8 @@ app.get("/viewAllItinerariesGuest",viewAllItinerariesGuest);
 app.get("/viewAllHistoricalPlacesGuest",viewAllHistoricalPlacesGuest);
 app.post("/filterActivities",filterActivitiesGuest);
 app.get("/filterHistoricalLocationsByTagsGuest",filterHistoricalLocationsByTagsGuest);
-app.get("/filterMuseumsByTagsGuest",filterMuseumsByTagsGuest);
+app.get("/filterMuseumsByTagsGuest",filterMuseumsByTagsGuest);viewAllMuseumsGuest
+app.get("/viewAllMuseumsGuest",viewAllMuseumsGuest);
 
 
 

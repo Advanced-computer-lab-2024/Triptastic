@@ -186,6 +186,15 @@ const viewAllHistoricalPlacesTourist = async (req, res) => {
  }
 };
 
+const viewAllMuseumsTourist = async (req, res) => {
+  try {
+      const places = await museumsModel.find({});
+      res.status(200).json(places);
+  } catch (error) {
+      res.status(500).json({ error: 'Error fetching  museums' });
+  }
+ };
+
 const viewAllItinerariesTourist = async (req, res) => {
   try {
     
@@ -300,4 +309,4 @@ const sortProductsByRatingTourist = async (req, res) => {
  module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
-  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist};
+  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist};
