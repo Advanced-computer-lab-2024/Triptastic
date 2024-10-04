@@ -69,22 +69,17 @@ const updateTourist = async(req,res) => {
  };
 
  const getProductTourist = async (req, res) => {
-   const {productName} = req.body; // Use Name as a parameter to find the category
-   try {
-       if (productName) {
-           const Product = await productModel.findOne({ productName });
-           if (!Product) {
-               return res.status(404).json({ msg: "Product not found" });
-           }
-           res.status(200).json(Product);
-       } else {
-           const Products = await productModel.find();
-           res.status(200).json(Products); // Return all categories if no Name is provided
-       }
-   } catch (error) {
-       res.status(400).json({ error: error.message });
-   }
+  const { productName } = req.query;
+
+  try {
+      const product = await productModel.findOne({ productName: productName });
+      res.status(200).json(product);
+  } 
+  catch (error) {
+      res.status(400).json({ error: error.message });
+  }
 };
+
 
 const filterActivities =async (req, res) => {
    const { Category, date,minBudget, maxBudget, rating } = req.body;
