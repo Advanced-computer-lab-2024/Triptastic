@@ -51,20 +51,6 @@ const getCategory = async (req, res) => {
   }
 };
 
-const gethistoricalLocation= async(req,res) =>{
-  const {Name}= req.query;
-  
-  try {
-      const historicalLocation = await historicalLocationModel.findOne({ Name: Name }); 
-
-          res.status(200).json(historicalLocation);
-  } 
-  catch (error) {
-      res.status(400).json({ error: error.message }); 
-  }
-}
-
-
 
 const updateCategory = async (req, res) => {
     const {Name, newName }= req.body; // The current category name from the URL parameter
