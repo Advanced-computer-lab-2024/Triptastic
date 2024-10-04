@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+
 
 const SellerProfile = () => {
   const [sellerInfo, setSellerInfo] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
+
 
   const fetchSellerInfo = async () => {
     setLoading(true);
@@ -54,7 +57,7 @@ const SellerProfile = () => {
             {/* Don't display the password for security reasons */}
           </div>
         ) : (
-          <p>No seller information found.</p>
+          <p></p>
         )
       )}
       <button onClick={fetchSellerInfo}>View My Information</button>

@@ -7,8 +7,14 @@ import SellerReg from './pages/sellerReg';
 import SellerProfile from './pages/sellerProfile';
 import AdvertiserProfile from './pages/advertiserProfile';
 import TouristProfile from './pages/touristProfile';
-import Admin from './pages/adminLogin';
+import TourGuideProfile from './pages/tourGuideProfile';
+import HistoricalLocations from './pages/historicalLocations';
+import Museums from './pages/Museums';
+import Products from './pages/Products';
+import Itineraries from './pages/Itineraries';
 import AdminPage from './pages/adminPage';
+import Admin from './pages/adminLogin';
+
 
 function Home() {
   const navigate = useNavigate();
@@ -47,8 +53,11 @@ function App() {
         <Route path="/seller-profile" element={<SellerProfile />} />
         <Route path="/advertiser-profile" element={<AdvertiserProfile />} />
         <Route path="/tourist-profile" element={<TouristProfile />} />
-        <Route path="/adminLogin" element={<Admin/>} />
-        <Route path="/adminPage" element={<AdminPage/>} />
+        <Route path="/tour-guide-profile" element={<TourGuideProfile />} />
+        <Route path="/historical-locations" element={<HistoricalLocations />} />
+        <Route path="/museums" element={<Museums />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/itineraries" element={<Itineraries />} />
 
       </Routes>
     </Router>

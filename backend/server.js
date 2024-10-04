@@ -17,7 +17,7 @@ const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActi
 
 //Tourist
 const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
-  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist} = require("./Routes/touristController");
+  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange} = require("./Routes/touristController");
 
 //Advertiser
 const{createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity}=require("./Routes/advertiserController");
@@ -75,7 +75,7 @@ app.post("/addTourist",createTourist);
 app.get("/getHistoricalLocationByName",gethistoricalLocationByName);
 app.post("/createProductTourist",createProductTourist);
 app.get("/getProductTourist",getProductTourist);
-app.post("/filterActivities",filterActivities);
+app.get("/filterActivities",filterActivities);
 app.get("/viewProductsTourist",viewProductsTourist);
 app.get("/viewAllUpcomingActivitiesTourist",viewAllUpcomingActivitiesTourist);
 app.get("/viewAllItinerariesTourist",viewAllItinerariesTourist);
@@ -94,6 +94,7 @@ app.get("/getActivityByname",getActivityByname);
 app.get("/getTourist",getTourist);
 app.patch("/updateTourist",updateTourist);viewAllMuseumsTourist
 app.get("/viewAllMuseumsTourist",viewAllMuseumsTourist);
+app.get("/filterProductsByPriceRange",filterProductsByPriceRange);
 
 
 
@@ -165,7 +166,7 @@ app.delete("/deleteMuseum",deleteMuseum);
 app.get("/viewAllUpcomingActivitiesGuest",viewAllUpcomingActivitiesGuest);
 app.get("/viewAllItinerariesGuest",viewAllItinerariesGuest);
 app.get("/viewAllHistoricalPlacesGuest",viewAllHistoricalPlacesGuest);
-app.post("/filterActivities",filterActivitiesGuest);
+app.get("/filterActivitiesGuest",filterActivitiesGuest);
 app.get("/filterHistoricalLocationsByTagsGuest",filterHistoricalLocationsByTagsGuest);
 app.get("/filterMuseumsByTagsGuest",filterMuseumsByTagsGuest);viewAllMuseumsGuest
 app.get("/viewAllMuseumsGuest",viewAllMuseumsGuest);

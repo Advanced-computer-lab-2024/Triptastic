@@ -69,55 +69,70 @@ const updateTourist = async(req,res) => {
  };
 
  const getProductTourist = async (req, res) => {
-   const {productName} = req.body; // Use Name as a parameter to find the category
-   try {
-       if (productName) {
-           const Product = await productModel.findOne({ productName });
-           if (!Product) {
-               return res.status(404).json({ msg: "Product not found" });
-           }
-           res.status(200).json(Product);
-       } else {
-           const Products = await productModel.find();
-           res.status(200).json(Products); // Return all categories if no Name is provided
-       }
-   } catch (error) {
-       res.status(400).json({ error: error.message });
-   }
+  const { productName } = req.query;
+
+  try {
+      const product = await productModel.findOne({ productName: productName });
+      res.status(200).json(product);
+  } 
+  catch (error) {
+      res.status(400).json({ error: error.message });
+  }
 };
 
-const filterActivities =async (req, res) => {
-   const { Category, date,minBudget, maxBudget, rating } = req.body;
-   
-   let filter = {};
-   if (Category) {
-      filter.Category = Category;
-    }
- 
-    if (minBudget !== undefined && maxBudget !== undefined) {
-      filter.price = {
-        $gte: Number(minBudget), 
-        $lte: Number(maxBudget), 
-      };
-    }
-    if (date) {
-      filter.date = new Date(date);
-    }
-   if (rating) {
-     filter.rating = { $gte: rating };
-   }
- 
-   const today = new Date();
-   today.setHours(0, 0, 0, 0); 
-   filter.date = { $gte: today };
+
+const filterActivities = async (req, res) => {
+  // Extract parameters from the query string for GET requests
+  const { Category, date, minBudget, maxBudget, rating } = req.query;
   
-   try {
+  let filter = {};
+
+  // Filter by category if provided
+  if (Category) {
+     filter.Category = Category;
+  }
+
+  // Filter by price (minBudget and maxBudget)
+  if (minBudget !== undefined && maxBudget !== undefined) {
+     filter.price = {
+        $gte: Number(minBudget), // Convert to number for comparison
+        $lte: Number(maxBudget), // Convert to number for comparison
+     };
+  }
+
+  if (date) {
+    // If a date is provided, filter by that specific date (exact match)
+    const inputDate = new Date(date);
+    const localDate = new Date(inputDate.setHours(0, 0, 0, 0)); // Normalize to local time start of the day
+    filter.date = {
+        $gte: localDate,  // Activities on or after the provided date (local time)
+        $lt: new Date(localDate.getTime() + 24 * 60 * 60 * 1000) // Before the next day
+    };
+} else {
+    // If no date is provided, filter activities from today onwards (local time)
+    const today = new Date();
+    const localToday = new Date(today.setHours(0, 0, 0, 0)); // Normalize to local time start of today
+    filter.date = { $gte: localToday }; // Activities today or later
+}
+
+
+
+  // Filter by rating (if provided)
+  if (rating) {
+     filter.rating = { $gte: Number(rating) }; // Convert to number for comparison
+  }
+
+  try {
+     
      const activities = await activitiesModel.find(filter);
-     res.json(activities);
-   } catch (error) {
+     console.log("Filter object:", filter);
+     res.json(activities); // Return the filtered activities
+  } catch (error) {
      res.status(500).json({ error: 'Server error' });
-   }
- };
+  }
+};
+
+
 
  const filterHistoricalLocationsByTagsTourist = async (req, res) => {
   const { Types } = req.query;
@@ -163,6 +178,34 @@ const viewProductsTourist = async (req, res) => {
     res.json(products); 
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+};
+const filterProductsByPriceRange = async (req, res) => {
+  const { minPrice, maxPrice } = req.query;
+
+  try {
+    // Set up filter criteria based on provided min and max prices
+    let filter = {};
+    
+    if (minPrice && maxPrice) {
+      filter.price = { $gte: parseFloat(minPrice), $lte: parseFloat(maxPrice) }; // Price between min and max
+    } else if (minPrice) {
+      filter.price = { $gte: parseFloat(minPrice) }; // Price greater than or equal to minPrice
+    } else if (maxPrice) {
+      filter.price = { $lte: parseFloat(maxPrice) }; // Price less than or equal to maxPrice
+    }
+
+    // Find products that match the filter criteria
+    const products = await productModel.find(filter);
+
+    if (products.length === 0) {
+      return res.status(404).json({ msg: 'No products found within the specified price range.' });
+    }
+
+    // Return filtered products
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -309,4 +352,4 @@ const sortProductsByRatingTourist = async (req, res) => {
  module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
-  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist};
+  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange};

@@ -1,9 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const AdvertiserProfile = () => {
+
+
   const [advertiserInfo, setAdvertiserInfo] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [updating, setUpdating] = useState(false); // Track update status
+  const [formData, setFormData] = useState({
+    Username: '',
+    Email: '',
+    Password: '',
+    Website_Link: '',
+    Hotline: '',
+    Company_Profile: '',
+   
+  });
 
   const fetchAdvertiserInfo = async () => {
     setLoading(true);
@@ -11,18 +23,18 @@ const AdvertiserProfile = () => {
 
     if (Username) {
       try {
-        const response = await fetch('http://localhost:8000/getAdvertiser', {
+     
+        const response = await fetch(`http://localhost:8000/getAdvertiser?Username=${Username}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
-           // 'Authorization': `Bearer ${localStorage.getItem()}` // Include the token if you're using authentication
           },
         });
        
 
         if (response.ok) {
           const data = await response.json();
-          console.log('Fetched Data:', data);
+         
           if (data) {
             setAdvertiserInfo(data); // Set the fetched information
             setErrorMessage('');
@@ -42,6 +54,50 @@ const AdvertiserProfile = () => {
     setLoading(false);
   };
 
+
+
+  useEffect(() => {
+    fetchAdvertiserInfo();
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+ 
+
+  const handleUpdate = async () => {
+    setUpdating(true);
+   // const Username = localStorage.getItem('Username'); // Get the username from local storage
+
+    try {
+      const response = await fetch(`http://localhost:8000/updateAdvertiser`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const updatedData = await response.json();
+        setAdvertiserInfo(updatedData); // Update the UI with new information
+        setErrorMessage('');
+        alert('Information updated successfully!');
+      } else {
+        throw new Error('Failed to update advertiser profile');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while updating your profile.');
+      console.error(error);
+    }
+
+    setUpdating(false);
+  };
+
   return (
     <div>
       <h2>Advertiser Profile</h2>
@@ -49,22 +105,61 @@ const AdvertiserProfile = () => {
       {loading ? (
         <p>Loading advertiser information...</p>
       ) : (
-        advertiserInfo ? (
+        advertiserInfo && (
           <div>
-            <p><strong>Username:</strong> {advertiserInfo.Username}</p>
-            <p><strong>Email:</strong> {advertiserInfo.Email}</p>
-            <p><strong>website_Link:</strong> {advertiserInfo.website_Link}</p>
-            <p><strong>Hotline:</strong> {advertiserInfo.Hotline}</p>
-            <p><strong>Company_Profile:</strong> {advertiserInfo.Company_Profile}</p>
-            {/* Don't display the password for security reasons */}
+            <div>
+              <label><strong>Username:</strong></label>
+              <p>{advertiserInfo.Username}</p> {/* Display Username as text */}
+            </div>
+            <div>
+              <label><strong>Website Link:</strong></label>
+              <input
+                 type="text"
+                  name="website_Link"
+                value={formData.website_Link}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div>
+              <label><strong>Password:</strong></label>
+              <input
+                type="text" // Visible password
+                name="Password"
+                value={formData.Password}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div>
+           <label> <strong>Hotline:</strong></label>
+                  <input
+                    type="text"
+                    name="Hotline"
+                value={formData.Hotline}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div>
+              <label><strong>Company Profile:</strong></label>
+              <input
+                type="text" 
+                name="Company_Profile"
+                value={formData.Company_Profile}
+                onChange={handleInputChange}
+              />
+            </div>
+           
+           
+
+            <button onClick={handleUpdate} disabled={updating}>
+              {updating ? 'Updating...' : 'Update Information'}
+            </button>
           </div>
-        ) : (
-          <p>No advertiser information found.</p>
         )
       )}
-      <button onClick={fetchAdvertiserInfo}>View My Information</button>
+      <button onClick={fetchAdvertiserInfo}>Refresh My Information</button>
     </div>
   );
 };
 
 export default AdvertiserProfile;
+

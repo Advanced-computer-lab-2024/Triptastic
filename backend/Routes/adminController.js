@@ -27,7 +27,7 @@ const AdminLogin = async (req, res) => {
 
 
 const createAdmin = async (req, res) => {
-    const { Username, Password, Role } = req.body;
+    const { Username, Password } = req.body;
 
     try {
         const existingAdmin = await adminModel.findOne({ Username });
@@ -36,7 +36,7 @@ const createAdmin = async (req, res) => {
             return res.status(400).json({ error: "Username already exists" });
         }
 
-        const admin = await adminModel.create({ Username, Password, Role });
+        const admin = await adminModel.create({ Username, Password });
         res.status(201).json(admin);
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -55,23 +55,16 @@ const createCategory = async (req, res) => {
 
 
 const getCategory = async (req, res) => {
-    const {Name} = req.body; // Use Name as a parameter to find the category
-    try {
-        if (Name) {
-            const category = await activitiescategoryModel.findOne({ Name });
-            if (!category) {
-                return res.status(404).json({ msg: "Category not found" });
-            }
-            res.status(200).json(category);
-        } else {
-            const categories = await activitiescategoryModel.find();
-            res.status(200).json(categories); // Return all categories if no Name is provided
-        }
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
+  const { Name } = req.query;
 
+  try {
+      const category = await activitiescategoryModel.findOne({ Name: Name });
+      res.status(200).json(category);
+  } 
+  catch (error) {
+      res.status(400).json({ error: error.message });
+  }
+};
 
 
 const updateCategory = async (req, res) => {
@@ -121,24 +114,18 @@ const createProduct = async (req, res) => {
     }
   };
  
-  const getProduct = async (req, res) => {
-    const {productName} = req.body; // Use Name as a parameter to find the category
-    try {
-        if (productName) {
-            const Product = await productModel.findOne({ productName });
-            if (!Product) {
-                return res.status(404).json({ msg: "Product not found" });
-            }
-            res.status(200).json(Product);
-        } else {
-            const Products = await productModel.find();
-            res.status(200).json(Products); // Return all categories if no Name is provided
-        }
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
 
+const getProduct = async (req, res) => {
+  const { productName } = req.query;
+
+  try {
+      const product = await productModel.findOne({ productName: productName });
+      res.status(200).json(product);
+  } 
+  catch (error) {
+      res.status(400).json({ error: error.message });
+  }
+};
 
 const deleteAdvertiser = async (req, res) => {
     const { Username } = req.query;  
@@ -219,22 +206,17 @@ const createPrefTag = async (req, res) => {
 
 
 const getPrefTag = async (req, res) => {
-    const {PrefTagName} = req.body; // Use Name as a parameter to find the category
-    try {
-        if (PrefTagName) {
-            const category = await prefTagModel.findOne({ PrefTagName });
-            if (!category) {
-                return res.status(404).json({ msg: "Category not found" });
-            }
-            res.status(200).json(category);
-        } else {
-            const categories = await prefTagModel.find();
-            res.status(200).json(categories); // Return all categories if no Name is provided
-        }
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
+  const { PrefTagName } = req.query;
+
+  try {
+      const category = await prefTagModel.findOne({ PrefTagName: PrefTagName });
+      res.status(200).json(category);
+  } 
+  catch (error) {
+      res.status(400).json({ error: error.message });
+  }
 };
+
 
 const updatePreftag = async (req, res) => {
     const {PrefTagName, newPrefTagName }= req.body; // The current category name from the URL parameter
