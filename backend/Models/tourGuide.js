@@ -12,13 +12,13 @@ const tourGuideSchema = new Schema({
         type: String, required: true,
     },
     mobileNumber: {
-        type: Number, required: false,
+        type: Number, default:null,
     },
     yearsOfExperience: {
-        type: Number, required: false, 
+        type: Number, default:null, 
     },
     previousWork: {
-        type: String, required: false,
+        type: String, default:null,
     }
       },{ timestamps: true });
        

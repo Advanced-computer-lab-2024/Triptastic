@@ -142,5 +142,6 @@ const createTouristItinerary=async(req,res)=>{
        res.status(400).json({ error: error.message });
    }
 };
+
  module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary};
  

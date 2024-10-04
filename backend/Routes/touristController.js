@@ -136,7 +136,7 @@ const filterActivities = async (req, res) => {
 
  const filterHistoricalLocationsByTagsTourist = async (req, res) => {
   const { Types } = req.query;
-  const validTagTypes = ["Monuments", "Museums", "Religious Sites", "Palaces","Castles"];
+  const validTagTypes = ["Monuments", "Religious Sites", "Palaces","Castles"];
 
   try {
     if (!validTagTypes.includes(Types)) {
