@@ -7,6 +7,7 @@ const AdminPage = () => {
     Password: ''
   });
 
+  const [categoryName, setCategoryName] = useState('');
   const [usernameToDelete, setUsernameToDelete] = useState('');
   const [userType, setUserType] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -158,12 +159,44 @@ const AdminPage = () => {
     }
   };
 
+  // Function to create a new category
+  const createCategory = async () => {
+    setLoading(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    try {
+      const response = await fetch('http://localhost:8000/createCategory', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ Name: categoryName }) // Send category name
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSuccessMessage(`Category "${data.Name}" created successfully!`);
+        setCategoryName(''); // Clear the input field
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Failed to create category.');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while creating the category.');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="admin-dashboard-container">
       <div className="admin-content">
         <h1>Admin Dashboard</h1>
-        <p>Welcome to the Admin Dashboard! Here you can manage users and view statistics.</p>
+        <p>Welcome to the Admin Dashboard! Here you can manage users, categories, and products.</p>
 
+        {/* Create Admin */}
         <h2>Create Admin</h2>
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         
@@ -193,6 +226,7 @@ const AdminPage = () => {
           </button>
         </form>
 
+        {/* Delete User */}
         <h2>Delete User</h2>
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
@@ -222,12 +256,29 @@ const AdminPage = () => {
           </div>
         )}
 
-        {/* Button to toggle product form */}
+        {/* Create Category */}
+        <h2>Create Category</h2>
+        <form onSubmit={(e) => { e.preventDefault(); createCategory(); }}>
+          <div>
+            <label>Category Name:</label>
+            <input
+              type="text"
+              value={categoryName}
+              onChange={(e) => setCategoryName(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" disabled={loading}>
+            {loading ? 'Creating...' : 'Create Category'}
+          </button>
+          {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+        </form>
+
+        {/* Add Product */}
         <button onClick={handleAddProduct}>
           {addingProduct ? 'Cancel' : 'Add Product'}
         </button>
 
-        {/* Add Product Form */}
         {addingProduct && (
           <form onSubmit={handleProductSubmit}>
             <h3>Add a Product</h3>
@@ -286,11 +337,11 @@ const AdminPage = () => {
         )}
       </div>
 
-      {/* Sidebar for Navigation */}
+      {/* Sidebar */}
       <div className="sidebar">
-        <h3>Navigation</h3>
+        <h3>Explore</h3>
         <ul>
-          <li onClick={() => navigate('/products')}>All Products</li>
+          <li onClick={() => navigate('/products')}>Products</li>
         </ul>
       </div>
     </div>
