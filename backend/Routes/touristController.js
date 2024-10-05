@@ -134,24 +134,31 @@ const filterActivities = async (req, res) => {
 
 
 
- const filterHistoricalLocationsByTagsTourist = async (req, res) => {
+const filterHistoricalLocationsByTagsTourist = async (req, res) => {
   const { Types } = req.query;
-  const validTagTypes = ["Monuments", "Religious Sites", "Palaces","Castles"];
+  const validTagTypes = ["Monuments", "Religious Sites", "Palaces/Castles"];
 
   try {
     if (!validTagTypes.includes(Types)) {
-      return res.status(400).json({ error: `Invalid tag type. Valid types are: ${validTagTypes.join(', ')}` }); 
-  }
-      const filteredLocations = await historicalLocationModel.find({ 'Tags.Types': Types });
+      return res.status(400).json({ error: `Invalid tag type. Valid types are: ${validTagTypes.join(', ')}` });
+    }
 
-      if (filteredLocations.length === 0) {
-          return res.status(404).json({ msg: "No historical locations found with the specified tag type." });
-      }
-      res.status(200).json(filteredLocations);
+    // Adjust the query condition to fetch both Palaces and Castles when "Palaces/Castles" is selected
+    const filterCondition = {
+      'Tags.Types': Types === "Palaces/Castles" ? { $in: ["Palaces", "Castles"] } : Types
+    };
+
+    const filteredLocations = await historicalLocationModel.find(filterCondition);
+
+    if (filteredLocations.length === 0) {
+      return res.status(404).json({ msg: "No historical locations found with the specified tag type." });
+    }
+    res.status(200).json(filteredLocations);
   } catch (error) {
-      res.status(400).json({ error: error.message });
-  }
+    res.status(400).json({ error: error.message });
+  }
 };
+
 
 const filterMuseumsByTagsTourist = async (req, res) => {
   const { Tags } = req.query; // Extracting HistoricalPeriod from query parameters
@@ -166,6 +173,23 @@ const filterMuseumsByTagsTourist = async (req, res) => {
       res.status(200).json(filteredMuseums);
   } catch (error) {
       res.status(400).json({ error: error.message });
+  }
+};
+
+const getUniqueHistoricalPeriods = async (req, res) => {
+  try {
+    const uniquePeriods = await museumsModel.distinct('Tags.HistoricalPeriod'); // Adjust the path as necessary
+
+    if (!uniquePeriods.length) {
+      return res.status(404).json({ msg: "No historical periods found." });
+    }
+
+    // Return the unique periods in the expected format
+    const periodsData = uniquePeriods.map(period => ({ name: period }));
+    
+    res.status(200).json(periodsData);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 };
 
@@ -352,4 +376,4 @@ const sortProductsByRatingTourist = async (req, res) => {
  module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
-  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange};
+  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods};
