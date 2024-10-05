@@ -275,11 +275,29 @@ const sortProductsByRatingAdmin = async (req, res) => {
       res.status(500).json({ error: 'Server error' });
     }
     };
+   
 
+    const addTourismGov = async (req, res) => {
+      const { Username, Password } = req.body;
+    
+      try {
+          const existingTourismGov = await tourismGovModel.findOne({ Username });
+          
+          if (existingTourismGov) {
+              return res.status(400).json({ error: "Username already exists" });
+          }
+    
+          const tourismGov = await tourismGovModel.create({ Username, Password });
+          res.status(200).json(tourismGov);
+      } catch (error) {
+          res.status(400).json({ error: error.message });
+      }
+    }
+    
 
 
 
 
 module.exports = {createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
-    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin
+    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov
 };
