@@ -24,6 +24,13 @@ const AdminPage = () => {
     stock: '',
     image: ''
   });
+  
+  // State for Tourism Governor
+  const [tourismGovData, setTourismGovData] = useState({
+    Username: '',
+    Password: ''
+  });
+
   const navigate = useNavigate();
 
   // Handle input changes for admin creation form
@@ -190,160 +197,211 @@ const AdminPage = () => {
     }
   };
 
+  // Function to add a Tourism Governor
+  const addTourismGov = async (e) => {
+    e.preventDefault();
+    const { Username, Password } = tourismGovData;
+
+    try {
+      const response = await fetch('http://localhost:8000/addTourismGov', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ Username, Password })
+      });
+
+      if (response.ok) {
+        alert('Tourism Governor added successfully!');
+        setTourismGovData({ Username: '', Password: '' }); // Clear the form
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Failed to add Tourism Governor.');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while adding the Tourism Governor.');
+      console.error(error);
+    }
+  };
+
+  // Handle input changes for Tourism Governor form
+  const handleTourismGovChange = (e) => {
+    const { name, value } = e.target;
+    setTourismGovData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+
   return (
-    <div className="admin-dashboard-container">
-      <div className="admin-content">
-        <h1>Admin Dashboard</h1>
-        <p>Welcome to the Admin Dashboard! Here you can manage users, categories, and products.</p>
+    <div>
+      <h1>Admin Page</h1>
 
-        {/* Create Admin */}
-        <h2>Create Admin</h2>
-        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-        
-        <form onSubmit={(e) => { e.preventDefault(); createAdmin(); }}>
-          <div>
-            <label>Username:</label>
-            <input
-              type="text"
-              name="Username"
-              value={formData.Username}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Password:</label>
-            <input
-              type="password"
-              name="Password"
-              value={formData.Password}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <button type="submit" disabled={loading}>
-            {loading ? 'Creating...' : 'Create Admin'}
-          </button>
-        </form>
-
-        {/* Delete User */}
-        <h2>Delete User</h2>
+      {/* Create Admin Form */}
+      <h2>Create Admin</h2>
+      <form onSubmit={createAdmin}>
+        <div>
+          <label>Username:</label>
+          <input
+            type="text"
+            name="Username"
+            value={formData.Username}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <label>Password:</label>
+          <input
+            type="password"
+            name="Password"
+            value={formData.Password}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <button type="submit" disabled={loading}>Create Admin</button>
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+      </form>
 
+      {/* Add Tourism Governor */}
+      <h2>Add Tourism Governor</h2>
+      <form onSubmit={addTourismGov}>
         <div>
-          <label>Select User Type:</label>
-          <select value={userType} onChange={(e) => setUserType(e.target.value)}>
-            <option value="">Select...</option>
-            <option value="Advertiser">Advertiser</option>
-            <option value="Seller">Seller</option>
-            <option value="TourGuide">Tour Guide</option>
-            <option value="Tourist">Tourist</option>
-            <option value="TourismGov">Tourism Governor</option>
-          </select>
+          <label>Username:</label>
+          <input
+            type="text"
+            name="Username"
+            value={tourismGovData.Username}
+            onChange={handleTourismGovChange}
+            required
+          />
         </div>
+        <div>
+          <label>Password:</label>
+          <input
+            type="password"
+            name="Password"
+            value={tourismGovData.Password}
+            onChange={handleTourismGovChange}
+            required
+          />
+        </div>
+        <button type="submit">Add Tourism Governor</button>
+        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+      </form>
 
-        {userType && (
+      {/* Add Product Form */}
+      <h2>Add Product</h2>
+      {addingProduct && (
+        <form onSubmit={handleProductSubmit}>
           <div>
+            <label>Product Name:</label>
             <input
               type="text"
-              placeholder="Enter Username to delete"
-              value={usernameToDelete}
-              onChange={(e) => setUsernameToDelete(e.target.value)}
+              name="productName"
+              value={productFormData.productName}
+              onChange={handleProductInputChange}
               required
             />
-            <button onClick={handleDeleteUser}>Delete</button>
           </div>
-        )}
-
-        {/* Create Category */}
-        <h2>Create Category</h2>
-        <form onSubmit={(e) => { e.preventDefault(); createCategory(); }}>
           <div>
-            <label>Category Name:</label>
+            <label>Description:</label>
             <input
               type="text"
-              value={categoryName}
-              onChange={(e) => setCategoryName(e.target.value)}
+              name="description"
+              value={productFormData.description}
+              onChange={handleProductInputChange}
               required
             />
           </div>
-          <button type="submit" disabled={loading}>
-            {loading ? 'Creating...' : 'Create Category'}
-          </button>
-          {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+          <div>
+            <label>Price:</label>
+            <input
+              type="number"
+              name="price"
+              value={productFormData.price}
+              onChange={handleProductInputChange}
+              required
+            />
+          </div>
+          <div>
+            <label>Rating:</label>
+            <input
+              type="number"
+              name="rating"
+              value={productFormData.rating}
+              onChange={handleProductInputChange}
+              required
+            />
+          </div>
+          <div>
+            <label>Review:</label>
+            <input
+              type="text"
+              name="review"
+              value={productFormData.review}
+              onChange={handleProductInputChange}
+            />
+          </div>
+          <div>
+            <label>Stock:</label>
+            <input
+              type="number"
+              name="stock"
+              value={productFormData.stock}
+              onChange={handleProductInputChange}
+              required
+            />
+          </div>
+          <div>
+            <label>Image URL:</label>
+            <input
+              type="text"
+              name="image"
+              value={productFormData.image}
+              onChange={handleProductInputChange}
+            />
+          </div>
+          <button type="submit">Add Product</button>
         </form>
+      )}
+      <button onClick={handleAddProduct}>Prepare to Add Product</button>
 
-        {/* Add Product */}
-        <button onClick={handleAddProduct}>
-          {addingProduct ? 'Cancel' : 'Add Product'}
-        </button>
+      {/* Create Category */}
+      <h2>Create Category</h2>
+      <form onSubmit={createCategory}>
+        <div>
+          <label>Category Name:</label>
+          <input
+            type="text"
+            value={categoryName}
+            onChange={(e) => setCategoryName(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit" disabled={loading}>Create Category</button>
+      </form>
 
-        {addingProduct && (
-          <form onSubmit={handleProductSubmit}>
-            <h3>Add a Product</h3>
-            <div>
-              <label>Product Name:</label>
-              <input
-                type="text"
-                name="productName"
-                value={productFormData.productName}
-                onChange={handleProductInputChange}
-                required
-              />
-            </div>
-            <div>
-              <label>Description:</label>
-              <input
-                type="text"
-                name="description"
-                value={productFormData.description}
-                onChange={handleProductInputChange}
-                required
-              />
-            </div>
-            <div>
-              <label>Price:</label>
-              <input
-                type="number"
-                name="price"
-                value={productFormData.price}
-                onChange={handleProductInputChange}
-                required
-              />
-            </div>
-            <div>
-              <label>Stock:</label>
-              <input
-                type="number"
-                name="stock"
-                value={productFormData.stock}
-                onChange={handleProductInputChange}
-                required
-              />
-            </div>
-            <div>
-              <label>Image URL:</label>
-              <input
-                type="text"
-                name="image"
-                value={productFormData.image}
-                onChange={handleProductInputChange}
-                required
-              />
-            </div>
-            <button type="submit">Submit Product</button>
-          </form>
-        )}
+      {/* Delete User */}
+      <h2>Delete User</h2>
+      <div>
+        <input
+          type="text"
+          value={usernameToDelete}
+          onChange={(e) => setUsernameToDelete(e.target.value)}
+          placeholder="Username to delete"
+        />
+        <select onChange={(e) => setUserType(e.target.value)}>
+          <option value="">Select User Type</option>
+          <option value="Admin">Admin</option>
+          <option value="Tourism Governor">Tourism Governor</option>
+        </select>
+        <button onClick={handleDeleteUser}>Delete User</button>
       </div>
 
-      {/* Sidebar */}
-      <div className="sidebar">
-        <h3>Explore</h3>
-        <ul>
-          <li onClick={() => navigate('/products')}>Products</li>
-        </ul>
-      </div>
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
     </div>
   );
 };
