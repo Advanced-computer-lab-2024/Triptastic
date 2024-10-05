@@ -24,6 +24,21 @@ const AdminLogin = async (req, res) => {
   }
 };
 
+const tourismGovLogin = async (req, res) => {
+  const { Username, Password } = req.body;
+
+  try {
+      const tourismGov = await tourismGovModel.findOne({ Username, Password });
+
+      if (!tourismGov) {
+          return res.status(401).json({ error: "Invalid username, password" });
+      }
+      res.status(200).json({ message: "Login successful", tourismGov });
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+};
+
 
 
 const createAdmin = async (req, res) => {
@@ -299,5 +314,5 @@ const sortProductsByRatingAdmin = async (req, res) => {
 
 
 module.exports = {createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
-    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov
+    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin
 };

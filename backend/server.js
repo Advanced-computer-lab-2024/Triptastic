@@ -28,10 +28,11 @@ const{ createSeller,getSeller,updateSeller,createProductseller,getProductSeller,
 //Admin
 const{createAdmin,createCategory,
   getCategory,
-  updateCategory,
+  updateCategory,tourismGovLogin,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
 ,createPrefTag,updatePreftag,deletePreftag,getPrefTag,
-viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov}=require("./Routes/adminController");
+viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,
+tourismGovLogin}=require("./Routes/adminController");
 
 
 
@@ -136,6 +137,7 @@ app.get("/viewProductsSeller",viewProductsSeller);
 app.get("/sortProductsByRatingSeller",sortProductsByRatingSeller);
 
 //Admin
+app.post("/tourismGovLogin",tourismGovLogin);
 app.delete("/deleteTourGuide",deleteTourGuide);
 app.delete("/deleteAdvertiser",deleteAdvertiser);
 app.delete("/deleteTourist",deleteTourist);

@@ -1,158 +1,208 @@
 import React, { useState, useEffect } from 'react';
-const Activites =()=>{
+
+const Activites = () => {
   const [activities, setActivities] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [expandedActivities, setExpandedActivities] = useState({});
 
-  const fetchPascRasc= async()=>{
-    try{
-        const response = await fetch(`http://localhost:8000/sortActPASCRASC`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-        if(response.ok){
-            const data= await response.json();
-            setActivities(data);
-            setErrorMessage('')
-        }
-        else {
-            throw new Error('Failed to fetch activities');
-          }
-    }catch(error){
-            setErrorMessage('An error occurred while fetching activities');
-            console.error(error);
-          } finally {
-            setLoading(false);
-          }
+  // Sorting states
+  const [priceSort, setPriceSort] = useState('PASC'); // 'PASC' or 'PDSC'
+  const [ratingSort, setRatingSort] = useState('RASC'); // 'RASC' or 'RDSC'
+
+  // Filter states
+  const [filterCategory, setFilterCategory] = useState('');
+  const [filterDate, setFilterDate] = useState('');
+  const [minBudget, setMinBudget] = useState('');
+  const [maxBudget, setMaxBudget] = useState('');
+  const [filterRating, setFilterRating] = useState('');
+
+  // Fetch activities with sorting
+  const fetchSortedActivities = async (priceSortParam, ratingSortParam) => {
+    try {
+      const response = await fetch(`http://localhost:8000/sortAct${priceSortParam}${ratingSortParam}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setActivities(data);
+        setErrorMessage('');
+      } else {
+        throw new Error('Failed to fetch activities');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while fetching activities');
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
-const handlePascRasc=()=>{
-    fetchPascRasc();
-}
-const handlePascRdsc= async()=>{
-    try{
-        const response = await fetch(`http://localhost:8000/sortActPASCRDSC`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-        if(response.ok){
-            const data= await response.json();
-            setActivities(data);
-            setErrorMessage('')
-        }
-        else {
-            throw new Error('Failed to fetch activities');
-          }
-    }catch(error){
-            setErrorMessage('An error occurred while fetching activities');
-            console.error(error);
-          } finally {
-            setLoading(false);
-          }
-}
-const handlePdscRasc= async()=>{
-    try{
-        const response = await fetch(`http://localhost:8000/sortActPDSCRASC`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-        if(response.ok){
-            const data= await response.json();
-            setActivities(data);
-            setErrorMessage('')
-        }
-        else {
-            throw new Error('Failed to fetch activities');
-          }
-    }catch(error){
-            setErrorMessage('An error occurred while fetching activities');
-            console.error(error);
-          } finally {
-            setLoading(false);
-          }
-}
-const handlePdscRdsc= async()=>{
-    try{
-        const response = await fetch(`http://localhost:8000/sortActPDSCRDSC`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-        if(response.ok){
-            const data= await response.json();
-            setActivities(data);
-            setErrorMessage('')
-        }
-        else {
-            throw new Error('Failed to fetch activities');
-          }
-    }catch(error){
-            setErrorMessage('An error occurred while fetching activities');
-            console.error(error);
-          } finally {
-            setLoading(false);
-          }
-}
-const toggleActivityDetails=(id)=>{
+  };
+
+  // Fetch activities with filters
+  const fetchFilteredActivities = async () => {
+    try {
+      const filterParams = new URLSearchParams();
+      if (filterCategory) filterParams.append('Category', filterCategory);
+      if (filterDate) filterParams.append('date', filterDate);
+      if (minBudget) filterParams.append('minBudget', minBudget);
+      if (maxBudget) filterParams.append('maxBudget', maxBudget);
+      if (filterRating) filterParams.append('rating', filterRating);
+
+      const response = await fetch(`http://localhost:8000/filterActivities?${filterParams.toString()}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setActivities(data);
+        setErrorMessage('');
+      } else {
+        throw new Error('Failed to fetch activities');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while fetching activities');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSort = (priceSortParam, ratingSortParam) => {
+    setPriceSort(priceSortParam);
+    setRatingSort(ratingSortParam);
+    setLoading(true);
+    fetchSortedActivities(priceSortParam, ratingSortParam);
+  };
+
+  const handleFilterSubmit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    fetchFilteredActivities();
+  };
+
+  const toggleActivityDetails = (id) => {
     setExpandedActivities((prev) => ({
-        ...prev,
-        [id]: !prev[id],
-      }));
-}
-useEffect(() => {
-    fetchPascRasc(); // Default to ascending sort
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  useEffect(() => {
+    fetchSortedActivities('PASC', 'RASC'); // Default sort: Price Asc, Rating Asc
   }, []);
 
-  
+  return (
+    <div>
+      <h2>Activities</h2>
 
-
-return(
-  
-  
-
-<div>
-
-<h2>Activities</h2>
-
-{loading ? (
+      {loading ? (
         <p>Loading activities...</p>
       ) : (
         <>
-          <button onClick={handlePascRasc}>Sort by Price asc and rating asc</button>
-          <button onClick={handlePascRdsc}>Sort by Price asc and rating dsc</button>
-          <button onClick={handlePdscRasc}>Sort by Price dsc and rating asc</button>
-          <button onClick={handlePdscRdsc}>Sort by Price dsc and rating dsc</button>
+          {/* Sorting Buttons */}
+          <div>
+            <h3>Sort Activities</h3>
+            <button onClick={() => handleSort('PASC', 'RASC')}>Price Asc & Rating Asc</button>
+            <button onClick={() => handleSort('PASC', 'RDSC')}>Price Asc & Rating Desc</button>
+            <button onClick={() => handleSort('PDSC', 'RASC')}>Price Desc & Rating Asc</button>
+            <button onClick={() => handleSort('PDSC', 'RDSC')}>Price Desc & Rating Desc</button>
+          </div>
 
+          {/* Filter Form */}
+          <div>
+            <h3>Filter Activities</h3>
+            <form onSubmit={handleFilterSubmit}>
+              <div>
+                <label>
+                  Category:
+                  <input
+                    type="text"
+                    value={filterCategory}
+                    onChange={(e) => setFilterCategory(e.target.value)}
+                    placeholder="e.g., Adventure"
+                  />
+                </label>
+              </div>
+              <div>
+                <label>
+                  Date:
+                  <input
+                    type="date"
+                    value={filterDate}
+                    onChange={(e) => setFilterDate(e.target.value)}
+                  />
+                </label>
+              </div>
+              <div>
+                <label>
+                  Min Budget:
+                  <input
+                    type="number"
+                    value={minBudget}
+                    onChange={(e) => setMinBudget(e.target.value)}
+                    placeholder="Minimum Price"
+                  />
+                </label>
+              </div>
+              <div>
+                <label>
+                  Max Budget:
+                  <input
+                    type="number"
+                    value={maxBudget}
+                    onChange={(e) => setMaxBudget(e.target.value)}
+                    placeholder="Maximum Price"
+                  />
+                </label>
+              </div>
+              <div>
+                <label>
+                  Minimum Rating:
+                  <input
+                    type="number"
+                    value={filterRating}
+                    onChange={(e) => setFilterRating(e.target.value)}
+                    placeholder="Rating (e.g., 4)"
+                    min="1"
+                    max="5"
+                  />
+                </label>
+              </div>
+              <button type="submit">Apply Filters</button>
+            </form>
+          </div>
+
+          {/* Error Message */}
           {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
 
+          {/* Activities List */}
           {activities.length > 0 ? (
             <ul>
               {activities.map((activity) => (
                 <li key={activity._id}>
                   <strong>Name:</strong> {activity.name} <br />
-                  <strong>Price:</strong> {activity.price} <br />
+                  <strong>Price:</strong> ${activity.price} <br />
                   <strong>Rating:</strong> {activity.rating} <br />
                   {/* Button to toggle activity details */}
                   <button onClick={() => toggleActivityDetails(activity._id)}>
-                    {expandedActivities[activity._id] ? 'Hide activity Details' : 'View activity Details'}
+                    {expandedActivities[activity._id] ? 'Hide Activity Details' : 'View Activity Details'}
                   </button>
                   {/* Show details if expanded */}
                   {expandedActivities[activity._id] && (
-                    <div>
+                    <div style={{ marginTop: '10px', paddingLeft: '20px' }}>
                       <p><strong>Category:</strong> {activity.Category}</p>
-                      <p><strong>Date:</strong> {activity.date}</p>
+                      <p><strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}</p>
                       <p><strong>Time:</strong> {activity.time}</p>
                       <p><strong>Location:</strong> {activity.location}</p>
                       <p><strong>Tags:</strong> {activity.tags.join(', ')}</p>
-                      <p><strong>Special discounts:</strong> {activity.specialDiscounts}</p>
-                      <p><strong>Booking open:</strong> {activity.bookingOpen? 'Yes' : 'No'}</p>
+                      <p><strong>Special Discounts:</strong> {activity.specialDiscounts}</p>
+                      <p><strong>Booking Open:</strong> {activity.bookingOpen ? 'Yes' : 'No'}</p>
                       <p><strong>Advertiser:</strong> {activity.Advertiser}</p>
                     </div>
                   )}
@@ -164,13 +214,8 @@ return(
           )}
         </>
       )}
-
-
-
-
-</div>
-)
-  }
-    
+    </div>
+  );
+};
 
 export default Activites;
