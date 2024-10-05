@@ -4,25 +4,7 @@ const Activites =()=>{
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [expandedActivities, setExpandedActivities] = useState({});
-  const [showUpcomingActivities, setShowUpcomingActivities] = useState(false);
-  const [error, setError] = useState(null);
 
-  // Function to fetch upcoming activities
-  const fetchUpcomingActivities = async () => {
-    try {
-      const response = await fetch('/api/viewAllUpcomingActivitiesTourist'); // Assuming this is your API route
-      if (!response.ok) {
-        throw new Error('Failed to fetch activities');
-      }
-      const data = await response.json();
-      setActivities(data);
-      setError(null); // Clear previous error, if any
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
   const fetchPascRasc= async()=>{
     try{
         const response = await fetch(`http://localhost:8000/sortActPASCRASC`, {
@@ -128,12 +110,7 @@ useEffect(() => {
     fetchPascRasc(); // Default to ascending sort
   }, []);
 
-  const handleViewUpcomingActivities = () => {
-    if (!showUpcomingActivities) {
-      fetchUpcomingActivities();
-    }
-    setShowUpcomingActivities(!showUpcomingActivities);
-  };
+  
 
 
 return(
@@ -142,34 +119,6 @@ return(
 
 <div>
 
-      {/* View All Upcoming Activities button */}
-      <div>
-        <h3>Upcoming Activities</h3>
-        <button onClick={handleViewUpcomingActivities}>
-          {showUpcomingActivities ? 'Hide Upcoming Activities' : 'View All Upcoming Activities'}
-        </button>
-
-        {/* Conditionally display upcoming activities */}
-        {showUpcomingActivities && (
-          <div>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            {activities.length > 0 ? (
-              <ul>
-                {activities.map((activity, index) => (
-                  <li key={index}>
-                    <h3>{activity.name}</h3>
-                    <p>Date: {new Date(activity.date).toLocaleDateString()}</p>
-                    <p>Price: {activity.price}</p>
-                    <p>Rating: {activity.rating}</p>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>No upcoming activities found</p>
-            )}
-          </div>
-        )}
-      </div>
 <h2>Activities</h2>
 
 {loading ? (
