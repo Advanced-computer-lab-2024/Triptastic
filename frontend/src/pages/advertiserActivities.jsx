@@ -37,7 +37,7 @@ const AdvertiserActivity = () => {
 
     try {
       console.log('Activity Data:', JSON.stringify(activityData));
-      const response = await fetch('http://localhost:8000/createActivity', {
+      const response = await fetch(`http://localhost:8000/createActivity`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -251,7 +251,7 @@ const AdvertiserActivity = () => {
           <p><strong>Date:</strong> {viewData.date}</p>
           <p><strong>Time:</strong> {viewData.time}</p>
           <p><strong>Price:</strong> {viewData.price}</p>
-          <p><strong>Category:</strong> {viewData.category}</p>
+          <p><strong>Category:</strong> {viewData.Category}</p>
           <p><strong>Tags:</strong> {viewData.tags}</p>
           <p><strong>Special Discounts:</strong> {viewData.specialDiscounts}</p>
           <p><strong>Booking Open:</strong> {viewData.bookingOpen ? 'Yes' : 'No'}</p>
