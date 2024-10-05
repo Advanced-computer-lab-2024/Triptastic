@@ -137,3 +137,28 @@ button:hover {
     font-size: 0.9em;
   }
 }
+
+
+.header-container {
+  position: absolute; /* positions the buttons relative to the page */
+  top: 10px; /* adjust for the desired top spacing */
+  right: 10px; /* adjust for the desired right spacing */
+  display: flex; /* use flexbox for horizontal layout */
+  gap: 10px; /* space between the buttons */
+}
+
+.header-button {
+  padding: 10px 20px; /* add some padding for better appearance */
+  background-color: #61dafb; /* button background color */
+  color: #fff; /* text color */
+  border: none; /* remove border */
+  border-radius: 5px; /* rounded corners */
+  cursor: pointer; /* change cursor on hover */
+}
+
+.header-button:hover {
+  background-color: #21a1f1; /* Change background color on hover */
+}
+
+
+

@@ -28,7 +28,7 @@ const{ createSeller,getSeller,updateSeller,createProductseller,getProductSeller,
 //Admin
 const{createAdmin,createCategory,
   getCategory,
-  updateCategory,tourismGovLogin,
+  updateCategory,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
 ,createPrefTag,updatePreftag,deletePreftag,getPrefTag,
 viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,
