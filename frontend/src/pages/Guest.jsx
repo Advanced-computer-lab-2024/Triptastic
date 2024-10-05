@@ -18,6 +18,8 @@ const Guest = () => {
       <div>
         <button onClick={() => navigate('/museums')}>Go to Museums</button>
         <button onClick={() => navigate('/historical-locations')}>Go to Historical Places</button>
+        <button onClick={()=>navigate("/itineraries")}>Go to itineraries</button>
+        <button onClick={()=>navigate("/activities")}>Go to activities</button>
       </div>
     </div>
   );
