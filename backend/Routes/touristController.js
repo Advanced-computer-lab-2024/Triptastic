@@ -264,13 +264,14 @@ const viewAllMuseumsTourist = async (req, res) => {
 
 const viewAllItinerariesTourist = async (req, res) => {
   try {
-    
-      const itineraries = await itineraryModel.find({});
+    const currentDate = new Date();
+      const itineraries = await itineraryModel.find({ DatesTimes: { $gte: currentDate } });
       res.status(200).json(itineraries);
   } catch (error) {
       res.status(500).json({ error: 'Error fetching itineraries' });
   }
 };
+
 
 
 
