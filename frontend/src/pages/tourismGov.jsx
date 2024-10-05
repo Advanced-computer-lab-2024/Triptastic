@@ -1,161 +1,232 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 
-    const TourismGov = () => {
-      const [formData, setFormData] = useState({
-        Name: '',
-        Description: '',
-        Location: '',
-        OpeningHours: '',
-        image: '',
-        Tags: {
-          Types: '',
+const HistoricalLocationForm = () => {
+  const [formData, setFormData] = useState({
+    Name: '',
+    Description: '',
+    Location: '',
+    OpeningHours: '',
+    TicketPrices: {
+      Foreigner: '',
+      Student: '',
+      Native: ''
+    },
+    Tags: {
+      Types: ''
+    },
+    image: ''
+  });
+
+  const [isUpdate, setIsUpdate] = useState(false); // Track whether you're updating or creating
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
+  // Handle form input change for simple fields
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+
+  // Handle nested Tags object change
+  const handleTagsChange = (e) => {
+    const { value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      Tags: {
+        Types: value
+      }
+    }));
+  };
+
+  // Handle nested TicketPrices object change
+  const handleTicketPricesChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      TicketPrices: {
+        ...prevData.TicketPrices,
+        [name]: value
+      }
+    }));
+  };
+
+  // Handle form submission for creation
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('http://localhost:8000/createhistoricalLocation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        TicketPrices: {
-          foreigner: '',
-          student: '',
-          native: ''
-        }
+        body: JSON.stringify(formData)
       });
-    
-      const [errorMessage, setErrorMessage] = useState('');
-      const [successMessage, setSuccessMessage] = useState('');
-      const navigate = useNavigate();
 
-      const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-          ...prevData,
-          [name]: value
-        }));
-      };
-    
-      const handleTagChange = (e) => {
-        setFormData((prevData) => ({
-          ...prevData,
-          Tags: { ...prevData.Tags, Types: e.target.value }
-        }));
-      };
-    
-      const handleTicketPriceChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-          ...prevData,
-          TicketPrices: { ...prevData.TicketPrices, [name]: value }
-        }));
-      };
-    
-      const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-          const response = await fetch('http://localhost:8000/createhistoricalLocation', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
-          });
-    
-          if (response.ok) {
-            const result = await response.json();
-            setSuccessMessage('Historical Location created successfully!');
-            setFormData({
-              Name: '',
-              Description: '',
-              Location: '',
-              OpeningHours: '',
-              image: '',
-              Tags: {
-                Types: '',
-              },
-              TicketPrices: {
-                foreigner: '',
-                student: '',
-                native: ''
-              }
-            });
-          } else {
-            const errorData = await response.json();
-            setErrorMessage(errorData.error || 'Failed to create location.');
-          }
-        } catch (error) {
-          setErrorMessage('An error occurred while creating the location.');
-        }
-      };
-    
-      return (
+      if (response.ok) {
+        const result = await response.json();
+        setSuccessMessage(`Location "${result.Name}" created successfully!`);
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Failed to create historical location.');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while creating the historical location.');
+      console.error(error);
+    }
+  };
+
+  // Handle form submission for update
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`http://localhost:8000/updatehistoricalLocation`, {
+        method: 'PATCH', // or PATCH
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setSuccessMessage(`Location "${result.Name}" updated successfully!`);
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Failed to update historical location.');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while updating the historical location.');
+      console.error(error);
+    }
+  };
+
+  // Function to toggle between Create and Update mode
+  const toggleUpdateMode = () => {
+    if (!isUpdate && formData.Name.trim() === '') {
+      setErrorMessage('Please enter a name before switching to update mode.');
+      return;
+    }
+    setIsUpdate(!isUpdate);
+  };
+
+  return (
+    <div>
+      <h1>{isUpdate ? 'Update Historical Location' : 'Create Historical Location'}</h1>
+
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+
+      <form onSubmit={isUpdate ? handleUpdate : handleCreate}>
         <div>
-          <h2>Create Historical Location</h2>
-          {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-          {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-          <form onSubmit={handleSubmit}>
-            <div>
-              <label>Name:</label>
-              <input type="text" name="Name" value={formData.Name} onChange={handleChange} required />
-            </div>
-    
-            <div>
-              <label>Description:</label>
-              <input type="text" name="Description" value={formData.Description} onChange={handleChange} required />
-            </div>
-    
-            <div>
-              <label>Location:</label>
-              <input type="text" name="Location" value={formData.Location} onChange={handleChange} required />
-            </div>
-    
-            <div>
-              <label>Opening Hours:</label>
-              <input type="text" name="OpeningHours" value={formData.OpeningHours} onChange={handleChange} required />
-            </div>
-    
-            <div>
-              <label>Image URL:</label>
-              <input type="text" name="image" value={formData.image} onChange={handleChange} required />
-            </div>
-    
-            <div>
-              <label>Tag Type:</label>
-              <select name="Tags.Types" value={formData.Tags.Types} onChange={handleTagChange} required>
-                <option value="">Select...</option>
-                <option value="Monuments">Monuments</option>
-                <option value="Religious Sites">Religious Sites</option>
-                <option value="Palaces">Palaces</option>
-                <option value="Castles">Castles</option>
-              </select>
-            </div>
-    
-            <div>
-              <h3>Ticket Prices</h3>
-              <label>Foreigner:</label>
-              <input type="number" name="foreigner" value={formData.TicketPrices.foreigner} onChange={handleTicketPriceChange} required />
-              
-              <label>Student:</label>
-              <input type="number" name="student" value={formData.TicketPrices.student} onChange={handleTicketPriceChange} required />
-    
-              <label>Native:</label>
-              <input type="number" name="native" value={formData.TicketPrices.native} onChange={handleTicketPriceChange} required />
-            </div>
-    
-            <button type="submit">Create Historical Location</button>
-          </form>
-
-          {/* Sidebar */}
-      <div className="sidebar">
-        <h3>Explore</h3>
-        <ul>
-          <li onClick={() => navigate('/historical-locations')}>Historical Locations</li>
-          <li onClick={() => navigate('/museums')}>Museums</li>
-          <li onClick={() => navigate('/activities')}>Activities</li>
-          <li onClick={() => navigate('/itineraries')}>Itineraries</li>
-        </ul>
-      </div>
-
+          <label>Name (Required for Update):</label>
+          <input
+            type="text"
+            name="Name"
+            value={formData.Name}
+            onChange={handleInputChange}
+            required={isUpdate} // Required only when updating
+          />
         </div>
-      );
-    };
-    
-   
-    
 
-export default TourismGov;
+        <div>
+          <label>Description:</label>
+          <textarea
+            name="Description"
+            value={formData.Description}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div>
+          <label>Location:</label>
+          <input
+            type="text"
+            name="Location"
+            value={formData.Location}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div>
+          <label>Opening Hours:</label>
+          <input
+            type="text"
+            name="OpeningHours"
+            value={formData.OpeningHours}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div>
+          <label style={{ fontWeight: 'bold' }}>Ticket Prices:</label>
+          <div>
+            <label>Foreigner:</label>
+            <input
+              type="number"
+              name="Foreigner"
+              value={formData.TicketPrices.Foreigner}
+              onChange={handleTicketPricesChange}
+            />
+          </div>
+          <div>
+            <label>Student:</label>
+            <input
+              type="number"
+              name="Student"
+              value={formData.TicketPrices.Student}
+              onChange={handleTicketPricesChange}
+            />
+          </div>
+          <div>
+            <label>Native:</label>
+            <input
+              type="number"
+              name="Native"
+              value={formData.TicketPrices.Native}
+              onChange={handleTicketPricesChange}
+            />
+          </div>
+        </div>
+
+        <div>
+          <label>Tags (Type):</label>
+          <select
+            name="Types"
+            value={formData.Tags.Types}
+            onChange={handleTagsChange}
+          >
+            <option value="">Select Type</option>
+            <option value="Monuments">Monuments</option>
+            <option value="Religious Sites">Religious Sites</option>
+            <option value="Palaces">Palaces</option>
+            <option value="Castles">Castles</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Image URL:</label>
+          <input
+            type="text"
+            name="image"
+            value={formData.image}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <button type="submit">
+          {isUpdate ? 'Update Location' : 'Create Location'}
+        </button>
+      </form>
+
+      {/* Button to toggle between create and update */}
+      <button onClick={toggleUpdateMode}>
+        {isUpdate ? 'Switch to Create' : 'Switch to Update'}
+      </button>
+    </div>
+  );
+};
+
+export default HistoricalLocationForm;
