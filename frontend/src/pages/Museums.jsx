@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 
 const Museums = () => {
   const [museums, setMuseums] = useState([]);
-  const [historicalPeriods, setHistoricalPeriods] = useState([]); // State for historical periods
-  const [selectedPeriod, setSelectedPeriod] = useState(''); // State for selected period
+  const [historicalPeriods, setHistoricalPeriods] = useState([]); 
+  const [selectedPeriod, setSelectedPeriod] = useState(''); 
   const [viewMuseums, setViewMuseums] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [filterVisible, setFilterVisible] = useState(false); // State to control dropdown visibility
+  const [filterVisible, setFilterVisible] = useState(false); 
+  const [searchTerm, setSearchTerm] = useState(''); // New state for search term
 
   // Fetch museums from the backend
   const handleViewAllMuseums = async () => {
@@ -19,12 +20,12 @@ const Museums = () => {
         },
       });
       const data = await response.json();
-      setMuseums(data); // Save the museums in the state
+      setMuseums(data); 
     } catch (error) {
       console.error('Error fetching museums:', error);
     } finally {
       setLoading(false);
-      setViewMuseums(true); // Show the museums when loaded
+      setViewMuseums(true); 
     }
   };
 
@@ -38,7 +39,7 @@ const Museums = () => {
         },
       });
       const data = await response.json();
-      setHistoricalPeriods(data); // Save the historical periods in the state
+      setHistoricalPeriods(data); 
     } catch (error) {
       console.error('Error fetching historical periods:', error);
     }
@@ -46,7 +47,7 @@ const Museums = () => {
 
   // Handle filtering museums by historical period
   const handleFilterMuseums = async () => {
-    if (!selectedPeriod) return; // If no period is selected, do nothing
+    if (!selectedPeriod) return; 
 
     setLoading(true);
     try {
@@ -57,9 +58,30 @@ const Museums = () => {
         },
       });
       const data = await response.json();
-      setMuseums(data); // Update museums based on the selected period
+      setMuseums(data); 
     } catch (error) {
       console.error('Error filtering museums:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // New function to search for museums
+  const handleSearchMuseums = async () => {
+    if (!searchTerm) return; // Do nothing if search term is empty
+
+    setLoading(true);
+    try {
+      const response = await fetch(`http://localhost:8000/searchMuseums?name=${searchTerm}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      setMuseums(data); // Update museums based on the search results
+    } catch (error) {
+      console.error('Error searching museums:', error);
     } finally {
       setLoading(false);
     }
@@ -75,6 +97,14 @@ const Museums = () => {
       <h1>Museums</h1>
       <button onClick={handleViewAllMuseums}>View All Museums</button>
 
+      <input
+        type="text"
+        placeholder="Search museums..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+      <button onClick={handleSearchMuseums} disabled={!searchTerm}>Search</button>
+
       {viewMuseums && (
         <>
           <button onClick={() => setFilterVisible(!filterVisible)}>Filter Museums</button>
@@ -89,7 +119,7 @@ const Museums = () => {
               >
                 <option value="" disabled>Select a historical period</option>
                 {historicalPeriods.map((period) => (
-                  <option key={period.name} value={period.name}>{period.name}</option> // Assuming each period has a `name` property
+                  <option key={period.name} value={period.name}>{period.name}</option>
                 ))}
               </select>
               <button onClick={handleFilterMuseums} disabled={!selectedPeriod}>Apply Filter</button>

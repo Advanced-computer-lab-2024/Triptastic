@@ -371,9 +371,68 @@ const sortProductsByRatingTourist = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
   };
+  const searchMuseums = async (req, res) => {
+    const { name, category, tag } = req.query; // Extract query parameters
+  
+    let filter = {}; // Initialize an empty filter object
+  
+    // Add conditions to the filter object based on available query parameters
+    if (name) {
+      filter.Name = { $regex: name, $options: 'i' }; // Case-insensitive search for name
+    }
+  
+    if (category) {
+      filter['Tags.HistoricalPeriod'] = { $regex: category, $options: 'i' }; // Case-insensitive search for category/historical period
+    }
+  
+    if (tag) {
+      filter['Tags.HistoricalPeriod'] = { $regex: tag, $options: 'i' }; // Case-insensitive search for tag
+    }
+  
+    try {
+      const museums = await museumsModel.find(filter); // Query the database with the filter
+  
+      if (museums.length === 0) {
+        return res.status(404).json({ msg: 'No museums found matching the criteria.' });
+      }
+  
+      res.status(200).json(museums); // Return the found museums
+    } catch (error) {
+      res.status(500).json({ error: 'Server error while searching for museums' });
+    }
+  };
+  const searchHistoricalLocations = async (req, res) => {
+    const { name, tag } = req.query; // Extract name and tag from query parameters
+  
+    let filter = {}; // Initialize an empty filter object
+  
+    // If a name is provided, add a regex condition to the filter for case-insensitive search
+    if (name) {
+      filter.Name = { $regex: name, $options: 'i' }; // Case-insensitive search for name
+    }
+  
+    // If a tag is provided, add a regex condition to the filter for case-insensitive search
+    if (tag) {
+      filter['Tags.Types'] = { $regex: tag, $options: 'i' }; // Case-insensitive search for tag
+    }
+  
+    try {
+      // Fetch historical locations based on the filter
+      const historicalLocations = await historicalLocationModel.find(filter);
+  
+      if (historicalLocations.length === 0) {
+        return res.status(404).json({ msg: 'No historical locations found matching the criteria.' });
+      }
+  
+      res.status(200).json(historicalLocations); // Return the found historical locations
+    } catch (error) {
+      res.status(500).json({ error: 'Server error while searching for historical locations' });
+    }
+  };
+  
  
  
  module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
-  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods};
+  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations};
