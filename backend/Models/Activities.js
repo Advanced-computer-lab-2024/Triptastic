@@ -33,12 +33,12 @@ location: {
 },
 price: {
     type: Number,
-    required: false // Ensure at least the minimum price is set
+    required: true // Ensure at least the minimum price is set
   },
 
 rating:{
     type:Number,
-    required:false
+    required:true
 },
 
 tags: {

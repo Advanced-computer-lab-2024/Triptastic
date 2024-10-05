@@ -555,7 +555,7 @@ function TourGuideProfile() {
                   />
                 </div>
                 <div>
-                  <label>Dates/Times:</label>
+                  <label>Dates/Times 'YYYY-MM-DD':</label>
                   <input
                     type="text"
                     name="DatesTimes"
@@ -678,7 +678,7 @@ function TourGuideProfile() {
                     />
                   </div>
                   <div>
-                    <label>Dates/Times:</label>
+                    <label>Dates/Times 'YYYY-MM-DD':</label>
                     <input
                       type="text"
                       name="DatesTimes"
