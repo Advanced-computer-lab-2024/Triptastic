@@ -8,7 +8,7 @@ const MongoURI = process.env.MONGO_URI ;
 const {createTourGuideInfo,createTourGuide}=require("./Routes/tourGuideController");
 const {updateTourGuide}=require("./Routes/tourGuideController");
 const {getTourGuide}=require("./Routes/tourGuideController");
-const {createItinerary,getItinerary,updateItinerary,deleteItinerary,getTouristItinerary,createTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries}=require("./Routes/tourGuideController");
+const {createItinerary,getItinerary,updateItinerary,deleteItinerary,getTouristItinerary,createTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries}=require("./Routes/tourGuideController");
 
 
 //Guest
@@ -108,11 +108,12 @@ app.post("/addItinerary",createItinerary);
 app.get("/getItinerary/:id",getItinerary);
 app.patch("/updateItinerary/:id",updateItinerary);
 app.delete("/deleteItinerary/:id",deleteItinerary);
-app.post("/addtouristItinerary",createTouristItinerary);
-app.get("/gettouristItinerary/:id",getTouristItinerary);
+app.post("/addTouristItinerary",createTouristItinerary);
+app.get("/getTouristItinerary/:id",getTouristItinerary);
 app.patch("/updatetouristItinerary/:id",updateTouristItinerary);
 app.delete("/deletetouristItinerary/:id",deleteTouristItinerary);
 app.get("/getMyItineraries",getMyItineraries);
+app.get("/getMyTouristItineraries",getMyTouristItineraries);
 
 //Advertiser
 app.post("/addAdvertiser",createAdvertiser);

@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const {Activities}=require("./Activities.js")
-;const {Tags}= require("./Tags.js");
 const touristItinerarySchema = new Schema({
     Activities:{
         type:[String], required: true
@@ -17,6 +15,9 @@ const touristItinerarySchema = new Schema({
     },
     Tags:{
         type:[String], required:true
+    },
+    tourGuide:{
+        type: String, required: true
     }    
 },{timestamps: true})
 
