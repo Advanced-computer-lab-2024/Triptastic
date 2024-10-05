@@ -72,7 +72,8 @@ function App() {
         <Route path="/tourism-gov" element={<TourismGov />} />
         <Route path="/activities" element={<Activities />} />
         <Route path="/guest" element={<Guest />} />      
-          <Route path="/advertiser-Activities" element={<AdvertiserActivity />} />
+          
+        <Route path="/advertiser-Activities" element={<AdvertiserActivity />} />
 
         <Route path="/gov-historical" element={<GovernorH />} />
         <Route path="/gov-museum" element={<GovernorM />} />
