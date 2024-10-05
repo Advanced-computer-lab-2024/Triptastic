@@ -4,6 +4,7 @@ const Activites =()=>{
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [expandedActivities, setExpandedActivities] = useState({});
+
   const fetchPascRasc= async()=>{
     try{
         const response = await fetch(`http://localhost:8000/sortActPASCRASC`, {
@@ -108,10 +109,18 @@ const toggleActivityDetails=(id)=>{
 useEffect(() => {
     fetchPascRasc(); // Default to ascending sort
   }, []);
+
+  
+
+
 return(
+  
+  
 
 <div>
+
 <h2>Activities</h2>
+
 {loading ? (
         <p>Loading activities...</p>
       ) : (

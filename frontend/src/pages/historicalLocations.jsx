@@ -6,12 +6,13 @@ const HistoricalLocations = () => {
   const [loading, setLoading] = useState(false);
   const [filterVisible, setFilterVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [selectedTag, setSelectedTag] = useState(''); // State for selected tag type
+  const [selectedTag, setSelectedTag] = useState('');
+  const [searchQuery, setSearchQuery] = useState(''); // State for search query
 
-  // Fetch historical places from the backend (without filter)
+  // Fetch historical places without filter
   const handleViewAllHistoricalPlaces = async () => {
     setLoading(true);
-    setErrorMessage(''); // Reset error message
+    setErrorMessage('');
     try {
       const response = await fetch('http://localhost:8000/viewAllHistoricalPlacesTourist', {
         method: 'GET',
@@ -22,14 +23,12 @@ const HistoricalLocations = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        setErrorMessage(errorData.error || 'No historical locations found with the specified tag type.');
+        setErrorMessage(errorData.error || 'No historical locations found.');
         return;
       }
 
       let data = await response.json();
-      console.log("All Historical Places Response:", data); // Log the response data
-
-      // Ensure data is always an array (even if it's a single object)
+      console.log("All Historical Places Response:", data);
       if (!Array.isArray(data)) {
         data = [data];
       }
@@ -37,17 +36,17 @@ const HistoricalLocations = () => {
       setHistoricalPlaces(data);
     } catch (error) {
       console.error('Error fetching historical places:', error);
-      setErrorMessage("No historical locations found with the specified tag type.");
+      setErrorMessage("No historical locations found.");
     } finally {
       setLoading(false);
       setViewPlaces(true);
     }
   };
 
-  // Generic filter function
+  // Filter historical places by tag
   const handleFilter = async () => {
     setLoading(true);
-    setErrorMessage(''); // Reset error message
+    setErrorMessage('');
     try {
       const response = await fetch(`http://localhost:8000/filterHistoricalLocationsByTagsTourist?Types=${selectedTag}`, {
         method: 'GET',
@@ -63,9 +62,7 @@ const HistoricalLocations = () => {
       }
 
       let data = await response.json();
-      console.log(`Filter ${selectedTag} Response:`, data); // Log the response data
-
-      // Ensure data is always an array (even if it's a single object)
+      console.log(`Filter ${selectedTag} Response:`, data);
       if (!Array.isArray(data)) {
         data = [data];
       }
@@ -77,6 +74,43 @@ const HistoricalLocations = () => {
       setErrorMessage("No historical locations found with the specified tag type.");
     } 
     finally {
+      setLoading(false);
+    }
+  };
+
+  // Search historical places by name or tag
+  const handleSearch = async () => {
+    setLoading(true);
+    setErrorMessage('');
+    try {
+      const query = new URLSearchParams();
+      if (searchQuery) query.append('name', searchQuery);
+      if (selectedTag) query.append('tag', selectedTag);
+
+      const response = await fetch(`http://localhost:8000/searchHistoricalLocations?${query.toString()}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'No historical locations found.');
+        return;
+      }
+
+      let data = await response.json();
+      console.log("Search Response:", data);
+      if (!Array.isArray(data)) {
+        data = [data];
+      }
+
+      setHistoricalPlaces(data);
+    } catch (error) {
+      console.error('Error searching historical places:', error);
+      setErrorMessage('No historical locations found.');
+    } finally {
       setLoading(false);
     }
   };
@@ -110,6 +144,17 @@ const HistoricalLocations = () => {
               <button onClick={handleFilter} disabled={!selectedTag}>Apply Filter</button>
             </div>
           )}
+
+          <div>
+            <label>Search by Name or Tag:</label>
+            <input
+              type="text"
+              placeholder="Enter name or tag"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <button onClick={handleSearch} disabled={!searchQuery && !selectedTag}>Search</button>
+          </div>
 
           {loading ? (
             <p>Loading...</p>

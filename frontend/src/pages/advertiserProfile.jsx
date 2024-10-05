@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-
+import './advertiserProfile.css';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 const AdvertiserProfile = () => {
   const [advertiserInfo, setAdvertiserInfo] = useState(null);
   const [activities, setActivities] = useState([]);
@@ -14,6 +15,8 @@ const AdvertiserProfile = () => {
     Hotline: '',
     Company_Profile: '',
   });
+  const navigate = useNavigate();
+
 
   const fetchAdvertiserInfo = async () => {
     setLoading(true);
@@ -202,7 +205,16 @@ const AdvertiserProfile = () => {
       ) : (
         <p>No activities found for this advertiser.</p>
       )}
+       {/* Sidebar */}
+       <div className="sidebar">
+        <h3>Explore</h3>
+        <ul>
+          <li onClick={() => navigate('/advertiser-Activities')}>Creating Activities</li>
+          
+        </ul>
+      </div>
     </div>
+    
   );
 };
 
