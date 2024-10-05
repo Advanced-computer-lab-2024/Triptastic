@@ -8,7 +8,7 @@ const Itineraries = () => {
   // State to track the visibility of itinerary details
   const [expandedItineraries, setExpandedItineraries] = useState({});
 
-  const fetchSortedItineraries = async () => {
+  const fetchASCItineraries = async () => {
     try {
       const response = await fetch(`http://localhost:8000/sortItinPASC`, {
         method: 'GET',
@@ -33,7 +33,7 @@ const Itineraries = () => {
   };
 
   const handleSortAscending = () => {
-    fetchSortedItineraries();
+    fetchASCItineraries();
   };
 
   const handleSortDescending = async () => {
@@ -68,12 +68,12 @@ const Itineraries = () => {
   };
 
   useEffect(() => {
-    fetchSortedItineraries(); // Default to ascending sort
+    fetchASCItineraries(); // Default to ascending sort
   }, []);
 
   return (
     <div>
-      <h2>Itinerary Sorter</h2>
+      <h2>Itineraries</h2>
       {loading ? (
         <p>Loading itineraries...</p>
       ) : (

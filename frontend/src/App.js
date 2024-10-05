@@ -16,6 +16,7 @@ import AdminPage from './pages/adminPage';
 import Admin from './pages/adminLogin';
 import AdminLogin from './pages/adminLogin';
 import TourismGov from './pages/tourismGov';
+import Activities from './pages/Activities';
 
 
 function Home() {
@@ -63,7 +64,7 @@ function App() {
         <Route path="/adminLogin" element={<AdminLogin />} />
         <Route path="/adminPage" element={<AdminPage />} />
         <Route path="/tourism-gov" element={<TourismGov />} />
-
+        <Route path="/activities" element={<Activities/>}/>
 
       </Routes>
     </Router>

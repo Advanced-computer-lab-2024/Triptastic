@@ -16,7 +16,7 @@ const touristItinerarySchema = new Schema({
         type: String, required: true
     },
     Tags:{
-        type:[Tags], required:true
+        type:[String], required:true
     }    
 },{timestamps: true})
 
