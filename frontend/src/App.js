@@ -12,6 +12,7 @@ import HistoricalLocations from './pages/historicalLocations';
 import Museums from './pages/Museums';
 import Products from './pages/Products';
 import Itineraries from './pages/Itineraries';
+import AdvertiserActivity from './pages/advertiserActivities';
 
 
 function Home() {
@@ -52,6 +53,7 @@ function App() {
         <Route path="/museums" element={<Museums />} />
         <Route path="/products" element={<Products />} />
         <Route path="/itineraries" element={<Itineraries />} />
+        <Route path="/advertiser-Activities" element={<AdvertiserActivity />} />
 
       </Routes>
     </Router>

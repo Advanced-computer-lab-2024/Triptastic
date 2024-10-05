@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-
+import './advertiserProfile.css';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 const AdvertiserProfile = () => {
 
 
@@ -16,6 +17,8 @@ const AdvertiserProfile = () => {
     Company_Profile: '',
    
   });
+  const navigate = useNavigate();
+
 
   const fetchAdvertiserInfo = async () => {
     setLoading(true);
@@ -157,9 +160,18 @@ const AdvertiserProfile = () => {
         )
       )}
       <button onClick={fetchAdvertiserInfo}>Refresh My Information</button>
+       {/* Sidebar */}
+       <div className="sidebar">
+        <h3>Explore</h3>
+        <ul>
+          <li onClick={() => navigate('/Activities')}>My Activities</li>
+          
+        </ul>
+      </div>
     </div>
+    
   );
 };
 
-export default AdvertiserProfile;
 
+export default AdvertiserProfile;

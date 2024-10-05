@@ -1,0 +1,37 @@
+.advertiser-profile-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+  }
+  
+  .profile-content {
+    flex: 3; /* Main profile content takes more space */
+    padding-right: 20px;
+  }
+  
+  .sidebar {
+    flex: 1; /* Sidebar takes less space */
+    background-color: #f8f8f8;
+    padding: 20px;
+    border-left: 1px solid #ddd;
+  }
+  
+  .sidebar h3 {
+    margin-bottom: 10px;
+  }
+  
+  .sidebar ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+  
+  .sidebar ul li {
+    margin: 10px 0;
+    cursor: pointer;
+    color: #007bff;
+  }
+  
+  .sidebar1 ul li:hover {
+    text-decoration: underline;
+  }
+  
