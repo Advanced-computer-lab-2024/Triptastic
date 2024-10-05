@@ -35,6 +35,9 @@ function TourGuideReg() {
 
       if (response.ok) {
         const data = await response.json();
+        localStorage.setItem('Username', formData.Username);
+        localStorage.setItem('Email', formData.Email);
+        localStorage.setItem('Password', formData.Password);
         setSuccessMessage('Tour guide registered successfully!');
         setErrorMessage('');
         // Optionally, reset form data
@@ -43,7 +46,9 @@ function TourGuideReg() {
           Email: '',
           Password: ''
         });
+        localStorage.setItem('Username', formData.Username);
         navigate('/tour-guide-profile');
+        
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.error || 'Registration failed');

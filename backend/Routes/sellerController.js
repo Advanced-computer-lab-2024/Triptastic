@@ -15,37 +15,18 @@ const createSeller = async(req,res) => {
     }
  }
 
- const updateSeller = async (req, res) => {
-   const { Username } = req.query; 
-   const { Email,Name, Description,Password } = req.body; 
-   try {
+ const updateSeller = async(req,res) => {
 
-      if (req.body.Username) {
-         return res.status(400).json({ error: 'Username cannot be changed' });
-     }
-       
-       const updates = {};
-       if (Name) updates.Name = Name;
-       if (Description) updates.Description = Description;
-       if (Email) updates.Email = Email;
-       if (Password) updates.Password = Password;
+  const{Username,Email,Password,Name,Description}=req.body;
+  try{
+     const seller=await sellerModel.findOneAndUpdate({Username: Username },{$set:{Email: Email,Password:Password,Name:Name,Description:Description}},{ new: true });
+     res.status(200).json(seller);
+  }
+  catch{
+     res.status(400).json({error:error.message})
 
-       
-       const seller = await sellerModel.findOneAndUpdate(
-           { Username: Username }, 
-           { $set: updates }, 
-           { new: true } 
-       );
-
-       if (!seller) {
-           return res.status(404).json({ error: 'Seller not found' });
-       }
-
-       res.status(200).json(seller); 
-   } catch (error) {
-       res.status(400).json({ error: error.message }); 
-   }
-};
+  }
+}
 
  const getSeller= async(req,res) =>{
     const {Username}= req.query;
@@ -61,14 +42,14 @@ const createSeller = async(req,res) => {
  }
 
  const createProductseller = async (req, res) => {
-   const { productName } = req.body;
- 
-   try {
-     const product = await productModel.create({ productName });
-     res.status(201).json(product);
-   } catch (error) {
-     res.status(400).json({ error: error.message });
-   }
+  const { productName,description,price,rating,seller,review,stock,image } = req.body;
+
+  try {
+    const product = await productModel.create({ productName,description,price,rating,seller,review,stock,image });
+    res.status(201).json(product);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 };
 
 const getProductSeller = async (req, res) => {

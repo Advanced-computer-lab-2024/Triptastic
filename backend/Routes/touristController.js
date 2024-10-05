@@ -134,24 +134,31 @@ const filterActivities = async (req, res) => {
 
 
 
- const filterHistoricalLocationsByTagsTourist = async (req, res) => {
+const filterHistoricalLocationsByTagsTourist = async (req, res) => {
   const { Types } = req.query;
-  const validTagTypes = ["Monuments", "Museums", "Religious Sites", "Palaces","Castles"];
+  const validTagTypes = ["Monuments", "Religious Sites", "Palaces/Castles"];
 
   try {
     if (!validTagTypes.includes(Types)) {
-      return res.status(400).json({ error: `Invalid tag type. Valid types are: ${validTagTypes.join(', ')}` }); 
-  }
-      const filteredLocations = await historicalLocationModel.find({ 'Tags.Types': Types });
+      return res.status(400).json({ error: `Invalid tag type. Valid types are: ${validTagTypes.join(', ')}` });
+    }
 
-      if (filteredLocations.length === 0) {
-          return res.status(404).json({ msg: "No historical locations found with the specified tag type." });
-      }
-      res.status(200).json(filteredLocations);
+    // Adjust the query condition to fetch both Palaces and Castles when "Palaces/Castles" is selected
+    const filterCondition = {
+      'Tags.Types': Types === "Palaces/Castles" ? { $in: ["Palaces", "Castles"] } : Types
+    };
+
+    const filteredLocations = await historicalLocationModel.find(filterCondition);
+
+    if (filteredLocations.length === 0) {
+      return res.status(404).json({ msg: "No historical locations found with the specified tag type." });
+    }
+    res.status(200).json(filteredLocations);
   } catch (error) {
-      res.status(400).json({ error: error.message });
-  }
+    res.status(400).json({ error: error.message });
+  }
 };
+
 
 const filterMuseumsByTagsTourist = async (req, res) => {
   const { Tags } = req.query; // Extracting HistoricalPeriod from query parameters
@@ -166,6 +173,23 @@ const filterMuseumsByTagsTourist = async (req, res) => {
       res.status(200).json(filteredMuseums);
   } catch (error) {
       res.status(400).json({ error: error.message });
+  }
+};
+
+const getUniqueHistoricalPeriods = async (req, res) => {
+  try {
+    const uniquePeriods = await museumsModel.distinct('Tags.HistoricalPeriod'); // Adjust the path as necessary
+
+    if (!uniquePeriods.length) {
+      return res.status(404).json({ msg: "No historical periods found." });
+    }
+
+    // Return the unique periods in the expected format
+    const periodsData = uniquePeriods.map(period => ({ name: period }));
+    
+    res.status(200).json(periodsData);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 };
 
@@ -253,7 +277,7 @@ const viewAllItinerariesTourist = async (req, res) => {
 const sortItinPASC= async (req,res)=>{
  try{
   const currentDate= new Date(); // 1 asc -1 dsc
-  const data = await itineraryModel.find({ date: { $gte: currentDate } }).sort({ Price:1}); 
+  const data = await itineraryModel.find({ DatesTimes: { $gte: currentDate } }).sort({ Price:1}); 
   res.status(200).json(data);
  }catch(error){
   res.status(400).json({ error: error.message })
@@ -262,7 +286,7 @@ const sortItinPASC= async (req,res)=>{
 const sortItinPDSC= async (req,res)=>{
   try{
    const currentDate= new Date(); // 1 asc -1 dsc
-   const data = await itineraryModel.find({ date: { $gte: currentDate } }).sort({ Price:-1}); 
+   const data = await itineraryModel.find({ DatesTimes: { $gte: currentDate } }).sort({ Price:-1}); 
    res.status(200).json(data);
   }catch(error){
    res.status(400).json({ error: error.message })
@@ -347,9 +371,68 @@ const sortProductsByRatingTourist = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
   };
+  const searchMuseums = async (req, res) => {
+    const { name, category, tag } = req.query; // Extract query parameters
+  
+    let filter = {}; // Initialize an empty filter object
+  
+    // Add conditions to the filter object based on available query parameters
+    if (name) {
+      filter.Name = { $regex: name, $options: 'i' }; // Case-insensitive search for name
+    }
+  
+    if (category) {
+      filter['Tags.HistoricalPeriod'] = { $regex: category, $options: 'i' }; // Case-insensitive search for category/historical period
+    }
+  
+    if (tag) {
+      filter['Tags.HistoricalPeriod'] = { $regex: tag, $options: 'i' }; // Case-insensitive search for tag
+    }
+  
+    try {
+      const museums = await museumsModel.find(filter); // Query the database with the filter
+  
+      if (museums.length === 0) {
+        return res.status(404).json({ msg: 'No museums found matching the criteria.' });
+      }
+  
+      res.status(200).json(museums); // Return the found museums
+    } catch (error) {
+      res.status(500).json({ error: 'Server error while searching for museums' });
+    }
+  };
+  const searchHistoricalLocations = async (req, res) => {
+    const { name, tag } = req.query; // Extract name and tag from query parameters
+  
+    let filter = {}; // Initialize an empty filter object
+  
+    // If a name is provided, add a regex condition to the filter for case-insensitive search
+    if (name) {
+      filter.Name = { $regex: name, $options: 'i' }; // Case-insensitive search for name
+    }
+  
+    // If a tag is provided, add a regex condition to the filter for case-insensitive search
+    if (tag) {
+      filter['Tags.Types'] = { $regex: tag, $options: 'i' }; // Case-insensitive search for tag
+    }
+  
+    try {
+      // Fetch historical locations based on the filter
+      const historicalLocations = await historicalLocationModel.find(filter);
+  
+      if (historicalLocations.length === 0) {
+        return res.status(404).json({ msg: 'No historical locations found matching the criteria.' });
+      }
+  
+      res.status(200).json(historicalLocations); // Return the found historical locations
+    } catch (error) {
+      res.status(500).json({ error: 'Server error while searching for historical locations' });
+    }
+  };
+  
  
  
  module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
-  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange};
+  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations};

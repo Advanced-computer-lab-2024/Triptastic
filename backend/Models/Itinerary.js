@@ -4,13 +4,13 @@ const Schema = mongoose.Schema;
 
 const itinerarySchema = new Schema({
     Activities:{ 
-        type: [Activities] ,required: true
+        type: [String] ,required: true
     },
     Locations:{
         type: [String], required:true
     },
     Timeline:{
-        type:String, required: true
+        type: String, required: true
     },
     DurationOfActivity:{
         type: String, required: true
@@ -22,7 +22,7 @@ const itinerarySchema = new Schema({
         type: Number, required: true
     },
     DatesTimes:{
-        type: Date , required: true
+        type: String , required: true
     },
     Accesibility:{
         type: String, required: true
@@ -33,6 +33,10 @@ const itinerarySchema = new Schema({
     Booked:{
         type: Boolean,
         default: false
+    },
+    TourGuide: {
+        type: String,  // Store the username directly
+        required: true
     }
 
 },{timestamps: true})

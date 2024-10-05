@@ -8,7 +8,7 @@ const MongoURI = process.env.MONGO_URI ;
 const {createTourGuideInfo,createTourGuide}=require("./Routes/tourGuideController");
 const {updateTourGuide}=require("./Routes/tourGuideController");
 const {getTourGuide}=require("./Routes/tourGuideController");
-const {createItinerary,getItinerary,updateItinerary,deleteItinerary,getTouristItinerary,createTouristItinerary,updateTouristItinerary,deleteTouristItinerary}=require("./Routes/tourGuideController");
+const {createItinerary,getItinerary,updateItinerary,deleteItinerary,getTouristItinerary,createTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries}=require("./Routes/tourGuideController");
 
 
 //Guest
@@ -17,7 +17,7 @@ const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActi
 
 //Tourist
 const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
-  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange} = require("./Routes/touristController");
+  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations} = require("./Routes/touristController");
 
 //Advertiser
 const{createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity}=require("./Routes/advertiserController");
@@ -31,7 +31,7 @@ const{createAdmin,createCategory,
   updateCategory,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
 ,createPrefTag,updatePreftag,deletePreftag,getPrefTag,
-viewProducts,sortProductsByRatingAdmin}=require("./Routes/adminController");
+viewProducts,sortProductsByRatingAdmin,AdminLogin}=require("./Routes/adminController");
 
 
 
@@ -95,13 +95,16 @@ app.get("/getTourist",getTourist);
 app.patch("/updateTourist",updateTourist);viewAllMuseumsTourist
 app.get("/viewAllMuseumsTourist",viewAllMuseumsTourist);
 app.get("/filterProductsByPriceRange",filterProductsByPriceRange);
+app.get('/getUniqueHistoricalPeriods', getUniqueHistoricalPeriods);
+app.get("/searchMuseums",searchMuseums);
+app.get("/searchHistoricalLocations",searchHistoricalLocations);
 
 
 
 //TourGuide
 app.post("/addTourGuide",createTourGuide);
 app.patch("/addTourGuideInfo",createTourGuideInfo);
-app.get("/getTourGuide",getTourGuide);
+app.get("/getTourGuide/",getTourGuide);
 app.patch("/updateTourGuide/:Username",updateTourGuide);
 app.post("/addItinerary",createItinerary);
 app.get("/getItinerary/:id",getItinerary);
@@ -111,6 +114,7 @@ app.post("/addtouristItinerary",createTouristItinerary);
 app.get("/gettouristItinerary/:id",getTouristItinerary);
 app.patch("/updatetouristItinerary/:id",updateTouristItinerary);
 app.delete("/deletetouristItinerary/:id",deleteTouristItinerary);
+app.get("/getMyItineraries",getMyItineraries);
 
 //Advertiser
 app.post("/addAdvertiser",createAdvertiser);
@@ -149,7 +153,7 @@ app.post("/createProduct",createProduct);
 app.get("/getProduct",getProduct);
 app.get("/viewProducts",viewProducts);
 app.get("/sortProductsByRatingAdmin",sortProductsByRatingAdmin);
-
+app.post("/AdminLogin",AdminLogin);
 
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);

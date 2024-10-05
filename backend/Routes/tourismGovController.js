@@ -25,8 +25,8 @@ const createhistoricalLocation = async (req, res) => {
 
 
 const updatehistoricalLocation  = async (req, res) => {
-    const { Description, Location, OpeningHours, TicketPrices, Tags } = req.body;
-    const { Name } = req.query;  // Extract Name from query parameters
+    const {Name ,Description, Location, OpeningHours, TicketPrices, Tags } = req.body;
+    
 
     const validTagTypes = ["Monuments", "Religious Sites", "Palaces", "Castles"];
 
