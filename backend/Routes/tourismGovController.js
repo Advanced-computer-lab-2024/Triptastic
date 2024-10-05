@@ -108,8 +108,7 @@ const createMuseum = async (req, res) => {
  
  
  const updateMuseum = async (req, res) => {
-    const { Description, Location, OpeningHours, TicketPrices, Tags } = req.body;
-    const { Name } = req.query;  // Extract Name from query parameters
+    const {Name, Description, Location, OpeningHours, TicketPrices, Tags } = req.body;
 
     try {
         
@@ -153,9 +152,9 @@ const createMuseum = async (req, res) => {
   
  
   const deleteMuseum = async (req, res) => {
-    const { Name } = req.query; // Extract Name from req.query
+    const { Name } = req.query; 
     try {
-        // Use deleteOne and check if a museum was actually deleted
+        
         const result = await museumModel.deleteOne({ Name: Name });
 
         if (result.deletedCount === 0) {

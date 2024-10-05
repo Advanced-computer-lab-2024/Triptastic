@@ -14,9 +14,11 @@ import Products from './pages/Products';
 import Itineraries from './pages/Itineraries';
 import AdminPage from './pages/adminPage';
 import AdminLogin from './pages/adminLogin';
-import TourismGov from './pages/tourismGov';
+import GovernorH from './pages/govH';
 import Activities from './pages/Activities';
 import Guest from './pages/Guest';
+import GovernorM from './pages/govM';
+import TourismGov from './pages/tourismGov';
 
 function Home() {
   const navigate = useNavigate();
@@ -68,6 +70,8 @@ function App() {
         <Route path="/tourism-gov" element={<TourismGov />} />
         <Route path="/activities" element={<Activities />} />
         <Route path="/guest" element={<Guest />} />
+        <Route path="/gov-historical" element={<GovernorH />} />
+        <Route path="/gov-museum" element={<GovernorM />} />
       </Routes>
     </Router>
   );
