@@ -209,7 +209,7 @@ const AdvertiserProfile = () => {
        <div className="sidebar">
         <h3>Explore</h3>
         <ul>
-          <li onClick={() => navigate('/Activities')}>My Activities</li>
+          <li onClick={() => navigate('/advertiser-Activities')}>My Activities</li>
           
         </ul>
       </div>

@@ -68,7 +68,8 @@ function App() {
         <Route path="/adminPage" element={<AdminPage />} />
         <Route path="/tourism-gov" element={<TourismGov />} />
         <Route path="/activities" element={<Activities />} />
-        <Route path="/guest" element={<Guest />} />        <Route path="/advertiser-Activities" element={<AdvertiserActivity />} />
+        <Route path="/guest" element={<Guest />} />        
+        <Route path="/advertiser-Activities" element={<AdvertiserActivity />} />
 
       </Routes>
     </Router>
