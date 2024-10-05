@@ -13,22 +13,19 @@ import Museums from './pages/Museums';
 import Products from './pages/Products';
 import Itineraries from './pages/Itineraries';
 import AdminPage from './pages/adminPage';
-import Admin from './pages/adminLogin';
 import AdminLogin from './pages/adminLogin';
 import TourismGov from './pages/tourismGov';
 import Activities from './pages/Activities';
-
+import Guest from './pages/Guest';
 
 function Home() {
   const navigate = useNavigate();
-  console.log({ TouristReg, TourGuideReg, AdvertiserReg, SellerReg, SellerProfile, Admin ,TourismGov });
-
-
+  
   return (
     <div className="App">
       <header className="App-header">
-        <button className="admin-login-btn"  onClick={() => navigate('/adminLogin')}>
-        Login as Admin
+        <button className="admin-login-btn" onClick={() => navigate('/adminLogin')}>
+          Login as Admin
         </button>
 
         <h1>Welcome to Triptastic!</h1>
@@ -39,6 +36,11 @@ function Home() {
           <button onClick={() => navigate('/advertiser-register')}>Register as Advertiser</button>
           <button onClick={() => navigate('/seller-register')}>Register as Seller</button>
         </div>
+        
+        {/* Continue as Guest Button */}
+        <button className="continue-guest-btn" onClick={() => navigate('/Guest')}>
+          Continue as Guest
+        </button>
       </header>
     </div>
   );
@@ -64,8 +66,8 @@ function App() {
         <Route path="/adminLogin" element={<AdminLogin />} />
         <Route path="/adminPage" element={<AdminPage />} />
         <Route path="/tourism-gov" element={<TourismGov />} />
-        <Route path="/activities" element={<Activities/>}/>
-
+        <Route path="/activities" element={<Activities />} />
+        <Route path="/guest" element={<Guest />} />
       </Routes>
     </Router>
   );
