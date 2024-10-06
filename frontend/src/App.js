@@ -19,8 +19,10 @@ import Activities from './pages/Activities';
 import Guest from './pages/Guest';
 import AdvertiserActivity from './pages/advertiserActivities';
 
+
 import GovernorM from './pages/govM';
 import TourismGov from './pages/tourismGov';
+import MapPicker from './pages/MapPicker';
 
 function Home() {
   const navigate = useNavigate();
@@ -77,6 +79,7 @@ function App() {
 
         <Route path="/gov-historical" element={<GovernorH />} />
         <Route path="/gov-museum" element={<GovernorM />} />
+        <Route path="/map-Picker" element={<MapPicker />} />
       </Routes>
     </Router>
   );
