@@ -244,7 +244,7 @@ const AdvertiserActivity = () => {
               <h3>{activity.name}</h3>
               <button onClick={(e) => handleGetActivity(e, activity.Advertiser)}>View</button>
               <button onClick={(e) => handleDeleteActivity(e, activity.Advertiser, activity.name)}>Delete</button>
-              <button onClick={(e) => handleUpdate(e, activity.Advertiser, activity.name)}>update</button>
+              <button onClick={(e) => handleUpdate(e)}>update</button>
             </div>
           ))
         ) : (
