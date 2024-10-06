@@ -135,12 +135,13 @@ const viewActivitydetails = async (req, res) => {
 
 
 const updateActivity = async (req, res) => {
-   const { Category,name,date,time,location,price,tags,rating,specialDiscounts,bookingOpen,Advertiser }= req.body; // The current category name from the URL parameter
+    const {name,Advertiser}=req.query;
+   const { Category,date,time,location,price,tags,rating,specialDiscounts,bookingOpen }= req.body; // The current category name from the URL parameter
   // The new name to be updated, taken directly from the request body
 
    try {
        const activity = await activitiesModel.findOneAndUpdate(
-           { Advertiser:Advertiser }, // Find category by the current name
+        { Advertiser: Advertiser, name: name }, // Find category by the current name
            { $set: { Category:Category,name:name,date:date,time:time,location:location,price:price,tags:tags,rating:rating,specialDiscounts:specialDiscounts,bookingOpen:bookingOpen  } }, // Update to the new name
            { new: true } // Return the updated document
        );

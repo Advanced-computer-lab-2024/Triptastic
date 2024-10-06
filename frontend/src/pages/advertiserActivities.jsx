@@ -105,60 +105,71 @@ const AdvertiserActivity = () => {
   const handleUpdateClick = (e, activity) => {
     e.preventDefault();
     setIsUpdating(true); // Set update mode to true
-    setFormData(activity); // Pre-fill the form with the data of the museum to update
+    setFormData(activity); // Pre-fill the form with the data of the activity to update
     setSuccessMessage(`Editing activity "${activity.name}"`);
-  };
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    const username = localStorage.getItem('Username'); 
-    console.log(username)// Get username from local storage
-    const activityData = { 
-      ...formData, 
-      Advertiser: username, 
-      activityLocation: formData.activityLocation // Include the location here
-  }; // Add Advertiser field
+};
 
-    try {
-      const response = await fetch('http://localhost:8000/updateActivity', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(activityData) // Use updated activityData
+const handleUpdate = async (e) => {
+  e.preventDefault();
+  const username = localStorage.getItem('Username'); // Get username from local storage
+  const { name } = formData; // Extract the name from formData
+
+  // Construct the activityData object to send to the server
+  const activityData = { 
+      Category: formData.Category,
+      date: formData.date,
+      time: formData.time,
+      location: formData.activityLocation, // Ensure this matches your backend
+      price: formData.price,
+      tags: formData.tags,
+      rating: formData.rating,
+      specialDiscounts: formData.specialDiscounts,
+      bookingOpen: formData.bookingOpen,
+      
+  };
+
+  try {
+      // Use username instead of Advertiser
+      const response = await fetch(`http://localhost:8000/updateActivity?Advertiser=${username}&name=${name}`, {
+          method: 'PATCH',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(activityData) // Use updated activityData
       });
 
       if (response.ok) {
-        const result = await response.json();
-        setSuccessMessage(`Activity "${result.name}" updated successfully!`);
-        setViewData(result);
-        setActivities((prevActivities) =>
-          prevActivities.map((Act) =>
-            Act.name === result.name ? result : Act
-          )
-        );
-        setIsUpdating(false);
-        setFormData({
-          date: '',
-          time: '',
-          price: '',
-          Category: '',
-          tags: '',
-          rating:0,
-          specialDiscounts: '',
-          bookingOpen: false,
-          activityLocation: { lat: null, lng: null },
-          name: '',
-          Advertiser: '', // Reset Advertiser to empty
-        });
+          const result = await response.json();
+          setSuccessMessage(`Activity "${result.name}" updated successfully!`);
+          setViewData(result);
+          setActivities((prevActivities) =>
+              prevActivities.map((Act) =>
+                  Act.name === result.name ? result : Act
+              )
+          );
+          setIsUpdating(false);
+          setFormData({
+              date: '',
+              time: '',
+              price: '',
+              Category: '',
+              tags: '',
+              rating: 0,
+              specialDiscounts: '',
+              bookingOpen: false,
+              activityLocation: { lat: null, lng: null },
+              name: '',
+          });
       } else {
-        const errorData = await response.json();
-        setErrorMessage(errorData.error || 'Failed to update Activity.');
+          const errorData = await response.json();
+          setErrorMessage(errorData.error || 'Failed to update Activity.');
       }
-    } catch (error) {
+  } catch (error) {
       setErrorMessage('An error occurred while updating the Activity');
       console.error(error);
-    }
-  };
+  }
+};
+
 
   const handleGetActivity = async (e, Advertiser,name) => {
     e.preventDefault();
