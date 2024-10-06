@@ -297,7 +297,8 @@ const handleUpdate = async (e) => {
               }
             />
           </div>
-          <div>
+          {/* Location picker */}
+        <div>
           <label><strong>Location:</strong></label>
           <MapPicker onLocationSelect={handleLocationSelect} />
         </div>

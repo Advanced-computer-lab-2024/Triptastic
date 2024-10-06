@@ -1,14 +1,10 @@
-// src/MapPicker.js
-
-// src/MapPicker.js
-
-import React, { useCallback, useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { GoogleMap, LoadScript, Marker, StandaloneSearchBox } from '@react-google-maps/api';
 
 const MapPicker = ({ onLocationSelect }) => {
-  const [mapCenter, setMapCenter] = useState({ lat: -34.397, lng: 150.644 }); // Default coordinates
+  const [mapCenter, setMapCenter] = useState({ lat: -34.397, lng: 150.644 });
   const [markerPosition, setMarkerPosition] = useState(mapCenter);
-  const searchBoxRef = useRef(null); // Create a ref for the StandaloneSearchBox
+  const searchBoxRef = useRef(null);
 
   const onMapClick = useCallback((event) => {
     const lat = event.latLng.lat();
@@ -20,26 +16,45 @@ const MapPicker = ({ onLocationSelect }) => {
   }, [onLocationSelect]);
 
   const handlePlaceChanged = () => {
-    const place = searchBoxRef.current.getPlaces()[0];
-    if (place) {
+    const places = searchBoxRef.current.getPlaces();
+    console.log("Places returned: ", places); // Debugging log
+
+    if (places && places.length > 0 && places[0].geometry) {
+      const place = places[0];
       const location = place.geometry.location;
+
+      console.log("Location: ", location); // Debugging log
       const newPosition = { lat: location.lat(), lng: location.lng() };
       setMarkerPosition(newPosition);
       setMapCenter(newPosition);
-      onLocationSelect(newPosition);
+      console.log("New marker position: ", newPosition); // Debugging log
+      onLocationSelect(newPosition); // Send the selected location back to parent
+    } else {
+      console.error('No valid place or geometry found');
     }
   };
 
   return (
-    <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY" libraries={['places']}>
+    <LoadScript googleMapsApiKey="AIzaSyD6QjQrBoCP9HJElNBpar1xz9yHABy2emc" libraries={['places']}>
       <StandaloneSearchBox
-        onLoad={ref => (searchBoxRef.current = ref)} // Store the ref in searchBoxRef
+        onLoad={(ref) => {
+          searchBoxRef.current = ref;
+          console.log("SearchBox Loaded: ", searchBoxRef.current); // Debugging log
+        }}
         onPlacesChanged={handlePlaceChanged}
       >
         <input
           type="text"
           placeholder="Search for a location"
-          style={{ boxSizing: 'border-box', border: '1px solid transparent', width: '240px', height: '32px', paddingLeft: '10px', marginTop: '10px', marginBottom: '10px' }}
+          style={{
+            boxSizing: 'border-box',
+            border: '1px solid transparent',
+            width: '240px',
+            height: '32px',
+            paddingLeft: '10px',
+            marginTop: '10px',
+            marginBottom: '10px'
+          }}
         />
       </StandaloneSearchBox>
       <GoogleMap
