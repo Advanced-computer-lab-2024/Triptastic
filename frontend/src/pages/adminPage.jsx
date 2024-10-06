@@ -17,6 +17,10 @@ const AdminPage = () => {
   const [loading, setLoading] = useState(false);
   const [addingProduct, setAddingProduct] = useState(false);
   const [deleteCategoryName, setDeleteCategoryName] = useState('');
+  const [prefTagName, setPrefTagName] = useState('');
+  const [createPrefTagMessage, setCreatePrefTagMessage] = useState('');
+  const [prefTag, setPrefTag] = useState(null);
+  const [error, setError] = useState('');
   const [productFormData, setProductFormData] = useState({
     productName: '',
     description: '',
@@ -164,6 +168,20 @@ const AdminPage = () => {
     }
   };
 
+  const fetchPrefTag = async () => {
+    try {
+        const response = await fetch(`/api/prefTag?PrefTagName=${prefTagName}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch preference tag');
+        }
+        const data = await response.json();
+        setPrefTag(data);
+    } catch (err) {
+        setError(err.message);
+    }
+};
+
+
   const createCategory = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -269,7 +287,7 @@ const AdminPage = () => {
 
     try {
       const response = await fetch('http://localhost:8000/updateCategory', {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -326,6 +344,36 @@ const AdminPage = () => {
       }
     } catch (error) {
       setErrorMessage('An error occurred while deleting the category.');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const createPrefTag = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setCreatePrefTagMessage('');
+
+    try {
+      const response = await fetch('http://localhost:8000/createPrefTag', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ PrefTagName: prefTagName }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCreatePrefTagMessage(`Preference Tag "${data.PrefTagName}" created successfully!`);
+        setPrefTagName(''); // Reset the input field after successful creation
+      } else {
+        const errorData = await response.json();
+        setCreatePrefTagMessage(`Error: ${errorData.error}`);
+      }
+    } catch (error) {
+      setCreatePrefTagMessage('An error occurred while creating the preference tag.');
       console.error(error);
     } finally {
       setLoading(false);
@@ -454,6 +502,16 @@ const AdminPage = () => {
         <button type="submit">Add Tourism Governor</button>
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
       </form>
+      <h2>Get Preference Tag</h2>
+            <input 
+                type="text" 
+                value={prefTagName} 
+                onChange={(e) => setPrefTagName(e.target.value)} 
+                placeholder="Enter Preference Tag Name" 
+            />
+            <button onClick={fetchPrefTag}>Fetch Preference Tag</button>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {prefTag && <div>{JSON.stringify(prefTag)}</div>}
 
       <h2>Delete User</h2>
       <div>
@@ -518,6 +576,22 @@ const AdminPage = () => {
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
       </form>
+        {/* Create Preference Tag Section */}
+        <h2>Create Preference Tag</h2>
+      <form onSubmit={createPrefTag}>
+        <div>
+          <label>Preference Tag Name:</label>
+          <input
+            type="text"
+            value={prefTagName}
+            onChange={(e) => setPrefTagName(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit" disabled={loading}>Create Preference Tag</button>
+      </form>
+      {createPrefTagMessage && <p>{createPrefTagMessage}</p>}
+
         {/* Delete Category Section */}
         <h2>Delete Category</h2>
       <form onSubmit={deleteCategory}>
