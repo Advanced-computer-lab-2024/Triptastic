@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
+import MapPicker from './MapPicker';
 
 const AdvertiserActivity = () => {
   const [formData, setFormData] = useState({
@@ -49,6 +50,14 @@ const AdvertiserActivity = () => {
     }));
   };
 
+
+  const handleLocationSelect = (location) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      activityLocation: location, // Update the activity location
+    }));
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -61,8 +70,12 @@ const AdvertiserActivity = () => {
     e.preventDefault();
     const username = localStorage.getItem('Username'); 
     console.log(username)
-    const activityData = { ...formData, Advertiser: username }; // Add Advertiser field
-
+   // Add Advertiser field
+    const activityData = { 
+      ...formData, 
+      Advertiser: username, 
+      activityLocation: formData.activityLocation // Include the location here
+  };
     try {
       console.log('Activity Data:', JSON.stringify(activityData));
       const response = await fetch('http://localhost:8000/createActivity', {
@@ -99,7 +112,11 @@ const AdvertiserActivity = () => {
     e.preventDefault();
     const username = localStorage.getItem('Username'); 
     console.log(username)// Get username from local storage
-    const activityData = { ...formData, Advertiser: username }; // Add Advertiser field
+    const activityData = { 
+      ...formData, 
+      Advertiser: username, 
+      activityLocation: formData.activityLocation // Include the location here
+  }; // Add Advertiser field
 
     try {
       const response = await fetch('http://localhost:8000/updateActivity', {
@@ -269,6 +286,10 @@ const AdvertiserActivity = () => {
               }
             />
           </div>
+          <div>
+          <label><strong>Location:</strong></label>
+          <MapPicker onLocationSelect={handleLocationSelect} />
+        </div>
 
           {/* Removed Advertiser input field */}
         </div>
@@ -310,6 +331,8 @@ const AdvertiserActivity = () => {
   <p><strong>Booking Open:</strong> {viewData.bookingOpen ? 'Yes' : 'No'}</p>
   <p><strong>Advertiser:</strong> {viewData.Advertiser}</p>
   <p><strong>Rating:</strong> {viewData.rating}</p>
+
+  <p><strong>Location:</strong> {viewData.activityLocation ? `Lat: ${viewData.activityLocation.lat}, Lng: ${viewData.activityLocation.lng}` : 'Not specified'}</p>
 </div>
       )}
     </div>
