@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import Select from 'react-select';
 
 const AdvertiserActivity = () => {
   const [formData, setFormData] = useState({
@@ -21,6 +22,32 @@ const AdvertiserActivity = () => {
   const [viewData, setViewData] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isCreated, setIsCreated] = useState(false);
+  const [availableTags, setAvailableTags] = useState([]);
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/viewAllPrefTag');
+        if (!response.ok) throw new Error('Failed to fetch tags');
+  
+        const tags = await response.json();
+        console.log("Fetched Tags:", tags); // Log the fetched tags to see their structure
+  
+        setAvailableTags(tags.map(tag => ({ value: tag.PrefTagName, label: tag.PrefTagName }))); // Adjust according to your data structure
+      } catch (error) {
+        console.error('Error fetching tags:', error);
+      }
+    };
+  
+    fetchTags();
+  }, []);// Runs once when the component mounts
+
+  const handleTagsChange = (selectedOptions) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      tags: selectedOptions.map(option => option.value), // Store the values of the selected options
+    }));
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -111,10 +138,10 @@ const AdvertiserActivity = () => {
     }
   };
 
-  const handleGetActivity = async (e, Advertiser) => {
+  const handleGetActivity = async (e, Advertiser,name) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:8000/getActivities?Advertiser=${Advertiser}`, {
+      const response = await fetch(`http://localhost:8000/viewActivitydetails?Advertiser=${Advertiser}&name=${name}`, {
         method: 'GET',
       });
 
@@ -199,10 +226,18 @@ const AdvertiserActivity = () => {
             <label><strong>Category:</strong></label>
             <input type="text" name="Category" value={formData.Category} onChange={handleInputChange} />
           </div>
-          <div>
-            <label><strong>Tags:</strong></label>
-            <input type="text" name="tags" value={formData.tags} onChange={handleInputChange} />
-          </div>
+           <div>
+            <label>Tags</label>
+            <Select
+                isMulti
+                name="tags"
+                options={availableTags}
+                className="basic-multi-select"
+                classNamePrefix="select"
+                onChange={handleTagsChange}
+                value={availableTags.filter(tag => formData.tags.includes(tag.value))} // Set the value based on the selected tags
+            />
+        </div>
           <div>
             <label><strong>rating:</strong></label>
             <input type="number" name="rating" value={formData.rating} onChange={handleInputChange} />
@@ -242,7 +277,7 @@ const AdvertiserActivity = () => {
           activities.map((activity) => (
             <div key={activity.name}>
               <h3>{activity.name}</h3>
-              <button onClick={(e) => handleGetActivity(e, activity.Advertiser)}>View</button>
+              <button onClick={(e) => handleGetActivity(e, activity.Advertiser,activity.name)}>View</button>
               <button onClick={(e) => handleDeleteActivity(e, activity.Advertiser, activity.name)}>Delete</button>
               <button onClick={(e) => handleUpdate(e)}>update</button>
             </div>
@@ -253,19 +288,22 @@ const AdvertiserActivity = () => {
       </div>
 
       {viewData && (
-        <div>
-          <h2>View Activity</h2>
-          <p><strong>Name:</strong> {viewData.name}</p>
-          <p><strong>Date:</strong> {viewData.date}</p>
-          <p><strong>Time:</strong> {viewData.time}</p>
-          <p><strong>Price:</strong> {viewData.price}</p>
-          <p><strong>Category:</strong> {viewData.Category}</p>
-          <p><strong>Tags:</strong> {viewData.tags}</p>
-          <p><strong>Special Discounts:</strong> {viewData.specialDiscounts}</p>
-          <p><strong>Booking Open:</strong> {viewData.bookingOpen ? 'Yes' : 'No'}</p>
-          <p><strong>Advertiser:</strong> {viewData.Advertiser}</p>
-          <p><strong>rating:</strong> {viewData.rating}</p>
-        </div>
+  <div>
+  <h2>View Activity</h2>
+  <p><strong>Name:</strong> {viewData.name}</p>
+  <p><strong>Date:</strong> {viewData.date}</p>
+  <p><strong>Time:</strong> {viewData.time}</p>
+  <p><strong>Price:</strong> {viewData.price}</p>
+  <p><strong>Category:</strong> {viewData.Category}</p>
+  
+  {/* Displaying tags as a comma-separated string */}
+  <p><strong>Tags:</strong> {viewData.tags.join(', ')}</p>
+  
+  <p><strong>Special Discounts:</strong> {viewData.specialDiscounts}</p>
+  <p><strong>Booking Open:</strong> {viewData.bookingOpen ? 'Yes' : 'No'}</p>
+  <p><strong>Advertiser:</strong> {viewData.Advertiser}</p>
+  <p><strong>Rating:</strong> {viewData.rating}</p>
+</div>
       )}
     </div>
   );

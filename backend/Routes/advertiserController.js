@@ -113,6 +113,25 @@ const getActivity = async (req, res) => {
        res.status(400).json({ error: error.message });
    }
 };
+const viewActivitydetails = async (req, res) => {
+    const { Advertiser, name } = req.body; // Get both Advertiser and name from the request body
+ 
+    try {
+        // Find the activity for the given Advertiser and name
+        const activity = await activitiesModel.findOne({ Advertiser: Advertiser, name: name });
+        
+        if (!activity) {
+            return res.status(404).json({ message: 'Activity not found for this advertiser and name' });
+        }
+ 
+        // Return the activity details
+        res.status(200).json(activity);
+        
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
 
 
 const updateActivity = async (req, res) => {
@@ -152,4 +171,4 @@ const deleteActivity = async (req, res) => {
  module.exports = {createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,
    getActivity,
    updateActivity,
-   deleteActivity,};
+   deleteActivity,viewActivitydetails};
