@@ -484,9 +484,42 @@ const sortProductsByRatingTourist = async (req, res) => {
       res.status(500).json({ error: 'Error fetching itineraries' });
     }
   };
+  const searchActivities = async (req, res) => {
+    const { name, category, tag } = req.query;
+
+    try {
+      // Create a dynamic search query
+      const searchQuery = {};
+  
+      if (name) {
+        searchQuery.name = { $regex: name, $options: 'i' }; // case-insensitive search for name
+      }
+      if (category) {
+        searchQuery.Category = { $regex: category, $options: 'i' }; // case-insensitive search for category
+      }
+      if (tag) {
+        searchQuery.tags = { $regex: tag, $options: 'i' }; // case-insensitive search for tags
+      }
+      console.log('Search Query:', searchQuery);
+
+  
+      const activities = await activitiesModel.find(searchQuery);
+      
+      if (activities.length > 0) {
+        res.status(200).json(activities);
+      } else {
+        res.status(404).json({ message: 'No activities found matching the search criteria.' });
+      }
+    } catch (error) {
+      console.error('Error searching activities:', error);
+      res.status(500).json({ message: 'Server error while searching for activities.', error: error.message });
+    }
+
+
+  }
   
  
  module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
-  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries};
+  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities};
