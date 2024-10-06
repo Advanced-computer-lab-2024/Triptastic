@@ -113,15 +113,35 @@ const getActivity = async (req, res) => {
        res.status(400).json({ error: error.message });
    }
 };
+const viewActivitydetails = async (req, res) => {
+    const { Advertiser, name } = req.query; // Get both Advertiser and name from the request body
+ 
+    try {
+        // Find the activity for the given Advertiser and name
+        const activity = await activitiesModel.findOne({ Advertiser: Advertiser, name: name });
+        
+        if (!activity) {
+            return res.status(404).json({ message: 'Activity not found for this advertiser and name' });
+        }
+ 
+        // Return the activity details
+        res.status(200).json(activity);
+        
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
 
 
 const updateActivity = async (req, res) => {
-   const { Category,name,date,time,location,price,tags,rating,specialDiscounts,bookingOpen,Advertiser }= req.body; // The current category name from the URL parameter
+    const {name,Advertiser}=req.query;
+   const { Category,date,time,location,price,tags,rating,specialDiscounts,bookingOpen }= req.body; // The current category name from the URL parameter
   // The new name to be updated, taken directly from the request body
 
    try {
        const activity = await activitiesModel.findOneAndUpdate(
-           { Advertiser:Advertiser }, // Find category by the current name
+        { Advertiser: Advertiser, name: name }, // Find category by the current name
            { $set: { Category:Category,name:name,date:date,time:time,location:location,price:price,tags:tags,rating:rating,specialDiscounts:specialDiscounts,bookingOpen:bookingOpen  } }, // Update to the new name
            { new: true } // Return the updated document
        );
@@ -152,4 +172,4 @@ const deleteActivity = async (req, res) => {
  module.exports = {createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,
    getActivity,
    updateActivity,
-   deleteActivity,};
+   deleteActivity,viewActivitydetails};

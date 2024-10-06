@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import Select from 'react-select';
+import MapPicker from './MapPicker';
 
 const AdvertiserActivity = () => {
   const [formData, setFormData] = useState({
@@ -21,6 +23,40 @@ const AdvertiserActivity = () => {
   const [viewData, setViewData] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isCreated, setIsCreated] = useState(false);
+  const [availableTags, setAvailableTags] = useState([]);
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/viewAllPrefTag');
+        if (!response.ok) throw new Error('Failed to fetch tags');
+  
+        const tags = await response.json();
+        console.log("Fetched Tags:", tags); // Log the fetched tags to see their structure
+  
+        setAvailableTags(tags.map(tag => ({ value: tag.PrefTagName, label: tag.PrefTagName }))); // Adjust according to your data structure
+      } catch (error) {
+        console.error('Error fetching tags:', error);
+      }
+    };
+  
+    fetchTags();
+  }, []);// Runs once when the component mounts
+
+  const handleTagsChange = (selectedOptions) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      tags: selectedOptions.map(option => option.value), // Store the values of the selected options
+    }));
+  };
+
+
+  const handleLocationSelect = (location) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      activityLocation: location, // Update the activity location
+    }));
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -34,8 +70,12 @@ const AdvertiserActivity = () => {
     e.preventDefault();
     const username = localStorage.getItem('Username'); 
     console.log(username)
-    const activityData = { ...formData, Advertiser: username }; // Add Advertiser field
-
+   // Add Advertiser field
+    const activityData = { 
+      ...formData, 
+      Advertiser: username, 
+      activityLocation: formData.activityLocation // Include the location here
+  };
     try {
       console.log('Activity Data:', JSON.stringify(activityData));
       const response = await fetch('http://localhost:8000/createActivity', {
@@ -62,66 +102,87 @@ const AdvertiserActivity = () => {
       console.error(error);
     }
   };
-
-  const handleUpdate = async (e) => {
+  const handleUpdateClick = (e, activity) => {
     e.preventDefault();
-    const username = localStorage.getItem('Username'); 
-    console.log(username)// Get username from local storage
-    const activityData = { ...formData, Advertiser: username }; // Add Advertiser field
+    setIsUpdating(true); // Set update mode to true
+    setFormData(activity); // Pre-fill the form with the data of the activity to update
+    setSuccessMessage(`Editing activity "${activity.name}"`);
+};
 
-    try {
-      const response = await fetch('http://localhost:8000/updateActivity', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(activityData) // Use updated activityData
+const handleUpdate = async (e) => {
+  e.preventDefault();
+  const username = localStorage.getItem('Username'); // Get username from local storage
+  const { name } = formData; // Extract the name from formData
+
+  // Construct the activityData object to send to the server
+  const activityData = { 
+      Category: formData.Category,
+      date: formData.date,
+      time: formData.time,
+      location: formData.activityLocation, // Ensure this matches your backend
+      price: formData.price,
+      tags: formData.tags,
+      rating: formData.rating,
+      specialDiscounts: formData.specialDiscounts,
+      bookingOpen: formData.bookingOpen,
+      
+  };
+
+  try {
+      // Use username instead of Advertiser
+      const response = await fetch(`http://localhost:8000/updateActivity?Advertiser=${username}&name=${name}`, {
+          method: 'PATCH',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(activityData) // Use updated activityData
       });
 
       if (response.ok) {
-        const result = await response.json();
-        setSuccessMessage(`Activity "${result.name}" updated successfully!`);
-        setViewData(result);
-        setActivities((prevActivities) =>
-          prevActivities.map((Act) =>
-            Act.name === result.name ? result : Act
-          )
-        );
-        setIsUpdating(false);
-        setFormData({
-          date: '',
-          time: '',
-          price: '',
-          Category: '',
-          tags: '',
-          rating:0,
-          specialDiscounts: '',
-          bookingOpen: false,
-          activityLocation: { lat: null, lng: null },
-          name: '',
-          Advertiser: '', // Reset Advertiser to empty
-        });
+          const result = await response.json();
+          setSuccessMessage(`Activity "${result.name}" updated successfully!`);
+          setViewData(result);
+          setActivities((prevActivities) =>
+              prevActivities.map((Act) =>
+                  Act.name === result.name ? result : Act
+              )
+          );
+          setIsUpdating(false);
+          setFormData({
+              date: '',
+              time: '',
+              price: '',
+              Category: '',
+              tags: '',
+              rating: 0,
+              specialDiscounts: '',
+              bookingOpen: false,
+              activityLocation: { lat: null, lng: null },
+              name: '',
+          });
       } else {
-        const errorData = await response.json();
-        setErrorMessage(errorData.error || 'Failed to update Activity.');
+          const errorData = await response.json();
+          setErrorMessage(errorData.error || 'Failed to update Activity.');
       }
-    } catch (error) {
+  } catch (error) {
       setErrorMessage('An error occurred while updating the Activity');
       console.error(error);
-    }
-  };
+  }
+};
 
-  const handleGetActivity = async (e, Advertiser) => {
+
+  const handleGetActivity = async (e, Advertiser,name) => {
     e.preventDefault();
+    console.log(`Fetching activity for Advertiser: ${Advertiser}, name: ${name}`);
     try {
-      const response = await fetch(`http://localhost:8000/getActivities?Advertiser=${Advertiser}`, {
+      const response = await fetch(`http://localhost:8000/viewActivitydetails?Advertiser=${Advertiser}&name=${name}`, {
         method: 'GET',
       });
 
       if (response.ok) {
         const result = await response.json();
         setFormData(result);
-        setSuccessMessage(`Activity "${result.Name}" retrieved successfully!`);
+        setSuccessMessage(`Activity "${result.name}" retrieved successfully!`);
         setViewData(result);
       } else {
         const errorData = await response.json();
@@ -132,6 +193,7 @@ const AdvertiserActivity = () => {
       console.error(error);
     }
   };
+ 
 
   const handleDeleteActivity = async (e, advertiser, name) => {
     e.preventDefault();
@@ -199,10 +261,18 @@ const AdvertiserActivity = () => {
             <label><strong>Category:</strong></label>
             <input type="text" name="Category" value={formData.Category} onChange={handleInputChange} />
           </div>
-          <div>
-            <label><strong>Tags:</strong></label>
-            <input type="text" name="tags" value={formData.tags} onChange={handleInputChange} />
-          </div>
+           <div>
+            <label>Tags</label>
+            <Select
+                isMulti
+                name="tags"
+                options={availableTags}
+                className="basic-multi-select"
+                classNamePrefix="select"
+                onChange={handleTagsChange}
+                value={availableTags.filter(tag => formData.tags.includes(tag.value))} // Set the value based on the selected tags
+            />
+        </div>
           <div>
             <label><strong>rating:</strong></label>
             <input type="number" name="rating" value={formData.rating} onChange={handleInputChange} />
@@ -227,6 +297,10 @@ const AdvertiserActivity = () => {
               }
             />
           </div>
+          <div>
+          <label><strong>Location:</strong></label>
+          <MapPicker onLocationSelect={handleLocationSelect} />
+        </div>
 
           {/* Removed Advertiser input field */}
         </div>
@@ -242,9 +316,9 @@ const AdvertiserActivity = () => {
           activities.map((activity) => (
             <div key={activity.name}>
               <h3>{activity.name}</h3>
-              <button onClick={(e) => handleGetActivity(e, activity.Advertiser)}>View</button>
+              <button onClick={(e) => handleGetActivity(e, activity.Advertiser,activity.name)}>View</button>
               <button onClick={(e) => handleDeleteActivity(e, activity.Advertiser, activity.name)}>Delete</button>
-              <button onClick={(e) => handleUpdate(e)}>update</button>
+              <button onClick={(e) => handleUpdateClick(e,activity)}>update</button>
             </div>
           ))
         ) : (
@@ -253,19 +327,24 @@ const AdvertiserActivity = () => {
       </div>
 
       {viewData && (
-        <div>
-          <h2>View Activity</h2>
-          <p><strong>Name:</strong> {viewData.name}</p>
-          <p><strong>Date:</strong> {viewData.date}</p>
-          <p><strong>Time:</strong> {viewData.time}</p>
-          <p><strong>Price:</strong> {viewData.price}</p>
-          <p><strong>Category:</strong> {viewData.Category}</p>
-          <p><strong>Tags:</strong> {viewData.tags}</p>
-          <p><strong>Special Discounts:</strong> {viewData.specialDiscounts}</p>
-          <p><strong>Booking Open:</strong> {viewData.bookingOpen ? 'Yes' : 'No'}</p>
-          <p><strong>Advertiser:</strong> {viewData.Advertiser}</p>
-          <p><strong>rating:</strong> {viewData.rating}</p>
-        </div>
+  <div>
+  <h2>View Activity</h2>
+  <p><strong>Name:</strong> {viewData.name}</p>
+  <p><strong>Date:</strong> {viewData.date}</p>
+  <p><strong>Time:</strong> {viewData.time}</p>
+  <p><strong>Price:</strong> {viewData.price}</p>
+  <p><strong>Category:</strong> {viewData.Category}</p>
+  
+  {/* Displaying tags as a comma-separated string */}
+  <p><strong>Tags:</strong> {viewData.tags.join(', ')}</p>
+  
+  <p><strong>Special Discounts:</strong> {viewData.specialDiscounts}</p>
+  <p><strong>Booking Open:</strong> {viewData.bookingOpen ? 'Yes' : 'No'}</p>
+  <p><strong>Advertiser:</strong> {viewData.Advertiser}</p>
+  <p><strong>Rating:</strong> {viewData.rating}</p>
+
+  <p><strong>Location:</strong> {viewData.activityLocation ? `Lat: ${viewData.activityLocation.lat}, Lng: ${viewData.activityLocation.lng}` : 'Not specified'}</p>
+</div>
       )}
     </div>
   );

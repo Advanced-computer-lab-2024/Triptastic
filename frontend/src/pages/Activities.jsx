@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const Activites = () => {
+const Activities = () => {
   const [activities, setActivities] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(true);
@@ -16,6 +16,10 @@ const Activites = () => {
   const [minBudget, setMinBudget] = useState('');
   const [maxBudget, setMaxBudget] = useState('');
   const [filterRating, setFilterRating] = useState('');
+
+  // Search states
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchType, setSearchType] = useState('name'); // 'name', 'category', 'tag'
 
   // Fetch activities with sorting
   const fetchSortedActivities = async (priceSortParam, ratingSortParam) => {
@@ -73,6 +77,34 @@ const Activites = () => {
     }
   };
 
+  // Fetch activities with search
+  const fetchSearchedActivities = async () => {
+    try {
+      const searchParams = new URLSearchParams();
+      searchParams.append(searchType, searchQuery);
+
+      const response = await fetch(`http://localhost:8000/searchActivities?${searchParams.toString()}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setActivities(data);
+        setErrorMessage('');
+      } else {
+        throw new Error('Failed to fetch activities');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while fetching activities');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSort = (priceSortParam, ratingSortParam) => {
     setPriceSort(priceSortParam);
     setRatingSort(ratingSortParam);
@@ -84,6 +116,12 @@ const Activites = () => {
     e.preventDefault();
     setLoading(true);
     fetchFilteredActivities();
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    fetchSearchedActivities();
   };
 
   const toggleActivityDetails = (id) => {
@@ -178,6 +216,35 @@ const Activites = () => {
             </form>
           </div>
 
+          {/* Search Form */}
+          <div>
+            <h3>Search Activities</h3>
+            <form onSubmit={handleSearchSubmit}>
+              <div>
+                <label>
+                  Search Query:
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search by name, category, or tag"
+                  />
+                </label>
+              </div>
+              <div>
+                <label>
+                  Search By:
+                  <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
+                    <option value="name">Name</option>
+                    <option value="Category">Category</option>
+                    <option value="tags">Tag</option>
+                  </select>
+                </label>
+              </div>
+              <button type="submit">Search</button>
+            </form>
+          </div>
+
           {/* Error Message */}
           {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
 
@@ -218,4 +285,4 @@ const Activites = () => {
   );
 };
 
-export default Activites;
+export default Activities;
