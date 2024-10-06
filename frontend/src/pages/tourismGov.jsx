@@ -12,6 +12,14 @@ const TourismGov = () => {
     navigate('/gov-museum'); // Navigate to the museums page
   };
 
+  const handleMyLocations = () => {
+    navigate('/my-locations'); 
+  };
+
+  const handleMyMuseums = () => {
+    navigate('/my-museums'); // Added this line for navigation
+  }; // Correctly closing the function here
+
   return (
     <div>
       <h1>Tourism Governor Profile</h1>
@@ -20,6 +28,12 @@ const TourismGov = () => {
       </button>
       <button onClick={handleCreateMuseum}>
         Create Museum
+      </button>
+      <button onClick={handleMyLocations}>
+        View My Historical Locations
+      </button>
+      <button onClick={handleMyMuseums}>
+        View My Museums
       </button>
     </div>
   );

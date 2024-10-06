@@ -18,11 +18,12 @@ import GovernorH from './pages/govH';
 import Activities from './pages/Activities';
 import Guest from './pages/Guest';
 import AdvertiserActivity from './pages/advertiserActivities';
-
 import GovernorM from './pages/govM';
 import TourismGov from './pages/tourismGov';
 import TourismGovLogin from './pages/tGovLogin';
 import MapPicker from './pages/MapPicker';
+import MyLocations from './pages/myLocations';
+import MyMuseums from './pages/myMuseums';
 
 function Home() {
   const navigate = useNavigate();
@@ -82,8 +83,9 @@ function App() {
         <Route path="/advertiser-Activities" element={<AdvertiserActivity />} />
         <Route path="/gov-historical" element={<GovernorH />} />
         <Route path="/gov-museum" element={<GovernorM />} />
-
-        <Route path="/map-Picker" element={<MapPicker />} />
+        <Route path="/my-locations" element={<MyLocations />} />
+        <Route path="/my-museums" element={<MyMuseums />} />
+        <Route path="/map-Picker" element={<TourismGov />} />
       </Routes>
     </Router>
   );

@@ -24,7 +24,6 @@ function TourismGovLogin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-
       const response = await fetch('http://localhost:8000/tourismGovLogin', {
         method: 'POST',
         headers: {
@@ -34,19 +33,20 @@ function TourismGovLogin() {
       });
         
       if (response.ok) {
-
         const data = await response.json();
-        setSuccessMessage(' logged in successfully!');
+        // Save the username in local storage
+        localStorage.setItem('Username', formData.Username); // Adjust based on your API response
+
+        setSuccessMessage('Logged in successfully!');
         setErrorMessage('');
         navigate('/tourism-gov');
-
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.error || 'Login failed');
         setSuccessMessage('');
       }
     } catch (error) {
-      setErrorMessage('Something wrong. Please try again later.');
+      setErrorMessage('Something went wrong. Please try again later.');
     }
   };
 

@@ -43,6 +43,10 @@ Name: {
   image: {  
     type: String,  
     required: false,
+  },
+  TourismGovernor:{
+    type: String,
+    required: true,
   }
 }, { timestamps: true });
 

@@ -56,19 +56,22 @@ const GovernorM = () => {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
+      // Retrieve the tourism governor's username from local storage
+      const tourismGovernor = localStorage.getItem('Username') || '';
+  
       const response = await fetch('http://localhost:8000/createmuseum', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({ ...formData, TourismGovernor: tourismGovernor }) // Include the TourismGovernor
       });
-
+  
       if (response.ok) {
         const result = await response.json();
         setSuccessMessage(`Museum "${result.Name}" created successfully!`);
         setLocations((prevLocations) => [...prevLocations, result]); // Add new museum to the list
-
+  
         // Reset form after successful creation
         setFormData({
           Name: '',
@@ -94,6 +97,7 @@ const GovernorM = () => {
       console.error(error);
     }
   };
+  
 
   const handleGetMuseum = async (e, name) => {
     e.preventDefault();
@@ -322,7 +326,9 @@ const GovernorM = () => {
           <p><b>Opening Hours:</b> {viewData.OpeningHours}</p>
           <p><b>Ticket Prices:</b> {`Foreigner: ${viewData.TicketPrices.Foreigner}, Student: ${viewData.TicketPrices.Student}, Native: ${viewData.TicketPrices.Native}`}</p>
           <p><b>Tags (HistoricalPeriod):</b> {viewData.Tags.HistoricalPeriod}</p>
-          <p><b>Image:</b> {viewData.image}</p>
+          <p><b>Image:</b> img src={viewData.image} alt={viewData.Name} style={{ maxWidth: '200px' }}</p>
+          <p><b>Tourism Governor:</b> {viewData.TourismGovernor}</p>
+
         </div>
       )}
     </div>
