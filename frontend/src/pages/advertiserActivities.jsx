@@ -7,6 +7,7 @@ const AdvertiserActivity = () => {
     price: '',
     Category: '',
     tags: '',
+    rating:0,
     specialDiscounts: '',
     bookingOpen: false,
     activityLocation: { lat: null, lng: null },
@@ -37,7 +38,7 @@ const AdvertiserActivity = () => {
 
     try {
       console.log('Activity Data:', JSON.stringify(activityData));
-      const response = await fetch(`http://localhost:8000/createActivity`, {
+      const response = await fetch('http://localhost:8000/createActivity', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -69,7 +70,7 @@ const AdvertiserActivity = () => {
     const activityData = { ...formData, Advertiser: username }; // Add Advertiser field
 
     try {
-      const response = await fetch(`http://localhost:8000/updateActivity`, {
+      const response = await fetch('http://localhost:8000/updateActivity', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -93,6 +94,7 @@ const AdvertiserActivity = () => {
           price: '',
           Category: '',
           tags: '',
+          rating:0,
           specialDiscounts: '',
           bookingOpen: false,
           activityLocation: { lat: null, lng: null },
@@ -151,6 +153,7 @@ const AdvertiserActivity = () => {
           price: '',
           Category: '',
           tags: '',
+          rating:0,
           specialDiscounts: '',
           bookingOpen: false,
           activityLocation: { lat: null, lng: null },
@@ -201,6 +204,10 @@ const AdvertiserActivity = () => {
             <input type="text" name="tags" value={formData.tags} onChange={handleInputChange} />
           </div>
           <div>
+            <label><strong>rating:</strong></label>
+            <input type="number" name="rating" value={formData.rating} onChange={handleInputChange} />
+          </div>
+          <div>
             <label><strong>Special Discounts:</strong></label>
             <input
               type="text"
@@ -237,6 +244,7 @@ const AdvertiserActivity = () => {
               <h3>{activity.name}</h3>
               <button onClick={(e) => handleGetActivity(e, activity.Advertiser)}>View</button>
               <button onClick={(e) => handleDeleteActivity(e, activity.Advertiser, activity.name)}>Delete</button>
+              <button onClick={(e) => handleUpdate(e)}>update</button>
             </div>
           ))
         ) : (
@@ -256,6 +264,7 @@ const AdvertiserActivity = () => {
           <p><strong>Special Discounts:</strong> {viewData.specialDiscounts}</p>
           <p><strong>Booking Open:</strong> {viewData.bookingOpen ? 'Yes' : 'No'}</p>
           <p><strong>Advertiser:</strong> {viewData.Advertiser}</p>
+          <p><strong>rating:</strong> {viewData.rating}</p>
         </div>
       )}
     </div>
