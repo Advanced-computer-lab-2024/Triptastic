@@ -7,6 +7,29 @@ const Products = () => {
   const [minPrice, setMinPrice] = useState(''); // State for minimum price
   const [maxPrice, setMaxPrice] = useState(''); // State for maximum price
 
+  const fetchProductsByRating = async () => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('http://localhost:8000/sortProductsByRatingTourist'); // Fetch sorted products
+      if (!response.ok) {
+        throw new Error('Failed to fetch sorted products');
+      }
+
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts(); // Fetch all products on page load
+  }, []);
+
   const fetchProducts = async (minPrice = '', maxPrice = '') => {
     setLoading(true);
     setError('');
@@ -77,7 +100,7 @@ const Products = () => {
         </div>
         <button type="submit">Filter</button>
       </form>
-
+      <button onClick={fetchProductsByRating}>Sort by Rating</button>
       {/* Display products */}
       {products.length === 0 ? (
         <p>No products available.</p>

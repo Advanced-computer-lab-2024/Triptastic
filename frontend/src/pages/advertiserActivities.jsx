@@ -38,7 +38,7 @@ const AdvertiserActivity = () => {
 
     try {
       console.log('Activity Data:', JSON.stringify(activityData));
-      const response = await fetch(`http://localhost:8000/createActivity`, {
+      const response = await fetch('http://localhost:8000/createActivity', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ const AdvertiserActivity = () => {
     const activityData = { ...formData, Advertiser: username }; // Add Advertiser field
 
     try {
-      const response = await fetch(`http://localhost:8000/updateActivity`, {
+      const response = await fetch('http://localhost:8000/updateActivity', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
