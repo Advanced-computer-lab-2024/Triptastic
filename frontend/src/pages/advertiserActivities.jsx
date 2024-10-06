@@ -89,7 +89,12 @@ const AdvertiserActivity = () => {
       console.error(error);
     }
   };
-
+  const handleUpdateClick = (e, activity) => {
+    e.preventDefault();
+    setIsUpdating(true); // Set update mode to true
+    setFormData(activity); // Pre-fill the form with the data of the museum to update
+    setSuccessMessage(`Editing activity "${activity.name}"`);
+  };
   const handleUpdate = async (e) => {
     e.preventDefault();
     const username = localStorage.getItem('Username'); 
@@ -140,6 +145,7 @@ const AdvertiserActivity = () => {
 
   const handleGetActivity = async (e, Advertiser,name) => {
     e.preventDefault();
+    console.log(`Fetching activity for Advertiser: ${Advertiser}, name: ${name}`);
     try {
       const response = await fetch(`http://localhost:8000/viewActivitydetails?Advertiser=${Advertiser}&name=${name}`, {
         method: 'GET',
@@ -148,7 +154,7 @@ const AdvertiserActivity = () => {
       if (response.ok) {
         const result = await response.json();
         setFormData(result);
-        setSuccessMessage(`Activity "${result.Name}" retrieved successfully!`);
+        setSuccessMessage(`Activity "${result.name}" retrieved successfully!`);
         setViewData(result);
       } else {
         const errorData = await response.json();
@@ -159,6 +165,7 @@ const AdvertiserActivity = () => {
       console.error(error);
     }
   };
+ 
 
   const handleDeleteActivity = async (e, advertiser, name) => {
     e.preventDefault();
@@ -279,7 +286,7 @@ const AdvertiserActivity = () => {
               <h3>{activity.name}</h3>
               <button onClick={(e) => handleGetActivity(e, activity.Advertiser,activity.name)}>View</button>
               <button onClick={(e) => handleDeleteActivity(e, activity.Advertiser, activity.name)}>Delete</button>
-              <button onClick={(e) => handleUpdate(e)}>update</button>
+              <button onClick={(e) => handleUpdateClick(e,activity)}>update</button>
             </div>
           ))
         ) : (

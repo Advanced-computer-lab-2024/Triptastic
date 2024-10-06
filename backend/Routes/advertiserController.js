@@ -114,7 +114,7 @@ const getActivity = async (req, res) => {
    }
 };
 const viewActivitydetails = async (req, res) => {
-    const { Advertiser, name } = req.body; // Get both Advertiser and name from the request body
+    const { Advertiser, name } = req.query; // Get both Advertiser and name from the request body
  
     try {
         // Find the activity for the given Advertiser and name
