@@ -21,6 +21,14 @@ const AdminPage = () => {
   const [createPrefTagMessage, setCreatePrefTagMessage] = useState('');
   const [prefTag, setPrefTag] = useState(null);
   const [error, setError] = useState('');
+  const [newPrefTagName, setNewPrefTagName] = useState('');
+  const [message, setMessage] = useState('');
+
+  //new
+  const [productNameToSearch, setProductNameToSearch] = useState('');
+  const [productSearchResult, setProductSearchResult] = useState(null);
+  
+ 
   const [productFormData, setProductFormData] = useState({
     productName: '',
     description: '',
@@ -180,6 +188,82 @@ const AdminPage = () => {
         setError(err.message);
     }
 };
+
+const deletePrefTag = async () => {
+  try {
+      const response = await fetch('/api/prefTag', {
+          method: 'DELETE',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ PrefTagName: prefTagName }),
+      });
+
+      if (!response.ok) {
+          throw new Error('Failed to delete preference tag');
+      }
+      const data = await response.json();
+      setMessage(data.msg); // Set success message
+      setError('');
+  } catch (err) {
+      setError(err.message); // Set error message
+      setMessage('');
+  }
+};
+const updatePrefTag = async () => {
+  try {
+      const response = await fetch('/api/prefTag', {
+          method: 'PATCH',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ PrefTagName: prefTagName, newPrefTagName }),
+      });
+
+      if (!response.ok) {
+          throw new Error('Failed to update preference tag');
+      }
+      const data = await response.json();
+      setMessage(`Preference tag updated: ${JSON.stringify(data)}`);
+      setError('');
+  } catch (err) {
+      setError(err.message);
+      setMessage('');
+  }
+};
+
+//getproduct
+const getProductByName = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setErrorMessage('');
+  setSuccessMessage('');
+  setProductSearchResult(null);
+
+  try {
+    const response = await fetch(`http://localhost:8000/getProduct?productName=${productNameToSearch}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const product = await response.json();
+      setProductSearchResult(product);
+      setSuccessMessage('Product found successfully!');
+    } else {
+      const errorData = await response.json();
+      setErrorMessage(errorData.error || 'Product not found.');
+    }
+  } catch (error) {
+    setErrorMessage('An error occurred while searching for the product.');
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
 
   const createCategory = async (e) => {
@@ -513,6 +597,17 @@ const AdminPage = () => {
             {error && <p style={{ color: 'red' }}>{error}</p>}
             {prefTag && <div>{JSON.stringify(prefTag)}</div>}
 
+            <h2>Delete Preference Tag</h2>
+            <input 
+                type="text" 
+                value={prefTagName} 
+                onChange={(e) => setPrefTagName(e.target.value)} 
+                placeholder="Preference Tag Name" 
+            />
+            <button onClick={deletePrefTag}>Delete Preference Tag</button>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {message && <p style={{ color: 'green' }}>{message}</p>}
+
       <h2>Delete User</h2>
       <div>
         <label>Username to delete:</label>
@@ -549,6 +644,23 @@ const AdminPage = () => {
         <button type="submit" disabled={loading}>Create Category</button>
       </form>
       {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+
+      <h2>Update Preference Tag</h2>
+            <input 
+                type="text" 
+                value={prefTagName} 
+                onChange={(e) => setPrefTagName(e.target.value)} 
+                placeholder="Current Preference Tag Name" 
+            />
+            <input 
+                type="text" 
+                value={newPrefTagName} 
+                onChange={(e) => setNewPrefTagName(e.target.value)} 
+                placeholder="New Preference Tag Name" 
+            />
+            <button onClick={updatePrefTag}>Update Preference Tag</button>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {message && <p style={{ color: 'green' }}>{message}</p>}
       
       <h2>Update Category</h2>
       <form onSubmit={handleUpdateCategory}>
@@ -604,6 +716,40 @@ const AdminPage = () => {
             required
           />
         </div>
+
+
+
+              {/* Get Product by Name Section */}
+      <h2>Search Product by Name</h2>
+      <form onSubmit={getProductByName}>
+        <div>
+          <label>Product Name:</label>
+          <input
+            type="text"
+            value={productNameToSearch}
+            onChange={(e) => setProductNameToSearch(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit" disabled={loading}>Search Product</button>
+      </form>
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+      {productSearchResult && (
+        <div>
+          <h3>Product Details</h3>
+          <p>Name: {productSearchResult.productName}</p>
+          <p>Description: {productSearchResult.description}</p>
+          <p>Price: {productSearchResult.price}</p>
+          <p>Rating: {productSearchResult.rating}</p>
+          <p>Seller: {productSearchResult.seller}</p>
+          {/* Add more product details as needed */}
+        </div>
+      )}
+
+
+
+
         <button type="submit" disabled={loading}>Delete Category</button>
       </form>
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
