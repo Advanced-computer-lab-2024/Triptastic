@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 
 const GovernorM = () => {
   const [formData, setFormData] = useState({
@@ -22,6 +23,7 @@ const GovernorM = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [viewData, setViewData] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false); // Tracks whether we are in update mode
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -331,6 +333,13 @@ const GovernorM = () => {
 
         </div>
       )}
+       {/* Sidebar */}
+       <div className="sidebar">
+        <h3>Explore</h3>
+        <ul>
+          <li onClick={() => navigate('/gov-museum')}>Create other Museums</li>
+        </ul>
+      </div>
     </div>
   );
 };
