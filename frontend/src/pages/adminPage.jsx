@@ -31,6 +31,10 @@ const AdminPage = () => {
     Username: '',
     Password: ''
   });
+  const [updateCategoryData, setUpdateCategoryData] = useState({
+    currentName: '',
+    newName: ''
+  });
 
   const navigate = useNavigate();
 
@@ -253,6 +257,49 @@ const AdminPage = () => {
       [name]: value
     }));
   };
+  // Function to handle updating the category
+  const handleUpdateCategory = async (e) => {
+    e.preventDefault();
+    setErrorMessage('');
+    setSuccessMessage('');
+    setLoading(true);
+
+    const { currentName, newName } = updateCategoryData;
+
+    try {
+      const response = await fetch('http://localhost:8000/updateCategory', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ Name: currentName, newName }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSuccessMessage(`Category "${data.Name}" updated successfully!`);
+        setUpdateCategoryData({ currentName: '', newName: '' });
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Failed to update category.');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while updating the category.');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateCategoryChange = (e) => {
+    const { name, value } = e.target;
+    setUpdateCategoryData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+
+
 
   return (
     <div>
@@ -347,6 +394,33 @@ const AdminPage = () => {
         <button type="submit" disabled={loading}>Create Category</button>
       </form>
       {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+      
+      <h2>Update Category</h2>
+      <form onSubmit={handleUpdateCategory}>
+        <div>
+          <label>Current Category Name:</label>
+          <input
+            type="text"
+            name="currentName"
+            value={updateCategoryData.currentName}
+            onChange={handleUpdateCategoryChange}
+            required
+          />
+        </div>
+        <div>
+          <label>New Category Name:</label>
+          <input
+            type="text"
+            name="newName"
+            value={updateCategoryData.newName}
+            onChange={handleUpdateCategoryChange}
+            required
+          />
+        </div>
+        <button type="submit" disabled={loading}>Update Category</button>
+        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+      </form>
 
       <h2>Search Category</h2>
       <div>
