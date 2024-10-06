@@ -19,9 +19,9 @@ import Activities from './pages/Activities';
 import Guest from './pages/Guest';
 import AdvertiserActivity from './pages/advertiserActivities';
 
-
 import GovernorM from './pages/govM';
 import TourismGov from './pages/tourismGov';
+import TourismGovLogin from './pages/tGovLogin';
 import MapPicker from './pages/MapPicker';
 
 function Home() {
@@ -30,9 +30,14 @@ function Home() {
   return (
     <div className="App">
       <header className="App-header">
-        <button className="admin-login-btn" onClick={() => navigate('/adminLogin')}>
-          Login as Admin
-        </button>
+        
+      <div className="header-container">
+  <button className="header-button" onClick={() => navigate('/adminLogin')}>Login as Admin</button>
+  <button className="header-button" onClick={() => navigate('/tgov-login')}>Login as Tourism Governor</button>
+</div>
+
+ 
+        
 
         <h1>Welcome to Triptastic!</h1>
         <p>Please register as one of the following:</p>
@@ -41,12 +46,11 @@ function Home() {
           <button onClick={() => navigate('/tour-guide-register')}>Register as Tour Guide</button>
           <button onClick={() => navigate('/advertiser-register')}>Register as Advertiser</button>
           <button onClick={() => navigate('/seller-register')}>Register as Seller</button>
+          <button  onClick={() => navigate('/Guest')}> Continue as Guest </button>
         </div>
         
         {/* Continue as Guest Button */}
-        <button className="continue-guest-btn" onClick={() => navigate('/Guest')}>
-          Continue as Guest
-        </button>
+        
       </header>
     </div>
   );
@@ -74,11 +78,11 @@ function App() {
         <Route path="/tourism-gov" element={<TourismGov />} />
         <Route path="/activities" element={<Activities />} />
         <Route path="/guest" element={<Guest />} />      
-          
+        <Route path="/tgov-login" element={<TourismGovLogin />} />
         <Route path="/advertiser-Activities" element={<AdvertiserActivity />} />
-
         <Route path="/gov-historical" element={<GovernorH />} />
         <Route path="/gov-museum" element={<GovernorM />} />
+
         <Route path="/map-Picker" element={<MapPicker />} />
       </Routes>
     </Router>

@@ -431,9 +431,62 @@ const sortProductsByRatingTourist = async (req, res) => {
     }
   };
   
- 
+  const filterItineraries = async (req, res) => {
+    const { minBudget, maxBudget, date, preferences, language } = req.query;
+  
+    let filter = {};
+  
+    // Budget filter
+    if (minBudget !== undefined && maxBudget !== undefined) {
+      filter.Price = {
+        $gte: Number(minBudget), // Minimum budget
+        $lte: Number(maxBudget)  // Maximum budget
+      };
+    } else if (minBudget !== undefined) {
+      filter.Price = { $gte: Number(minBudget) };
+    } else if (maxBudget !== undefined) {
+      filter.Price = { $lte: Number(maxBudget) };
+    }
+  
+    // Date filter (for itineraries that are upcoming)
+    if (date) {
+      const inputDate = new Date(date);
+      filter.DatesTimes = {
+        $gte: inputDate // Itineraries on or after the given date
+      };
+    } else {
+      const today = new Date();
+      filter.DatesTimes = {
+        $gte: today // Upcoming itineraries starting today or later
+      };
+    }
+  
+    // Preferences filter (historic areas, beaches, family-friendly, shopping)
+    if (preferences) {
+      filter.PreferenceTag = { $regex: preferences, $options: 'i' }; // Case-insensitive match for preferences
+    }
+  
+    // Language filter
+    if (language) {
+      filter.Language = language;
+    }
+  
+    try {
+      // Fetch itineraries that match the filter criteria
+      const itineraries = await itineraryModel.find(filter);
+      
+      if (itineraries.length === 0) {
+        return res.status(404).json({ msg: "No itineraries found matching the criteria." });
+      }
+  
+      res.status(200).json(itineraries);
+    } catch (error) {
+      res.status(500).json({ error: 'Error fetching itineraries' });
+    }
+  };
+  
  
  module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
-  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations};
+  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries};

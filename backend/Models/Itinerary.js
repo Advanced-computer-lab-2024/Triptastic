@@ -37,6 +37,10 @@ const itinerarySchema = new Schema({
     TourGuide: {
         type: String,  // Store the username directly
         required: true
+    },
+    PreferenceTag:{
+        type: String,
+        required:false
     }
 
 },{timestamps: true})
