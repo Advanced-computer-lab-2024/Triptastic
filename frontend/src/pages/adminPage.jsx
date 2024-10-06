@@ -285,6 +285,71 @@ const AdminPage = () => {
         {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
       </form>
 
+      <h2>Add Product</h2>
+      <form onSubmit={handleProductSubmit}>
+        <div>
+          <label>Product Name:</label>
+          <input
+            type="text"
+            name="productName"
+            value={productFormData.productName}
+            onChange={handleProductInputChange}
+            required
+          />
+        </div>
+        <div>
+          <label>Description:</label>
+          <input
+            type="text"
+            name="description"
+            value={productFormData.description}
+            onChange={handleProductInputChange}
+            required
+          />
+        </div>
+        <div>
+          <label>Price:</label>
+          <input
+            type="number"
+            name="price"
+            value={productFormData.price}
+            onChange={handleProductInputChange}
+            required
+          />
+        </div>
+        <div>
+          <label>Rating:</label>
+          <input
+            type="number"
+            name="rating"
+            value={productFormData.rating}
+            onChange={handleProductInputChange}
+            required
+          />
+        </div>
+        <div>
+          <label>Stock:</label>
+          <input
+            type="number"
+            name="stock"
+            value={productFormData.stock}
+            onChange={handleProductInputChange}
+            required
+          />
+        </div>
+        <div>
+          <label>Image URL:</label>
+          <input
+            type="text"
+            name="image"
+            value={productFormData.image}
+            onChange={handleProductInputChange}
+            required
+          />
+        </div>
+        <button type="submit">Add Product</button>
+      </form>
+
       <h2>Add Tourism Governor</h2>
       <form onSubmit={addTourismGov}>
         <div>
@@ -359,6 +424,13 @@ const AdminPage = () => {
         />
         <button onClick={handleGetCategory} disabled={loading}>Search Category</button>
         {categorySearchResult && <p>Category Found: {categorySearchResult.Name}</p>}
+      </div>
+      {/* Sidebar */}
+      <div className="sidebar">
+        <h3>Explore</h3>
+        <ul>
+          <li onClick={() => navigate('/products')}>Products</li>
+        </ul>
       </div>
     </div>
   );
