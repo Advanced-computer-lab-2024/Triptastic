@@ -16,6 +16,7 @@ const AdminPage = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [addingProduct, setAddingProduct] = useState(false);
+  const [deleteCategoryName, setDeleteCategoryName] = useState('');
   const [productFormData, setProductFormData] = useState({
     productName: '',
     description: '',
@@ -300,6 +301,37 @@ const AdminPage = () => {
   };
 
 
+  const deleteCategory = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    try {
+      const response = await fetch('http://localhost:8000/deleteCategory', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ Name: deleteCategoryName }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSuccessMessage(data.msg);
+        setDeleteCategoryName('');
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Failed to delete category.');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while deleting the category.');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   return (
     <div>
@@ -486,6 +518,22 @@ const AdminPage = () => {
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
       </form>
+        {/* Delete Category Section */}
+        <h2>Delete Category</h2>
+      <form onSubmit={deleteCategory}>
+        <div>
+          <label>Category Name to Delete:</label>
+          <input
+            type="text"
+            value={deleteCategoryName}
+            onChange={(e) => setDeleteCategoryName(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit" disabled={loading}>Delete Category</button>
+      </form>
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
 
       <h2>Search Category</h2>
       <div>
