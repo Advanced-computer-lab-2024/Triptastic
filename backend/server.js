@@ -39,7 +39,7 @@ tourismGovLogin,viewAllPrefTag}=require("./Routes/adminController");
 
 //TourismGoverner
 const{createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,deletehistoricalLocation,
-  createMuseum,getMuseum,deleteMuseum,updateMuseum
+  createMuseum,getMuseum,deleteMuseum,updateMuseum,viewMyLocations,viewMyMuseums
 }=require("./Routes/tourismGovController");
 
 
@@ -173,6 +173,8 @@ app.post("/createMuseum",createMuseum);
 app.patch("/updateMuseum",updateMuseum);
 app.get("/getMuseum",getMuseum);
 app.delete("/deleteMuseum",deleteMuseum);
+app.get("/viewMyLocations",viewMyLocations);
+app.get("/viewMyMuseums",viewMyMuseums);
 
 
 //Guest

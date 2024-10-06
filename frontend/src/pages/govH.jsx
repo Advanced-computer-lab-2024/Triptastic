@@ -55,13 +55,24 @@ const GovernorH = () => {
 
   const handleCreate = async (e) => {
     e.preventDefault();
+    
+    // Retrieve TourismGovernor from local storage
+    const TourismGovernor = localStorage.getItem('Username');
+
+    // Ensure that TourismGovernor exists before proceeding
+    if (!TourismGovernor) {
+      setErrorMessage('Tourism Governor is not logged in or available.');
+      return;
+    }
+
     try {
       const response = await fetch('http://localhost:8000/createhistoricalLocation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        // Add TourismGovernor to the form data
+        body: JSON.stringify({ ...formData, TourismGovernor })
       });
 
       if (response.ok) {
@@ -95,17 +106,18 @@ const GovernorH = () => {
     }
   };
 
+
   const handleGetHistoricalLocation = async (e, name) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:8000/gethistoricalLocation?Name=${name}`, {
+      const response = await fetch(`http://localhost:8000/gethistoricalLocation?Name=${name}`, { // Fixed backticks
         method: 'GET',
       });
 
       if (response.ok) {
         const result = await response.json();
         setFormData(result);
-        setSuccessMessage(`Location "${result.Name}" retrieved successfully!`);
+        setSuccessMessage(`Location "${result.Name}" retrieved successfully!`); // Fixed backticks
         setViewData(result);
       } else {
         const errorData = await response.json();
@@ -120,12 +132,12 @@ const GovernorH = () => {
   const handleDeleteHistoricalLocation = async (e, name) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:8000/deletehistoricalLocation?Name=${name}`, {
+      const response = await fetch(`http://localhost:8000/deletehistoricalLocation?Name=${name}`, { // Fixed backticks
         method: 'DELETE',
       });
 
       if (response.ok) {
-        setSuccessMessage(`Location "${name}" deleted successfully!`);
+        setSuccessMessage(`Location "${name}" deleted successfully!`); // Fixed backticks
         setViewData(null);
         setLocations((prevLocations) => prevLocations.filter((loc) => loc.Name !== name)); // Remove location from the list
       } else {
@@ -142,13 +154,13 @@ const GovernorH = () => {
     e.preventDefault();
     setIsUpdating(true); // Set update mode to true
     setFormData(location); // Pre-fill the form with the data of the location to update
-    setSuccessMessage(`Editing location "${location.Name}"`);
+    setSuccessMessage(`Editing location "${location.Name}"`); // Fixed backticks
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:8000/updatehistoricalLocation`, {
+      const response = await fetch('http://localhost:8000/updatehistoricalLocation', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -158,7 +170,7 @@ const GovernorH = () => {
 
       if (response.ok) {
         const updatedLocation = await response.json();
-        setSuccessMessage(`Location "${updatedLocation.Name}" updated successfully!`);
+        setSuccessMessage(`Location "${updatedLocation.Name}" updated successfully!`); // Fixed backticks
         setLocations((prevLocations) =>
           prevLocations.map((loc) => (loc.Name === updatedLocation.Name ? updatedLocation : loc))
         );
@@ -309,8 +321,8 @@ const GovernorH = () => {
             <div key={location.Name}>
               <h3>{location.Name}</h3>
               <button onClick={(e) => handleGetHistoricalLocation(e, location.Name)}>View</button>
-              <button onClick={(e) => handleUpdateClick(e, location)}>Update</button>
               <button onClick={(e) => handleDeleteHistoricalLocation(e, location.Name)}>Delete</button>
+              <button onClick={(e) => handleUpdateClick(e, location)}>Edit</button>
             </div>
           ))
         ) : (
@@ -320,16 +332,18 @@ const GovernorH = () => {
 
       {viewData && (
         <div>
-          <h2>Viewing Historical Location: {viewData.Name}</h2>
+          <h2>View Location Details</h2>
+          <p><b>Name:</b> {viewData.Name}</p>
           <p><b>Description:</b> {viewData.Description}</p>
           <p><b>Location:</b> {viewData.Location}</p>
           <p><b>Opening Hours:</b> {viewData.OpeningHours}</p>
           <p><b>Ticket Prices:</b></p>
-          <p><b>Foreigner:</b> {viewData.TicketPrices.Foreigner}</p>
-          <p><b>Student:</b> {viewData.TicketPrices.Student}</p>
-          <p><b>Native:</b> {viewData.TicketPrices.Native}</p>
-          <p><b>Tags (Type):</b> {viewData.Tags.Types}</p>
-          <p><b>Image URL:</b> {viewData.image}</p>
+          <p>Foreigner: {viewData.TicketPrices.Foreigner}</p>
+          <p>Student: {viewData.TicketPrices.Student}</p>
+          <p>Native: {viewData.TicketPrices.Native}</p>
+          <p><b>Tags:</b> {viewData.Tags.Types}</p>
+          <p><b>Tourism Governor:</b> {viewData.TourismGovernor}</p>
+          <p><b>Image:</b> <img src={viewData.image} alt={viewData.Name} style={{ maxWidth: '200px' }} /></p>
         </div>
       )}
     </div>
