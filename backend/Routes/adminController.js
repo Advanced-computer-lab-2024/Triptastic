@@ -231,6 +231,17 @@ const getPrefTag = async (req, res) => {
       res.status(400).json({ error: error.message });
   }
 };
+const viewAllPrefTag = async (req, res) => {
+  
+
+  try {
+      const category = await prefTagModel.find({});
+      res.status(200).json(category);
+  } 
+  catch (error) {
+      res.status(400).json({ error: error.message });
+  }
+};
 
 
 const updatePreftag = async (req, res) => {
@@ -314,5 +325,5 @@ const sortProductsByRatingAdmin = async (req, res) => {
 
 
 module.exports = {createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
-    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin
+    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin,viewAllPrefTag
 };
