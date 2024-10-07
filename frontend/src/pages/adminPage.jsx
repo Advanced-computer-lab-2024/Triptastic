@@ -235,6 +235,9 @@ const updatePrefTag = async () => {
 //getproduct
 const getProductByName = async (e) => {
   e.preventDefault();
+  console.log("Search function triggered");
+
+
   setLoading(true);
   setErrorMessage('');
   setSuccessMessage('');
@@ -251,7 +254,7 @@ const getProductByName = async (e) => {
     if (response.ok) {
       const product = await response.json();
       setProductSearchResult(product);
-      setSuccessMessage('Product found successfully!');
+      setSuccessMessage(`Product found successfully!: ${JSON.stringify(product.productName)}`);
     } else {
       const errorData = await response.json();
       setErrorMessage(errorData.error || 'Product not found.');
@@ -720,6 +723,15 @@ const getProductByName = async (e) => {
 
 
               {/* Get Product by Name Section */}
+
+
+
+
+
+        <button type="submit" disabled={loading}>Delete Category</button>
+      </form>
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
       <h2>Search Product by Name</h2>
       <form onSubmit={getProductByName}>
         <div>
@@ -746,14 +758,6 @@ const getProductByName = async (e) => {
           {/* Add more product details as needed */}
         </div>
       )}
-
-
-
-
-        <button type="submit" disabled={loading}>Delete Category</button>
-      </form>
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
 
       <h2>Search Category</h2>
       <div>
