@@ -85,7 +85,7 @@ function App() {
         <Route path="/gov-museum" element={<GovernorM />} />
         <Route path="/my-locations" element={<MyLocations />} />
         <Route path="/my-museums" element={<MyMuseums />} />
-        <Route path="/map-Picker" element={<TourismGov />} />
+        <Route path="/map-Picker" element={<MapPicker />} />
       </Routes>
     </Router>
   );
