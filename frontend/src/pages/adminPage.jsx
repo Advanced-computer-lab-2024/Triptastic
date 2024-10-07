@@ -170,7 +170,7 @@ const AdminPage = () => {
 
   const fetchPrefTag = async () => {
     try {
-        const response = await fetch(`/api/prefTag?PrefTagName=${prefTagName}`);
+        const response = await fetch(`http://localhost:8000/getPrefTag?PrefTagName=${prefTagName}`);
         if (!response.ok) {
             throw new Error('Failed to fetch preference tag');
         }
