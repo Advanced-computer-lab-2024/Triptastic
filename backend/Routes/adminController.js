@@ -231,6 +231,7 @@ const getPrefTag = async (req, res) => {
       res.status(400).json({ error: error.message });
   }
 };
+
 const viewAllPrefTag = async (req, res) => {
   
 

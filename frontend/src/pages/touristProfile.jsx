@@ -9,6 +9,8 @@ const TouristProfile = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false); // Track update status
+
+  const [fetchedProduct, setFetchedProduct] = useState(null);//new
   const [formData, setFormData] = useState({
     Username: '',
     Email: '',
@@ -92,6 +94,35 @@ const TouristProfile = () => {
     setUpdating(false);
   };
 
+    // Function to fetch a product by name
+    const fetchProductByName = async (productName) => {
+      setLoading(true);
+      try {
+        const response = await fetch(`http://localhost:8000/getProductTourist?productName=${productName}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        if (response.ok) {
+          const product = await response.json();
+          setFetchedProduct(product); // Store the fetched product
+          setErrorMessage('');
+        } else {
+          throw new Error('Failed to fetch product');
+        }
+      } catch (error) {
+        setErrorMessage('An error occurred while fetching the product');
+        console.error(error);
+      }
+      setLoading(false);
+    };
+  
+    const handleFetchProduct = () => {
+      const productName = formData.productName; // Assuming there's an input for productName
+      fetchProductByName(productName);
+    };
   return (
     <div className="tourist-profile-container">
       <div className="profile-content">
@@ -163,8 +194,34 @@ const TouristProfile = () => {
           )
         )}
         <button onClick={fetchTouristInfo}>Refresh My Information</button>
-      </div>
 
+
+      </div>
+              {/* Fetch Product by Name */}
+              <div>
+          <h3>Fetch Product by Name</h3>
+          <input
+            type="text"
+            name="productName"
+            value={formData.productName}
+            onChange={handleInputChange}
+          />
+          <button onClick={handleFetchProduct}>Fetch Product</button>
+
+          {fetchedProduct && (
+            <div>
+              <h4>Product Details</h4>
+              <p><strong>Name:</strong> {fetchedProduct.productName}</p>
+              <p><strong>Description:</strong> {fetchedProduct.description}</p>
+              <p><strong>Price:</strong> {fetchedProduct.price}</p>
+              <p><strong>Stock:</strong> {fetchedProduct.stock}</p>
+              {/* You can display more product details here */}
+            </div>
+          )}
+        </div>
+
+        
+  
       {/* Sidebar */}
       <div className="sidebar">
         <h3>Explore</h3>
