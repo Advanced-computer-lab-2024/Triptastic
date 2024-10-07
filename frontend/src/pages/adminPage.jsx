@@ -183,7 +183,7 @@ const AdminPage = () => {
             throw new Error('Failed to fetch preference tag');
         }
         const data = await response.json();
-        setPrefTag(data);
+        setPrefTag(data.PrefTagName);
     } catch (err) {
         setError(err.message);
     }
@@ -191,7 +191,7 @@ const AdminPage = () => {
 
 const deletePrefTag = async () => {
   try {
-      const response = await fetch('/api/prefTag', {
+      const response = await fetch('http://localhost:8000/deletePreftag', {
           method: 'DELETE',
           headers: {
               'Content-Type': 'application/json',
@@ -212,7 +212,7 @@ const deletePrefTag = async () => {
 };
 const updatePrefTag = async () => {
   try {
-      const response = await fetch('/api/prefTag', {
+      const response = await fetch('http://localhost:8000/updatePreftag', {
           method: 'PATCH',
           headers: {
               'Content-Type': 'application/json',
@@ -224,7 +224,7 @@ const updatePrefTag = async () => {
           throw new Error('Failed to update preference tag');
       }
       const data = await response.json();
-      setMessage(`Preference tag updated: ${JSON.stringify(data)}`);
+      setMessage(`Preference tag updated: ${JSON.stringify(data.PrefTagName)}`);
       setError('');
   } catch (err) {
       setError(err.message);
