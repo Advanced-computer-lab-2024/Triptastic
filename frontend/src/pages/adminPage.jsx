@@ -626,6 +626,11 @@ const getProductByName = async (e) => {
             <option value="">Select Type</option>
             <option value="Admin">Admin</option>
             <option value="TourismGov">Tourism Governor</option>
+            <option value="Tourist">Tourist</option>
+            <option value="Advertiser">Advertiser</option>
+            <option value="Seller">Seller</option>
+            <option value="TourGuide">tourGuide</option>
+
           </select>
         </div>
         <button onClick={handleDeleteUser} disabled={!usernameToDelete || !userType}>Delete User</button>

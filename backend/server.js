@@ -32,7 +32,7 @@ const{createAdmin,createCategory,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
 ,createPrefTag,updatePreftag,deletePreftag,getPrefTag,
 viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,
-tourismGovLogin,viewAllPrefTag}=require("./Routes/adminController");
+tourismGovLogin,viewAllPrefTag,deleteAdmin}=require("./Routes/adminController");
 
 
 
@@ -162,7 +162,7 @@ app.get("/sortProductsByRatingAdmin",sortProductsByRatingAdmin);
 app.post("/AdminLogin",AdminLogin);
 app.post("/addTourismGov",addTourismGov);
 app.get("/viewAllPrefTag",viewAllPrefTag);
-
+app.delete("/deleteAdmin",deleteAdmin);
 
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);

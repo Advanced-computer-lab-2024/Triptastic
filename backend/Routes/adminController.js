@@ -9,6 +9,7 @@ const sellerModel = require('../Models/Seller');
 const advertiserModel = require('../Models/Advertiser');
 const tourismGovModel = require('../Models/tourismGov');
 
+
 const AdminLogin = async (req, res) => {
   const { Username, Password } = req.body;
 
@@ -194,6 +195,19 @@ const deleteAdvertiser = async (req, res) => {
       res.status(400).json({ error: error.message });
     }
   };
+
+  const deleteAdmin = async (req, res) => {
+    const { Username } = req.query;  
+    try {
+      const result = await adminModel.deleteOne({ Username: Username }); 
+      if (result.deletedCount === 0) {
+        return res.status(404).json({ msg: "Admin not found" });
+      }
+      res.status(200).json({ msg: "Admin has been deleted successfully" });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  };
   
 const deleteTourismGov = async (req, res) => {
     const { Username } = req.query;  
@@ -326,5 +340,5 @@ const sortProductsByRatingAdmin = async (req, res) => {
 
 
 module.exports = {createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
-    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin,viewAllPrefTag
+    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin,viewAllPrefTag,deleteAdmin
 };
