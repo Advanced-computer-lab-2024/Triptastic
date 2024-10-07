@@ -12,7 +12,7 @@ const AdvertiserActivity = () => {
     rating:0,
     specialDiscounts: '',
     bookingOpen: false,
-    activityLocation: { lat: null, lng: null },
+    location:'',
     name: '',
     Advertiser: '', // This will be set in handleCreate and handleUpdate
   });
@@ -51,12 +51,14 @@ const AdvertiserActivity = () => {
   };
 
 
-  const handleLocationSelect = (location) => {
+  const handleLocationSelect = (address) => {
     setFormData((prevData) => ({
-      ...prevData,
-      activityLocation: location, // Update the activity location
+        ...prevData,
+        location: address, // Update to string
     }));
-  };
+    console.log("Updated formData:", formData); // Log the formData here
+};
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -71,11 +73,12 @@ const AdvertiserActivity = () => {
     const username = localStorage.getItem('Username'); 
     console.log(username)
    // Add Advertiser field
-    const activityData = { 
-      ...formData, 
-      Advertiser: username, 
-      activityLocation: formData.activityLocation // Include the location here
+   const activityData = { 
+    ...formData, 
+    Advertiser: username,
+    location: formData.location  // Rename to match the backend
   };
+  console.log('Activity Data:', JSON.stringify(activityData));
     try {
       console.log('Activity Data:', JSON.stringify(activityData));
       const response = await fetch('http://localhost:8000/createActivity', {
@@ -119,7 +122,7 @@ const handleUpdate = async (e) => {
       Category: formData.Category,
       date: formData.date,
       time: formData.time,
-      location: formData.activityLocation, // Ensure this matches your backend
+      location: formData.location, // Ensure this matches your backend
       price: formData.price,
       tags: formData.tags,
       rating: formData.rating,
@@ -157,7 +160,7 @@ const handleUpdate = async (e) => {
               rating: 0,
               specialDiscounts: '',
               bookingOpen: false,
-              activityLocation: { lat: null, lng: null },
+              location: '',
               name: '',
           });
       } else {
@@ -218,7 +221,7 @@ const handleUpdate = async (e) => {
           rating:0,
           specialDiscounts: '',
           bookingOpen: false,
-          activityLocation: { lat: null, lng: null },
+          location: '',
           name: '',
           Advertiser: '',
         });
@@ -344,7 +347,7 @@ const handleUpdate = async (e) => {
   <p><strong>Advertiser:</strong> {viewData.Advertiser}</p>
   <p><strong>Rating:</strong> {viewData.rating}</p>
 
-  <p><strong>Location:</strong> {viewData.activityLocation ? `Lat: ${viewData.activityLocation.lat}, Lng: ${viewData.activityLocation.lng}` : 'Not specified'}</p>
+  <p><strong>Location:</strong> {viewData.location || 'Not specified'}</p>
 </div>
       )}
     </div>
