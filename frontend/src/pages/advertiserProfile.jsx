@@ -7,6 +7,8 @@ const AdvertiserProfile = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false); // Track update status
+  const [waiting, setWaiting] = useState(false);
+  const [requestSent, setRequestSent] = useState(false); // Track if request was successfully sent
   const [formData, setFormData] = useState({
     Username: '',
     Email: '',
@@ -114,6 +116,36 @@ const AdvertiserProfile = () => {
 
     setUpdating(false);
   };
+  const handleDeleteRequest = async () => {
+    const Username = localStorage.getItem('Username');
+    setWaiting(true);
+    setRequestSent(false); // Reset request sent state when initiating new request
+    try {
+        const response = await fetch(`http://localhost:8000/requestAccountDeletion?Username=${Username}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                
+            }
+            
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setRequestSent(true); // Set to true when the request is successfully sent
+          alert('Your account deletion request has been submitted and is pending approval.');
+        } else {
+          setRequestSent(false); // Reset to allow another deletion request
+          alert(data.msg); // Show the rejection message
+         }
+ 
+        
+    } catch (error) {
+        alert('Error deleting account');
+    }
+    finally {
+      setWaiting(false); // Stop waiting regardless of outcome
+  }
+};
 
   return (
     <div>
@@ -167,6 +199,9 @@ const AdvertiserProfile = () => {
 
             <button onClick={handleUpdate} disabled={updating}>
               {updating ? 'Updating...' : 'Update Information'}
+            </button>
+            <button onClick={handleDeleteRequest} disabled={waiting || requestSent}>
+              {waiting ? 'Waiting to be deleted...' : requestSent ? 'Request Sent' : 'Delete Account'}
             </button>
           </div>
         )
