@@ -1,6 +1,53 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// Modal component for Terms and Conditions
+const Modal = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div style={modalOverlayStyle}>
+      <div style={modalStyle}>
+        <h3>Terms and Conditions</h3>
+        <p>
+          {/* Add your terms and conditions text here */}
+          These are the terms and conditions for registering as a tour guide. Please read them carefully.
+          <br />
+          1. You must be over 18 years of age.
+          <br />
+          2. You agree to follow all local laws and regulations.
+          <br />
+          3. Your information will be kept confidential.
+          <br />
+          4. Violation of any terms may result in the cancellation of your registration.
+        </p>
+        <button onClick={onClose}>Close</button>
+      </div>
+    </div>
+  );
+};
+
+const modalOverlayStyle = {
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  zIndex: 1000,
+};
+
+const modalStyle = {
+  backgroundColor: 'white',
+  padding: '20px',
+  borderRadius: '5px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+};
+
+// Main component
 function TourGuideReg() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -8,8 +55,10 @@ function TourGuideReg() {
     Email: '',
     Password: ''
   });
+  const [acceptTerms, setAcceptTerms] = useState(false); // State for terms acceptance
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
 
   // Handle input changes
   const handleChange = (e) => {
@@ -20,9 +69,21 @@ function TourGuideReg() {
     }));
   };
 
+  // Handle checkbox change
+  const handleTermsChange = (e) => {
+    setAcceptTerms(e.target.checked);
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if terms and conditions are accepted
+    if (!acceptTerms) {
+      setErrorMessage('You must accept the terms and conditions to register.');
+      setSuccessMessage('');
+      return;
+    }
 
     try {
       const response = await fetch('http://localhost:8000/addTourGuide', {
@@ -46,7 +107,7 @@ function TourGuideReg() {
           Email: '',
           Password: ''
         });
-        localStorage.setItem('Username', formData.Username);
+        setAcceptTerms(false); // Reset terms acceptance
         navigate('/tour-guide-profile');
         
       } else {
@@ -95,8 +156,25 @@ function TourGuideReg() {
             required
           />
         </div>
+        <div>
+          <input
+            type="checkbox"
+            checked={acceptTerms}
+            onChange={handleTermsChange}
+            required
+          />
+          <label>
+            I accept the terms and conditions
+            <button type="button" onClick={() => setIsModalOpen(true)}>
+              Read Terms
+            </button>
+          </label>
+        </div>
         <button type="submit">Register as Tour Guide</button>
       </form>
+
+      {/* Modal for Terms and Conditions */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 }

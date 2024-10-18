@@ -121,7 +121,7 @@ const AdvertiserProfile = () => {
     setWaiting(true);
     setRequestSent(false); // Reset request sent state when initiating new request
     try {
-        const response = await fetch(`http://localhost:8000/requestAccountDeletion?Username=${Username}`, {
+        const response = await fetch(`http://localhost:8000/requestAccountDeletionAdvertiser?Username=${Username}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
