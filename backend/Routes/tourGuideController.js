@@ -1,6 +1,7 @@
 const tourGuideModel = require('../Models/tourGuide.js');
 const itineraryModel = require('../Models/Itinerary.js');
 const touristItineraryModel= require('../Models/touristItinerary.js');
+const requestModel= require('../Models/Request.js');
 const { default: mongoose } = require('mongoose');
 const createTourGuide = async(req,res) => {
 
@@ -165,5 +166,63 @@ const getMyTouristItineraries= async(req,res)=>{
       res.status(400).json({ error: error.message });
    }
 }
- module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries};
+const requestAccountDeletionTourG = async (req, res) => {
+   const { Username } = req.query; 
+
+   try {
+        // Check if the user has any upcoming activities or itineraries with paid bookings
+        const now = new Date();
+        
+        const hasUpcomingItineraries = await itineraryModel.findOne({
+         TourGuide: Username,
+         DatesTimes: { $gte: now }, // Upcoming activities
+            // 'bookings.status': 'paid' // Uncomment if you need to check for paid bookings
+        });
+
+        if (hasUpcomingItineraries) {
+            // Create a new deletion request with a rejected status
+            const deleteRequest = new requestModel({
+                Username: Username,
+                requestDate: new Date(),
+                status: 'rejected' // Mark as rejected due to upcoming activities
+            });
+
+            // Save the request to the database
+            await deleteRequest.save();
+
+            return res.status(400).json({
+                msg: "Your account deletion request has been rejected due to upcoming Itineraries with paid bookings."
+            });
+        }
+        // Check if the user has already made a request
+        const existingRequest = await requestModel.findOne({ Username, status: 'pending' });
+        if (existingRequest) {
+            return res.status(400).json({
+                msg: "You already have a pending request for account deletion."
+            });
+        }
+       
+
+       // Create a new deletion request
+       const deleteRequest = new requestModel({
+           Username: Username,
+           requestDate: new Date(),
+           status: 'pending' // Mark as pending by default
+       });
+
+       // Save the request to the database
+       await deleteRequest.save();
+        // Send success response
+        res.status(200).json({
+           msg: "Your request for account deletion has been submitted and is pending approval."
+       });
+
+      
+
+   } catch (error) {
+       // Handle any errors that occur during the request process
+       res.status(500).json({ error: "Failed to submit deletion request" });
+   }
+};
+ module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG};
  

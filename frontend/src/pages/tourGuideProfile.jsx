@@ -9,6 +9,8 @@ function TourGuideProfile() {
   const [isIVisible, setIsIVisible] = useState(false);
   const [isTIVisible, setIsTIVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [waiting, setWaiting] = useState(false);
+  const [requestSent, setRequestSent] = useState(false); // Track if request was successfully sent
   const [formData, setFormData] = useState({
     Username: '',
     Email: '',
@@ -412,6 +414,36 @@ function TourGuideProfile() {
       console.error('Error occurred while updating the itinerary:', error);
     }
   };
+  const handleDeleteRequest = async () => {
+    const Username = localStorage.getItem('Username');
+    setWaiting(true);
+    setRequestSent(false); // Reset request sent state when initiating new request
+    try {
+        const response = await fetch(`http://localhost:8000/requestAccountDeletionTourG?Username=${Username}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                
+            }
+            
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setRequestSent(true); // Set to true when the request is successfully sent
+          alert('Your account deletion request has been submitted and is pending approval.');
+        } else {
+          setRequestSent(false); // Reset to allow another deletion request
+          alert(data.msg); // Show the rejection message
+         }
+ 
+        
+    } catch (error) {
+        alert('Error deleting account');
+    }
+    finally {
+      setWaiting(false); // Stop waiting regardless of outcome
+  }
+};
   return (
   
     
@@ -422,6 +454,9 @@ function TourGuideProfile() {
           <p>Loading tour guide information...</p>
         ) : (
           <>
+          <button onClick={handleDeleteRequest} disabled={waiting || requestSent}>
+              {waiting ? 'Waiting to be deleted...' : requestSent ? 'Request Sent' : 'Delete Account'}
+            </button>
             <button onClick={toggleProfileDetails}>{isVisible ? 'Hide' : 'Show'} Profile Details</button>
             {isVisible && (
               <div>
@@ -858,6 +893,7 @@ function TourGuideProfile() {
           </div>
         )}
       </div>
+      
    
      
   )         
