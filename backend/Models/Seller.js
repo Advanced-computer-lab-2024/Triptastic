@@ -22,7 +22,11 @@ const sellerSchema = new Schema({
   Description: {
     type: String,
     required: false,
-  }
+  },
+  Logo:{
+    type:String,
+    required: false,
+  },
 }, { timestamps: true });
 
 const Seller =mongoose.models.Seller || mongoose.model('Seller', sellerSchema);

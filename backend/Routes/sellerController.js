@@ -18,9 +18,9 @@ const createSeller = async(req,res) => {
 
  const updateSeller = async(req,res) => {
 
-  const{Username,Email,Password,Name,Description}=req.body;
+  const{Username,Email,Password,Name,Description,Logo}=req.body;
   try{
-     const seller=await sellerModel.findOneAndUpdate({Username: Username },{$set:{Email: Email,Password:Password,Name:Name,Description:Description}},{ new: true });
+     const seller=await sellerModel.findOneAndUpdate({Username: Username },{$set:{Email: Email,Password:Password,Name:Name,Description:Description,Logo:Logo}},{ new: true });
      res.status(200).json(seller);
   }
   catch{
