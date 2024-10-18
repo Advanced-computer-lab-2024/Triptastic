@@ -1,5 +1,6 @@
 
 const sellerModel = require('../Models/Seller.js');
+const requestModel= require('../Models/Request.js');
 const productModel= require('../Models/Product.js');
 const { default: mongoose } = require('mongoose');
 const createSeller = async(req,res) => {
@@ -83,7 +84,41 @@ const viewProductsSeller = async (req, res) => {
      res.status(500).json({ error: 'Server error' });
    }
    };
+   const requestAccountDeletionSeller = async (req, res) => {
+    const { Username } = req.query; 
+
+    try {
+       
+         // Check if the user has already made a request
+         const existingRequest = await requestModel.findOne({ Username, status: 'pending' });
+         if (existingRequest) {
+             return res.status(400).json({
+                 msg: "You already have a pending request for account deletion."
+             });
+         }
+        
+
+        // Create a new deletion request
+        const deleteRequest = new requestModel({
+            Username: Username,
+            requestDate: new Date(),
+            status: 'pending' // Mark as pending by default
+        });
+
+        // Save the request to the database
+        await deleteRequest.save();
+         // Send success response
+         res.status(200).json({
+            msg: "Your request for account deletion has been submitted and is pending approval."
+        });
+
+       
+
+    } catch (error) {
+        // Handle any errors that occur during the request process
+        res.status(500).json({ error: "Failed to submit deletion request" });
+    }
+};
 
 
-
- module.exports = {createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller};
+ module.exports = {createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller};

@@ -7,7 +7,8 @@ const SellerProfile = () => {
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [addingProduct, setAddingProduct] = useState(false); // Track product form status
-
+  const [waiting, setWaiting] = useState(false);
+  const [requestSent, setRequestSent] = useState(false); // Track if request was successfully sent
   const [fetchedProduct, setFetchedProduct] = useState(null);//new
 
   const [productFormData, setProductFormData] = useState({
@@ -181,7 +182,36 @@ const SellerProfile = () => {
       const productName = productFormData.productName; // Assuming you use the productFormData to search
       fetchProductByName(productName);
     };
-
+    const handleDeleteRequest = async () => {
+      const Username = localStorage.getItem('Username');
+      setWaiting(true);
+      setRequestSent(false); // Reset request sent state when initiating new request
+      try {
+          const response = await fetch(`http://localhost:8000/requestAccountDeletionSeller?Username=${Username}`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  
+              }
+              
+          });
+          const data = await response.json();
+          if (response.ok) {
+            setRequestSent(true); // Set to true when the request is successfully sent
+            alert('Your account deletion request has been submitted and is pending approval.');
+          } else {
+            setRequestSent(false); // Reset to allow another deletion request
+            alert(data.msg); // Show the rejection message
+           }
+   
+          
+      } catch (error) {
+          alert('Error deleting account');
+      }
+      finally {
+        setWaiting(false); // Stop waiting regardless of outcome
+    }
+  };
   return (
     <div className="seller-profile-container">
       <div className="profile-content">
@@ -331,7 +361,9 @@ const SellerProfile = () => {
           )}
         </div>
 
-        
+        <button onClick={handleDeleteRequest} disabled={waiting || requestSent}>
+              {waiting ? 'Waiting to be deleted...' : requestSent ? 'Request Sent' : 'Delete Account'}
+        </button>
       {/* Sidebar */}
       <div className="sidebar">
         <h3>Explore</h3>

@@ -20,10 +20,10 @@ const {createTourist,gethistoricalLocationByName,filterActivities,getProductTour
   ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities} = require("./Routes/touristController");
 
 //Advertiser
-const{createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails}=require("./Routes/advertiserController");
+const{createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser}=require("./Routes/advertiserController");
 
 //Seller
-const{ createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller}=require("./Routes/sellerController");
+const{ createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller}=require("./Routes/sellerController");
 
 //Admin
 const{createAdmin,createCategory,
@@ -57,6 +57,7 @@ const tourismGov=require("./Models/tourismGov");
 const categories=require("./Models/Activitiescategory");
 const activities=require("./Models/Activities");
 const museums=require("./Models/Museums");
+const request=require("./Models/Request");
 
 
 mongoose.connect(MongoURI)
@@ -129,6 +130,7 @@ app.delete("/deleteActivity",deleteActivity);
 app.patch("/updateActivity",updateActivity);
 app.get("/getActivity",getActivity);
 app.get("/viewActivitydetails",viewActivitydetails);
+app.post("/requestAccountDeletionAdvertiser",requestAccountDeletionAdvertiser);
 
 //Seller
 app.post("/createSeller",createSeller);
@@ -138,6 +140,7 @@ app.post("/createProductseller",createProductseller);
 app.get("/getProductSeller",getProductSeller);
 app.get("/viewProductsSeller",viewProductsSeller);
 app.get("/sortProductsByRatingSeller",sortProductsByRatingSeller);
+app.post("/requestAccountDeletionSeller",requestAccountDeletionSeller);
 
 //Admin
 app.post("/tourismGovLogin",tourismGovLogin);

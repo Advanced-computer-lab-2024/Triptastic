@@ -2,6 +2,7 @@ const advertiserModel = require('../Models/Advertiser.js');
 const activitiescategoryModel = require('../Models/Activitiescategory.js');
 const activitiesModel = require('../Models/Activities.js');
 const PreferenceTagsModel = require('../Models/PreferenceTags.js');
+const RequestModel = require('../Models/Request.js');
 const { default: mongoose } = require('mongoose');
 const createAdvertiser = async(req,res) => {
 
@@ -166,10 +167,70 @@ const deleteActivity = async (req, res) => {
        res.status(400).json({ error: error.message });
    }
 };
+ 
+const requestAccountDeletionAdvertiser = async (req, res) => {
+    const { Username } = req.query; // Assuming the username is passed in the query or retrieved from the authenticated user
+
+    try {
+        // Check if the user has any upcoming activities or itineraries with paid bookings
+        const now = new Date();
+        
+        const hasUpcomingActivities = await activitiesModel.findOne({
+            Advertiser: Username,
+            date: { $gte: now }, // Upcoming activities
+            // 'bookings.status': 'paid' // Uncomment if you need to check for paid bookings
+        });
+
+        if (hasUpcomingActivities) {
+            // Create a new deletion request with a rejected status
+            const deleteRequest = new RequestModel({
+                Username: Username,
+                requestDate: new Date(),
+                status: 'rejected' // Mark as rejected due to upcoming activities
+            });
+
+            // Save the request to the database
+            await deleteRequest.save();
+
+            return res.status(400).json({
+                msg: "Your account deletion request has been rejected due to upcoming activities with paid bookings."
+            });
+        }
+
+        // Check if the user has already made a request
+        const existingRequest = await RequestModel.findOne({ Username, status: 'pending' });
+        if (existingRequest) {
+            return res.status(400).json({
+                msg: "You already have a pending request for account deletion."
+            });
+        }
+
+        // Create a new deletion request
+        const deleteRequest = new RequestModel({
+            Username: Username,
+            requestDate: new Date(),
+            status: 'pending' // Mark as pending by default
+        });
+
+        // Save the request to the database
+        await deleteRequest.save();
+         // Send success response
+         res.status(200).json({
+            msg: "Your request for account deletion has been submitted and is pending approval."
+        });
+
+       
+
+    } catch (error) {
+        // Handle any errors that occur during the request process
+        res.status(500).json({ error: "Failed to submit deletion request" });
+    }
+};
+
 
 
 
  module.exports = {createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,
    getActivity,
    updateActivity,
-   deleteActivity,viewActivitydetails};
+   deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser};
