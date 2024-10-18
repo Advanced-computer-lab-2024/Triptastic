@@ -24,6 +24,9 @@ import TourismGovLogin from './pages/tGovLogin';
 import MapPicker from './pages/MapPicker';
 import MyLocations from './pages/myLocations';
 import MyMuseums from './pages/myMuseums';
+import bookFlights from './pages/bookFlights';
+import bookHotels from './pages/bookHotels';
+import bookTransportation from './pages/bookTransportation';
 
 function Home() {
   const navigate = useNavigate();
@@ -86,6 +89,13 @@ function App() {
         <Route path="/my-locations" element={<MyLocations />} />
         <Route path="/my-museums" element={<MyMuseums />} />
         <Route path="/map-Picker" element={<MapPicker />} />
+        <Route path="/book-flights" element={<bookFlights />} />
+        <Route path="/book-hotels" element={<bookHotels />} />
+        <Route path="/book-transportation" element={<bookTransportation />} />
+
+
+
+
       </Routes>
     </Router>
   );

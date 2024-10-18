@@ -231,6 +231,12 @@ const TouristProfile = () => {
           <li onClick={() => navigate('/products')}>Products</li>
           <li onClick={() => navigate('/itineraries')}>Itineraries</li>
           <li onClick={() => navigate('/activities')}>Activities</li>
+          <li onClick={() => navigate('/book-flights')}>Book Flights</li>
+          <li onClick={() => navigate('/book-hotels')}>Book a Hotel</li>
+          <li onClick={() => navigate('/book-transportation')}>Book Transportation</li>
+
+
+
         </ul>
       </div>
     </div>
