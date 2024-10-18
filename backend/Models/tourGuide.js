@@ -19,7 +19,11 @@ const tourGuideSchema = new Schema({
     },
     previousWork: {
         type: String, default:null,
-    }
+    },
+    Photo: {
+     type:String,
+     required:false,
+    },
       },{ timestamps: true });
        
 const tourGuide = mongoose.models.tourGuide || mongoose.model('tourGuide', tourGuideSchema);

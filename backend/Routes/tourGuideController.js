@@ -16,9 +16,9 @@ const createTourGuide = async(req,res) => {
 }
 const createTourGuideInfo = async(req,res) => {
 
-    const{Username,mobileNumber,yearsOfExperience,previousWork}=req.body;
+    const{Username,mobileNumber,yearsOfExperience,previousWork,Photo}=req.body;
     try{
-       const tourGuide=await tourGuideModel.findOneAndUpdate({Username: Username },{$set:{mobileNumber: mobileNumber,yearsOfExperience: yearsOfExperience,previousWork: previousWork}});
+       const tourGuide=await tourGuideModel.findOneAndUpdate({Username: Username },{$set:{mobileNumber: mobileNumber,yearsOfExperience: yearsOfExperience,previousWork: previousWork,Photo:Photo}});
        res.status(200).json(tourGuide);
     }
     catch{

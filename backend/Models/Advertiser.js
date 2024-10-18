@@ -30,6 +30,13 @@ const advertiserSchema = new Schema({
     required: false,
 
   },
+  Logo:{
+    type:String,
+    required:false,
+  },
+  Taxation_Registry_Card: { 
+    type: String,
+  },
 
 
 
