@@ -1,16 +1,62 @@
-import React, { useState  } from 'react';
-import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
+// Modal component for Terms and Conditions
+const Modal = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div style={modalOverlayStyle}>
+      <div style={modalStyle}>
+        <h3>Terms and Conditions</h3>
+        <p>
+          {/* Add your terms and conditions text here */}
+          These are the terms and conditions for registering as a seller. Please read them carefully.
+          <br />
+          1. You must be over 18 years of age.
+          <br />
+          2. You agree to follow all local laws and regulations.
+          <br />
+          3. Your information will be kept confidential.
+          <br />
+          4. Violation of any terms may result in the cancellation of your registration.
+        </p>
+        <button onClick={onClose}>Close</button>
+      </div>
+    </div>
+  );
+};
+
+const modalOverlayStyle = {
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  zIndex: 1000,
+};
+
+const modalStyle = {
+  backgroundColor: 'white',
+  padding: '20px',
+  borderRadius: '5px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+};
 
 function SellerReg() {
   const [formData, setFormData] = useState({
     Username: '',
     Email: '',
     Password: '',
-    
   });
+  const [acceptTerms, setAcceptTerms] = useState(false); // State for terms acceptance
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
   const navigate = useNavigate();
 
   // Handle input changes
@@ -22,13 +68,25 @@ function SellerReg() {
     }));
   };
 
+  // Handle checkbox change
+  const handleTermsChange = (e) => {
+    setAcceptTerms(e.target.checked);
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Check if terms and conditions are accepted
+    if (!acceptTerms) {
+      setErrorMessage('You must accept the terms and conditions to register.');
+      setSuccessMessage('');
+      return;
+    }
+
     try {
       const response = await fetch('http://localhost:8000/createSeller', {
-        method: 'POST', 
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
@@ -39,7 +97,7 @@ function SellerReg() {
         const data = await response.json();
         localStorage.setItem('Username', formData.Username);
         localStorage.setItem('Email', formData.Email);
-        localStorage.setItem('Password', formData.Password);      
+        localStorage.setItem('Password', formData.Password);
         setSuccessMessage('Seller registered successfully!');
         setErrorMessage('');
         // Optionally, reset form data
@@ -96,8 +154,25 @@ function SellerReg() {
             required
           />
         </div>
+        <div>
+          <input
+            type="checkbox"
+            checked={acceptTerms}
+            onChange={handleTermsChange}
+            required
+          />
+          <label>
+            I accept the terms and conditions
+            <button type="button" onClick={() => setIsModalOpen(true)}>
+              Read Terms
+            </button>
+          </label>
+        </div>
         <button type="submit">Register as Seller</button>
       </form>
+
+      {/* Modal for Terms and Conditions */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 }
