@@ -25,7 +25,7 @@ import MapPicker from './pages/MapPicker';
 import MyLocations from './pages/myLocations';
 import MyMuseums from './pages/myMuseums';
 import BookFlights from './pages/bookFlights';
-import bookHotels from './pages/bookHotels';
+import BookHotels from './pages/bookHotels';
 import bookTransportation from './pages/bookTransportation';
 
 function Home() {
@@ -90,7 +90,7 @@ function App() {
         <Route path="/my-museums" element={<MyMuseums />} />
         <Route path="/map-Picker" element={<MapPicker />} />
         <Route path="/book-flights" element={<BookFlights />} />
-        <Route path="/book-hotels" element={<bookHotels />} />
+        <Route path="/book-hotels" element={<BookHotels />} />
         <Route path="/book-transportation" element={<bookTransportation />} />
 
 
