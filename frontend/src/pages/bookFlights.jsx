@@ -10,6 +10,7 @@ const BookFlights = () => {
   const [flights, setFlights] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [bookedFlightId, setBookedFlightId] = useState(null); // Track the booked flight ID
 
   // Update form inputs
   const handleInputChange = (e) => {
@@ -33,7 +34,6 @@ const BookFlights = () => {
   const getToken = async () => {
     const API_KEY = process.env.REACT_APP_API_KEY;
     const API_SECRET = process.env.REACT_APP_API_SECRET;
-    
 
     try {
       const res = await fetch('https://test.api.amadeus.com/v1/security/oauth2/token', {
@@ -98,6 +98,7 @@ const BookFlights = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);  // Clear any previous errors
+    setBookedFlightId(null); // Clear any previous booking state
 
     // Get the access token
     const token = await getToken();
@@ -109,6 +110,11 @@ const BookFlights = () => {
       setError('Could not get access token.');
       setLoading(false);
     }
+  };
+
+  // Handle booking button (mark the flight as booked)
+  const handleBooking = (flightId) => {
+    setBookedFlightId(flightId); // Mark the specific flight as booked
   };
 
   return (
@@ -163,23 +169,34 @@ const BookFlights = () => {
       {flights.length > 0 && (
         <div>
           <h3>Flight Offers</h3>
-          {flights.map((flight, index) => (
-            <div key={index}>
-              <p>Flight ID: {flight.id}</p>
-              <p>Price: {flight.price.total} {flight.price.currency}</p>
-              <p>Departure: {flight.itineraries[0].segments[0].departure.iataCode}</p>
-              <p>Arrival: {flight.itineraries[0].segments[0].arrival.iataCode}</p>
-            </div>
-          ))}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
+            {flights.map((flight, index) => (
+              <div key={index} style={{ border: '1px solid #ccc', padding: '16px', borderRadius: '8px', position: 'relative' }}>
+                <p><strong>Flight ID:</strong> {flight.id}</p>
+                <p><strong>Price:</strong> {flight.price.total} {flight.price.currency}</p>
+                <p><strong>Departure:</strong> {flight.itineraries[0].segments[0].departure.iataCode}</p>
+                <p><strong>Arrival:</strong> {flight.itineraries[0].segments[0].arrival.iataCode}</p>
+
+                {/* Show 'Booked' status if the flight is booked */}
+                {bookedFlightId === flight.id ? (
+                  <p style={{ color: 'green', fontWeight: 'bold', position: 'absolute', top: '10px', right: '10px' }}>Booked!</p>
+                ) : (
+                  <button
+                    onClick={() => handleBooking(flight.id)}
+                    style={{ marginTop: '8px', backgroundColor: '#007bff', color: '#fff', padding: '8px 16px', border: 'none', borderRadius: '4px' }}
+                  >
+                    Book
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
-      {error && <p>Error: {error}</p>}
+      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
     </div>
   );
 };
 
 export default BookFlights;
-
-
-
