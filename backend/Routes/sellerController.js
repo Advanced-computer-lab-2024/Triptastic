@@ -2,7 +2,9 @@
 const sellerModel = require('../Models/Seller.js');
 const requestModel= require('../Models/Request.js');
 const productModel= require('../Models/Product.js');
+
 const { default: mongoose } = require('mongoose');
+
 const createSeller = async(req,res) => {
 
     const{Username,Email,Password}=req.body;
@@ -84,6 +86,7 @@ const viewProductsSeller = async (req, res) => {
      res.status(500).json({ error: 'Server error' });
    }
    };
+
    const requestAccountDeletionSeller = async (req, res) => {
     const { Username } = req.query; 
 
@@ -120,5 +123,34 @@ const viewProductsSeller = async (req, res) => {
     }
 };
 
+// Function to change seller's password
 
- module.exports = {createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller};
+const changePassword = async (req, res) => {
+  const { Username, currentPassword, newPassword } = req.body;
+
+  try {
+    // Find the seller by Username
+    const seller = await sellerModel.findOne({ Username });
+
+    if (!seller) {
+      return res.status(404).json({ error: "Seller not found" });
+    }
+
+    // Compare current password directly (plain text comparison)
+    if (currentPassword !== seller.Password) {
+      return res.status(400).json({ error: "Current password is incorrect" });
+    }
+
+    // Update the seller's password (plain text)
+    seller.Password = newPassword;
+    await seller.save();
+
+    res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Error changing password" });
+  }
+};
+
+
+
+ module.exports = {changePassword,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller};

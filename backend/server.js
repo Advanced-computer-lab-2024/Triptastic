@@ -23,7 +23,7 @@ const {createTourist,gethistoricalLocationByName,filterActivities,getProductTour
 const{createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser}=require("./Routes/advertiserController");
 
 //Seller
-const{ createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller}=require("./Routes/sellerController");
+const{changePassword, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller}=require("./Routes/sellerController");
 
 //Admin
 const{createAdmin,createCategory,
@@ -144,6 +144,9 @@ app.get("/getProductSeller",getProductSeller);
 app.get("/viewProductsSeller",viewProductsSeller);
 app.get("/sortProductsByRatingSeller",sortProductsByRatingSeller);
 app.post("/requestAccountDeletionSeller",requestAccountDeletionSeller);
+app.patch("/changePassword",changePassword);
+
+
 
 //Admin
 app.post("/tourismGovLogin",tourismGovLogin);
