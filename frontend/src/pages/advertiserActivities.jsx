@@ -125,7 +125,7 @@ const handleUpdate = async (e) => {
       location: formData.location, // Ensure this matches your backend
       price: formData.price,
       tags: formData.tags,
-      rating: formData.rating,
+      
       specialDiscounts: formData.specialDiscounts,
       bookingOpen: formData.bookingOpen,
       
@@ -157,7 +157,7 @@ const handleUpdate = async (e) => {
               price: '',
               Category: '',
               tags: '',
-              rating: 0,
+             
               specialDiscounts: '',
               bookingOpen: false,
               location: '',
@@ -218,7 +218,7 @@ const handleUpdate = async (e) => {
           price: '',
           Category: '',
           tags: '',
-          rating:0,
+         
           specialDiscounts: '',
           bookingOpen: false,
           location: '',
@@ -276,10 +276,7 @@ const handleUpdate = async (e) => {
                 value={availableTags.filter(tag => formData.tags.includes(tag.value))} // Set the value based on the selected tags
             />
         </div>
-          <div>
-            <label><strong>rating:</strong></label>
-            <input type="number" name="rating" value={formData.rating} onChange={handleInputChange} />
-          </div>
+          
           <div>
             <label><strong>Special Discounts:</strong></label>
             <input
@@ -345,7 +342,7 @@ const handleUpdate = async (e) => {
   <p><strong>Special Discounts:</strong> {viewData.specialDiscounts}</p>
   <p><strong>Booking Open:</strong> {viewData.bookingOpen ? 'Yes' : 'No'}</p>
   <p><strong>Advertiser:</strong> {viewData.Advertiser}</p>
-  <p><strong>Rating:</strong> {viewData.rating}</p>
+  
 
   <p><strong>Location:</strong> {viewData.location || 'Not specified'}</p>
 </div>

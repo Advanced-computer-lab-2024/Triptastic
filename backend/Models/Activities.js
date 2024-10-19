@@ -36,10 +36,7 @@ price: {
     required: true // Ensure at least the minimum price is set
   },
 
-rating:{
-    type:Number,
-    required:true
-},
+
 
 tags: {
     type: [String], // Array of strings for tags
@@ -57,8 +54,39 @@ Advertiser: {
     type: String,
     
     required: true
-}
-
+},
+ratings: [{
+    Username: {
+      type: String,
+      required: true
+    },
+    rating: {
+      type: Number,
+      required: true,
+      min: 1,
+      max: 5
+    },
+   
+    ratedAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
+  comments: [{
+    Username: {
+      type: String,
+      required: true
+    },
+    comment: {
+      type: String,
+      required: true
+    },
+    commentedAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
+  
 
 
 

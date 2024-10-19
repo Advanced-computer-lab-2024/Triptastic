@@ -517,9 +517,82 @@ const sortProductsByRatingTourist = async (req, res) => {
 
 
   }
+  const commentOnActivity = async (req, res) => {
+    const{Username}=req.query
+    const { name, comment } = req.body; // Ensure you're passing Username and not username
+  
+    try {
+      // Find the activity by its name
+      const activity = await activitiesModel.findOne({ name: name });
+  
+      if (!activity) {
+        return res.status(404).json({ error: 'Activity not found' });
+      }
+  
+      // Ensure Username is present
+      if (!Username) {
+        return res.status(400).json({ error: 'Username is required to submit a comment' });
+      }
+  
+      // Add the user's comment
+      activity.comments.push({ Username, comment });
+  
+      // Save the updated activity with the new comment
+      await activity.save();
+  
+      res.status(200).json({ msg: 'Comment submitted successfully', activity });
+    } catch (error) {
+      console.error('Error submitting comment:', error); // Log the error for better tracking
+      res.status(500).json({ error: 'Failed to submit comment' });
+    }
+  };
+  
+  const rateActivity = async (req, res) => {
+    const { Username } = req.query; // Get the Username from the query parameters
+    const { name, rating } = req.body; // Get the name and rating from the request body
+
+    try {
+        // Find the activity by its name
+        const activity = await activitiesModel.findOne({ name:name });
+
+        if (!activity) {
+            return res.status(404).json({ error: 'Activity not found' });
+        }
+
+        // Ensure Username is present
+        if (!Username) {
+            return res.status(400).json({ error: 'Username is required to submit a rating' });
+        }
+
+        // Check if the rating is valid
+        if (!rating || rating < 1 || rating > 5) {
+            return res.status(400).json({ error: 'Rating must be a number between 1 and 5' });
+        }
+
+        // Check if the user has already rated this activity
+        const existingRating = activity.ratings.find(r => r.Username === Username);
+        if (existingRating) {
+            return res.status(400).json({ error: 'You have already rated this activity' });
+        }
+
+        // Add the new rating
+        activity.ratings.push({ Username, rating });
+
+        // Save the updated activity with the new rating
+        await activity.save();
+
+        res.status(200).json({ msg: 'Rating submitted successfully', activity });
+    } catch (error) {
+        console.error('Error submitting rating:', error); // Log the error for better tracking
+        res.status(500).json({ error: 'Failed to submit rating' });
+    }
+};
+
+  
+  
   
  
  module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
-  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities};
+  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity};

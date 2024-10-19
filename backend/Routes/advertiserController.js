@@ -48,7 +48,7 @@ const updateAdvertiser = async(req,res) => {
 
 
 const createActivity = async (req, res) => {
-   const { Category,name,date,time,location,price,tags,rating,specialDiscounts,bookingOpen,Advertiser } = req.body;
+   const { Category,name,date,time,location,price,tags,specialDiscounts,bookingOpen,Advertiser } = req.body;
 
    try {
        // Find the category by name or by its _id
@@ -77,13 +77,13 @@ const createActivity = async (req, res) => {
             }else{
     
            // Create a new activity
-           const activity = await activitiesModel.create({Category: foundCategory.Name,name,date,time,location,price,tags,rating,specialDiscounts,bookingOpen,Advertiser:foundAdvertiser.Username });
+           const activity = await activitiesModel.create({Category: foundCategory.Name,name,date,time,location,price,tags,specialDiscounts,bookingOpen,Advertiser:foundAdvertiser.Username });
            res.status(200).json(activity);
         }
 
         }
         else{
-            const activity = await activitiesModel.create({Category: foundCategory.Name,name,date,time,location,price,tags,rating,specialDiscounts,bookingOpen,Advertiser:foundAdvertiser.Username });
+            const activity = await activitiesModel.create({Category: foundCategory.Name,name,date,time,location,price,tags,specialDiscounts,bookingOpen,Advertiser:foundAdvertiser.Username });
             res.status(200).json(activity);
         }
 
@@ -137,13 +137,13 @@ const viewActivitydetails = async (req, res) => {
 
 const updateActivity = async (req, res) => {
     const {name,Advertiser}=req.query;
-   const { Category,date,time,location,price,tags,rating,specialDiscounts,bookingOpen }= req.body; // The current category name from the URL parameter
+   const { Category,date,time,location,price,tags,specialDiscounts,bookingOpen }= req.body; // The current category name from the URL parameter
   // The new name to be updated, taken directly from the request body
 
    try {
        const activity = await activitiesModel.findOneAndUpdate(
         { Advertiser: Advertiser, name: name }, // Find category by the current name
-           { $set: { Category:Category,name:name,date:date,time:time,location:location,price:price,tags:tags,rating:rating,specialDiscounts:specialDiscounts,bookingOpen:bookingOpen  } }, // Update to the new name
+           { $set: { Category:Category,name:name,date:date,time:time,location:location,price:price,tags:tags,specialDiscounts:specialDiscounts,bookingOpen:bookingOpen  } }, // Update to the new name
            { new: true } // Return the updated document
        );
 
