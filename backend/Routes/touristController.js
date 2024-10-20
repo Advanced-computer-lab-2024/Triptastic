@@ -518,13 +518,14 @@ const sortProductsByRatingTourist = async (req, res) => {
 
   }
   const commentOnActivity = async (req, res) => {
-    const{Username}=req.query
-    const { name, comment } = req.body; // Ensure you're passing Username and not username
+    
+    const { name, Username,comment } = req.body; // Ensure you're passing Username and not username
   
     try {
       // Find the activity by its name
       const activity = await activitiesModel.findOne({ name: name });
-  
+      
+
       if (!activity) {
         return res.status(404).json({ error: 'Activity not found' });
       }

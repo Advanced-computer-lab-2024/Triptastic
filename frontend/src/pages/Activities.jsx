@@ -138,36 +138,47 @@ const Activities = () => {
     fetchSortedActivities('PASC', 'RASC'); // Default sort: Price Asc, Rating Asc
   }, []);
   const handleCommentSubmit = async (e, activity) => {
+    e.preventDefault(); // Prevent default form submission
     const Username = localStorage.getItem('Username'); 
-    e.preventDefault();
-    try {
-      const response = await fetch(`http://localhost:8000/commentOnActivity?Username=${Username}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: activity.name,
-          //Username: Username,
-          comment: commentData.comment,
-        }),
-      });
-  
-      console.log('Status:', response.status); // Log the status code
-      const data = await response.json();
-      console.log('Response Data:', data); // Log the response data
-  
-      if (response.ok) {
-        setResponseMsg(data.msg);
-        setCommentData({ comment: '' });
-      } else {
-        console.error('Error message:', data.error); // Log the error from the backend
-        throw new Error('Failed to submit comment');
-      }
-    } catch (error) {
-      setResponseMsg('Failed to submit comment');
+    console.log('Username:', Username); // Ensure this is not null or undefined
+
+    // Ensure commentData.comment is defined
+    if (!commentData.comment) {
+        setResponseMsg('Comment cannot be empty.');
+        return; // Prevent submission if the comment is empty
     }
-  };
+
+    try {
+        const response = await fetch('http://localhost:8000/commentOnActivity', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: activity.name,
+                Username: Username,
+                comment: commentData.comment,
+            }),
+        });
+
+        console.log('Name:', activity.name);
+        console.log('Status:', response.status); // Log the status code
+
+        const data = await response.json();
+        console.log('Response Data:', JSON.stringify(data, null, 2)); // Pretty-print response data for clarity
+
+        if (response.ok) {
+            setResponseMsg(data.msg);
+            setCommentData({ comment: '' });
+        } else {
+            console.error('Error message:', data.error); // Log the error from the backend
+        }
+    } catch (error) {
+        console.error('Error submitting comment:', error); // Log the error for debugging
+        setResponseMsg('Failed to submit comment');
+    }
+};
+
   const handleRatingSubmit = async (e, activity) => {
     const Username = localStorage.getItem('Username'); 
     e.preventDefault();
