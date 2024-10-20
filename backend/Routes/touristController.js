@@ -748,10 +748,36 @@ const getComplaintsByTourist = async (req, res) => {
 
 
   
-  
-  
+
+const changepasswordTourist = async (req, res) => {
+  const { Username, currentPassword, newPassword } = req.body;
+
+  try {
+    // Step 1: Find the tourist by Username
+    const tourist = await touristModel.findOne({ Username });
+
+    if (!tourist) {
+      return res.status(404).json({ error: "Tourist not found" });
+    }
+
+    // Step 2: Compare current password with the one stored in the database (plain text comparison)
+    if (currentPassword !== tourist.Password) {
+      return res.status(400).json({ error: "Current password is incorrect" });
+    }
+
+    // Step 3: Update only the password field
+    tourist.Password = newPassword;
+    await tourist.save();
+
+    res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    console.error("Error changing password:", error.message);
+    res.status(500).json({ error: "Error changing password" });
+  }
+};
+
  
- module.exports = {setCurrency,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+ module.exports = {changepasswordTourist,setCurrency,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
