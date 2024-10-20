@@ -1,4 +1,5 @@
 const express = require("express");
+const session = require('express-session');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require("cors");
@@ -60,6 +61,13 @@ const activities=require("./Models/Activities");
 const museums=require("./Models/Museums");
 const request=require("./Models/Request");
 
+// Set up session middleware
+app.use(session({
+  secret: 'yourSecretKey',  // Use a strong secret for signing the session ID
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }  // Set to true if using HTTPS in production
+}));
 
 mongoose.connect(MongoURI)
 .then(()=>{
@@ -74,6 +82,9 @@ app.use(express.json());
 app.use(cors({
   origin: 'http://localhost:3000', // Allow requests from this origin
 }));
+
+
+
 
 //Tourist
 app.post("/addTourist",createTourist);
@@ -107,7 +118,18 @@ app.get("/filterItineraries",filterItineraries);
 app.get("/searchActivities",searchActivities);
 app.post("/commentOnActivity",commentOnActivity);
 app.post("/rateActivity",rateActivity);
+app.post('/setCurrency', (req, res) => {
+  const { currency } = req.body;
 
+  if (!currency) {
+    return res.status(400).json({ error: 'Currency is required' });
+  }
+
+  // Store the selected currency in the session
+  req.session.selectedCurrency = currency;
+
+  res.status(200).json({ message: `Currency set to ${currency}` });
+});
 
 
 //TourGuide
