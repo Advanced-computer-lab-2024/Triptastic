@@ -10,7 +10,7 @@ const advertiserModel = require('../Models/Advertiser');
 const tourismGovModel = require('../Models/tourismGov');
 const itineraryModel= require('..Models/Itinerary.js');
 const touristItineraryModel=require('..Model/touristItinerary.js');
-const activitiesModel= require('..Model/Activities.js');
+const activityModel= require('..Model/Activities.js');
 
 const AdminLogin = async (req, res) => {
   const { Username, Password } = req.body;
