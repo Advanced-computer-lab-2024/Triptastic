@@ -35,7 +35,7 @@ const{createAdmin,createCategory,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
 ,createPrefTag,updatePreftag,deletePreftag,getPrefTag,
 viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,
-tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,flagActivity}=require("./Routes/adminController");
+tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,flagActivity,getallActivities,getallTouristItineraries,getallItineraries}=require("./Routes/adminController");
 
 
 
@@ -151,7 +151,7 @@ app.post("/requestAccountDeletionTourG",requestAccountDeletionTourG);
 
 //Advertiser
 app.post("/addAdvertiser",upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'TaxationRegistryCard', maxCount: 1 } ]),createAdvertiser);
-app.patch("/updateAdvertiser",updateAdvertiser);
+app.patch("/updateAdvertiser",upload.single('Logo'),updateAdvertiser);
 app.get("/getAdvertiser",getAdvertiser);
 app.post("/createActivity",createActivity);
 app.delete("/deleteActivity",deleteActivity);
@@ -162,7 +162,7 @@ app.post("/requestAccountDeletionAdvertiser",requestAccountDeletionAdvertiser);
 
 //Seller
 app.post('/createSeller', upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'TaxationRegistryCard', maxCount: 1 } ]), createSeller);
-app.patch('/updateSeller', upload.fields([{ name: 'Logo', maxCount: 1  } ]),updateSeller);
+app.patch('/updateSeller', upload.single('Logo'),updateSeller);
 app.get("/getSeller",getSeller);
 app.post("/createProductseller",createProductseller);
 app.get("/getProductSeller",getProductSeller);
@@ -200,6 +200,9 @@ app.delete("/deleteAdmin",deleteAdmin);
 app.patch('/flagItinerary',flagItinerary);
 app.patch('/flagTouristItinerary',flagTouristItinerary);
 app.patch('/flagActivitiy',flagActivity)
+app.get('/getAllItineraries',getallItineraries);
+app.get('/getAllActivities',getallActivities);
+app.get('getAllTouristItineraries',getallTouristItineraries)
 
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);

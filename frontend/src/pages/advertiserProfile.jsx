@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import './advertiserProfile.css';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+
 const AdvertiserProfile = () => {
   const [advertiserInfo, setAdvertiserInfo] = useState(null);
   const [activities, setActivities] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [updating, setUpdating] = useState(false); // Track update status
+  const [updating, setUpdating] = useState(false);
   const [waiting, setWaiting] = useState(false);
-  const [requestSent, setRequestSent] = useState(false); // Track if request was successfully sent
+  const [requestSent, setRequestSent] = useState(false);
   const [formData, setFormData] = useState({
     Username: '',
     Email: '',
@@ -17,12 +18,12 @@ const AdvertiserProfile = () => {
     Hotline: '',
     Company_Profile: '',
   });
+  const [logo, setLogo] = useState(null); // State for the logo file
   const navigate = useNavigate();
-
 
   const fetchAdvertiserInfo = async () => {
     setLoading(true);
-    const Username = localStorage.getItem('Username'); // Get the username from local storage
+    const Username = localStorage.getItem('Username');
 
     if (Username) {
       try {
@@ -36,8 +37,22 @@ const AdvertiserProfile = () => {
         if (response.ok) {
           const data = await response.json();
           if (data) {
-            setAdvertiserInfo(data); // Set the fetched information
+            setAdvertiserInfo(data);
             setErrorMessage('');
+            setFormData({
+              Username: data.Username,
+              Email: data.Email,
+              Password: data.Password,
+              Website_Link: data.Website_Link,
+              Hotline: data.Hotline,
+              Company_Profile: data.Company_Profile,
+            });
+
+            // Set logo URL if available and save it to local storage
+            if (data.logo) {
+              setLogo(data.logo);
+              localStorage.setItem('advertiserLogo', data.logo); // Store logo URL in local storage
+            }
           } else {
             setErrorMessage('No advertiser information found.');
           }
@@ -53,6 +68,16 @@ const AdvertiserProfile = () => {
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    // Check local storage for logo URL on mount
+    const savedLogo = localStorage.getItem('advertiserLogo');
+    if (savedLogo) {
+      setLogo(savedLogo);
+    }
+    fetchAdvertiserInfo();
+    fetchActivities();
+  }, []);
 
   const fetchActivities = async () => {
     const Username = localStorage.getItem('Username');
@@ -76,11 +101,6 @@ const AdvertiserProfile = () => {
     }
   };
 
-  useEffect(() => {
-    fetchAdvertiserInfo();
-    fetchActivities(); // Fetch activities on component mount
-  }, []);
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -89,23 +109,45 @@ const AdvertiserProfile = () => {
     }));
   };
 
+  const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const logoURL = URL.createObjectURL(file);
+      setLogo(logoURL); // Display the selected logo immediately
+      setFormData((prevData) => ({
+        ...prevData,
+        Logo: file, // Store the file for uploading
+      }));
+    }
+  };
+
   const handleUpdate = async () => {
     setUpdating(true);
+    const form = new FormData();
+    
+    // Append form data
+    Object.keys(formData).forEach(key => {
+      form.append(key, formData[key]);
+    });
 
     try {
       const response = await fetch(`http://localhost:8000/updateAdvertiser`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+        body: form, // Send FormData
       });
 
       if (response.ok) {
         const updatedData = await response.json();
-        setAdvertiserInfo(updatedData); // Update the UI with new information
+        setAdvertiserInfo(updatedData);
         setErrorMessage('');
         alert('Information updated successfully!');
+        
+        // Update logo in local storage if it has changed
+        if (formData.Logo) {
+          const logoURL = URL.createObjectURL(formData.Logo);
+          setLogo(logoURL);
+          localStorage.setItem('advertiserLogo', logoURL); // Update logo URL in local storage
+        }
       } else {
         throw new Error('Failed to update advertiser profile');
       }
@@ -116,36 +158,32 @@ const AdvertiserProfile = () => {
 
     setUpdating(false);
   };
+
   const handleDeleteRequest = async () => {
     const Username = localStorage.getItem('Username');
     setWaiting(true);
-    setRequestSent(false); // Reset request sent state when initiating new request
+    setRequestSent(false);
     try {
-        const response = await fetch(`http://localhost:8000/requestAccountDeletionAdvertiser?Username=${Username}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                
-            }
-            
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setRequestSent(true); // Set to true when the request is successfully sent
-          alert('Your account deletion request has been submitted and is pending approval.');
-        } else {
-          setRequestSent(false); // Reset to allow another deletion request
-          alert(data.msg); // Show the rejection message
-         }
- 
-        
+      const response = await fetch(`http://localhost:8000/requestAccountDeletionAdvertiser?Username=${Username}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setRequestSent(true);
+        alert('Your account deletion request has been submitted and is pending approval.');
+      } else {
+        setRequestSent(false);
+        alert(data.msg);
+      }
     } catch (error) {
-        alert('Error deleting account');
+      alert('Error deleting account');
+    } finally {
+      setWaiting(false);
     }
-    finally {
-      setWaiting(false); // Stop waiting regardless of outcome
-  }
-};
+  };
 
   return (
     <div>
@@ -156,23 +194,24 @@ const AdvertiserProfile = () => {
       ) : (
         advertiserInfo && (
           <div>
-            <div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              {logo && <img src={logo} alt="Advertiser Logo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
               <label><strong>Username:</strong></label>
-              <p>{advertiserInfo.Username}</p> {/* Display Username as text */}
+              <p>{advertiserInfo.Username}</p>
             </div>
             <div>
               <label><strong>Website Link:</strong></label>
               <input
                 type="text"
-                name="website_Link"
-                value={formData.website_Link}
+                name="Website_Link" // Corrected name to match formData keys
+                value={formData.Website_Link}
                 onChange={handleInputChange}
               />
             </div>
             <div>
               <label><strong>Password:</strong></label>
               <input
-                type="text" // Visible password
+                type="password" // Use type="password" for better security
                 name="Password"
                 value={formData.Password}
                 onChange={handleInputChange}
@@ -196,7 +235,14 @@ const AdvertiserProfile = () => {
                 onChange={handleInputChange}
               />
             </div>
-
+            <div>
+              <label><strong>Logo:</strong></label>
+              <input
+                type="file"
+                accept="image/*" // Accept any image type
+                onChange={handleLogoChange}
+              />
+            </div>
             <button onClick={handleUpdate} disabled={updating}>
               {updating ? 'Updating...' : 'Update Information'}
             </button>
@@ -219,37 +265,24 @@ const AdvertiserProfile = () => {
                 <p><strong>Category:</strong> {activity.Category}</p>
               </div>
               <div style={styles.activityRow}>
-                <p><strong>Date:</strong> {activity.date ? new Date(activity.date).toLocaleDateString() : 'N/A'}</p>
-                <p><strong>Time:</strong> {activity.time || 'N/A'}</p>
+                <p><strong>Date:</strong> {activity.date}</p>
+                <p><strong>Budget:</strong> {activity.budget}</p>
               </div>
-              <div style={styles.activityRow}>
-                <p><strong>Location:</strong> {activity.location || 'N/A'}</p>
-                <p><strong>Price:</strong> ${activity.price || 'N/A'}</p>
-              </div>
-              <div style={styles.activityRow}>
-                <p><strong>Rating:</strong> {activity.rating || 'N/A'}</p>
-                <p><strong>Tags:</strong> {activity.tags?.length > 0 ? activity.tags.join(', ') : 'N/A'}</p>
-              </div>
-              <div style={styles.activityRow}>
-                <p><strong>Special Discounts:</strong> {activity.specialDiscounts || 'N/A'}</p>
-                <p><strong>Booking Open:</strong> {activity.bookingOpen ? 'Yes' : 'No'}</p>
+              <div>
+                <strong>More Info:</strong>
+                <ul>
+                  <li><a href="/some-link">Link 1</a></li>
+                  <li><a href="/some-link">Link 2</a></li>
+                  <li><a href="/some-link">Link 3</a></li>
+                </ul>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <p>No activities found for this advertiser.</p>
+        <p>No activities found.</p>
       )}
-       {/* Sidebar */}
-       <div className="sidebar">
-        <h3>Explore</h3>
-        <ul>
-          <li onClick={() => navigate('/advertiser-Activities')}>Creating Activities</li>
-          
-        </ul>
-      </div>
     </div>
-    
   );
 };
 
@@ -260,16 +293,14 @@ const styles = {
     gap: '10px',
   },
   activityCard: {
-    border: '1px solid #ddd',
-    borderRadius: '8px',
-    padding: '5px', // Reduced padding to save vertical space
+    border: '1px solid #ccc',
+    padding: '10px',
+    borderRadius: '5px',
     backgroundColor: '#f9f9f9',
-    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
   },
   activityRow: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginBottom: '5px', // Reduce margin between rows to save vertical space
   },
 };
 

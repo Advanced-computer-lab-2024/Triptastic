@@ -11,7 +11,6 @@ const tourismGovModel = require('../Models/tourismGov');
 const itineraryModel= require('../Models/Itinerary.js');
 const touristItineraryModel=require('../Models/touristItinerary.js');
 const activityModel= require('../Models/Activities.js');
-
 const AdminLogin = async (req, res) => {
   const { Username, Password } = req.body;
 
@@ -367,6 +366,33 @@ const sortProductsByRatingAdmin = async (req, res) => {
       res.status(400).json({error: error.message});
    }    
     }
+    const getallItineraries= async(req,res)=>{
+      try{
+        const itineraries = await itineraryModel.find(); 
+        res.json(itineraries);
+      }
+      catch (error){
+        res.status(400).json({error: error.message});
+     }   
+    }
+    const getallActivities= async(req,res)=>{
+      try{
+        const activities = await activityModel.find(); 
+        res.json(activities);
+      }
+      catch (error){
+        res.status(400).json({error: error.message});
+     }   
+    }
+    const getallTouristItineraries= async(req,res)=>{
+      try{
+        const touristItineraries = await touristItineraryModel.find(); 
+        res.json(touristItineraries);
+      }
+      catch (error){
+        res.status(400).json({error: error.message});
+     }   
+    }
 module.exports = {createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
-    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,flagActivity
+    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,flagActivity,getallItineraries,getallActivities,getallTouristItineraries
 };

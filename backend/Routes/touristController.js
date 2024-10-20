@@ -5,6 +5,8 @@ const activitiesModel=require('../Models/Activities.js');
 const itineraryModel= require('../Models/Itinerary.js');
 const museumsModel=require('../Models/Museums.js');
 const { default: mongoose } = require('mongoose');
+const complaintModel = require('../Models/Complaint.js'); // Adjust the path based on your project structure
+
 const createTourist = async(req,res) => {
 
     const{Username,Email,Password,Nationality,DOB,Occupation}=req.body;
@@ -41,6 +43,37 @@ const updateTourist = async(req,res) => {
 
   }
 }
+
+const fileComplaint = async (req, res) => {
+  const { title, body, date } = req.body;
+  const username = req.query.username; // Use req.query to get username from the query
+
+  console.log('Incoming complaint:', { title, body, date, username }); // Debugging
+
+  try {
+    // Check if the username is provided
+    if (!username) {
+      return res.status(400).json({ error: 'Username is required' });
+    }
+
+    // Create a new complaint with the username attached
+    const complaint = await complaintModel.create({
+      title,
+      body,
+      date,
+      username, // Ensure username is correctly passed here
+      status: 'pending', // Default status is 'pending'
+    });
+
+    // Return the created complaint
+    res.status(201).json(complaint);
+  } catch (error) {
+    console.error('Error creating complaint:', error); // Log the error for debugging
+    res.status(400).json({ error: error.message });
+  }
+};
+
+
 
 
 
@@ -550,13 +583,14 @@ const sortProductsByRatingTourist = async (req, res) => {
 
   }
   const commentOnActivity = async (req, res) => {
-    const{Username}=req.query
-    const { name, comment } = req.body; // Ensure you're passing Username and not username
+    
+    const { name, Username,comment } = req.body; // Ensure you're passing Username and not username
   
     try {
       // Find the activity by its name
       const activity = await activitiesModel.findOne({ name: name });
-  
+      
+
       if (!activity) {
         return res.status(404).json({ error: 'Activity not found' });
       }
@@ -601,12 +635,7 @@ const sortProductsByRatingTourist = async (req, res) => {
             return res.status(400).json({ error: 'Rating must be a number between 1 and 5' });
         }
 
-        // Check if the user has already rated this activity
-        const existingRating = activity.ratings.find(r => r.Username === Username);
-        if (existingRating) {
-            return res.status(400).json({ error: 'You have already rated this activity' });
-        }
-
+        
         // Add the new rating
         activity.ratings.push({ Username, rating });
 
@@ -627,4 +656,7 @@ const sortProductsByRatingTourist = async (req, res) => {
  module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
-  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity};
+  sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
+  ,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange
+  ,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities
+  ,commentOnActivity,rateActivity,fileComplaint};

@@ -6,6 +6,7 @@ const Activities = () => {
   const [loading, setLoading] = useState(true);
   const [expandedActivities, setExpandedActivities] = useState({});
   const [commentData, setCommentData] = useState({ Username: '', comment: '' });
+  const [ratingData, setRatingData] = useState({ rating: '' }); // New state for rating
   const [responseMsg, setResponseMsg] = useState('');
 
   // Sorting states
@@ -34,7 +35,8 @@ const Activities = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        setActivities(data);
+        const filteredActivities = data.filter(activity => !activity.FlagInappropriate);
+        setActivities(filteredActivities);
         setErrorMessage('');
       } else {
         throw new Error('Failed to fetch activities');
@@ -66,7 +68,8 @@ const Activities = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setActivities(data);
+        const filteredActivities = data.filter(activity => !activity.FlagInappropriate);
+        setActivities(filteredActivities);
         setErrorMessage('');
       } else {
         throw new Error('Failed to fetch activities');
@@ -94,7 +97,8 @@ const Activities = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setActivities(data);
+        const filteredActivities = data.filter(activity => !activity.FlagInappropriate);
+        setActivities(filteredActivities);
         setErrorMessage('');
       } else {
         throw new Error('Failed to fetch activities');
@@ -105,37 +109,7 @@ const Activities = () => {
       setLoading(false);
     }
   };
-  const handleCommentSubmit = async (e, activity) => {
-    const Username = localStorage.getItem('Username'); 
-    e.preventDefault();
-    try {
-      const response = await fetch(`http://localhost:8000/commentOnActivity?Username=${Username}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: activity.name,
-          //Username: Username,
-          comment: commentData.comment,
-        }),
-      });
-  
-      console.log('Status:', response.status); // Log the status code
-      const data = await response.json();
-      console.log('Response Data:', data); // Log the response data
-  
-      if (response.ok) {
-        setResponseMsg(data.msg);
-        setCommentData({ comment: '' });
-      } else {
-        console.error('Error message:', data.error); // Log the error from the backend
-        throw new Error('Failed to submit comment');
-      }
-    } catch (error) {
-      setResponseMsg('Failed to submit comment');
-    }
-  };
+ 
   
   const handleSort = (priceSortParam, ratingSortParam) => {
     setPriceSort(priceSortParam);
@@ -166,7 +140,7 @@ const Activities = () => {
   useEffect(() => {
     fetchSortedActivities('PASC', 'RASC'); // Default sort: Price Asc, Rating Asc
   }, []);
-
+ 
   return (
     <div>
       <h2>Activities</h2>
@@ -303,27 +277,10 @@ const Activities = () => {
                       <p><strong>Special Discounts:</strong> {activity.specialDiscounts}</p>
                       <p><strong>Booking Open:</strong> {activity.bookingOpen ? 'Yes' : 'No'}</p>
                       <p><strong>Advertiser:</strong> {activity.Advertiser}</p>
-                       {/* Comments section */}
-                      <div>
-                        <h4>Comments</h4>
-                        <ul>
-                          {activity.comments.map((comment, index) => (
-                            <li key={index}><strong>{comment.Username}:</strong> {comment.comment}</li>
-                          ))}
-                        </ul>
+                      
 
-                        {/* Comment form */}
-                        <form onSubmit={(e) => handleCommentSubmit(e, activity)}>
-                          <textarea
-                            value={commentData.comment}
-                            onChange={(e) => setCommentData({ comment: e.target.value })}
-                            placeholder="Leave a comment"
-                            required
-                          />
-                          <button type="submit">Submit Comment</button>
-                        </form>
-                        {responseMsg && <p>{responseMsg}</p>}
-                      </div>
+                        
+                      
                     </div>
                   )}
                 </li>
