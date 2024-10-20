@@ -18,6 +18,10 @@ const touristItinerarySchema = new Schema({
     },
     tourGuide:{
         type: String, required: true
+    },
+    FlagInappropriate:{
+        type: Boolean,
+        default: false
     }    
 },{timestamps: true})
 

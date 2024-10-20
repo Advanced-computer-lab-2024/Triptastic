@@ -8,7 +8,9 @@ const tourGuideModel = require('../Models/tourGuide');
 const sellerModel = require('../Models/Seller');
 const advertiserModel = require('../Models/Advertiser');
 const tourismGovModel = require('../Models/tourismGov');
-
+const itineraryModel= require('..Models/Itinerary.js');
+const touristItineraryModel=require('..Model/touristItinerary.js');
+const activitiesModel= require('..Model/Activities.js');
 
 const AdminLogin = async (req, res) => {
   const { Username, Password } = req.body;
@@ -318,7 +320,7 @@ const sortProductsByRatingAdmin = async (req, res) => {
     };
    
 
-    const addTourismGov = async (req, res) => {
+  const addTourismGov = async (req, res) => {
       const { Username, Password } = req.body;
     
       try {
@@ -335,10 +337,36 @@ const sortProductsByRatingAdmin = async (req, res) => {
       }
     }
     
-
-
-
-
+    const flagItinerary= async(req,res)=>{
+      const {id}=req.params.id;
+      try{
+        await itineraryModel.findByIdAndUpdate(id,{FlagInappropriate: false});
+      res.status(200).json({msg:" Itinerary is flagged"});
+   }
+   catch (error){
+      res.status(400).json({error: error.message});
+   }    
+    }
+    const flagTouristItinerary= async(req,res)=>{
+      const {id}=req.params.id;
+      try{
+        await touristItineraryModel.findByIdAndUpdate(id,{FlagInappropriate: false});
+      res.status(200).json({msg:" Tourist itinerary is flagged"});
+   }
+   catch (error){
+      res.status(400).json({error: error.message});
+   }    
+    }
+    const flagActivity= async(req,res)=>{
+      const {id}=req.params.id;
+      try{
+        await activityModel.findByIdAndUpdate(id,{FlagInappropriate: false});
+      res.status(200).json({msg:" Activity is flagged"});
+   }
+   catch (error){
+      res.status(400).json({error: error.message});
+   }    
+    }
 module.exports = {createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
-    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin,viewAllPrefTag,deleteAdmin
+    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,flagActivity
 };
