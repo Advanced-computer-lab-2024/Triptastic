@@ -140,96 +140,7 @@ const Activities = () => {
   useEffect(() => {
     fetchSortedActivities('PASC', 'RASC'); // Default sort: Price Asc, Rating Asc
   }, []);
-  const handleCommentSubmit = async (e, activity) => {
-    e.preventDefault(); // Prevent default form submission
-    const username = localStorage.getItem('Username'); 
-    console.log('Submitting comment for activity:', activity.name);
-    console.log('Username:', username);
-    console.log('Comment:', commentData.comment); // Log the comment
-
-    if (!commentData.comment) {
-        setResponseMsg('Comment cannot be empty.');
-        return; // Prevent submission if the comment is empty
-    }
-
-    try {
-        const response = await fetch('http://localhost:8000/commentOnActivity', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                name: activity.name,
-                Username: username,
-                comment: commentData.comment,
-            }),
-        });
-
-        const data = await response.json();
-        console.log('Comment submission response:', data); // Log response
-
-        if (response.ok) {
-            setResponseMsg(data.msg);
-            // Update the activities state to include the new comment immediately
-            setActivities((prevActivities) =>
-                prevActivities.map((act) =>
-                    act._id === activity._id
-                    ? { ...act, comments: [...act.comments, { Username: username, comment: commentData.comment }] }
-                    : act
-                )
-            );
-
-            setCommentData({ comment: '' }); // Reset comment input
-        } else {
-            console.error('Error message:', data.error);
-            setResponseMsg(data.error); // Display the error message
-        }
-    } catch (error) {
-        console.error('Error submitting comment:', error);
-        setResponseMsg('Failed to submit comment');
-    }
-};
-
-
-const handleRatingSubmit = async (e, activity) => {
-  const username = localStorage.getItem('Username'); 
-  e.preventDefault();
-
-  try {
-      const response = await fetch(`http://localhost:8000/rateActivity?Username=${username}`, {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-              name: activity.name,
-              rating: ratingData.rating,
-          }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-          setResponseMsg(data.msg);
-
-          // Update the activities state to include the new rating
-          setActivities((prevActivities) => 
-              prevActivities.map((act) => 
-                  act._id === activity._id 
-                  ? { ...act, rating: ratingData.rating } 
-                  : act
-              )
-          );
-
-          setRatingData({ rating: '' }); // Reset rating input
-      } else {
-          console.error('Error message:', data.error);
-          throw new Error('Failed to submit rating');
-      }
-  } catch (error) {
-      setResponseMsg('Failed to submit rating');
-  }
-};
+ 
   return (
     <div>
       <h2>Activities</h2>
@@ -366,47 +277,10 @@ const handleRatingSubmit = async (e, activity) => {
                       <p><strong>Special Discounts:</strong> {activity.specialDiscounts}</p>
                       <p><strong>Booking Open:</strong> {activity.bookingOpen ? 'Yes' : 'No'}</p>
                       <p><strong>Advertiser:</strong> {activity.Advertiser}</p>
-                       {/* Comments section */}
-                      <div>
-                        <h4>Comments</h4>
-                        <ul>
-                          {activity.comments.map((comment, index) => (
-                            <li key={index}><strong>{comment.Username}:</strong> {comment.comment}</li>
-                          ))}
-                        </ul>
+                      
 
-                        {/* Comment form */}
-                        <form onSubmit={(e) => handleCommentSubmit(e, activity)}>
-                          <textarea
-                            value={commentData.comment}
-                            onChange={(e) => setCommentData({ comment: e.target.value })}
-                            placeholder="Leave a comment"
-                            required
-                          />
-                          <button type="submit">Submit Comment</button>
-                        </form>
-                        {responseMsg && <p>{responseMsg}</p>}
-                      </div>
-                       {/* Rating Section */}
-                       <div>
-                        <h4>Rate this Activity</h4>
-                        <form onSubmit={(e) => handleRatingSubmit(e, activity)}>
-                          <select
-                            value={ratingData.rating}
-                            onChange={(e) => setRatingData({ rating: e.target.value })}
-                            required
-                          >
-                            <option value="">Select a rating</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                          </select>
-                          <button type="submit">Submit Rating</button>
-                        </form>
-                        {responseMsg && <p>{responseMsg}</p>}
-                      </div>
+                        
+                      
                     </div>
                   )}
                 </li>
