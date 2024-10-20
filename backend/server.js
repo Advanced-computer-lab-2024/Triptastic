@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 const cors = require("cors");
 mongoose.set('strictQuery', false);
 require("dotenv").config();
@@ -45,7 +46,6 @@ const{createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,de
 
 
 
-
 const app = express();
 const port = process.env.PORT || "8000";
 const tourist = require("./Models/Tourist");
@@ -71,7 +71,9 @@ mongoose.connect(MongoURI)
 })
 .catch(err => console.log(err));
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', // Allow requests from this origin
+}));
 
 //Tourist
 app.post("/addTourist",createTourist);
@@ -138,7 +140,7 @@ app.post("/requestAccountDeletionAdvertiser",requestAccountDeletionAdvertiser);
 
 //Seller
 app.post('/createSeller', upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'TaxationRegistryCard', maxCount: 1 } ]), createSeller);
-app.patch('/updateSeller', updateSeller);
+app.patch('/updateSeller', upload.fields([{ name: 'Logo', maxCount: 1  } ]),updateSeller);
 app.get("/getSeller",getSeller);
 app.post("/createProductseller",createProductseller);
 app.get("/getProductSeller",getProductSeller);
@@ -196,6 +198,7 @@ app.get("/filterHistoricalLocationsByTagsGuest",filterHistoricalLocationsByTagsG
 app.get("/filterMuseumsByTagsGuest",filterMuseumsByTagsGuest);viewAllMuseumsGuest
 app.get("/viewAllMuseumsGuest",viewAllMuseumsGuest);
 
-
+app.use(bodyParser.json({ limit: '50mb' })); // Adjust the limit as needed
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 

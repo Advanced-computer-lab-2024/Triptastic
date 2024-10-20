@@ -29,11 +29,11 @@ const sellerSchema = new Schema({
 
   },  Id: { 
     type: String,
-    required: true,
+    required: false,
   },
   TaxationRegistryCard: { 
     type: String,
-    required: true,
+    required: false,
   },
 }, { timestamps: true });
 

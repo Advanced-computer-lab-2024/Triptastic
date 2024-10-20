@@ -24,9 +24,10 @@ const createSeller = async(req,res) => {
 
  const updateSeller = async(req,res) => {
 
-  const{Username,Email,Password,Name,Description,Logo}=req.body;
+  const{Username,Email,Password,Name,Description}=req.body;
+  const logo = req.files?.Logo?.[0]?.path || null;
   try{
-     const seller=await sellerModel.findOneAndUpdate({Username: Username },{$set:{Email: Email,Password:Password,Name:Name,Description:Description,Logo:Logo}},{ new: true });
+     const seller=await sellerModel.findOneAndUpdate({Username: Username },{$set:{Email: Email,Password:Password,Name:Name,Description:Description,Logo:logo}},{ new: true });
      res.status(200).json(seller);
   }
   catch{
