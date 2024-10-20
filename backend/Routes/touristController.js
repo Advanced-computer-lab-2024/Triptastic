@@ -7,6 +7,20 @@ const museumsModel=require('../Models/Museums.js');
 const { default: mongoose } = require('mongoose');
 const complaintModel = require('../Models/Complaint.js'); // Adjust the path based on your project structure
 
+
+const setCurrency = (req, res) => {
+  const { currency } = req.body;
+
+  if (!currency) {
+    return res.status(400).json({ error: 'Currency is required' });
+  }
+
+  // Store the selected currency in the session
+  req.session.selectedCurrency = currency;
+
+  res.status(200).json({ message: `Currency set to ${currency}` });
+};
+
 const createTourist = async(req,res) => {
 
     const{Username,Email,Password,Nationality,DOB,Occupation}=req.body;
@@ -653,7 +667,7 @@ const sortProductsByRatingTourist = async (req, res) => {
   
   
  
- module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+ module.exports = {setCurrency,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
