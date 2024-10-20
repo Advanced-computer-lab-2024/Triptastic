@@ -12,7 +12,7 @@ const {createTourGuideInfo,createTourGuide}=require("./Routes/tourGuideControlle
 const {updateTourGuide}=require("./Routes/tourGuideController");
 const {getTourGuide}=require("./Routes/tourGuideController");
 const {createItinerary,getItinerary,updateItinerary,deleteItinerary,getTouristItinerary,createTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG}=require("./Routes/tourGuideController");
-
+const {changePasswordTourGuide}=require("./Routes/tourGuideController");
 
 //Guest
 const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActivitiesGuest,filterActivitiesGuest,filterHistoricalLocationsByTagsGuest,filterMuseumsByTagsGuest,viewAllMuseumsGuest}=require("./Routes/guestController");
@@ -41,7 +41,7 @@ tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,fl
 
 
 //TourismGoverner
-const{createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,deletehistoricalLocation,
+const{changePasswordTourismGov,createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,deletehistoricalLocation,
   createMuseum,getMuseum,deleteMuseum,updateMuseum,viewMyLocations,viewMyMuseums
 }=require("./Routes/tourismGovController");
 
@@ -143,7 +143,7 @@ app.delete("/deletetouristItinerary/:id",deleteTouristItinerary);
 app.get("/getMyItineraries",getMyItineraries);
 app.get("/getMyTouristItineraries",getMyTouristItineraries);
 app.post("/requestAccountDeletionTourG",requestAccountDeletionTourG);
-
+app.patch("/changePasswordTourGuide",changePasswordTourGuide);
 //Advertiser
 app.post("/addAdvertiser",upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'TaxationRegistryCard', maxCount: 1 } ]),createAdvertiser);
 app.patch("/updateAdvertiser",upload.single('Logo'),updateAdvertiser);
@@ -211,6 +211,7 @@ app.get("/getMuseum",getMuseum);
 app.delete("/deleteMuseum",deleteMuseum);
 app.get("/viewMyLocations",viewMyLocations);
 app.get("/viewMyMuseums",viewMyMuseums);
+app.patch("/changePasswordTourismGov",changePasswordTourismGov);
 
 
 //Guest

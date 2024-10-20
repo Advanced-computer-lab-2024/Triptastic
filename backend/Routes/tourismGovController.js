@@ -233,7 +233,32 @@ const viewMyLocations= async(req,res) =>{
 
 
  
-
+ const changePasswordTourismGov= async (req, res) => {
+    const {Username, currentPassword, newPassword } = req.body;
+  
+    try {
+      // Find the seller by Username
+      const TourismGov = await tourismGovModel.findOne({ Username });
+  
+      if (!TourismGov) {
+        return res.status(404).json({ error: "Tourism Governer not found" });
+      }
+  
+      // Compare current password directly (plain text comparison)
+      if (currentPassword !== TourismGov.Password) {
+        return res.status(400).json({ error: "Current password is incorrect" });
+      }
+  
+      // Update the seller's password (plain text)
+      TourismGov.Password = newPassword;
+      await TourismGov.save();
+  
+      res.status(200).json({ message: "Password changed successfully" });
+    } catch (error) {
+      res.status(500).json({ error: "Error changing password" });
+    }
+  };
+  
  
     
  
@@ -250,6 +275,6 @@ const viewMyLocations= async(req,res) =>{
 
 
 
-module.exports = {createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,deletehistoricalLocation,createMuseum,updateMuseum,getMuseum,deleteMuseum,
+module.exports = {changePasswordTourismGov,createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,deletehistoricalLocation,createMuseum,updateMuseum,getMuseum,deleteMuseum,
     viewMyLocations,viewMyMuseums
 };

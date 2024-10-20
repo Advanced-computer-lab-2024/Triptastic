@@ -228,5 +228,37 @@ const requestAccountDeletionTourG = async (req, res) => {
        res.status(500).json({ error: "Failed to submit deletion request" });
    }
 };
- module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG};
+
+
+const changePasswordTourGuide = async (req, res) => {
+   const { Username, currentPassword, newPassword } = req.body;
+ 
+   try {
+     // Step 1: Find the tour guide by Username
+     const tourGuide = await tourGuideModel.findOne({ Username });
+ 
+     if (!tourGuide) {
+       return res.status(404).json({ error: "Tour Guide not found" });
+     }
+ 
+     // Step 2: Compare current password with the one stored in the database (plain text comparison)
+     if (currentPassword !== tourGuide.Password) {
+       return res.status(400).json({ error: "Current password is incorrect" });
+     }
+ 
+     // Step 3: Update only the password field using findOneAndUpdate
+     await tourGuideModel.findOneAndUpdate(
+       { Username },  // Find by Username
+       { $set: { Password: newPassword } },  // Update the password field only
+       { new: true, runValidators: false }   // Disable validation, return updated document
+     );
+ 
+     res.status(200).json({ message: "Password changed successfully" });
+   } catch (error) {
+     console.error("Error changing password:", error.message);
+     res.status(500).json({ error: "Error changing password" });
+   }
+ };
+ 
+ module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG,changePasswordTourGuide};
  
