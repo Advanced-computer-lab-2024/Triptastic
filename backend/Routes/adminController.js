@@ -8,7 +8,7 @@ const tourGuideModel = require('../Models/tourGuide');
 const sellerModel = require('../Models/Seller');
 const advertiserModel = require('../Models/Advertiser');
 const tourismGovModel = require('../Models/tourismGov');
-const itineraryModel= require('..Models/Itinerary.js');
+const itineraryModel= require('..Models/Itinerary');
 const touristItineraryModel=require('..Model/touristItinerary.js');
 const activityModel= require('..Model/Activities.js');
 
