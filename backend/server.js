@@ -194,7 +194,7 @@ app.get("/viewAllPrefTag",viewAllPrefTag);
 app.delete("/deleteAdmin",deleteAdmin);
 app.patch('/flagItinerary/:id',flagItinerary);
 app.patch('/flagTouristItinerary/:id',flagTouristItinerary);
-app.patch('/flagActivitiy/:id',flagActivity);
+app.patch('/flagActivity/:id',flagActivity);
 app.get('/getAllItineraries',getallItineraries);
 app.get('/getAllActivities',getallActivities);
 app.get('/getAllTouristItineraries',getallTouristItineraries)

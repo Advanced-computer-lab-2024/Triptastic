@@ -349,7 +349,7 @@ const sortProductsByRatingAdmin = async (req, res) => {
     const flagTouristItinerary= async(req,res)=>{
       const id=req.params.id;
       try{
-        await touristItineraryModel.findByIdAndUpdate(id,{FlagInappropriate: false});
+        await touristItineraryModel.findByIdAndUpdate(id,{FlagInappropriate: true});
       res.status(200).json({msg:" Tourist itinerary is flagged"});
    }
    catch (error){
@@ -359,7 +359,7 @@ const sortProductsByRatingAdmin = async (req, res) => {
     const flagActivity= async(req,res)=>{
       const id=req.params.id;
       try{
-        await activityModel.findByIdAndUpdate(id,{FlagInappropriate: false});
+        await activityModel.findByIdAndUpdate(id,{FlagInappropriate: true});
       res.status(200).json({msg:" Activity is flagged"});
    }
    catch (error){
