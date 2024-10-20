@@ -26,10 +26,10 @@ const {setCurrency,createTourist,gethistoricalLocationByName,filterActivities,ge
 const{createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser}=require("./Routes/advertiserController");
 
 //Seller
-const{changePassword, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller}=require("./Routes/sellerController");
+const{changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller}=require("./Routes/sellerController");
 
 //Admin
-const{createAdmin,createCategory,
+const{changePasswordAdmin,createAdmin,createCategory,
   getCategory,
   updateCategory,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
@@ -161,7 +161,7 @@ app.get("/getProductSeller",getProductSeller);
 app.get("/viewProductsSeller",viewProductsSeller);
 app.get("/sortProductsByRatingSeller",sortProductsByRatingSeller);
 app.post("/requestAccountDeletionSeller",requestAccountDeletionSeller);
-app.patch("/changePassword",changePassword);
+app.patch("/changePasswordSeller",changePasswordSeller);
 
 
 
@@ -195,6 +195,7 @@ app.patch('/flagActivitiy/:id',flagActivity);
 app.get('/getAllItineraries',getallItineraries);
 app.get('/getAllActivities',getallActivities);
 app.get('/getAllTouristItineraries',getallTouristItineraries)
+app.patch("/changePasswordAdmin",changePasswordAdmin);
 
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);
