@@ -1,4 +1,5 @@
 const express = require("express");
+const session = require('express-session');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require("cors");
@@ -18,7 +19,7 @@ const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActi
 
 
 //Tourist
-const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
+const {setCurrency,createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
   ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity} = require("./Routes/touristController");
 
 //Advertiser
@@ -60,6 +61,13 @@ const activities=require("./Models/Activities");
 const museums=require("./Models/Museums");
 const request=require("./Models/Request");
 
+// Set up session middleware
+app.use(session({
+  secret: 'yourSecretKey',  // Use a strong secret for signing the session ID
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }  // Set to true if using HTTPS in production
+}));
 
 mongoose.connect(MongoURI)
 .then(()=>{
@@ -74,6 +82,9 @@ app.use(express.json());
 app.use(cors({
   origin: 'http://localhost:3000', // Allow requests from this origin
 }));
+
+
+
 
 //Tourist
 app.post("/addTourist",createTourist);
@@ -107,6 +118,7 @@ app.get("/filterItineraries",filterItineraries);
 app.get("/searchActivities",searchActivities);
 app.post("/commentOnActivity",commentOnActivity);
 app.post("/rateActivity",rateActivity);
+app.post('/setCurrency',setCurrency);
 
 
 
