@@ -725,7 +725,6 @@ const shareMuseum = async (req, res) => {
 };
   
  
- module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
 const getComplaintsByTourist = async (req, res) => {
   const { username } = req.query; // Get the username from the query parameters
 
