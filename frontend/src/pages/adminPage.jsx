@@ -57,7 +57,13 @@ const AdminPage = () => {
   const navigate = useNavigate();
 
   const handleViewItineraries=()=>{
-    setShowingItineraries( prev=>!prev)
+    setShowingItineraries( prev=>!prev);
+  }
+  const handleViewActivities=()=>{
+    setShowingActivities( prev=>!prev);
+  }
+  const handleViewTouristItineraries=()=>{
+    setShowingTouristItineraries( prev=>!prev);
   }
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -71,9 +77,51 @@ const AdminPage = () => {
     getTouristItineraries();
     getActivities();
   }, []);
+  const handleFlagActivity= async(id)=>{
+    try{
+      const response = await fetch(`http://localhost:8000/flagActivity/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data.msg); 
+      } else {
+        const errorData = await response.json();
+        console.error('Error:', errorData.error);
+      }
+    }
+    catch (error) {
+      console.log(error);
+    }
+  }
   const handleFlagItinerary= async(id)=>{
     try{
       const response = await fetch(`http://localhost:8000/flagItinerary/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data.msg); 
+      } else {
+        const errorData = await response.json();
+        console.error('Error:', errorData.error);
+      }
+    }
+    catch (error) {
+      console.log(error);
+    }
+  }
+  const handleFlagTouristItinerary= async(id)=>{
+    try{
+      const response = await fetch(`http://localhost:8000/flagTouristItinerary/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -874,6 +922,42 @@ const getProductByName = async (e) => {
              ))
            ) : (
              <p>No itineraries found.</p>
+           )}
+         </div>
+        )}
+      </div>
+      <div>
+        <button onClick={handleViewActivities}> {showingActivities ? 'Hide activities' : 'Show activities'}</button>
+        { showingActivities && (
+           <div>
+           {Activities.length > 0 ? (
+             Activities.map((activity) => (
+               <div key={activity._id}>
+                 <h4>Name: {activity.Name}</h4>
+                 <p>Category: {activity.Category}</p>
+                 <button onClick={() => handleFlagActivity(activity._id)}>Flag activity</button>
+               </div>
+             ))
+           ) : (
+             <p>No activities found.</p>
+           )}
+         </div>
+        )}
+      </div>
+      <div>
+        <button onClick={handleViewTouristItineraries}> {showingTouristItineraries ? 'Hide tourist itineraries' : 'Show tourist itineraries'}</button>
+        { showingTouristItineraries && (
+           <div>
+           {touristItineraries.length > 0 ? (
+             touristItineraries.map((touristItinerary) => (
+               <div key={touristItinerary._id}>
+                 <h4>Activities: {touristItinerary.Activities.join(', ')}</h4>
+                 <p>Locations: {touristItinerary.Locations.join(', ')}</p>
+                 <button onClick={() => handleFlagTouristItinerary(touristItinerary._id)}>Flag tourist itinerary</button>
+               </div>
+             ))
+           ) : (
+             <p>No tourist itineraries found.</p>
            )}
          </div>
         )}
