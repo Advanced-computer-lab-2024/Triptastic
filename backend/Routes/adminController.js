@@ -337,9 +337,9 @@ const sortProductsByRatingAdmin = async (req, res) => {
     }
     
     const flagItinerary= async(req,res)=>{
-      const {id}=req.params.id;
+      const id=req.params.id;
       try{
-        await itineraryModel.findByIdAndUpdate(id,{FlagInappropriate: false});
+        await itineraryModel.findByIdAndUpdate(id,{FlagInappropriate: true});
       res.status(200).json({msg:" Itinerary is flagged"});
    }
    catch (error){
@@ -347,7 +347,7 @@ const sortProductsByRatingAdmin = async (req, res) => {
    }    
     }
     const flagTouristItinerary= async(req,res)=>{
-      const {id}=req.params.id;
+      const id=req.params.id;
       try{
         await touristItineraryModel.findByIdAndUpdate(id,{FlagInappropriate: false});
       res.status(200).json({msg:" Tourist itinerary is flagged"});
@@ -357,7 +357,7 @@ const sortProductsByRatingAdmin = async (req, res) => {
    }    
     }
     const flagActivity= async(req,res)=>{
-      const {id}=req.params.id;
+      const id=req.params.id;
       try{
         await activityModel.findByIdAndUpdate(id,{FlagInappropriate: false});
       res.status(200).json({msg:" Activity is flagged"});
@@ -393,6 +393,8 @@ const sortProductsByRatingAdmin = async (req, res) => {
         res.status(400).json({error: error.message});
      }   
     }
+
+    
 module.exports = {createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
     ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,flagActivity,getallItineraries,getallActivities,getallTouristItineraries
 };

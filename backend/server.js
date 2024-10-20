@@ -19,7 +19,7 @@ const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActi
 
 
 //Tourist
-const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
+const {setCurrency,createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
   ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist} = require("./Routes/touristController");
 
 //Advertiser
@@ -118,23 +118,11 @@ app.get("/filterItineraries",filterItineraries);
 app.get("/searchActivities",searchActivities);
 app.post("/commentOnActivity",commentOnActivity);
 app.post("/rateActivity",rateActivity);
-app.post('/setCurrency', (req, res) => {
-  const { currency } = req.body;
+app.post('/setCurrency',setCurrency);
 
-  if (!currency) {
-    return res.status(400).json({ error: 'Currency is required' });
-  }
-
-  // Store the selected currency in the session
-  req.session.selectedCurrency = currency;
-
-  res.status(200).json({ message: `Currency set to ${currency}` });
-});
 app.post('/fileComplaint', fileComplaint);
 
 app.get("/getComplaintsByTourist", getComplaintsByTourist);
-
-
 
 //TourGuide
 app.post("/addTourGuide",upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'Certificate', maxCount: 1 } ]),createTourGuide);
@@ -201,12 +189,12 @@ app.post("/AdminLogin",AdminLogin);
 app.post("/addTourismGov",addTourismGov);
 app.get("/viewAllPrefTag",viewAllPrefTag);
 app.delete("/deleteAdmin",deleteAdmin);
-app.patch('/flagItinerary',flagItinerary);
-app.patch('/flagTouristItinerary',flagTouristItinerary);
-app.patch('/flagActivitiy',flagActivity)
+app.patch('/flagItinerary/:id',flagItinerary);
+app.patch('/flagTouristItinerary/:id',flagTouristItinerary);
+app.patch('/flagActivitiy/:id',flagActivity);
 app.get('/getAllItineraries',getallItineraries);
 app.get('/getAllActivities',getallActivities);
-app.get('getAllTouristItineraries',getallTouristItineraries)
+app.get('/getAllTouristItineraries',getallTouristItineraries)
 
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);
