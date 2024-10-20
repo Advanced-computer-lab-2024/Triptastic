@@ -20,7 +20,7 @@ const tourGuideSchema = new Schema({
     previousWork: {
         type: String, default:null,
     },
-    Photo: {
+    photo: {
      type:String,
      required:false,
     },

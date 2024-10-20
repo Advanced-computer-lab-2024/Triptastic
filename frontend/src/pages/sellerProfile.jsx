@@ -28,9 +28,9 @@ const SellerProfile = () => {
     Password: '',
     Name: '',
     Description: '',
-    logo: '' // Added field for logo
+    logo: '' // Adding a logo field
   });
-
+  const [logo, setLogo] = useState(null);
   const navigate = useNavigate();
 
   const fetchSellerInfo = async () => {
@@ -214,7 +214,7 @@ const SellerProfile = () => {
               <div>
                 <label><strong>Username:</strong></label>
                 <p>
-                  <img src={formData.logo || localStorage.getItem('logo')} alt="Logo" style={{ width: '30px', height: '30px', marginRight: '10px' }} />
+                  <img src={formData.logo || localStorage.getItem('logo')} alt="Logo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />
                   {sellerInfo.Username}
                 </p> {/* Display Username with logo */}
               </div>
@@ -259,10 +259,10 @@ const SellerProfile = () => {
               <div>
                 <label><strong>Upload Logo:</strong></label>
                 <input
-              type="file"
-              accept="image/*" // This allows any image type
-              onChange={handleLogoChange}
-               />
+                  type="file"
+                  accept="image/*" // This allows any image type
+                  onChange={handleLogoChange}
+                />
                 {formData.logo && <img src={formData.logo} alt="Logo Preview" style={{ width: '100px', height: '100px', marginTop: '10px' }} />}
               </div>
 
@@ -324,7 +324,7 @@ const SellerProfile = () => {
               />
             </div>
             <div>
-              <label><strong>Image:</strong></label>
+              <label><strong>Image URL:</strong></label>
               <input
                 type="text"
                 name="image"
@@ -335,17 +335,6 @@ const SellerProfile = () => {
             <button type="submit">Add Product</button>
           </form>
         )}
-        <button onClick={() => setAddingProduct(!addingProduct)}>
-          {addingProduct ? 'Cancel' : 'Add Product'}
-        </button>
-
-        {/* Account Deletion Request */}
-        <div>
-          <button onClick={handleDeleteRequest} disabled={waiting}>
-            {waiting ? 'Submitting...' : 'Request Account Deletion'}
-          </button>
-          {requestSent && <p>Request has been sent!</p>}
-        </div>
       </div>
     </div>
   );
