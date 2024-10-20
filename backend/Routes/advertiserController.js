@@ -36,19 +36,36 @@ const getAdvertiser= async(req,res) =>{
    }
 }
 
-const updateAdvertiser = async(req,res) => {
-
-    const {Username, Password,Email,Website_Link,Hotline,Company_Profile } = req.body; 
-    const Logo = req.file ? req.file.path : null;
-    try{
-       const advertiser=await advertiserModel.findOneAndUpdate({Username: Username },{$set:{Email: Email,Password:Password,Website_Link:Website_Link,Hotline:Hotline,Company_Profile:Company_Profile,Logo:Logo}},{ new: true });
-       res.status(200).json(advertiser);
-    }
-    catch{
-       res.status(400).json({error:error.message})
+const updateAdvertiser = async (req, res) => {
+    const { Username, Password, Email, Website_Link, Hotline, Company_Profile } = req.body; 
+    const Logo = req.file ? req.file.path : null; // Only set Logo if file is uploaded
   
+    try {
+      const advertiser = await advertiserModel.findOneAndUpdate(
+        { Username },
+        { 
+          $set: { 
+            Email, 
+            Password, 
+            Website_Link, 
+            Hotline, 
+            Company_Profile,
+            ...(Logo && { Logo }) // Only update logo if it's provided
+          } 
+        },
+        { new: true }
+      );
+  
+      if (!advertiser) {
+        return res.status(404).json({ error: 'Advertiser not found' });
+      }
+  
+      res.status(200).json(advertiser);
+    } catch (error) {
+      res.status(400).json({ error: error.message }); // Correct error handling
     }
-  }
+  };
+  
 
 
 

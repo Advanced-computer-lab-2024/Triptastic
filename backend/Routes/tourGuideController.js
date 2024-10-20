@@ -19,18 +19,30 @@ const createTourGuide = async(req,res) => {
 
    }
 }
-const createTourGuideInfo = async(req,res) => {
-
-    const{Username,mobileNumber,yearsOfExperience,previousWork,Photo}=req.body;
-    try{
-       const tourGuide=await tourGuideModel.findOneAndUpdate({Username: Username },{$set:{mobileNumber: mobileNumber,yearsOfExperience: yearsOfExperience,previousWork: previousWork,Photo:Photo}});
-       res.status(200).json(tourGuide);
-    }
-    catch{
-       res.status(400).json({error:error.message})
+const createTourGuideInfo = async (req, res) => {
+   const { Username, mobileNumber, yearsOfExperience, previousWork } = req.body;
+   const photo = req.file ? req.file.path : null; 
  
-    }
- }
+   try {
+     const tourGuide = await tourGuideModel.findOneAndUpdate(
+       { Username: Username }, 
+       { 
+         $set: { 
+           mobileNumber: mobileNumber, 
+           yearsOfExperience: yearsOfExperience, 
+           previousWork: previousWork, 
+           ...(photo && { photo }) 
+         } 
+       }, 
+       { new: true } 
+     );
+     
+     res.status(200).json(tourGuide);
+   } catch (error) {
+     res.status(400).json({ error: error.message });
+   }
+ };
+ 
  const getTourGuide= async(req,res) =>{
     const Username= req.query.Username;
     

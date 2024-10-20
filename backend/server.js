@@ -129,7 +129,7 @@ app.get("/getComplaintsByTourist", getComplaintsByTourist);
 
 //TourGuide
 app.post("/addTourGuide",upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'Certificate', maxCount: 1 } ]),createTourGuide);
-app.patch("/addTourGuideInfo",createTourGuideInfo);
+app.patch("/addTourGuideInfo",upload.single('photo'),createTourGuideInfo);
 app.get("/getTourGuide/",getTourGuide);
 app.patch("/updateTourGuide/:Username",updateTourGuide);
 app.post("/addItinerary",createItinerary);
