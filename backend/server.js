@@ -4,6 +4,7 @@ const cors = require("cors");
 mongoose.set('strictQuery', false);
 require("dotenv").config();
 const MongoURI = process.env.MONGO_URI ;
+const upload = require("./Middleware/uploadMiddleware"); 
 //Tour Guide
 const {createTourGuideInfo,createTourGuide}=require("./Routes/tourGuideController");
 const {updateTourGuide}=require("./Routes/tourGuideController");
@@ -108,7 +109,7 @@ app.post("/rateActivity",rateActivity);
 
 
 //TourGuide
-app.post("/addTourGuide",createTourGuide);
+app.post("/addTourGuide",upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'Certificate', maxCount: 1 } ]),createTourGuide);
 app.patch("/addTourGuideInfo",createTourGuideInfo);
 app.get("/getTourGuide/",getTourGuide);
 app.patch("/updateTourGuide/:Username",updateTourGuide);
@@ -125,7 +126,7 @@ app.get("/getMyTouristItineraries",getMyTouristItineraries);
 app.post("/requestAccountDeletionTourG",requestAccountDeletionTourG);
 
 //Advertiser
-app.post("/addAdvertiser",createAdvertiser);
+app.post("/addAdvertiser",upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'TaxationRegistryCard', maxCount: 1 } ]),createAdvertiser);
 app.patch("/updateAdvertiser",updateAdvertiser);
 app.get("/getAdvertiser",getAdvertiser);
 app.post("/createActivity",createActivity);
@@ -136,7 +137,7 @@ app.get("/viewActivitydetails",viewActivitydetails);
 app.post("/requestAccountDeletionAdvertiser",requestAccountDeletionAdvertiser);
 
 //Seller
-app.post("/createSeller",createSeller);
+app.post('/createSeller', upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'TaxationRegistryCard', maxCount: 1 } ]), createSeller);
 app.patch('/updateSeller', updateSeller);
 app.get("/getSeller",getSeller);
 app.post("/createProductseller",createProductseller);

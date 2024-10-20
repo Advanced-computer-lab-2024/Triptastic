@@ -8,8 +8,12 @@ const { default: mongoose } = require('mongoose');
 const createSeller = async(req,res) => {
 
     const{Username,Email,Password}=req.body;
+    const idDocument = req.files?.Id?.[0]?.path || null;
+    const taxationRegistryCard = req.files?.TaxationRegistryCard?.[0]?.path || null;
+
     try{
-       const seller=await sellerModel.create({Username,Email,Password});
+       const seller=await sellerModel.create({Username,Email,Password,Id: idDocument,
+        TaxationRegistryCard: taxationRegistryCard});
        res.status(200).json(seller);
     }
     catch{

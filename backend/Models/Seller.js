@@ -26,6 +26,14 @@ const sellerSchema = new Schema({
   Logo:{
     type:String,
     required: false,
+
+  },  Id: { 
+    type: String,
+    required: true,
+  },
+  TaxationRegistryCard: { 
+    type: String,
+    required: true,
   },
 }, { timestamps: true });
 
