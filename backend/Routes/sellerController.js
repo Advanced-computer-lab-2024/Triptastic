@@ -8,8 +8,12 @@ const { default: mongoose } = require('mongoose');
 const createSeller = async(req,res) => {
 
     const{Username,Email,Password}=req.body;
+    const idDocument = req.files?.Id?.[0]?.path || null;
+    const taxationRegistryCard = req.files?.TaxationRegistryCard?.[0]?.path || null;
+
     try{
-       const seller=await sellerModel.create({Username,Email,Password});
+       const seller=await sellerModel.create({Username,Email,Password,Id: idDocument,
+        TaxationRegistryCard: taxationRegistryCard});
        res.status(200).json(seller);
     }
     catch{
@@ -20,9 +24,10 @@ const createSeller = async(req,res) => {
 
  const updateSeller = async(req,res) => {
 
-  const{Username,Email,Password,Name,Description,Logo}=req.body;
+  const{Username,Email,Password,Name,Description}=req.body;
+  const logo = req.files?.Logo?.[0]?.path || null;
   try{
-     const seller=await sellerModel.findOneAndUpdate({Username: Username },{$set:{Email: Email,Password:Password,Name:Name,Description:Description,Logo:Logo}},{ new: true });
+     const seller=await sellerModel.findOneAndUpdate({Username: Username },{$set:{Email: Email,Password:Password,Name:Name,Description:Description,Logo:logo}},{ new: true });
      res.status(200).json(seller);
   }
   catch{

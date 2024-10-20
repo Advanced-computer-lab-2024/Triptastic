@@ -34,8 +34,13 @@ const advertiserSchema = new Schema({
     type:String,
     required:false,
   },
-  Taxation_Registry_Card: { 
+  Id: { 
     type: String,
+    required: true,
+  },
+  TaxationRegistryCard: { 
+    type: String,
+    required:true,
   },
 
 

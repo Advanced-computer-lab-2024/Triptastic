@@ -47,25 +47,35 @@ const modalStyle = {
   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
 };
 
-// Main component
 function TourGuideReg() {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     Username: '',
     Email: '',
-    Password: ''
+    Password: '',
+    Id: null, // To hold the file for ID
+    Certificate: null, // To hold the file for Certificate
   });
   const [acceptTerms, setAcceptTerms] = useState(false); // State for terms acceptance
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const navigate = useNavigate();
 
-  // Handle input changes
+  // Handle input changes for text inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value
+      [name]: value,
+    }));
+  };
+
+  // Handle file input changes
+  const handleFileChange = (e) => {
+    const { name, files } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: files[0], // Store the first selected file
     }));
   };
 
@@ -85,17 +95,21 @@ function TourGuideReg() {
       return;
     }
 
+    const data = new FormData();
+    data.append('Username', formData.Username);
+    data.append('Email', formData.Email);
+    data.append('Password', formData.Password);
+    data.append('Id', formData.Id);
+    data.append('Certificate', formData.Certificate);
+
     try {
       const response = await fetch('http://localhost:8000/addTourGuide', {
-        method: 'POST', // Changed to POST
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
+        method: 'POST',
+        body: data, // Send FormData
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const responseData = await response.json();
         localStorage.setItem('Username', formData.Username);
         localStorage.setItem('Email', formData.Email);
         localStorage.setItem('Password', formData.Password);
@@ -105,11 +119,11 @@ function TourGuideReg() {
         setFormData({
           Username: '',
           Email: '',
-          Password: ''
+          Password: '',
+          Id: null,
+          Certificate: null,
         });
-        setAcceptTerms(false); // Reset terms acceptance
         navigate('/tour-guide-profile');
-        
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.error || 'Registration failed');
@@ -153,6 +167,24 @@ function TourGuideReg() {
             name="Password"
             value={formData.Password}
             onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <label>ID:</label>
+          <input
+            type="file"
+            name="Id"
+            onChange={handleFileChange}
+            required
+          />
+        </div>
+        <div>
+          <label>Certificate:</label>
+          <input
+            type="file"
+            name="Certificate"
+            onChange={handleFileChange}
             required
           />
         </div>

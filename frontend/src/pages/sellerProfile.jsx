@@ -6,28 +6,31 @@ const SellerProfile = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
-  const [addingProduct, setAddingProduct] = useState(false); // Track product form status
+  const [addingProduct, setAddingProduct] = useState(false);
   const [waiting, setWaiting] = useState(false);
-  const [requestSent, setRequestSent] = useState(false); // Track if request was successfully sent
-  const [fetchedProduct, setFetchedProduct] = useState(null);//new
+  const [requestSent, setRequestSent] = useState(false);
+  const [fetchedProduct, setFetchedProduct] = useState(null);
 
   const [productFormData, setProductFormData] = useState({
     productName: '',
     description: '',
     price: '',
     rating: '',
-    seller: '', // This will be auto-filled with the username later
+    seller: '',
     review: '',
     stock: '',
     image: ''
   });
+  
   const [formData, setFormData] = useState({
     Username: '',
     Email: '',
     Password: '',
     Name: '',
-    Description: ''
+    Description: '',
+    logo: '' // Added field for logo
   });
+
   const navigate = useNavigate();
 
   const fetchSellerInfo = async () => {
@@ -47,12 +50,16 @@ const SellerProfile = () => {
           if (data) {
             setSellerInfo(data);
             setFormData(data); // Pre-fill the form with current data
-            // Automatically set the seller username in the product form
             setProductFormData((prevData) => ({
               ...prevData,
-              seller: data.Username // Set the seller field in the product form
+              seller: data.Username
             }));
             setErrorMessage('');
+
+            // Store the logo in localStorage for persistence
+            if (data.logo) {
+              localStorage.setItem('logo', data.logo);
+            }
           } else {
             setErrorMessage('No seller information found.');
           }
@@ -81,6 +88,23 @@ const SellerProfile = () => {
     }));
   };
 
+  const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prevData) => ({
+          ...prevData,
+          logo: reader.result // Store the logo data URL
+        }));
+        
+        // Save logo to local storage for persistence
+        localStorage.setItem('logo', reader.result);
+      };
+      reader.readAsDataURL(file); // Convert file to base64
+    }
+  };
+
   const handleUpdate = async () => {
     setUpdating(true);
     try {
@@ -107,7 +131,6 @@ const SellerProfile = () => {
     setUpdating(false);
   };
 
-  // Handle product form input changes
   const handleProductInputChange = (e) => {
     const { name, value } = e.target;
     setProductFormData((prevData) => ({
@@ -116,7 +139,6 @@ const SellerProfile = () => {
     }));
   };
 
-  // Handle product submission
   const handleProductSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -136,13 +158,13 @@ const SellerProfile = () => {
           description: '',
           price: '',
           rating: '',
-          seller: sellerInfo.Username, // Reset to seller's username
+          seller: sellerInfo.Username,
           review: '',
           stock: '',
           image: ''
         });
         setErrorMessage('');
-        setAddingProduct(false); // Close the product form
+        setAddingProduct(false);
       } else {
         throw new Error('Failed to create product');
       }
@@ -152,66 +174,33 @@ const SellerProfile = () => {
     }
   };
 
-    // New function to fetch a product by name
-    const fetchProductByName = async (productName) => {
-      setLoading(true);
-      try {
-        const response = await fetch(`http://localhost:8000/getProductSeller?productName=${productName}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-  
-        if (response.ok) {
-          const product = await response.json();
-          setFetchedProduct(product);
-          setErrorMessage('');
-        } else {
-          throw new Error('Failed to fetch product');
+  const handleDeleteRequest = async () => {
+    const Username = localStorage.getItem('Username');
+    setWaiting(true);
+    setRequestSent(false);
+    try {
+      const response = await fetch(`http://localhost:8000/requestAccountDeletionSeller?Username=${Username}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         }
-      } catch (error) {
-        setErrorMessage('An error occurred while fetching the product');
-        console.error(error);
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setRequestSent(true);
+        alert('Your account deletion request has been submitted and is pending approval.');
+      } else {
+        setRequestSent(false);
+        alert(data.msg);
       }
-      setLoading(false);
-    };
-  
-    // Call this function based on user action (e.g., button click)
-    const handleFetchProduct = () => {
-      const productName = productFormData.productName; // Assuming you use the productFormData to search
-      fetchProductByName(productName);
-    };
-    const handleDeleteRequest = async () => {
-      const Username = localStorage.getItem('Username');
-      setWaiting(true);
-      setRequestSent(false); // Reset request sent state when initiating new request
-      try {
-          const response = await fetch(`http://localhost:8000/requestAccountDeletionSeller?Username=${Username}`, {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-                  
-              }
-              
-          });
-          const data = await response.json();
-          if (response.ok) {
-            setRequestSent(true); // Set to true when the request is successfully sent
-            alert('Your account deletion request has been submitted and is pending approval.');
-          } else {
-            setRequestSent(false); // Reset to allow another deletion request
-            alert(data.msg); // Show the rejection message
-           }
-   
-          
-      } catch (error) {
-          alert('Error deleting account');
-      }
-      finally {
-        setWaiting(false); // Stop waiting regardless of outcome
+    } catch (error) {
+      alert('Error deleting account');
+    }
+    finally {
+      setWaiting(false);
     }
   };
+
   return (
     <div className="seller-profile-container">
       <div className="profile-content">
@@ -224,7 +213,10 @@ const SellerProfile = () => {
             <div>
               <div>
                 <label><strong>Username:</strong></label>
-                <p>{sellerInfo.Username}</p> {/* Display Username as text */}
+                <p>
+                  <img src={formData.logo || localStorage.getItem('logo')} alt="Logo" style={{ width: '30px', height: '30px', marginRight: '10px' }} />
+                  {sellerInfo.Username}
+                </p> {/* Display Username with logo */}
               </div>
               <div>
                 <label><strong>Email:</strong></label>
@@ -263,113 +255,97 @@ const SellerProfile = () => {
                 />
               </div>
 
+              {/* New Logo Upload Section */}
+              <div>
+                <label><strong>Upload Logo:</strong></label>
+                <input
+              type="file"
+              accept="image/*" // This allows any image type
+              onChange={handleLogoChange}
+               />
+                {formData.logo && <img src={formData.logo} alt="Logo Preview" style={{ width: '100px', height: '100px', marginTop: '10px' }} />}
+              </div>
+
               <button onClick={handleUpdate} disabled={updating}>
                 {updating ? 'Updating...' : 'Update Information'}
               </button>
             </div>
           )
         )}
-        <button onClick={fetchSellerInfo}>Refresh My Information</button>
+        <button onClick={fetchSellerInfo}>Refresh Profile</button>
 
-        {/* Button to toggle product form */}
-        <button onClick={() => setAddingProduct(!addingProduct)}>
-          {addingProduct ? 'Cancel' : 'Add Product'}
-        </button>
-
-        {/* Add Product Form */}
+        {/* Product Form */}
         {addingProduct && (
           <form onSubmit={handleProductSubmit}>
-            <h3>Add a Product</h3>
+            <h3>Add Product</h3>
             <div>
-              <label>Product Name:</label>
+              <label><strong>Product Name:</strong></label>
               <input
                 type="text"
                 name="productName"
                 value={productFormData.productName}
                 onChange={handleProductInputChange}
-                required
               />
             </div>
             <div>
-              <label>Description:</label>
+              <label><strong>Description:</strong></label>
               <input
                 type="text"
                 name="description"
                 value={productFormData.description}
                 onChange={handleProductInputChange}
-                required
               />
             </div>
             <div>
-              <label>Price:</label>
+              <label><strong>Price:</strong></label>
               <input
                 type="number"
                 name="price"
                 value={productFormData.price}
                 onChange={handleProductInputChange}
-                required
               />
             </div>
-            
             <div>
-              <label>Stock:</label>
+              <label><strong>Rating:</strong></label>
+              <input
+                type="number"
+                name="rating"
+                value={productFormData.rating}
+                onChange={handleProductInputChange}
+              />
+            </div>
+            <div>
+              <label><strong>Stock:</strong></label>
               <input
                 type="number"
                 name="stock"
                 value={productFormData.stock}
                 onChange={handleProductInputChange}
-                required
               />
             </div>
             <div>
-              <label>Image URL:</label>
+              <label><strong>Image:</strong></label>
               <input
                 type="text"
                 name="image"
                 value={productFormData.image}
                 onChange={handleProductInputChange}
-                required
               />
             </div>
-
-            <button type="submit">Submit Product</button>
+            <button type="submit">Add Product</button>
           </form>
         )}
-      </div>
-
-
- {/* Fetch Product by Name */}
- <div>
-          <h3>Fetch Product by Name</h3>
-          <input
-            type="text"
-            name="productName"
-            value={productFormData.productName}
-            onChange={(e) => setProductFormData({ ...productFormData, productName: e.target.value })}
-          />
-          <button onClick={handleFetchProduct}>Fetch Product</button>
-
-          {fetchedProduct && (
-            <div>
-              <h4>Product Details</h4>
-              <p><strong>Name:</strong> {fetchedProduct.productName}</p>
-              <p><strong>Description:</strong> {fetchedProduct.description}</p>
-              <p><strong>Price:</strong> {fetchedProduct.price}</p>
-              <p><strong>Stock:</strong> {fetchedProduct.stock}</p>
-              {/* You can display more product details here */}
-            </div>
-          )}
-        </div>
-
-        <button onClick={handleDeleteRequest} disabled={waiting || requestSent}>
-              {waiting ? 'Waiting to be deleted...' : requestSent ? 'Request Sent' : 'Delete Account'}
+        <button onClick={() => setAddingProduct(!addingProduct)}>
+          {addingProduct ? 'Cancel' : 'Add Product'}
         </button>
-      {/* Sidebar */}
-      <div className="sidebar">
-        <h3>Explore</h3>
-        <ul>
-          <li onClick={() => navigate('/products')}>Products</li>
-        </ul>
+
+        {/* Account Deletion Request */}
+        <div>
+          <button onClick={handleDeleteRequest} disabled={waiting}>
+            {waiting ? 'Submitting...' : 'Request Account Deletion'}
+          </button>
+          {requestSent && <p>Request has been sent!</p>}
+        </div>
       </div>
     </div>
   );

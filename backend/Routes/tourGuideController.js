@@ -6,8 +6,12 @@ const { default: mongoose } = require('mongoose');
 const createTourGuide = async(req,res) => {
 
    const{Username,Email,Password}=req.body;
+   const idDocument = req.files?.Id?.[0]?.path || null;
+    const certificate = req.files?.Certificate?.[0]?.path || null;
+
    try{
-      const tourGuide=await tourGuideModel.create({Username,Email,Password});
+      const tourGuide=await tourGuideModel.create({Username,Email,Password,Id: idDocument,
+         Certificate: certificate});
       res.status(200).json(tourGuide);
    }
    catch{

@@ -24,6 +24,14 @@ const tourGuideSchema = new Schema({
      type:String,
      required:false,
     },
+    Id: {
+        type:String,
+        required:true,
+    },
+    Certificate: {
+        type:String,
+        required:true,
+    },
       },{ timestamps: true });
        
 const tourGuide = mongoose.models.tourGuide || mongoose.model('tourGuide', tourGuideSchema);

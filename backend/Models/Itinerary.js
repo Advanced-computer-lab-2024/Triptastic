@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const {Activities}=require("./Activities.js")
 const Schema = mongoose.Schema;
 
 const itinerarySchema = new Schema({
@@ -41,6 +40,10 @@ const itinerarySchema = new Schema({
     PreferenceTag:{
         type: String,
         required:false
+    },
+    FlagInappropriate:{
+        type: Boolean,
+        default: false
     }
 
 },{timestamps: true})

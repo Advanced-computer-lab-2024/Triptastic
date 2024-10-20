@@ -52,6 +52,8 @@ function SellerReg() {
     Username: '',
     Email: '',
     Password: '',
+    Id: null, // For file upload
+    TaxationRegistryCard: null, // For file upload
   });
   const [acceptTerms, setAcceptTerms] = useState(false); // State for terms acceptance
   const [errorMessage, setErrorMessage] = useState('');
@@ -64,7 +66,16 @@ function SellerReg() {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value
+      [name]: value,
+    }));
+  };
+
+  // Handle file input change
+  const handleFileChange = (e) => {
+    const { name, files } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: files[0], // Store the first file selected
     }));
   };
 
@@ -84,13 +95,18 @@ function SellerReg() {
       return;
     }
 
+    // Create FormData to handle file uploads
+    const formDataToSend = new FormData();
+    formDataToSend.append('Username', formData.Username);
+    formDataToSend.append('Email', formData.Email);
+    formDataToSend.append('Password', formData.Password);
+    formDataToSend.append('Id', formData.Id); // Add file
+    formDataToSend.append('TaxationRegistryCard', formData.TaxationRegistryCard); // Add file
+
     try {
       const response = await fetch('http://localhost:8000/createSeller', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
+        body: formDataToSend, // Send FormData
       });
 
       if (response.ok) {
@@ -104,10 +120,11 @@ function SellerReg() {
         setFormData({
           Username: '',
           Email: '',
-          Password: ''
+          Password: '',
+          Id: null,
+          TaxationRegistryCard: null,
         });
         navigate('/seller-profile');
-
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.error || 'Registration failed');
@@ -151,6 +168,24 @@ function SellerReg() {
             name="Password"
             value={formData.Password}
             onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <label>ID:</label>
+          <input
+            type="file"
+            name="Id"
+            onChange={handleFileChange}
+            required
+          />
+        </div>
+        <div>
+          <label>Taxation Registry Card:</label>
+          <input
+            type="file"
+            name="TaxationRegistryCard"
+            onChange={handleFileChange}
             required
           />
         </div>
