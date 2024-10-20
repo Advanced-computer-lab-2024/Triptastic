@@ -617,8 +617,66 @@ const sortProductsByRatingTourist = async (req, res) => {
     }
 };
 
-  
-  
+const shareActivity = async (req, res) => {
+  const { name } = req.params; // Get the activity ID from the request
+
+  try {
+      // Find the activity by ID
+      const activity = await activitiesModel.findOne({ name: name });
+      if (!activity) {
+          return res.status(404).json({ error: 'Activity not found' });
+      }
+
+      // Generate the shareable link
+      const shareableLink = `https://yourwebsite.com/activities/${name}`;
+
+      // Return the link for sharing
+      res.status(200).json({ link: shareableLink });
+  } catch (error) {
+      console.error('Error generating shareable link:', error);
+      res.status(500).json({ error: 'Server error' });
+  }
+};
+const shareHistorical = async (req, res) => {
+  const { Name } = req.params; 
+
+  try {
+      // Find the activity by ID
+      const historical = await historicalLocationModel.findOne({ Name: Name });
+      if (!historical) {
+          return res.status(404).json({ error: 'Historical not found' });
+      }
+
+      // Generate the shareable link
+      const shareableLink = `https://yourwebsite.com/historical/${Name}`;
+
+      // Return the link for sharing
+      res.status(200).json({ link: shareableLink });
+  } catch (error) {
+      console.error('Error generating shareable link:', error);
+      res.status(500).json({ error: 'Server error' });
+  }
+};
+const shareMuseum = async (req, res) => {
+  const { Name } = req.params; 
+
+  try {
+      // Find the activity by ID
+      const Museum = await museumsModel.findOne({ Name: Name });
+      if (!Museum) {
+          return res.status(404).json({ error: 'Museum not found' });
+      }
+
+      // Generate the shareable link
+      const shareableLink = `https://yourwebsite.com/Museum/${Name}`;
+
+      // Return the link for sharing
+      res.status(200).json({ link: shareableLink });
+  } catch (error) {
+      console.error('Error generating shareable link:', error);
+      res.status(500).json({ error: 'Server error' });
+  }
+};
   
  
  module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
@@ -627,4 +685,4 @@ const sortProductsByRatingTourist = async (req, res) => {
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
   ,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange
   ,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities
-  ,commentOnActivity,rateActivity,fileComplaint};
+  ,commentOnActivity,rateActivity,fileComplaint,shareActivity,shareMuseum,shareHistorical};

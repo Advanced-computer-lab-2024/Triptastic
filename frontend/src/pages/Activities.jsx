@@ -8,7 +8,8 @@ const Activities = () => {
   const [commentData, setCommentData] = useState({ Username: '', comment: '' });
   const [ratingData, setRatingData] = useState({ rating: '' }); // New state for rating
   const [responseMsg, setResponseMsg] = useState('');
-
+  const [shareableLink, setShareableLink] = useState('');
+  const [copySuccess, setCopySuccess] = useState('');
   // Sorting states
   const [priceSort, setPriceSort] = useState('PASC'); // 'PASC' or 'PDSC'
   const [ratingSort, setRatingSort] = useState('RASC'); // 'RASC' or 'RDSC'
@@ -140,7 +141,24 @@ const Activities = () => {
   useEffect(() => {
     fetchSortedActivities('PASC', 'RASC'); // Default sort: Price Asc, Rating Asc
   }, []);
- 
+  const handleShare = async (activity) => {
+     
+    try {
+        const response = await fetch(`http://localhost:8000/shareActivity/${activity.name}`);
+        const data = await response.json();
+
+        if (response.ok) {
+          setShareableLink(data.link); // Set the link to state
+          await navigator.clipboard.writeText(data.link); // Copy link to clipboard
+          setCopySuccess('Link copied to clipboard!'); // Set success message
+           
+        } else {
+            console.error("Failed to generate shareable link");
+        }
+    } catch (error) {
+        console.error("Error generating shareable link:", error);
+    }
+};
   return (
     <div>
       <h2>Activities</h2>
@@ -262,6 +280,10 @@ const Activities = () => {
                   <strong>Name:</strong> {activity.name} <br />
                   <strong>Price:</strong> ${activity.price} <br />
                   <strong>Rating:</strong> {activity.rating} <br />
+                  {/* Share Button */}
+                  <button onClick={() => handleShare(activity)}>Share Activity</button>
+                  {/* Display success message after copying */}
+                  {copySuccess && <p style={{ color: 'green' }}>{copySuccess}</p>}
                   {/* Button to toggle activity details */}
                   <button onClick={() => toggleActivityDetails(activity._id)}>
                     {expandedActivities[activity._id] ? 'Hide Activity Details' : 'View Activity Details'}

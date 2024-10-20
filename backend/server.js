@@ -19,7 +19,7 @@ const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActi
 
 //Tourist
 const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
-  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity} = require("./Routes/touristController");
+  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity,shareActivity,shareHistorical,shareMuseum} = require("./Routes/touristController");
 
 //Advertiser
 const{createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser}=require("./Routes/advertiserController");
@@ -107,6 +107,9 @@ app.get("/filterItineraries",filterItineraries);
 app.get("/searchActivities",searchActivities);
 app.post("/commentOnActivity",commentOnActivity);
 app.post("/rateActivity",rateActivity);
+app.get("/shareActivity/:name",shareActivity);
+app.get("/shareHistorical/:Name",shareHistorical);
+app.get("/shareMuseum/:Name",shareMuseum);
 
 
 

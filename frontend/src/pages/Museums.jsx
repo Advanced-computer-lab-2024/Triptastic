@@ -8,6 +8,8 @@ const Museums = () => {
   const [loading, setLoading] = useState(false);
   const [filterVisible, setFilterVisible] = useState(false); 
   const [searchTerm, setSearchTerm] = useState(''); // New state for search term
+  const [shareableLink, setShareableLink] = useState('');
+  const [copySuccess, setCopySuccess] = useState({});
 
   // Fetch museums from the backend
   const handleViewAllMuseums = async () => {
@@ -91,7 +93,21 @@ const Museums = () => {
   useEffect(() => {
     fetchHistoricalPeriods();
   }, []);
+  const handleShare = async (museumName) => {
+    try {
+      const response = await fetch(`http://localhost:8000/shareMuseum/${museumName}`);
+      const data = await response.json();
 
+      if (response.ok) {
+        await navigator.clipboard.writeText(data.link); // Copy link to clipboard
+        setCopySuccess((prev) => ({ ...prev, [museumName]: 'Link copied to clipboard!' })); // Set success message for the specific museum
+      } else {
+        console.error("Failed to generate shareable link");
+      }
+    } catch (error) {
+      console.error("Error generating shareable link:", error);
+    }
+  };
   return (
     <div>
       <h1>Museums</h1>
@@ -126,14 +142,19 @@ const Museums = () => {
             </div>
           )}
 
-          {loading ? (
+{loading ? (
             <p>Loading...</p>
           ) : (
             <ul>
-              {museums.map((museum) => (
-                <li key={museum._id}>{museum.Name}</li> // Assuming each museum has a `Name` property
-              ))}
-            </ul>
+            {museums.map((museum) => (
+              <li key={museum._id}>
+                {museum.Name}
+                <button onClick={() => handleShare(museum.Name)}>Share</button>
+                {/* Display success message for this specific museum */}
+                {copySuccess[museum.Name] && <span style={{ color: 'green', marginLeft: '10px' }}>{copySuccess[museum.Name]}</span>}
+              </li>
+            ))}
+          </ul>
           )}
         </>
       )}
