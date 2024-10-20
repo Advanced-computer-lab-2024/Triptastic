@@ -35,7 +35,8 @@ const Activities = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        setActivities(data);
+        const filteredActivities = data.filter(activity => !activity.FlagInappropriate);
+        setActivities(filteredActivities);
         setErrorMessage('');
       } else {
         throw new Error('Failed to fetch activities');
@@ -67,7 +68,8 @@ const Activities = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setActivities(data);
+        const filteredActivities = data.filter(activity => !activity.FlagInappropriate);
+        setActivities(filteredActivities);
         setErrorMessage('');
       } else {
         throw new Error('Failed to fetch activities');
@@ -95,7 +97,8 @@ const Activities = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setActivities(data);
+        const filteredActivities = data.filter(activity => !activity.FlagInappropriate);
+        setActivities(filteredActivities);
         setErrorMessage('');
       } else {
         throw new Error('Failed to fetch activities');

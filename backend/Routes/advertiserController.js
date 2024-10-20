@@ -38,7 +38,8 @@ const getAdvertiser= async(req,res) =>{
 
 const updateAdvertiser = async(req,res) => {
 
-    const {Username, Password,Email,Website_Link,Hotline,Company_Profile,Logo } = req.body; 
+    const {Username, Password,Email,Website_Link,Hotline,Company_Profile } = req.body; 
+    const Logo = req.file ? req.file.path : null;
     try{
        const advertiser=await advertiserModel.findOneAndUpdate({Username: Username },{$set:{Email: Email,Password:Password,Website_Link:Website_Link,Hotline:Hotline,Company_Profile:Company_Profile,Logo:Logo}},{ new: true });
        res.status(200).json(advertiser);
