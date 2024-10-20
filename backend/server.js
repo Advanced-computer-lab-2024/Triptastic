@@ -20,16 +20,16 @@ const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActi
 
 //Tourist
 const {setCurrency,createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
-  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity} = require("./Routes/touristController");
+  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist} = require("./Routes/touristController");
 
 //Advertiser
 const{createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser}=require("./Routes/advertiserController");
 
 //Seller
-const{changePassword, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller}=require("./Routes/sellerController");
+const{changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller}=require("./Routes/sellerController");
 
 //Admin
-const{createAdmin,createCategory,
+const{changePasswordAdmin,createAdmin,createCategory,
   getCategory,
   updateCategory,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
@@ -120,7 +120,9 @@ app.post("/commentOnActivity",commentOnActivity);
 app.post("/rateActivity",rateActivity);
 app.post('/setCurrency',setCurrency);
 
+app.post('/fileComplaint', fileComplaint);
 
+app.get("/getComplaintsByTourist", getComplaintsByTourist);
 
 //TourGuide
 app.post("/addTourGuide",upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'Certificate', maxCount: 1 } ]),createTourGuide);
@@ -159,7 +161,7 @@ app.get("/getProductSeller",getProductSeller);
 app.get("/viewProductsSeller",viewProductsSeller);
 app.get("/sortProductsByRatingSeller",sortProductsByRatingSeller);
 app.post("/requestAccountDeletionSeller",requestAccountDeletionSeller);
-app.patch("/changePassword",changePassword);
+app.patch("/changePasswordSeller",changePasswordSeller);
 
 
 
@@ -193,6 +195,7 @@ app.patch('/flagActivitiy/:id',flagActivity);
 app.get('/getAllItineraries',getallItineraries);
 app.get('/getAllActivities',getallActivities);
 app.get('/getAllTouristItineraries',getallTouristItineraries)
+app.patch("/changePasswordAdmin",changePasswordAdmin);
 
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);
