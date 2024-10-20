@@ -41,6 +41,10 @@ const itinerarySchema = new Schema({
     PreferenceTag:{
         type: String,
         required:false
+    },
+    FlagInappropriate:{
+        type: Boolean,
+        default: false
     }
 
 },{timestamps: true})

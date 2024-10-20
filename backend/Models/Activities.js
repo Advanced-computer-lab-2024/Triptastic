@@ -55,6 +55,10 @@ Advertiser: {
     
     required: true
 },
+FlagInappropriate:{
+  type: Boolean,
+  default: false
+},
 ratings: [{
     Username: {
       type: String,
