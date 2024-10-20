@@ -250,9 +250,37 @@ const requestAccountDeletionAdvertiser = async (req, res) => {
 };
 
 
-
-
- module.exports = {createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,
+const changePasswordAdvertiser = async (req, res) => {
+        const { Username, currentPassword, newPassword } = req.body;
+      
+        try {
+          // Step 1: Find the advertiser by Username
+          const advertiser = await advertiserModel.findOne({ Username });
+      
+          if (!advertiser) {
+            return res.status(404).json({ error: "Advertiser not found" });
+          }
+      
+          // Step 2: Compare current password with the one stored in the database (plain text)
+          if (currentPassword !== advertiser.Password) {
+            return res.status(400).json({ error: "Current password is incorrect" });
+          }
+      
+          // Step 3: Update only the password field using findOneAndUpdate
+          await advertiserModel.findOneAndUpdate(
+            { Username },  // Find by Username
+            { $set: { Password: newPassword } },  // Update only the password field
+            { new: true, runValidators: false }   // Disable validation for other fields
+          );
+      
+          res.status(200).json({ message: "Password changed successfully" });
+        } catch (error) {
+          console.error("Error changing password:", error.message);
+          res.status(500).json({ error: "Error changing password" });
+        }
+      };
+      
+ module.exports = {changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,
    getActivity,
    updateActivity,
    deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser};
