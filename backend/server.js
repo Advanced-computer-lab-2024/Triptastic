@@ -129,7 +129,7 @@ app.post("/requestAccountDeletionTourG",requestAccountDeletionTourG);
 
 //Advertiser
 app.post("/addAdvertiser",upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'TaxationRegistryCard', maxCount: 1 } ]),createAdvertiser);
-app.patch("/updateAdvertiser",updateAdvertiser);
+app.patch("/updateAdvertiser",upload.single('Logo'),updateAdvertiser);
 app.get("/getAdvertiser",getAdvertiser);
 app.post("/createActivity",createActivity);
 app.delete("/deleteActivity",deleteActivity);
@@ -140,7 +140,7 @@ app.post("/requestAccountDeletionAdvertiser",requestAccountDeletionAdvertiser);
 
 //Seller
 app.post('/createSeller', upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'TaxationRegistryCard', maxCount: 1 } ]), createSeller);
-app.patch('/updateSeller', upload.fields([{ name: 'Logo', maxCount: 1  } ]),updateSeller);
+app.patch('/updateSeller', upload.single('Logo'),updateSeller);
 app.get("/getSeller",getSeller);
 app.post("/createProductseller",createProductseller);
 app.get("/getProductSeller",getProductSeller);
