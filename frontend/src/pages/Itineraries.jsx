@@ -26,7 +26,8 @@ const Itineraries = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setItineraries(data);
+        const filteredItineraries = data.filter(itinerary => !itinerary.FlagInappropriate);
+        setItineraries(filteredItineraries);
         setErrorMessage('');
       } else {
         throw new Error('Failed to fetch itineraries');
@@ -54,7 +55,8 @@ const Itineraries = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setItineraries(data);
+        const filteredItineraries = data.filter(itinerary => !itinerary.FlagInappropriate);
+        setItineraries(filteredItineraries);
         setErrorMessage('');
       } else {
         throw new Error('Failed to fetch itineraries');
@@ -87,7 +89,8 @@ const Itineraries = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setItineraries(data);
+        const filteredItineraries = data.filter(itinerary => !itinerary.FlagInappropriate);
+        setItineraries(filteredItineraries);
         setErrorMessage('');
       } else {
         throw new Error('No itineraries found matching the criteria');
