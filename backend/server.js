@@ -6,7 +6,6 @@ mongoose.set('strictQuery', false);
 require("dotenv").config();
 const MongoURI = process.env.MONGO_URI ;
 const upload = require("./Middleware/uploadMiddleware"); 
-
 //Tour Guide
 const {createTourGuideInfo,createTourGuide}=require("./Routes/tourGuideController");
 const {updateTourGuide}=require("./Routes/tourGuideController");
@@ -20,8 +19,7 @@ const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActi
 
 //Tourist
 const {createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
-  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,
-  searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity,fileComplaint} = require("./Routes/touristController");
+  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity} = require("./Routes/touristController");
 
 //Advertiser
 const{createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser}=require("./Routes/advertiserController");
@@ -36,7 +34,7 @@ const{createAdmin,createCategory,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
 ,createPrefTag,updatePreftag,deletePreftag,getPrefTag,
 viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,
-tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,flagActivity}=require("./Routes/adminController");
+tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,flagActivity,getallActivities,getallTouristItineraries,getallItineraries}=require("./Routes/adminController");
 
 
 
@@ -61,7 +59,7 @@ const categories=require("./Models/Activitiescategory");
 const activities=require("./Models/Activities");
 const museums=require("./Models/Museums");
 const request=require("./Models/Request");
-const complaint=require("./Models/Complaint");
+
 
 mongoose.connect(MongoURI)
 .then(()=>{
@@ -109,11 +107,11 @@ app.get("/filterItineraries",filterItineraries);
 app.get("/searchActivities",searchActivities);
 app.post("/commentOnActivity",commentOnActivity);
 app.post("/rateActivity",rateActivity);
-app.post("/fileComplaint",fileComplaint);
+
 
 
 //TourGuide
-app.post("/addTourGuide",createTourGuide);
+app.post("/addTourGuide",upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'Certificate', maxCount: 1 } ]),createTourGuide);
 app.patch("/addTourGuideInfo",createTourGuideInfo);
 app.get("/getTourGuide/",getTourGuide);
 app.patch("/updateTourGuide/:Username",updateTourGuide);
@@ -180,6 +178,9 @@ app.delete("/deleteAdmin",deleteAdmin);
 app.patch('/flagItinerary',flagItinerary);
 app.patch('/flagTouristItinerary',flagTouristItinerary);
 app.patch('/flagActivitiy',flagActivity)
+app.get('/getAllItineraries',getallItineraries);
+app.get('/getAllActivities',getallActivities);
+app.get('getAllTouristItineraries',getallTouristItineraries)
 
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);
