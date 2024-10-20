@@ -18,7 +18,10 @@ const TouristProfile = () => {
     Nationality: '',
     DOB: '',
     Occupation: '',
-    Wallet: '' // Read-only Wallet attribute
+    Wallet: '',
+    title: '', 
+    body: '',  
+    date: ''  
   });
   const navigate = useNavigate();
 
@@ -123,6 +126,51 @@ const TouristProfile = () => {
       const productName = formData.productName; // Assuming there's an input for productName
       fetchProductByName(productName);
     };
+
+    const handleSubmitComplaint = async (e) => {
+      e.preventDefault();
+    
+      try {
+    
+        const username = localStorage.getItem('Username'); // Retrieve username from localStorage
+    
+      
+        if (!username) {
+          setErrorMessage('Username not found in localStorage. Please log in again.');
+          return; // Exit the function if username is not found
+        }
+    
+        const complaintData = {
+          title: formData.title,
+          body: formData.body,
+          date: formData.date,
+        };
+    
+        // Construct the URL with the username as a query parameter
+        const response = await fetch(`http://localhost:8000/fileComplaint?username=${username}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(complaintData), // Send form data
+        });
+        console.log("Username:", username); // Check if username is retrieved
+        console.log("Complaint Data:", complaintData); // Check the complaint data being sent
+        
+        if (response.ok) {
+          alert('Complaint filed successfully!');
+          setErrorMessage('');
+          setFormData((prev) => ({ ...prev, ...complaintData, title: '', body: '', date: '' }));
+        } else {
+          const errorData = await response.json();
+          setErrorMessage(errorData.error || 'Failed to file complaint');
+        }
+      } catch (error) {
+        setErrorMessage('Something went wrong. Please try again later.');
+      }
+    };
+    
+
   return (
     <div className="tourist-profile-container">
       <div className="profile-content">
@@ -239,8 +287,44 @@ const TouristProfile = () => {
 
         </ul>
       </div>
+      <div>
+        <h3>File a Complaint</h3>
+        <form onSubmit={handleSubmitComplaint}>
+          <div>
+            <label><strong>Title:</strong></label>
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div>
+            <label><strong>Body:</strong></label>
+            <textarea
+              name="body"
+              value={formData.body}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div>
+            <label><strong>Date:</strong></label>
+            <input
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <button type="submit">File Complaint</button>
+        </form>
+      </div>
     </div>
   );
 };
+
 
 export default TouristProfile;
