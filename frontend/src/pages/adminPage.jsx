@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AdminPage = () => {
@@ -23,7 +23,12 @@ const AdminPage = () => {
   const [error, setError] = useState('');
   const [newPrefTagName, setNewPrefTagName] = useState('');
   const [message, setMessage] = useState('');
-
+  const [Itineraries,setItineraries]= useState('');
+  const [touristItineraries,setTouristItineraries]= useState('');
+  const [Activities,setActivities]= useState('');
+  const [showingItineraries,setShowingItineraries]=useState(false);
+  const [showingTouristItineraries,setShowingTouristItineraries]=useState(false);
+  const [showingActivities,setShowingActivities]=useState(false);
   //new
   const [productNameToSearch, setProductNameToSearch] = useState('');
   const [productSearchResult, setProductSearchResult] = useState(null);
@@ -51,6 +56,9 @@ const AdminPage = () => {
 
   const navigate = useNavigate();
 
+  const handleViewItineraries=()=>{
+    setShowingItineraries( prev=>!prev)
+  }
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -58,7 +66,83 @@ const AdminPage = () => {
       [name]: value
     }));
   };
-
+  useEffect(() => {
+    getItineraries();
+    getTouristItineraries();
+    getActivities();
+  }, []);
+  const handleFlagItinerary= async(id)=>{
+    try{
+      const response = await fetch(`http://localhost:8000/flagItinerary/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data.msg); 
+      } else {
+        const errorData = await response.json();
+        console.error('Error:', errorData.error);
+      }
+    }
+    catch (error) {
+      console.log(error);
+    }
+  }
+const getItineraries= async ()=>{
+  try{
+    const response = await fetch(`http://localhost:8000/getAllItineraries`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (response.ok) {
+      const data = await response.json();
+      setItineraries(data);
+    }
+  }
+  catch (error) {
+    console.error(error);
+  }
+}
+const getTouristItineraries= async ()=>{
+  try{
+    const response = await fetch(`http://localhost:8000/getAllTouristItineraries`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (response.ok) {
+      const data = await response.json();
+      setTouristItineraries(data);
+    }
+  }
+  catch (error) {
+    console.error(error);
+  }
+}
+const getActivities= async ()=>{
+  try{
+    const response = await fetch(`http://localhost:8000/getAllActivities`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (response.ok) {
+      const data = await response.json();
+      setActivities(data);
+    }
+  }
+  catch (error) {
+    console.error(error);
+  }
+}
   const createAdmin = async (e) => {
     e.preventDefault();
     const { Username, Password } = formData;
@@ -775,6 +859,24 @@ const getProductByName = async (e) => {
         />
         <button onClick={handleGetCategory} disabled={loading}>Search Category</button>
         {categorySearchResult && <p>Category Found: {categorySearchResult.Name}</p>}
+      </div>
+      <div>
+        <button onClick={handleViewItineraries}> {showingItineraries ? 'Hide Itineraries' : 'Show Itineraries'}</button>
+        { showingItineraries && (
+           <div>
+           {Itineraries.length > 0 ? (
+             Itineraries.map((itinerary) => (
+               <div key={itinerary._id}>
+                 <h4>Locations: {itinerary.Locations.join(', ')}</h4>
+                 <p>Dates: {itinerary.DatesTimes}</p>
+                 <button onClick={() => handleFlagItinerary(itinerary._id)}>Flag itinerary</button>
+               </div>
+             ))
+           ) : (
+             <p>No itineraries found.</p>
+           )}
+         </div>
+        )}
       </div>
       {/* Sidebar */}
       <div className="sidebar">
