@@ -129,7 +129,7 @@ const viewProductsSeller = async (req, res) => {
 
 // Function to change seller's password
 
-const changePassword = async (req, res) => {
+const changePasswordSeller = async (req, res) => {
   const { Username, currentPassword, newPassword } = req.body;
 
   try {
@@ -157,4 +157,4 @@ const changePassword = async (req, res) => {
 
 
 
- module.exports = {changePassword,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller};
+ module.exports = {changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller};

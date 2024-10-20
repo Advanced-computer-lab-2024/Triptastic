@@ -337,9 +337,9 @@ const sortProductsByRatingAdmin = async (req, res) => {
     }
     
     const flagItinerary= async(req,res)=>{
-      const {id}=req.params.id;
+      const id=req.params.id;
       try{
-        await itineraryModel.findByIdAndUpdate(id,{FlagInappropriate: false});
+        await itineraryModel.findByIdAndUpdate(id,{FlagInappropriate: true});
       res.status(200).json({msg:" Itinerary is flagged"});
    }
    catch (error){
@@ -347,7 +347,7 @@ const sortProductsByRatingAdmin = async (req, res) => {
    }    
     }
     const flagTouristItinerary= async(req,res)=>{
-      const {id}=req.params.id;
+      const id=req.params.id;
       try{
         await touristItineraryModel.findByIdAndUpdate(id,{FlagInappropriate: false});
       res.status(200).json({msg:" Tourist itinerary is flagged"});
@@ -357,7 +357,7 @@ const sortProductsByRatingAdmin = async (req, res) => {
    }    
     }
     const flagActivity= async(req,res)=>{
-      const {id}=req.params.id;
+      const id=req.params.id;
       try{
         await activityModel.findByIdAndUpdate(id,{FlagInappropriate: false});
       res.status(200).json({msg:" Activity is flagged"});
@@ -393,6 +393,33 @@ const sortProductsByRatingAdmin = async (req, res) => {
         res.status(400).json({error: error.message});
      }   
     }
-module.exports = {createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
+
+    const changePasswordAdmin= async (req, res) => {
+      const {Username, currentPassword, newPassword } = req.body;
+    
+      try {
+        // Find the seller by Username
+        const admin = await adminModel.findOne({ Username });
+    
+        if (!admin) {
+          return res.status(404).json({ error: "Admin not found" });
+        }
+    
+        // Compare current password directly (plain text comparison)
+        if (currentPassword !== admin.Password) {
+          return res.status(400).json({ error: "Current password is incorrect" });
+        }
+    
+        // Update the seller's password (plain text)
+        admin.Password = newPassword;
+        await admin.save();
+    
+        res.status(200).json({ message: "Password changed successfully" });
+      } catch (error) {
+        res.status(500).json({ error: "Error changing password" });
+      }
+    };
+    
+module.exports = {changePasswordAdmin,createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
     ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,flagActivity,getallItineraries,getallActivities,getallTouristItineraries
 };

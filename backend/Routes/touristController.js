@@ -7,6 +7,20 @@ const museumsModel=require('../Models/Museums.js');
 const { default: mongoose } = require('mongoose');
 const complaintModel = require('../Models/Complaint.js'); // Adjust the path based on your project structure
 
+
+const setCurrency = (req, res) => {
+  const { currency } = req.body;
+
+  if (!currency) {
+    return res.status(400).json({ error: 'Currency is required' });
+  }
+
+  // Store the selected currency in the session
+  req.session.selectedCurrency = currency;
+
+  res.status(200).json({ message: `Currency set to ${currency}` });
+};
+
 const createTourist = async(req,res) => {
 
     const{Username,Email,Password,Nationality,DOB,Occupation}=req.body;
@@ -228,15 +242,47 @@ const getUniqueHistoricalPeriods = async (req, res) => {
 
 
 
- 
+ //need to add to other methods still
 const viewProductsTourist = async (req, res) => {
   try {
-    const products = await productModel.find(); 
-    res.json(products); 
+    // Step 1: Get the selected currency from the session, default to USD if not set
+    const selectedCurrency = req.session.selectedCurrency || 'USD';
+
+    // Step 2: Fetch products from the database
+    const products = await productModel.find();
+
+    // Step 3: Define exchange rates (you can move this to a separate file for larger applications)
+    const exchangeRates = {
+      USD: 1,      // Base currency
+      EUR: 0.85,   // Example: 1 USD = 0.85 EUR
+      GBP: 0.75,   // Example: 1 USD = 0.75 GBP
+      EGP: 15.75   // Example: 1 USD = 15.75 EGP
+    };
+
+    // Step 4: Get the exchange rate for the selected currency
+    const exchangeRate = exchangeRates[selectedCurrency] || 1;
+
+    // Step 5: Convert product prices based on the selected currency
+    const convertedProducts = products.map(product => ({
+      productName: product.productName,
+      description: product.description,
+      price: (product.price * exchangeRate).toFixed(2),  // Convert the price
+      currency: selectedCurrency,  // Add the currency info to the response
+      rating: product.rating,
+      seller: product.seller,
+      review: product.review,
+      stock: product.stock,
+      image: product.image
+    }));
+
+    // Step 6: Return the products with converted prices
+    res.status(200).json(convertedProducts);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
+
+
 const filterProductsByPriceRange = async (req, res) => {
   const { minPrice, maxPrice } = req.query;
 
@@ -680,9 +726,36 @@ const shareMuseum = async (req, res) => {
   
  
  module.exports = {createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+const getComplaintsByTourist = async (req, res) => {
+  const { username } = req.query; // Get the username from the query parameters
+
+  try {
+    if (!username) {
+      return res.status(400).json({ error: 'Username is required' });
+    }
+
+    // Find all complaints for the specified tourist username
+    const complaints = await complaintModel.find({ username }).sort({ createdAt: -1 });
+
+    if (complaints.length === 0) {
+      return res.status(404).json({ message: 'No complaints found for this user.' });
+    }
+
+    res.status(200).json(complaints);
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while fetching complaints.' });
+  }
+};
+
+
+  
+  
+  
+ 
+ module.exports = {setCurrency,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
   ,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange
   ,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities
-  ,commentOnActivity,rateActivity,fileComplaint,shareActivity,shareMuseum,shareHistorical};
+  ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,shareActivity,shareMuseum,shareHistorical};

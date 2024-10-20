@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import './TouristProfile.css'; // Assuming you create a CSS file for styling
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 
-
 const TouristProfile = () => {
 
   const [touristInfo, setTouristInfo] = useState(null);
+  const [complaints, setComplaints] = useState([]); // New state for complaints
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false); // Track update status
@@ -59,8 +59,33 @@ const TouristProfile = () => {
     setLoading(false);
   };
 
+  // New function to fetch complaints
+  const fetchComplaints = async () => {
+    setLoading(true);
+    const Username = localStorage.getItem('Username');
+    try {
+      const response = await fetch(`http://localhost:8000/getComplaintsByTourist?username=${Username}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setComplaints(data); // Set complaints state
+        setErrorMessage('');
+      } else {
+        throw new Error('Failed to fetch complaints');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while fetching complaints');
+      console.error(error);
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
     fetchTouristInfo();
+    fetchComplaints(); // Fetch complaints when the component loads
   }, []);
 
   const handleInputChange = (e) => {
@@ -97,79 +122,75 @@ const TouristProfile = () => {
     setUpdating(false);
   };
 
-    // Function to fetch a product by name
-    const fetchProductByName = async (productName) => {
-      setLoading(true);
-      try {
-        const response = await fetch(`http://localhost:8000/getProductTourist?productName=${productName}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-  
-        if (response.ok) {
-          const product = await response.json();
-          setFetchedProduct(product); // Store the fetched product
-          setErrorMessage('');
-        } else {
-          throw new Error('Failed to fetch product');
-        }
-      } catch (error) {
-        setErrorMessage('An error occurred while fetching the product');
-        console.error(error);
-      }
-      setLoading(false);
-    };
-  
-    const handleFetchProduct = () => {
-      const productName = formData.productName; // Assuming there's an input for productName
-      fetchProductByName(productName);
-    };
+  // Function to fetch a product by name
+  const fetchProductByName = async (productName) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`http://localhost:8000/getProductTourist?productName=${productName}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-    const handleSubmitComplaint = async (e) => {
-      e.preventDefault();
-    
-      try {
-    
-        const username = localStorage.getItem('Username'); // Retrieve username from localStorage
-    
-      
-        if (!username) {
-          setErrorMessage('Username not found in localStorage. Please log in again.');
-          return; // Exit the function if username is not found
-        }
-    
-        const complaintData = {
-          title: formData.title,
-          body: formData.body,
-          date: formData.date,
-        };
-    
-        // Construct the URL with the username as a query parameter
-        const response = await fetch(`http://localhost:8000/fileComplaint?username=${username}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(complaintData), // Send form data
-        });
-        console.log("Username:", username); // Check if username is retrieved
-        console.log("Complaint Data:", complaintData); // Check the complaint data being sent
-        
-        if (response.ok) {
-          alert('Complaint filed successfully!');
-          setErrorMessage('');
-          setFormData((prev) => ({ ...prev, ...complaintData, title: '', body: '', date: '' }));
-        } else {
-          const errorData = await response.json();
-          setErrorMessage(errorData.error || 'Failed to file complaint');
-        }
-      } catch (error) {
-        setErrorMessage('Something went wrong. Please try again later.');
+      if (response.ok) {
+        const product = await response.json();
+        setFetchedProduct(product); // Store the fetched product
+        setErrorMessage('');
+      } else {
+        throw new Error('Failed to fetch product');
       }
-    };
-    
+    } catch (error) {
+      setErrorMessage('An error occurred while fetching the product');
+      console.error(error);
+    }
+    setLoading(false);
+  };
+
+  const handleFetchProduct = () => {
+    const productName = formData.productName; // Assuming there's an input for productName
+    fetchProductByName(productName);
+  };
+
+  const handleSubmitComplaint = async (e) => {
+    e.preventDefault();
+
+    try {
+      const username = localStorage.getItem('Username'); // Retrieve username from localStorage
+
+      if (!username) {
+        setErrorMessage('Username not found in localStorage. Please log in again.');
+        return; // Exit the function if username is not found
+      }
+
+      const complaintData = {
+        title: formData.title,
+        body: formData.body,
+        date: formData.date,
+      };
+
+      // Construct the URL with the username as a query parameter
+      const response = await fetch(`http://localhost:8000/fileComplaint?username=${username}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(complaintData), // Send form data
+      });
+
+      if (response.ok) {
+        alert('Complaint filed successfully!');
+        setErrorMessage('');
+        setFormData((prev) => ({ ...prev, ...complaintData, title: '', body: '', date: '' }));
+        fetchComplaints(); // Refresh complaints after filing a new one
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Failed to file complaint');
+      }
+    } catch (error) {
+      setErrorMessage('Something went wrong. Please try again later.');
+    }
+  };
 
   return (
     <div className="tourist-profile-container">
@@ -242,34 +263,30 @@ const TouristProfile = () => {
           )
         )}
         <button onClick={fetchTouristInfo}>Refresh My Information</button>
-
-
       </div>
-              {/* Fetch Product by Name */}
-              <div>
-          <h3>Fetch Product by Name</h3>
-          <input
-            type="text"
-            name="productName"
-            value={formData.productName}
-            onChange={handleInputChange}
-          />
-          <button onClick={handleFetchProduct}>Fetch Product</button>
 
-          {fetchedProduct && (
-            <div>
-              <h4>Product Details</h4>
-              <p><strong>Name:</strong> {fetchedProduct.productName}</p>
-              <p><strong>Description:</strong> {fetchedProduct.description}</p>
-              <p><strong>Price:</strong> {fetchedProduct.price}</p>
-              <p><strong>Stock:</strong> {fetchedProduct.stock}</p>
-              {/* You can display more product details here */}
-            </div>
-          )}
-        </div>
+      {/* Fetch Product by Name */}
+      <div>
+        <h3>Fetch Product by Name</h3>
+        <input
+          type="text"
+          name="productName"
+          value={formData.productName}
+          onChange={handleInputChange}
+        />
+        <button onClick={handleFetchProduct}>Fetch Product</button>
 
-        
-  
+        {fetchedProduct && (
+          <div>
+            <h4>Product Details</h4>
+            <p><strong>Name:</strong> {fetchedProduct.productName}</p>
+            <p><strong>Description:</strong> {fetchedProduct.description}</p>
+            <p><strong>Price:</strong> {fetchedProduct.price}</p>
+            <p><strong>Stock:</strong> {fetchedProduct.stock}</p>
+          </div>
+        )}
+      </div>
+
       {/* Sidebar */}
       <div className="sidebar">
         <h3>Explore</h3>
@@ -282,11 +299,10 @@ const TouristProfile = () => {
           <li onClick={() => navigate('/book-flights')}>Book Flights</li>
           <li onClick={() => navigate('/book-hotels')}>Book a Hotel</li>
           <li onClick={() => navigate('/book-transportation')}>Book Transportation</li>
-
-
-
         </ul>
       </div>
+
+      {/* File Complaint Form */}
       <div>
         <h3>File a Complaint</h3>
         <form onSubmit={handleSubmitComplaint}>
@@ -322,9 +338,26 @@ const TouristProfile = () => {
           <button type="submit">File Complaint</button>
         </form>
       </div>
+
+      {/* Display Complaints */}
+      <div>
+        <h3>Your Complaints</h3>
+        {complaints.length === 0 ? (
+          <p>No complaints filed yet.</p>
+        ) : (
+          <ul>
+            {complaints.map((complaint) => (
+              <li key={complaint._id}>
+                <p><strong>Title:</strong> {complaint.title}</p>
+                <p><strong>Status:</strong> {complaint.status}</p>
+                <p><strong>Date:</strong> {new Date(complaint.date).toLocaleDateString()}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 };
-
 
 export default TouristProfile;
