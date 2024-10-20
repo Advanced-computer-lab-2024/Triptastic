@@ -648,6 +648,27 @@ const sortProductsByRatingTourist = async (req, res) => {
         res.status(500).json({ error: 'Failed to submit rating' });
     }
 };
+const getComplaintsByTourist = async (req, res) => {
+  const { username } = req.query; // Get the username from the query parameters
+
+  try {
+    if (!username) {
+      return res.status(400).json({ error: 'Username is required' });
+    }
+
+    // Find all complaints for the specified tourist username
+    const complaints = await complaintModel.find({ username }).sort({ createdAt: -1 });
+
+    if (complaints.length === 0) {
+      return res.status(404).json({ message: 'No complaints found for this user.' });
+    }
+
+    res.status(200).json(complaints);
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while fetching complaints.' });
+  }
+};
+
 
   
   
@@ -659,4 +680,4 @@ const sortProductsByRatingTourist = async (req, res) => {
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
   ,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange
   ,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities
-  ,commentOnActivity,rateActivity,fileComplaint};
+  ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist};
