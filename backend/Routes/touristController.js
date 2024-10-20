@@ -603,12 +603,7 @@ const sortProductsByRatingTourist = async (req, res) => {
             return res.status(400).json({ error: 'Rating must be a number between 1 and 5' });
         }
 
-        // Check if the user has already rated this activity
-        const existingRating = activity.ratings.find(r => r.Username === Username);
-        if (existingRating) {
-            return res.status(400).json({ error: 'You have already rated this activity' });
-        }
-
+        
         // Add the new rating
         activity.ratings.push({ Username, rating });
 
