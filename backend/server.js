@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 const cors = require("cors");
 mongoose.set('strictQuery', false);
 require("dotenv").config();
@@ -35,7 +36,7 @@ const{createAdmin,createCategory,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
 ,createPrefTag,updatePreftag,deletePreftag,getPrefTag,
 viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,
-tourismGovLogin,viewAllPrefTag,deleteAdmin}=require("./Routes/adminController");
+tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,flagActivity}=require("./Routes/adminController");
 
 
 
@@ -44,7 +45,6 @@ tourismGovLogin,viewAllPrefTag,deleteAdmin}=require("./Routes/adminController");
 const{createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,deletehistoricalLocation,
   createMuseum,getMuseum,deleteMuseum,updateMuseum,viewMyLocations,viewMyMuseums
 }=require("./Routes/tourismGovController");
-
 
 
 
@@ -73,7 +73,9 @@ mongoose.connect(MongoURI)
 })
 .catch(err => console.log(err));
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', // Allow requests from this origin
+}));
 
 //Tourist
 app.post("/addTourist",createTourist);
@@ -128,8 +130,8 @@ app.get("/getMyTouristItineraries",getMyTouristItineraries);
 app.post("/requestAccountDeletionTourG",requestAccountDeletionTourG);
 
 //Advertiser
-app.post("/addAdvertiser",createAdvertiser);
-app.patch("/updateAdvertiser",updateAdvertiser);
+app.post("/addAdvertiser",upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'TaxationRegistryCard', maxCount: 1 } ]),createAdvertiser);
+app.patch("/updateAdvertiser",upload.single('Logo'),updateAdvertiser);
 app.get("/getAdvertiser",getAdvertiser);
 app.post("/createActivity",createActivity);
 app.delete("/deleteActivity",deleteActivity);
@@ -139,8 +141,8 @@ app.get("/viewActivitydetails",viewActivitydetails);
 app.post("/requestAccountDeletionAdvertiser",requestAccountDeletionAdvertiser);
 
 //Seller
-app.post("/createSeller",createSeller);
-app.patch('/updateSeller', updateSeller);
+app.post('/createSeller', upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'TaxationRegistryCard', maxCount: 1 } ]), createSeller);
+app.patch('/updateSeller', upload.single('Logo'),updateSeller);
 app.get("/getSeller",getSeller);
 app.post("/createProductseller",createProductseller);
 app.get("/getProductSeller",getProductSeller);
@@ -175,6 +177,9 @@ app.post("/AdminLogin",AdminLogin);
 app.post("/addTourismGov",addTourismGov);
 app.get("/viewAllPrefTag",viewAllPrefTag);
 app.delete("/deleteAdmin",deleteAdmin);
+app.patch('/flagItinerary',flagItinerary);
+app.patch('/flagTouristItinerary',flagTouristItinerary);
+app.patch('/flagActivitiy',flagActivity)
 
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);
@@ -198,6 +203,7 @@ app.get("/filterHistoricalLocationsByTagsGuest",filterHistoricalLocationsByTagsG
 app.get("/filterMuseumsByTagsGuest",filterMuseumsByTagsGuest);viewAllMuseumsGuest
 app.get("/viewAllMuseumsGuest",viewAllMuseumsGuest);
 
-
+app.use(bodyParser.json({ limit: '50mb' })); // Adjust the limit as needed
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 
