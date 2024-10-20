@@ -6,6 +6,7 @@ const Activities = () => {
   const [loading, setLoading] = useState(true);
   const [expandedActivities, setExpandedActivities] = useState({});
   const [commentData, setCommentData] = useState({ Username: '', comment: '' });
+  const [ratingData, setRatingData] = useState({ rating: '' }); // New state for rating
   const [responseMsg, setResponseMsg] = useState('');
 
   // Sorting states
@@ -105,6 +106,37 @@ const Activities = () => {
       setLoading(false);
     }
   };
+ 
+  
+  const handleSort = (priceSortParam, ratingSortParam) => {
+    setPriceSort(priceSortParam);
+    setRatingSort(ratingSortParam);
+    setLoading(true);
+    fetchSortedActivities(priceSortParam, ratingSortParam);
+  };
+
+  const handleFilterSubmit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    fetchFilteredActivities();
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    fetchSearchedActivities();
+  };
+
+  const toggleActivityDetails = (id) => {
+    setExpandedActivities((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  useEffect(() => {
+    fetchSortedActivities('PASC', 'RASC'); // Default sort: Price Asc, Rating Asc
+  }, []);
   const handleCommentSubmit = async (e, activity) => {
     const Username = localStorage.getItem('Username'); 
     e.preventDefault();
@@ -136,37 +168,34 @@ const Activities = () => {
       setResponseMsg('Failed to submit comment');
     }
   };
-  
-  const handleSort = (priceSortParam, ratingSortParam) => {
-    setPriceSort(priceSortParam);
-    setRatingSort(ratingSortParam);
-    setLoading(true);
-    fetchSortedActivities(priceSortParam, ratingSortParam);
-  };
-
-  const handleFilterSubmit = (e) => {
+  const handleRatingSubmit = async (e, activity) => {
+    const Username = localStorage.getItem('Username'); 
     e.preventDefault();
-    setLoading(true);
-    fetchFilteredActivities();
+    try {
+      const response = await fetch(`http://localhost:8000/rateActivity?Username=${Username}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: activity.name,
+          rating: ratingData.rating, // Use ratingData to send rating
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setResponseMsg(data.msg);
+        setRatingData({ rating: '' }); // Reset rating input
+      } else {
+        console.error('Error message:', data.error);
+        throw new Error('Failed to submit rating');
+      }
+    } catch (error) {
+      setResponseMsg('Failed to submit rating');
+    }
   };
-
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    fetchSearchedActivities();
-  };
-
-  const toggleActivityDetails = (id) => {
-    setExpandedActivities((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
-
-  useEffect(() => {
-    fetchSortedActivities('PASC', 'RASC'); // Default sort: Price Asc, Rating Asc
-  }, []);
-
   return (
     <div>
       <h2>Activities</h2>
@@ -321,6 +350,26 @@ const Activities = () => {
                             required
                           />
                           <button type="submit">Submit Comment</button>
+                        </form>
+                        {responseMsg && <p>{responseMsg}</p>}
+                      </div>
+                       {/* Rating Section */}
+                       <div>
+                        <h4>Rate this Activity</h4>
+                        <form onSubmit={(e) => handleRatingSubmit(e, activity)}>
+                          <select
+                            value={ratingData.rating}
+                            onChange={(e) => setRatingData({ rating: e.target.value })}
+                            required
+                          >
+                            <option value="">Select a rating</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                          </select>
+                          <button type="submit">Submit Rating</button>
                         </form>
                         {responseMsg && <p>{responseMsg}</p>}
                       </div>
