@@ -11,6 +11,7 @@ const tourismGovModel = require('../Models/tourismGov');
 const itineraryModel= require('../Models/Itinerary.js');
 const touristItineraryModel=require('../Models/touristItinerary.js');
 const activityModel= require('../Models/Activities.js');
+const complaintsModel=require('../Models/Complaint.js');
 const AdminLogin = async (req, res) => {
   const { Username, Password } = req.body;
 
@@ -419,7 +420,27 @@ const sortProductsByRatingAdmin = async (req, res) => {
         res.status(500).json({ error: "Error changing password" });
       }
     };
-    
+    const getComplaints=async(req,res)=>{
+      try{
+        const { sortOrder, filterStatus } = req.query;
+  
+        let filterQuery = {};
+        if (filterStatus && filterStatus !== 'all') {
+          filterQuery.status = filterStatus;
+        }
+      
+        let sortQuery = {};
+        if (sortOrder) {
+          sortQuery.date = sortOrder === 'asc' ? 1 : -1;
+        }
+      
+        const data = await complaintsModel.find(filterQuery).sort(sortQuery);
+        res.json(data);
+      }
+      catch (error){
+        res.status(400).json({error: error.message});
+     }  
+
+    }
 module.exports = {changePasswordAdmin,createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
-    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,flagActivity,getallItineraries,getallActivities,getallTouristItineraries
-};
+    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,flagActivity,getallItineraries,getallActivities,getallTouristItineraries,getComplaints};

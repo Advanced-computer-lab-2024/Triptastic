@@ -962,6 +962,9 @@ const getProductByName = async (e) => {
          </div>
         )}
       </div>
+      <div>
+      <button onClick={() => navigate('/Complaints')}>Go to complaints</button>
+      </div>
       {/* Sidebar */}
       <div className="sidebar">
         <h3>Explore</h3>

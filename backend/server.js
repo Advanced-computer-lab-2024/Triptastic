@@ -35,7 +35,7 @@ const{changePasswordAdmin,createAdmin,createCategory,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
 ,createPrefTag,updatePreftag,deletePreftag,getPrefTag,
 viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,
-tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,flagActivity,getallActivities,getallTouristItineraries,getallItineraries}=require("./Routes/adminController");
+tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,flagActivity,getallActivities,getallTouristItineraries,getallItineraries,getComplaints}=require("./Routes/adminController");
 
 
 
@@ -197,6 +197,8 @@ app.get('/getAllItineraries',getallItineraries);
 app.get('/getAllActivities',getallActivities);
 app.get('/getAllTouristItineraries',getallTouristItineraries)
 app.patch("/changePasswordAdmin",changePasswordAdmin);
+app.get("/getComplaints",getComplaints);
+
 
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);
