@@ -580,7 +580,7 @@ const sortProductsByRatingTourist = async (req, res) => {
         searchQuery.tags = { $regex: tag, $options: 'i' }; // case-insensitive search for tags
       }
       console.log('Search Query:', searchQuery);
-
+    
   
       const activities = await activitiesModel.find(searchQuery);
       

@@ -84,33 +84,79 @@ const Activities = () => {
   };
 
   // Fetch activities with search
+  // const fetchSearchedActivities = async () => {
+  //   try {
+  //     const searchParams = new URLSearchParams();
+  //     searchParams.append(searchType, searchQuery);
+
+  //     const response = await fetch(`http://localhost:8000/searchActivities?${searchParams.toString()}`, {
+  //       method: 'GET',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //     });
+
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       const filteredActivities = data.filter(activity => !activity.FlagInappropriate);
+  //       setActivities(filteredActivities);
+  //       setErrorMessage('');
+  //     } else {
+  //       throw new Error('Failed to fetch activities');
+  //     }
+  //     setErrorMessage('An error occurred while fetching activities');
+  //     //console.error(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const fetchSearchedActivities = async () => {
+    setLoading(true); // Show loading indicator
     try {
       const searchParams = new URLSearchParams();
-      searchParams.append(searchType, searchQuery);
-
+  
+      // Based on selected searchType, append the correct query parameter
+      if (searchType === 'name') {
+        searchParams.append('name', searchQuery);
+      } else if (searchType === 'Category') {
+        searchParams.append('category', searchQuery);
+      } else if (searchType === 'tags') {
+        searchParams.append('tag', searchQuery);
+      }
+  
       const response = await fetch(`http://localhost:8000/searchActivities?${searchParams.toString()}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-
+  
       if (response.ok) {
         const data = await response.json();
+  
+        // Only show activities that aren't flagged as inappropriate
         const filteredActivities = data.filter(activity => !activity.FlagInappropriate);
-        setActivities(filteredActivities);
-        setErrorMessage('');
+  
+        // If no activities match the criteria, set an appropriate message
+        if (filteredActivities.length === 0) {
+          setErrorMessage('No activities found satisfying your criteria.');
+          setActivities([]); // Ensure the activities list is empty
+        } else {
+          setActivities(filteredActivities); // Set the activities that match the criteria
+          setErrorMessage(''); // Clear error message if activities are found
+        }
       } else {
         throw new Error('Failed to fetch activities');
       }
+    } catch (error) {
       setErrorMessage('An error occurred while fetching activities');
-      //console.error(error);
+      console.error(error);
     } finally {
-      setLoading(false);
+      setLoading(false); // Hide loading indicator
     }
   };
- 
+  
+  
   
   const handleSort = (priceSortParam, ratingSortParam) => {
     setPriceSort(priceSortParam);
