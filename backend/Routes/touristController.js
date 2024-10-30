@@ -114,6 +114,29 @@ const fileComplaint = async (req, res) => {
      res.status(400).json({ error: error.message });
    }
  };
+ const addReviewToProduct = async (req, res) => {
+  const { productName, review, rating } = req.body;
+
+  try {
+    // Find the product by name and update its review and rating
+    const product = await productModel.findOneAndUpdate(
+      { productName },
+      { $set: { review, rating } },
+      { new: true } // Return the updated document
+    );
+
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    res.status(200).json(product);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// Export this function and set up an endpoint for it
+
 
  const getProductTourist = async (req, res) => {
   const { productName } = req.query;
@@ -783,4 +806,4 @@ const changepasswordTourist = async (req, res) => {
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
   ,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange
   ,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities
-  ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,shareActivity,shareMuseum,shareHistorical};
+  ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,shareActivity,shareMuseum,shareHistorical,addReviewToProduct};
