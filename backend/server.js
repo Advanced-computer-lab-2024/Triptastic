@@ -158,7 +158,7 @@ app.patch("/changePasswordAdvertiser",changePasswordAdvertiser);
 app.post('/createSeller', upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'TaxationRegistryCard', maxCount: 1 } ]), createSeller);
 app.patch('/updateSeller', upload.single('Logo'),updateSeller);
 app.get("/getSeller",getSeller);
-app.post("/createProductseller",createProductseller);
+app.post("/createProductseller", upload.single('image'),createProductseller);
 app.get("/getProductSeller",getProductSeller);
 app.get("/viewProductsSeller",viewProductsSeller);
 app.get("/sortProductsByRatingSeller",sortProductsByRatingSeller);
