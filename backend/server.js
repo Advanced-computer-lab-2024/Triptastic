@@ -29,7 +29,7 @@ const{changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,c
 const{changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller}=require("./Routes/sellerController");
 
 //Admin
-const{changePasswordAdmin,createAdmin,createCategory,
+const{updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin,createCategory,
   getCategory,
   updateCategory,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
@@ -199,6 +199,8 @@ app.get('/getAllActivities',getallActivities);
 app.get('/getAllTouristItineraries',getallTouristItineraries)
 app.patch("/changePasswordAdmin",changePasswordAdmin);
 app.get("/getComplaints",getComplaints);
+app.get('/getComplaintDetails/:id', getComplaintDetails);
+app.patch('/updateComplaintStatus/:id', updateComplaintStatus);
 
 
 //TourismGoverner
