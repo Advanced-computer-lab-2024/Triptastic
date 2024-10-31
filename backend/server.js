@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require('path');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -83,7 +84,7 @@ app.use(cors({
   origin: 'http://localhost:3000', // Allow requests from this origin
 }));
 
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 //Tourist
@@ -166,7 +167,6 @@ app.post("/requestAccountDeletionSeller",requestAccountDeletionSeller);
 app.patch("/changePasswordSeller",changePasswordSeller);
 
 
-
 //Admin
 app.post("/tourismGovLogin",tourismGovLogin);
 app.delete("/deleteTourGuide",deleteTourGuide);
@@ -183,7 +183,7 @@ app.post("/createPrefTag",createPrefTag);
 app.get("/getPrefTag",getPrefTag);
 app.patch("/updatePreftag",updatePreftag);
 app.delete("/deletePreftag",deletePreftag);
-app.post("/createProduct",createProduct);
+app.post("/createProduct",upload.single('image'),createProduct);
 app.get("/getProduct",getProduct);
 app.get("/viewProducts",viewProducts);
 app.get("/sortProductsByRatingAdmin",sortProductsByRatingAdmin);

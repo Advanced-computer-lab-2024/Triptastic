@@ -122,8 +122,8 @@ const deleteCategory = async (req, res) => {
 };
 
 const createProduct = async (req, res) => {
-    const { productName,description,price,rating,seller,review,stock,image } = req.body;
-  
+    const { productName,description,price,rating,seller,review,stock } = req.body;
+    const image = req.file ? req.file.path : null;
     try {
       const product = await productModel.create({ productName,description,price,rating,seller,review,stock,image });
       res.status(201).json(product);
