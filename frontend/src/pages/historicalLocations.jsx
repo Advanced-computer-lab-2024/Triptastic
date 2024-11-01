@@ -8,7 +8,7 @@ const HistoricalLocations = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedTag, setSelectedTag] = useState('');
   const [searchQuery, setSearchQuery] = useState(''); // State for search query
-
+  const [copySuccess, setCopySuccess] = useState({});
   // Fetch historical places without filter
   const handleViewAllHistoricalPlaces = async () => {
     setLoading(true);
@@ -122,16 +122,30 @@ const HistoricalLocations = () => {
       <li>No historical places found.</li>
     );
   };
+  const handleShare = async (historicallocation) => {
+    try {
+      const response = await fetch(`http://localhost:8000/shareHistorical/${historicallocation}`);
+      const data = await response.json();
 
+      if (response.ok) {
+        await navigator.clipboard.writeText(data.link); // Copy link to clipboard
+        setCopySuccess((prev) => ({ ...prev, [historicallocation]: 'Link copied to clipboard!' })); // Set success message for the specific museum
+      } else {
+        console.error("Failed to generate shareable link");
+      }
+    } catch (error) {
+      console.error("Error generating shareable link:", error);
+    }
+  };
   return (
     <div>
       <h1>Historical Locations</h1>
       <button onClick={handleViewAllHistoricalPlaces}>View All Historical Locations</button>
-
+  
       {viewPlaces && (
         <>
           <button onClick={() => setFilterVisible(!filterVisible)}>Filter Historical Locations</button>
-
+  
           {filterVisible && (
             <div>
               <label>Filter by Tag:</label>
@@ -144,7 +158,7 @@ const HistoricalLocations = () => {
               <button onClick={handleFilter} disabled={!selectedTag}>Apply Filter</button>
             </div>
           )}
-
+  
           <div>
             <label>Search by Name or Tag:</label>
             <input
@@ -155,14 +169,25 @@ const HistoricalLocations = () => {
             />
             <button onClick={handleSearch} disabled={!searchQuery && !selectedTag}>Search</button>
           </div>
-
+  
           {loading ? (
             <p>Loading...</p>
           ) : (
             <>
               {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
               <ul>
-                {renderHistoricalPlaces()}
+                {historicalPlaces.map((historicallocation) => (
+                  <li key={historicallocation._id}>
+                    {historicallocation.Name}
+                    <button onClick={() => handleShare(historicallocation.Name)}>Share</button>
+                    {/* Display success message for this specific historicallocation */}
+                    {copySuccess[historicallocation.Name] && (
+                      <span style={{ color: 'green', marginLeft: '10px' }}>
+                        {copySuccess[historicallocation.Name]}
+                      </span>
+                    )}
+                  </li>
+                ))}
               </ul>
             </>
           )}
