@@ -205,6 +205,31 @@ const Activities = () => {
         console.error("Error generating shareable link:", error);
     }
 };
+
+const bookActivity = async (activityName) => {
+  const username = localStorage.getItem('Username');
+  try {
+    const response = await fetch('http://localhost:8000/bookActivity', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name: activityName, Username: username }), 
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Booking failed');
+    }
+
+    const data = await response.json();
+    setErrorMessage(''); // Clear any previous error messages
+    alert(data.message); // Show success message
+  } catch (error) {
+    setErrorMessage(error.message);
+    console.error(error);
+  }
+};
   return (
     <div>
       <h2>Activities</h2>
@@ -326,6 +351,8 @@ const Activities = () => {
                   <strong>Name:</strong> {activity.name} <br />
                   <strong>Price:</strong> ${activity.price} <br />
                   <strong>Rating:</strong> {activity.rating} <br />
+                   {/* Book Activity Button */}
+                   <button onClick={() => bookActivity(activity.name)}>Book Ticket</button>
                   {/* Share Button */}
                   <button onClick={() => handleShare(activity)}>Share Activity</button>
                   {/* Display success message after copying */}
