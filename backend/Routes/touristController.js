@@ -799,6 +799,85 @@ const changepasswordTourist = async (req, res) => {
   }
 };
 
+
+const bookActivity = async (req, res) => {
+  const { name, Username } = req.body; 
+
+  try {
+    // Step 1: Find the activity by its name
+    const activity = await activitiesModel.findOne({ name: name });
+    
+    if (!activity) {
+      return res.status(404).json({ error: 'Activity not found' });
+    }
+
+    // Check if the activity is open for booking
+    if (!activity.bookingOpen) {
+      return res.status(400).json({ error: 'This activity is not open for booking' });
+    }
+
+    // Step 2: Find the tourist by username
+    const tourist = await touristModel.findOne({ Username: Username });
+    
+    if (!tourist) {
+      return res.status(404).json({ error: 'Tourist not found' });
+    }
+
+    const alreadyBooked = tourist.Bookings.some(
+      booking => booking.name === activity.name
+    );
+
+    if (alreadyBooked) {
+      return res.status(400).json({ error: 'You have already booked this activity' });
+    }
+
+    // Step 4: Add the full activity object to the tourist's Bookings array
+    tourist.Bookings.push(activity);
+
+    // Save the updated tourist record
+    await tourist.save();
+
+    res.status(200).json({ message: 'Activity booked successfully!', tourist });
+  } catch (error) {
+    res.status(500).json({ error: 'Error booking the activity' });
+  }
+};
+
+const bookItinerary = async (req, res) => {
+  const { Activities, Username } = req.body;
+
+  try {
+    const itinerary = await itineraryModel.findOne({Activities:Activities});
+
+    if (!itinerary) {
+      return res.status(404).json({ error: 'Itinerary not found' });
+    }
+   
+    const tourist = await touristModel.findOne({ Username: Username });
+    
+    if (!tourist) {
+      return res.status(404).json({ error: 'Tourist not found' });
+    }
+    const alreadyBooked = tourist.Bookings.some(
+      booking => booking._id.toString() === itinerary._id.toString()
+    );
+
+    if (alreadyBooked) {
+      return res.status(400).json({ error: 'You have already booked this itinerary' });
+    }
+
+    if (itinerary.Booked) {
+      return res.status(400).json({ message: 'Itinerary is Full' });
+    }
+    tourist.Bookings.push(itinerary);
+    await tourist.save();
+
+    res.status(200).json({
+      message: 'Itinerary booked successfully',tourist});
+  } catch (error) {
+    res.status(500).json({ error: 'Error booking itinerary' });
+  }
+};
  
  module.exports = {changepasswordTourist,setCurrency,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
@@ -806,4 +885,5 @@ const changepasswordTourist = async (req, res) => {
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
   ,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange
   ,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities
-  ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,shareActivity,shareMuseum,shareHistorical,addReviewToProduct};
+  ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
+  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary};
