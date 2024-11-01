@@ -746,7 +746,26 @@ const shareMuseum = async (req, res) => {
       res.status(500).json({ error: 'Server error' });
   }
 };
-  
+const shareItinerary = async (req, res) => {
+  const { Activities } = req.params; 
+
+  try {
+      // Find the activity by ID
+      const Itinerary = await itineraryModel.findOne({ Activities: Activities });
+      if (!Itinerary) {
+          return res.status(404).json({ error: 'Itinerary not found' });
+      }
+
+      // Generate the shareable link
+      const shareableLink = `https://yourwebsite.com/Itinerary/${Activities}`;
+
+      // Return the link for sharing
+      res.status(200).json({ link: shareableLink });
+  } catch (error) {
+      console.error('Error generating shareable link:', error);
+      res.status(500).json({ error: 'Server error' });
+  }
+};
  
 const getComplaintsByTourist = async (req, res) => {
   const { username } = req.query; // Get the username from the query parameters
@@ -886,4 +905,4 @@ const bookItinerary = async (req, res) => {
   ,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange
   ,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities
   ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
-  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary};
+  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary};

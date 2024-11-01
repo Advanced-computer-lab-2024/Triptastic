@@ -11,7 +11,7 @@ const Itineraries = () => {
     preferences: '',
     language: '',
   });
-
+  const [copySuccess, setCopySuccess] = useState({});
   // State to track the visibility of itinerary details
   const [expandedItineraries, setExpandedItineraries] = useState({});
 
@@ -149,7 +149,21 @@ const Itineraries = () => {
   useEffect(() => {
     fetchASCItineraries(); // Default to ascending sort
   }, []);
+  const handleShare = async (itinerary) => {
+    try {
+      const response = await fetch(`http://localhost:8000/shareItinerary/${itinerary}`);
+      const data = await response.json();
 
+      if (response.ok) {
+        await navigator.clipboard.writeText(data.link); // Copy link to clipboard
+        setCopySuccess((prev) => ({ ...prev, [itinerary]: 'Link copied to clipboard!' })); // Set success message for the specific museum
+      } else {
+        console.error("Failed to generate shareable link");
+      }
+    } catch (error) {
+      console.error("Error generating shareable link:", error);
+    }
+  };
   return (
     <div>
       <h2>Itineraries</h2>
@@ -248,6 +262,11 @@ const Itineraries = () => {
                       <p><strong>Tour Guide:</strong> {itinerary.TourGuide}</p>
                     </div>
                   )}
+                   {/* Share button and success message */}
+        <button onClick={() => handleShare(itinerary.Activities)}>Share</button>
+        {copySuccess[itinerary.Activities] && (
+          <span style={{ color: 'green', marginLeft: '10px' }}>{copySuccess[itinerary.Activities]}</span>
+        )}
                 </li>
               ))}
             </ul>

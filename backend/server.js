@@ -24,7 +24,7 @@ const {changepasswordTourist,setCurrency,createTourist,gethistoricalLocationByNa
   ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,
   sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,
   getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity,
-  fileComplaint,getComplaintsByTourist,shareActivity,shareHistorical,shareMuseum,addReviewToProduct,bookActivity,bookItinerary} = require("./Routes/touristController");
+  fileComplaint,getComplaintsByTourist,shareActivity,shareHistorical,shareMuseum,addReviewToProduct,bookActivity,bookItinerary,shareItinerary} = require("./Routes/touristController");
 
 //Advertiser
 const{changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser}=require("./Routes/advertiserController");
@@ -124,9 +124,10 @@ app.get("/searchActivities",searchActivities);
 app.post("/commentOnActivity",commentOnActivity);
 app.post("/rateActivity",rateActivity);
 app.post('/setCurrency',setCurrency);
-app.get("/shareActivity/:name",shareActivity);
+app.get("/shareActivity/:name",shareActivity);shareItinerary
 app.get("/shareHistorical/:Name",shareHistorical);
 app.get("/shareMuseum/:Name",shareMuseum);
+app.get("/shareItinerary/:Activities",shareItinerary);
 app.post('/fileComplaint', fileComplaint);
 app.get("/getComplaintsByTourist", getComplaintsByTourist);
 app.patch("/changepasswordTourist",changepasswordTourist);
