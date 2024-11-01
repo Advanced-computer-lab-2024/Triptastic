@@ -854,7 +854,7 @@ const bookItinerary = async (req, res) => {
     }
    
     const tourist = await touristModel.findOne({ Username: Username });
-    
+    console.log('Tourist:', tourist);
     if (!tourist) {
       return res.status(404).json({ error: 'Tourist not found' });
     }
