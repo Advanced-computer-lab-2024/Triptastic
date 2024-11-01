@@ -9,6 +9,8 @@ const TouristProfile = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false); // Track update status
+  const [Itineraries,setItineraries]= useState('');
+  const [showingItineraries,setShowingItineraries]=useState(false);
 
   const [fetchedProduct, setFetchedProduct] = useState(null);//new
   const [formData, setFormData] = useState({
@@ -24,6 +26,12 @@ const TouristProfile = () => {
     date: ''  
   });
   const navigate = useNavigate();
+  useEffect(() => {
+    fetchItineraries();
+      }, []);
+  const handleViewItineraries=()=>{
+    setShowingItineraries( prev=>!prev);
+  }
 
   const fetchTouristInfo = async () => {
     setLoading(true);
@@ -58,7 +66,23 @@ const TouristProfile = () => {
     }
     setLoading(false);
   };
-
+  const fetchItineraries= async ()=>{
+    try{
+      const response = await fetch(`http://localhost:8000/getAllItineraries`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setItineraries(data);
+      }
+    }
+    catch (error) {
+      console.error(error);
+    }
+  }
   // New function to fetch complaints
   const fetchComplaints = async () => {
     setLoading(true);
@@ -286,7 +310,23 @@ const TouristProfile = () => {
           </div>
         )}
       </div>
-
+      <div>
+        <button onClick={handleViewItineraries}> {showingItineraries ? 'Hide itineraries' : 'Show itineraries'}</button>
+        { showingItineraries && (
+            <div>
+            {Itineraries.length > 0 ? ( // Use 'itineraries' state variable for mapping
+              Itineraries.map((itinerary) => (
+                <div key={itinerary._id}>
+                  <h4>Activities: {itinerary.Activities.join(', ')}</h4>
+                  <p>Locations: {itinerary.Locations.join(', ')}</p>
+                </div>
+              ))
+            ) : (
+              <p>No itineraries found.</p>
+            )}
+          </div>
+        )}
+      </div>
       {/* Sidebar */}
       <div className="sidebar">
         <h3>Explore</h3>
@@ -299,6 +339,8 @@ const TouristProfile = () => {
           <li onClick={() => navigate('/book-flights')}>Book Flights</li>
           <li onClick={() => navigate('/book-hotels')}>Book a Hotel</li>
           <li onClick={() => navigate('/book-transportation')}>Book Transportation</li>
+          <li onClick={() => navigate('/tourist-orders')}>Past Orders</li>
+
         </ul>
       </div>
 

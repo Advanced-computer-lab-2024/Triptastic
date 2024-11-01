@@ -28,6 +28,7 @@ import BookFlights from './pages/bookFlights';
 import BookHotels from './pages/bookHotels';
 import bookTransportation from './pages/bookTransportation';
 import Complaints from './pages/Complaints';
+import TouristOrders from './pages/touristOrders';
 
 function Home() {
   const navigate = useNavigate();
@@ -94,6 +95,8 @@ function App() {
         <Route path="/book-hotels" element={<BookHotels />} />
         <Route path="/book-transportation" element={<bookTransportation />} />
         <Route path="/Complaints" element={<Complaints/>}/>
+        <Route path="/tourist-orders" element={<TouristOrders/>}/>
+
 
 
 

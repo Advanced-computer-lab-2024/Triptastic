@@ -10,7 +10,7 @@ const SellerProfile = () => {
   const [waiting, setWaiting] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
   const [fetchedProduct, setFetchedProduct] = useState(null);
-
+  const [imagePreview, setImagePreview] = useState(null);
   const [productFormData, setProductFormData] = useState({
     productName: '',
     description: '',
@@ -19,7 +19,7 @@ const SellerProfile = () => {
     seller: '',
     review: '',
     stock: '',
-    image: ''
+    image: null // Change to null to store the file
   });
   
   const [formData, setFormData] = useState({
@@ -139,15 +139,32 @@ const SellerProfile = () => {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        setProductFormData((prevData) => ({
+            ...prevData,
+            image: file // Store the file object instead of URL
+        }));
+
+        // Create a local URL for the image and set it to the imagePreview state
+        const imageUrl = URL.createObjectURL(file);
+        setImagePreview(imageUrl);
+    }
+};
+
   const handleProductSubmit = async (e) => {
     e.preventDefault();
+    
+    const formDataToSubmit = new FormData(); // Create FormData object
+    for (const key in productFormData) {
+      formDataToSubmit.append(key, productFormData[key]); // Append each field
+    }
+
     try {
       const response = await fetch('http://localhost:8000/createProductSeller', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(productFormData),
+        body: formDataToSubmit, // Send the FormData
       });
 
       if (response.ok) {
@@ -161,7 +178,7 @@ const SellerProfile = () => {
           seller: sellerInfo.Username,
           review: '',
           stock: '',
-          image: ''
+          image: null // Reset image after successful submission
         });
         setErrorMessage('');
         setAddingProduct(false);
@@ -285,6 +302,7 @@ const SellerProfile = () => {
                 name="productName"
                 value={productFormData.productName}
                 onChange={handleProductInputChange}
+                required
               />
             </div>
             <div>
@@ -294,6 +312,7 @@ const SellerProfile = () => {
                 name="description"
                 value={productFormData.description}
                 onChange={handleProductInputChange}
+                required
               />
             </div>
             <div>
@@ -303,6 +322,7 @@ const SellerProfile = () => {
                 name="price"
                 value={productFormData.price}
                 onChange={handleProductInputChange}
+                required
               />
             </div>
             <div>
@@ -312,6 +332,7 @@ const SellerProfile = () => {
                 name="rating"
                 value={productFormData.rating}
                 onChange={handleProductInputChange}
+                required
               />
             </div>
             <div>
@@ -321,20 +342,33 @@ const SellerProfile = () => {
                 name="stock"
                 value={productFormData.stock}
                 onChange={handleProductInputChange}
+                required
               />
             </div>
             <div>
-              <label><strong>Image URL:</strong></label>
+              <label><strong>Image:</strong></label>
               <input
-                type="text"
-                name="image"
-                value={productFormData.image}
-                onChange={handleProductInputChange}
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                required
               />
             </div>
-            <button type="submit">Add Product</button>
+            {imagePreview && <img src={imagePreview} alt="Product Preview" style={{ width: '100px', height: '100px' }} />}
+            <button onClick={() => setAddingProduct(true)}>Add Product</button>
           </form>
         )}
+        
+        {waiting && <p>Waiting for deletion request...</p>}
+        <button onClick={handleDeleteRequest} disabled={waiting}>
+          Request Account Deletion
+        </button>
+      </div>
+      <div className="sidebar">
+        <h3>Explore</h3>
+        <ul>
+          <li onClick={() => navigate('/products')}>Products</li>
+        </ul>
       </div>
     </div>
   );

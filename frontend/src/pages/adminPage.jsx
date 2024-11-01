@@ -260,32 +260,30 @@ const getActivities= async ()=>{
       [name]: value
     }));
   };
-
-  const handleAddProduct = () => {
-    setProductFormData((prevData) => ({
-      ...prevData,
-      seller: formData.Username
-    }));
-    setAddingProduct(true);
-  };
+const handleAddProduct = () => {
+  
+  const seller = formData.Username || ''; // Fallback to empty string if undefined
+  setProductFormData((prevData) => ({
+    ...prevData,
+    seller: seller // Assign the seller here
+  }));
+  setAddingProduct(true);
+};
 
   const handleProductSubmit = async (e) => {
     e.preventDefault();
-
-    const productData = {
-      ...productFormData,
-      seller: formData.Username
-    };
-
+    handleAddProduct();
+    const formData = new FormData();
+    for (const key in productFormData) {
+      formData.append(key, productFormData[key]);
+    }
+  
     try {
       const response = await fetch('http://localhost:8000/createProduct', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(productData),
+        body: formData,
       });
-
+  
       if (response.ok) {
         alert('Product added successfully!');
         setProductFormData({
@@ -296,17 +294,19 @@ const getActivities= async ()=>{
           seller: formData.Username,
           review: '',
           stock: '',
-          image: ''
+          image: null // Reset image after submission
         });
         setAddingProduct(false);
       } else {
-        throw new Error('Failed to create product');
+        const errorData = await response.json(); // Get error data from response
+        throw new Error(`Failed to create product: ${errorData.error || response.statusText}`);
       }
     } catch (error) {
-      setErrorMessage('An error occurred while creating the product');
+      setErrorMessage(`An error occurred while creating the product: ${error.message}`);
       console.error(error);
     }
   };
+
 
   const fetchPrefTag = async () => {
     try {
@@ -684,15 +684,18 @@ const getProductByName = async (e) => {
           />
         </div>
         <div>
-          <label>Image URL:</label>
-          <input
-            type="text"
-            name="image"
-            value={productFormData.image}
-            onChange={handleProductInputChange}
-            required
-          />
-        </div>
+  <label>Image:</label>
+  <input
+    type="file"
+    name="image"
+    accept="image/*" // Allow only image files
+    onChange={(e) => setProductFormData((prevData) => ({
+      ...prevData,
+      image: e.target.files[0] // Store the selected file
+    }))}
+    required
+  />
+</div>
         <button type="submit">Add Product</button>
       </form>
 

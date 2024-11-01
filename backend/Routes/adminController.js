@@ -122,8 +122,8 @@ const deleteCategory = async (req, res) => {
 };
 
 const createProduct = async (req, res) => {
-    const { productName,description,price,rating,seller,review,stock,image } = req.body;
-  
+    const { productName,description,price,rating,seller,review,stock } = req.body;
+    const image = req.file ? req.file.path : null;
     try {
       const product = await productModel.create({ productName,description,price,rating,seller,review,stock,image });
       res.status(201).json(product);
@@ -420,6 +420,7 @@ const sortProductsByRatingAdmin = async (req, res) => {
         res.status(500).json({ error: "Error changing password" });
       }
     };
+
     const getComplaints=async(req,res)=>{
       try{
         const { sortOrder, filterStatus } = req.query;
@@ -442,5 +443,56 @@ const sortProductsByRatingAdmin = async (req, res) => {
      }  
 
     }
-module.exports = {changePasswordAdmin,createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
+
+    const getComplaintDetails = async (req, res) => {
+      const { id } = req.params;
+    
+      try {
+        // Trim the ID to remove any extra newline or whitespace characters
+        const trimmedId = id.trim();
+        const complaint = await complaintsModel.findById(trimmedId);
+    
+        if (!complaint) {
+          return res.status(404).json({ error: "Complaint not found" });
+        }
+    
+        res.status(200).json(complaint);
+      } catch (error) {
+        console.error("Error retrieving complaint details:", error.message);
+        res.status(500).json({ error: "Error retrieving complaint details" });
+      }
+    };
+
+    const updateComplaintStatus = async (req, res) => {
+      const { id } = req.params; // Get the complaint ID from URL parameters
+      const { status } = req.body; // Get the desired status from the request body
+    
+      // Check that the status is either 'pending' or 'resolved'
+      if (status !== 'pending' && status !== 'resolved') {
+        return res.status(400).json({ error: 'Status must be either "pending" or "resolved"' });
+      }
+    
+      try {
+        // Find the complaint by ID and update its status
+        const updatedComplaint = await complaintsModel.findByIdAndUpdate(
+          id.trim(),
+          { status },
+          { new: true }
+        );
+    
+        // If no complaint was found, return a 404 error
+        if (!updatedComplaint) {
+          return res.status(404).json({ error: 'Complaint not found' });
+        }
+    
+        // Return the updated complaint
+        res.status(200).json({ message: 'Complaint status updated successfully', updatedComplaint });
+      } catch (error) {
+        console.error('Error updating complaint status:', error.message);
+        res.status(500).json({ error: 'Error updating complaint status' });
+      }
+    };
+    
+
+module.exports = {updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
     ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,flagActivity,getallItineraries,getallActivities,getallTouristItineraries,getComplaints};

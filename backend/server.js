@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require('path');
 const session = require('express-session');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -20,7 +21,7 @@ const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActi
 
 //Tourist
 const {changepasswordTourist,setCurrency,createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
-  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,shareActivity,shareHistorical,shareMuseum} = require("./Routes/touristController");
+  ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,shareActivity,shareHistorical,shareMuseum,addReviewToProduct} = require("./Routes/touristController");
 
 //Advertiser
 const{changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser}=require("./Routes/advertiserController");
@@ -29,7 +30,7 @@ const{changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,c
 const{changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller}=require("./Routes/sellerController");
 
 //Admin
-const{changePasswordAdmin,createAdmin,createCategory,
+const{updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin,createCategory,
   getCategory,
   updateCategory,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
@@ -83,7 +84,7 @@ app.use(cors({
   origin: 'http://localhost:3000', // Allow requests from this origin
 }));
 
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 //Tourist
@@ -125,6 +126,7 @@ app.get("/shareMuseum/:Name",shareMuseum);
 app.post('/fileComplaint', fileComplaint);
 app.get("/getComplaintsByTourist", getComplaintsByTourist);
 app.patch("/changepasswordTourist",changepasswordTourist);
+app.patch("/addReviewToProduct",addReviewToProduct);
 //TourGuide
 app.post("/addTourGuide",upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'Certificate', maxCount: 1 } ]),createTourGuide);
 app.patch("/addTourGuideInfo",upload.single('photo'),createTourGuideInfo);
@@ -157,13 +159,12 @@ app.patch("/changePasswordAdvertiser",changePasswordAdvertiser);
 app.post('/createSeller', upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'TaxationRegistryCard', maxCount: 1 } ]), createSeller);
 app.patch('/updateSeller', upload.single('Logo'),updateSeller);
 app.get("/getSeller",getSeller);
-app.post("/createProductseller",createProductseller);
+app.post("/createProductseller", upload.single('image'),createProductseller);
 app.get("/getProductSeller",getProductSeller);
 app.get("/viewProductsSeller",viewProductsSeller);
 app.get("/sortProductsByRatingSeller",sortProductsByRatingSeller);
 app.post("/requestAccountDeletionSeller",requestAccountDeletionSeller);
 app.patch("/changePasswordSeller",changePasswordSeller);
-
 
 
 //Admin
@@ -182,7 +183,7 @@ app.post("/createPrefTag",createPrefTag);
 app.get("/getPrefTag",getPrefTag);
 app.patch("/updatePreftag",updatePreftag);
 app.delete("/deletePreftag",deletePreftag);
-app.post("/createProduct",createProduct);
+app.post("/createProduct",upload.single('image'),createProduct);
 app.get("/getProduct",getProduct);
 app.get("/viewProducts",viewProducts);
 app.get("/sortProductsByRatingAdmin",sortProductsByRatingAdmin);
@@ -198,6 +199,8 @@ app.get('/getAllActivities',getallActivities);
 app.get('/getAllTouristItineraries',getallTouristItineraries)
 app.patch("/changePasswordAdmin",changePasswordAdmin);
 app.get("/getComplaints",getComplaints);
+app.get('/getComplaintDetails/:id', getComplaintDetails);
+app.patch('/updateComplaintStatus/:id', updateComplaintStatus);
 
 
 //TourismGoverner
