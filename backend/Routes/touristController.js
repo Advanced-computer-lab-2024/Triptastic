@@ -990,8 +990,45 @@ const getBookedItineraries = async(req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+const cancelBookedItinerary = async (req, res) => {
+  const { itineraryId } = req.params; // Get the itinerary ID from the request parameters
+  const { username } = req.query; // Get the username from the query parameters
 
+  try {
+    // Find the tourist by username
+    const tourist = await touristModel.findOne({ Username: username });
+    if (!tourist) {
+      return res.status(404).json({ message: 'Tourist not found' });
+    }
 
+    // Find the booked itinerary by ID
+    const bookedItinerary = tourist.Bookings.find(booking => booking._id.toString() === itineraryId);
+    if (!bookedItinerary) {
+      return res.status(404).json({ message: 'Itinerary not found in the tourist\'s bookings' });
+    }
+
+    // Check if the itinerary is within the cancellation window (48 hours before start date)
+    const itineraryStartDate = new Date(bookedItinerary.DatesTimes);
+    const currentDate = new Date();
+    const timeDifference = itineraryStartDate - currentDate;
+    const hoursDifference = timeDifference / (1000 * 60 * 60); // Convert milliseconds to hours
+
+    if (hoursDifference <= 48) {
+      return res.status(400).json({ message: 'Itinerary cannot be cancelled within 48 hours of start date' });
+    }
+
+    // Remove the booked itinerary from the tourist's bookings
+    tourist.Bookings = tourist.Bookings.filter(booking => booking._id.toString() !== itineraryId);
+
+    // Save the updated tourist record
+    await tourist.save();
+
+    res.status(200).json({ message: 'Itinerary booking cancelled successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+}
 
  module.exports = {changepasswordTourist,setCurrency,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
@@ -1000,4 +1037,4 @@ const getBookedItineraries = async(req, res) => {
   ,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange
   ,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities
   ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
-  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback};
+  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary};

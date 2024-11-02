@@ -95,6 +95,28 @@ const TouristProfile = () => {
     }
     setLoading(false);
   };
+  const handleCancelItineraryBooking = async (id) => { 
+    const username = localStorage.getItem('Username');
+    try {
+      const response = await fetch(`http://localhost:8000/cancelItineraryBooking/${id}?username=${username}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        alert('Itinerary booking cancelled successfully!');
+        setErrorMessage('');
+        fetchBookedItineraries(); // Refresh booked itineraries after cancelling one
+      } else {
+        throw new Error('Failed to cancel itinerary booking');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while cancelling itinerary booking');
+      console.error(error);
+    }
+  };
   const fetchItineraries= async ()=>{
     try{
       const response = await fetch(`http://localhost:8000/getAllItineraries`, {
@@ -415,21 +437,7 @@ const TouristProfile = () => {
         )}
       </div>
       {/* Sidebar */}
-      <div className="sidebar">
-        <h3>Explore</h3>
-        <ul>
-          <li onClick={() => navigate('/historical-locations')}>Historical Locations</li>
-          <li onClick={() => navigate('/museums')}>Museums</li>
-          <li onClick={() => navigate('/products')}>Products</li>
-          <li onClick={() => navigate('/itineraries')}>Itineraries</li>
-          <li onClick={() => navigate('/activities')}>Activities</li>
-          <li onClick={() => navigate('/book-flights')}>Book Flights</li>
-          <li onClick={() => navigate('/book-hotels')}>Book a Hotel</li>
-          <li onClick={() => navigate('/book-transportation')}>Book Transportation</li>
-          <li onClick={() => navigate('/tourist-orders')}>Past Orders</li>
-
-        </ul>
-      </div>
+      
 
       {/* File Complaint Form */}
       <div>
@@ -495,7 +503,8 @@ const TouristProfile = () => {
                 <h4>Booked Activities: {Itinerary.Activities.join(', ')}</h4>
                 <p>Locations: {Itinerary.Locations.join(', ')}</p>
                 <p>Price: ${Itinerary.price}</p>
-                <p>TourGuide: ${Itinerary.TourGuide}</p>
+                <p>TourGuide: {Itinerary.TourGuide}</p>
+                <p>Date:{Itinerary.DatesTimes}</p>
                  <input 
                   type="number" 
                   placeholder="Rating" 
@@ -507,6 +516,7 @@ const TouristProfile = () => {
                   onChange={(e) => handleCommentChange(Itinerary, e.target.value)}
                   />
                 <button onClick={() => submitFeedback(Itinerary)}>Submit Feedback</button>
+                <button onClick={()=>handleCancelItineraryBooking(Itinerary._id)}>Cancel Booking</button>
               </div>
             ))
           ) : (
@@ -518,6 +528,21 @@ const TouristProfile = () => {
 
       {errorMessage && <div className="error">{errorMessage}</div>}
       {successMessage && <div className="success">{successMessage}</div>}
+      <div className="sidebar">
+        <h3>Explore</h3>
+        <ul>
+          <li onClick={() => navigate('/historical-locations')}>Historical Locations</li>
+          <li onClick={() => navigate('/museums')}>Museums</li>
+          <li onClick={() => navigate('/products')}>Products</li>
+          <li onClick={() => navigate('/itineraries')}>Itineraries</li>
+          <li onClick={() => navigate('/activities')}>Activities</li>
+          <li onClick={() => navigate('/book-flights')}>Book Flights</li>
+          <li onClick={() => navigate('/book-hotels')}>Book a Hotel</li>
+          <li onClick={() => navigate('/book-transportation')}>Book Transportation</li>
+          <li onClick={() => navigate('/tourist-orders')}>Past Orders</li>
+
+        </ul>
+      </div>
     </div>
     
   );
