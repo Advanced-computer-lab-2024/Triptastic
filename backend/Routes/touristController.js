@@ -821,6 +821,31 @@ const changepasswordTourist = async (req, res) => {
 };
 
 
+const calculateAndAddPoints = async (tourist, amountPaid) => {
+  let pointsToAdd = 0;
+
+  if (tourist.badge === 1) {
+    pointsToAdd = amountPaid * 0.5;
+  } else if (tourist.badge === 2) {
+    pointsToAdd = amountPaid * 1;
+  } else if (tourist.badge === 3) {
+    pointsToAdd = amountPaid * 1.5;
+  }
+
+  tourist.points += pointsToAdd;
+
+  if (tourist.points > 500000) {
+    tourist.badge = 3;
+  } else if (tourist.points > 100000) {
+    tourist.badge = 2;
+  } else {
+    tourist.badge = 1;
+  }
+
+  await tourist.save(); 
+};
+
+
 const bookActivity = async (req, res) => {
   const { name, Username } = req.body; 
 
@@ -852,7 +877,7 @@ const bookActivity = async (req, res) => {
       return res.status(400).json({ error: 'You have already booked this activity' });
     }
 
-    // Step 4: Add the full activity object to the tourist's Bookings array
+    await calculateAndAddPoints(tourist, activity.price);
     tourist.Bookings.push(activity);
 
     // Save the updated tourist record
@@ -891,6 +916,7 @@ const bookItinerary = async (req, res) => {
     if (itinerary.Booked) {
       return res.status(400).json({ message: 'Itinerary is Full' });
     }
+    await calculateAndAddPoints(tourist, itinerary.Price);
 
     tourist.Bookings.push(itinerary);
     await tourist.save();

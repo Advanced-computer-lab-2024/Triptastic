@@ -21,6 +21,8 @@ const TouristProfile = () => {
   const [comments, setComments] = useState({});
   const [formData, setFormData] = useState({
     Username: '',
+    points:'',
+    badge:'',
     Email: '',
     Password: '',
     Nationality: '',
@@ -337,7 +339,15 @@ const TouristProfile = () => {
             <div>
               <div>
                 <label><strong>Username:</strong></label>
-                <p>{touristInfo.Username}</p> {/* Display Username as text */}
+                <p>{touristInfo.Username}</p>
+              </div>
+              <div>
+                <label><strong>Points:</strong></label>
+                <p>{touristInfo.points}</p> 
+              </div>
+              <div>
+                <label><strong>Badge:</strong></label>
+                <p>{touristInfo.badge}</p> 
               </div>
               <div>
                 <label><strong>Email:</strong></label>
