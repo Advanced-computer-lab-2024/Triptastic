@@ -12,8 +12,10 @@ const TouristProfile = () => {
   const [updating, setUpdating] = useState(false); // Track update status
   const [Itineraries,setItineraries]= useState('');
   const [showingItineraries,setShowingItineraries]=useState(false);
-  const [bookedItineraries, setBookedItineraries] = useState([]); // State for booked itineraries
-  const [showingBookedItineraries, setShowingBookedItineraries] = useState(false); // State for showing booked itineraries
+  const [bookedItineraries, setBookedItineraries] = useState([]);// State for booked itineraries
+  const [showingBookedItineraries, setShowingBookedItineraries]= useState(false); // State for showing booked itineraries
+  const [showingBookedActivities, setShowingBookedActivities]= useState(false); // State for showing booked activities
+  const [bookedActivities, setBookedActivities]= useState([]); // State for booked activities
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(''); // Initialize successMessage
   const [fetchedProduct, setFetchedProduct] = useState(null);//new
@@ -38,13 +40,16 @@ const TouristProfile = () => {
     fetchItineraries();
       }, []);
       useEffect(() => {
-        fetchBookedItineraries(); // Fetch booked itineraries when the component mounts
+        fetchBookedItineraries();
+        fetchBookedActivities(); // Fetch booked itineraries when the component mounts
       }, []); // Empty dependency array means this runs once after the first render
     
   const handleViewItineraries=()=>{
     setShowingItineraries( prev=>!prev);
   }
-  
+  const toggleViewBookedActivites = () => {
+    setShowingBookedActivities((prev) => !prev);
+  }
   
   const handleViewBookedItineraries = () => {
     setShowingBookedItineraries(prev => !prev);
@@ -63,7 +68,6 @@ const TouristProfile = () => {
       [itineraryId]: value,
     }));
   };
-
   const fetchTouristInfo = async () => {
     setLoading(true);
     const Username = localStorage.getItem('Username');
@@ -96,6 +100,28 @@ const TouristProfile = () => {
       setErrorMessage('No tourist information found.');
     }
     setLoading(false);
+  };
+  const handleCancelActivityBooking = async (id) => {
+    const username = localStorage.getItem('Username');
+    try {
+      const response = await fetch(`http://localhost:8000/cancelBookedActivity/${id}?username=${username}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        alert('Activity booking cancelled successfully!');
+        setErrorMessage('');
+        fetchBookedActivities(); // Refresh booked activities after cancelling one
+      } else {
+        throw new Error('Failed to cancel activity booking');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while cancelling activity booking');
+      console.error(error);
+    }
   };
   const handleCancelItineraryBooking = async (id) => { 
     const username = localStorage.getItem('Username');
@@ -268,6 +294,35 @@ const TouristProfile = () => {
       setErrorMessage('Something went wrong. Please try again later.');
     }
   };
+  const fetchBookedActivities = async () => {
+    setLoading(true);
+    const username = localStorage.getItem('Username');
+
+    if (!username) {
+      setErrorMessage('Username not found in localStorage. Please log in again.');
+      setLoading(false);
+      return; // Exit if username is not found
+    }
+
+    try {
+      const response = await axios.get(`http://localhost:8000/getBookedActivities?username=${username}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming token is stored in local storage
+        },
+      });
+
+      if (response.status === 200) {
+        setBookedActivities(response.data); 
+      } else {
+        setErrorMessage('Failed to retrieve booked activities');
+      }
+    } catch (err) {
+      setErrorMessage('Something went wrong. Please try again later.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }; 
   const fetchBookedItineraries = async () => {
     setLoading(true);
     const username = localStorage.getItem('Username');
@@ -535,7 +590,27 @@ const TouristProfile = () => {
         </div>
       )}
       </div>
-
+      <div>
+        <button onClick={toggleViewBookedActivites}>{showingBookedActivities ? 'Hide booked activites' : 'Show booked activites'}</button>
+        {showingBookedActivities && (
+        <div>
+          {bookedActivities.length > 0 ? (
+            bookedActivities.map((Activity) => (
+              <div key={Activity._id}>
+                <h4>Name: {Activity.name}</h4>
+                <p>Cateogry: {Activity.Category}</p>
+                <p>Price: ${Activity.price}</p>
+                <p>Date: {Activity.date}</p>
+                <p>Location:{Activity.Location}</p>                 
+                <button onClick={()=>handleCancelActivityBooking(Activity._id)}>Cancel Booking( 2 days before )</button>
+              </div>
+            ))
+          ) : (
+            <p>No booked activites found.</p>
+          )}
+        </div>
+      )}
+      </div>
       {errorMessage && <div className="error">{errorMessage}</div>}
       {successMessage && <div className="success">{successMessage}</div>}
       <div className="sidebar">

@@ -1020,6 +1020,7 @@ const getBookedItineraries = async(req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 const cancelBookedItinerary = async (req, res) => {
   const { itineraryId } = req.params; // Get the itinerary ID from the request parameters
   const { username } = req.query; // Get the username from the query parameters
@@ -1102,6 +1103,81 @@ const requestAccountDeletionTourist = async (req, res) => {
     res.status(500).json({ error: "Failed to submit deletion request" });
   }
 };
+const cancelActivity = async (req, res) => {
+  const { activityId } = req.params; // Get the activity ID from the request parameters
+  const { username } = req.query; // Get the username from the query parameters
+
+  console.log('cancelBookedActivity function called'); // Initial log to confirm function call
+  console.log('Received activityId:', activityId); // Log received activityId
+  console.log('Received username:', username); // Log received username
+
+  try {
+    // Find the tourist by username
+    const tourist = await touristModel.findOne({ Username: username });
+    if (!tourist) {
+      console.log('Tourist not found'); // Log if tourist is not found
+      return res.status(404).json({ message: 'Tourist not found' });
+    }
+
+    // Log the tourist's bookings for debugging
+    console.log('Tourist Bookings:', tourist.Bookings);
+
+    // Find the booked activity by ID
+    const bookedActivity = tourist.Bookings.find(booking => booking._id.toString() === activityId);
+    if (!bookedActivity) {
+      console.log('Activity not found in the tourist\'s bookings'); // Log if activity is not found
+      return res.status(404).json({ message: 'Activity not found in the tourist\'s bookings' });
+    }
+
+    // Check if the activity is within the cancellation window (48 hours before start date)
+    const activityStartDate = new Date(bookedActivity.DatesTimes);
+    const currentDate = new Date();
+    const timeDifference = activityStartDate - currentDate;
+    const hoursDifference = timeDifference / (1000 * 60 * 60); // Convert milliseconds to hours
+
+    if (hoursDifference <= 48) {
+      console.log('Activity cannot be cancelled within 48 hours of start date'); // Log if within cancellation window
+      return res.status(400).json({ message: 'Activity cannot be cancelled within 48 hours of start date' });
+    }
+
+    // Remove the booked activity from the tourist's bookings
+    tourist.Bookings = tourist.Bookings.filter(booking => booking._id.toString() !== activityId);
+
+    // Save the updated tourist record
+    await tourist.save();
+
+    res.status(200).json({ message: 'Activity booking cancelled successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+const getBookedActivities = async (req, res) => {
+  const { username } = req.query; // Get the username from the query parameters
+
+  try {
+    // Find the tourist by username
+    const tourist = await touristModel.findOne({ Username: username });
+    if (!tourist) {
+      return res.status(404).json({ message: 'Tourist not found' });
+    }
+
+    // Extract the IDs of the booked activities
+    const bookingIds = tourist.Bookings.map(booking => booking._id);
+
+    // Find the booked activities by IDs
+    const bookedActivities = await activitiesModel.find({
+      _id: { $in: bookingIds } // Use the extracted booking IDs
+    });
+
+    // Return the booked activities
+    res.status(200).json(bookedActivities);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 
  module.exports = {changepasswordTourist,setCurrency,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
@@ -1110,4 +1186,4 @@ const requestAccountDeletionTourist = async (req, res) => {
   ,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange
   ,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities
   ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
-  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist};
+  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,getBookedActivities};
