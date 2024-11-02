@@ -516,7 +516,7 @@ const TouristProfile = () => {
                   onChange={(e) => handleCommentChange(Itinerary, e.target.value)}
                   />
                 <button onClick={() => submitFeedback(Itinerary)}>Submit Feedback</button>
-                <button onClick={()=>handleCancelItineraryBooking(Itinerary._id)}>Cancel Booking</button>
+                <button onClick={()=>handleCancelItineraryBooking(Itinerary._id)}>Cancel Booking( 2 days before )</button>
               </div>
             ))
           ) : (
