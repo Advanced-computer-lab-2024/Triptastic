@@ -100,8 +100,8 @@ const TouristProfile = () => {
   const handleCancelItineraryBooking = async (id) => { 
     const username = localStorage.getItem('Username');
     try {
-      const response = await fetch(`http://localhost:8000/cancelItineraryBooking/${id}?username=${username}`, {
-        method: 'DELETE',
+      const response = await fetch(`http://localhost:8000/cancelBookedItinerary/${id}?username=${username}`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },

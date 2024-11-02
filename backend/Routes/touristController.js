@@ -1031,6 +1031,10 @@ const cancelBookedItinerary = async (req, res) => {
       return res.status(404).json({ message: 'Tourist not found' });
     }
 
+    // Log the itineraryId and the tourist's bookings for debugging
+    console.log('itineraryId:', itineraryId);
+    console.log('Tourist Bookings:', tourist.Bookings);
+
     // Find the booked itinerary by ID
     const bookedItinerary = tourist.Bookings.find(booking => booking._id.toString() === itineraryId);
     if (!bookedItinerary) {
@@ -1058,7 +1062,7 @@ const cancelBookedItinerary = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
-}
+};
 const requestAccountDeletionTourist = async (req, res) => {
   const { Username } = req.query;
 

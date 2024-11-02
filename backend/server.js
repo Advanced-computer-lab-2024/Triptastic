@@ -135,7 +135,7 @@ app.patch("/addReviewToProduct",addReviewToProduct);
 app.post("/bookItinerary",bookItinerary);
 app.get("/getBookedItineraries", getBookedItineraries);
 app.post("/submitFeedback",submitFeedback);
-app.delete('/cancelBookedItinerary/:id',cancelBookedItinerary);requestAccountDeletionTourist
+app.patch('/cancelBookedItinerary/:itineraryId',cancelBookedItinerary);
 app.post("/requestAccountDeletionTourist",requestAccountDeletionTourist);
 
 //TourGuide
