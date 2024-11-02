@@ -34,9 +34,11 @@ const touristSchema = new Schema({
 
   },
   Bookings: [{
+    
     type: Object, 
     required: true,
-  }],
+  },
+ ],
 }, { timestamps: true });
 
 const Tourist = mongoose.models.Tourist || mongoose.model('Tourist', touristSchema);

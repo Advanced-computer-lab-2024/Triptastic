@@ -891,7 +891,7 @@ const bookItinerary = async (req, res) => {
     if (itinerary.Booked) {
       return res.status(400).json({ message: 'Itinerary is Full' });
     }
-
+    
     tourist.Bookings.push(itinerary);
     await tourist.save();
 
@@ -1033,6 +1033,45 @@ const cancelBookedItinerary = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 }
+const requestAccountDeletionTourist = async (req, res) => {
+  const { Username } = req.query;
+
+  try {
+    // Find the tourist by username
+    const tourist = await touristModel.findOne({ Username });
+    if (!tourist) {
+      return res.status(404).json({ message: 'Tourist not found' });
+    }
+
+    // Check if the tourist has any bookings
+    if (tourist.Bookings.length > 0) {
+      return res.status(400).json({
+        msg: "Your account deletion request cannot be processed because you have active bookings."
+      });
+    }
+
+   
+
+    // Create a new deletion request
+    const deleteRequest = new requestModel({
+      Username: Username,
+      requestDate: new Date(),
+      status: 'pending' // Mark as pending by default
+    });
+
+    // Save the request to the database
+    await deleteRequest.save();
+
+    // Send success response
+    res.status(200).json({
+      msg: "Your request for account deletion has been submitted and is pending approval."
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to submit deletion request" });
+  }
+};
 
  module.exports = {changepasswordTourist,setCurrency,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
@@ -1041,4 +1080,4 @@ const cancelBookedItinerary = async (req, res) => {
   ,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange
   ,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities
   ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
-  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary};
+  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist};
