@@ -26,7 +26,7 @@ import MyLocations from './pages/myLocations';
 import MyMuseums from './pages/myMuseums';
 import BookFlights from './pages/bookFlights';
 import BookHotels from './pages/bookHotels';
-import bookTransportation from './pages/bookTransportation';
+import BookTransportation from './pages/bookTransportation';
 import Complaints from './pages/Complaints';
 import TouristOrders from './pages/touristOrders';
 
@@ -93,7 +93,7 @@ function App() {
         <Route path="/map-Picker" element={<MapPicker />} />
         <Route path="/book-flights" element={<BookFlights />} />
         <Route path="/book-hotels" element={<BookHotels />} />
-        <Route path="/book-transportation" element={<bookTransportation />} />
+        <Route path="/book-transportation" element={<BookTransportation />} />
         <Route path="/Complaints" element={<Complaints/>}/>
         <Route path="/tourist-orders" element={<TouristOrders/>}/>
 

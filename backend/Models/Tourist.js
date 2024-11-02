@@ -37,8 +37,17 @@ const touristSchema = new Schema({
     
     type: Object, 
     required: true,
+  }],
+  points:{
+    type:Number,
+    default:0,
+
   },
- ],
+  badge:{
+    type:Number,
+    default:1,
+  }
+  
 }, { timestamps: true });
 
 const Tourist = mongoose.models.Tourist || mongoose.model('Tourist', touristSchema);
