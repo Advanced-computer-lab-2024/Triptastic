@@ -6,6 +6,7 @@ const itineraryModel= require('../Models/Itinerary.js');
 const museumsModel=require('../Models/Museums.js');
 const { default: mongoose } = require('mongoose');
 const complaintModel = require('../Models/Complaint.js'); // Adjust the path based on your project structure
+const TourGuideModel = require('../Models/tourGuide.js'); // Adjust path as needed
 
 
 const setCurrency = (req, res) => {
@@ -771,6 +772,7 @@ const getComplaintsByTourist = async (req, res) => {
   const { username } = req.query; // Get the username from the query parameters
 
   try {
+
     if (!username) {
       return res.status(400).json({ error: 'Username is required' });
     }
@@ -897,7 +899,100 @@ const bookItinerary = async (req, res) => {
     res.status(500).json({ error: 'Error booking itinerary' });
   }
 };
- 
+
+
+const submitFeedback = async (req, res) => {
+  const { username } = req.query; // Get the username from the query parameters
+  const { Itinerary, rating, comment} = req.body; // Use itineraryId passed in the body
+
+  // Validate input
+  if (!Itinerary || !rating || !comment) {
+   
+    return res.status(400).json({ message: 'Itinerary ID, rating, and comment are required' });
+  }
+
+  // Retrieve the tourist's username from the request or session (logged-in user)
+  const touristUsername = await touristModel.findOne({ Username: username });
+
+  // Check if the tourist is authenticated
+  if (!touristUsername) {
+    return res.status(403).json({ message: 'User is not authenticated' });
+  }
+
+  try {
+    // Fetch the itinerary to find the associated tour guide's username
+    const itinerary = await itineraryModel.findById(Itinerary).populate('TourGuide'); // Ensure you have the correct model here
+
+    if (!itinerary) {
+      return res.status(404).json({ message: 'Itinerary not found' });
+    }
+    if (rating < 0 || rating > 5) {
+      return res.status(400).json({ message: 'Rating must be between 0 and 5.' });
+    }
+    const tourGuideUsername = itinerary.TourGuide; // Get the tour guide's username from the itinerary
+
+    // Create the feedback object
+    const feedbackEntry = {
+      touristUsername: touristUsername.Username, // Add the tourist's username
+      itineraryId:Itinerary, // Use the ID from the itinerary object directly
+      rating,
+      comment,
+      date: Date.now(), // Automatically set to current date
+    };
+    
+    // Find the tour guide and add the feedback
+    const foundTourGuide = await TourGuideModel.findOne({ Username: tourGuideUsername });
+
+    if (!foundTourGuide) {
+      return res.status(404).json({ message: `Tour guide '${tourGuideUsername}' not found` });
+    }
+
+    // Add the feedback to the tour guide's feedback array
+    foundTourGuide.feedback.push(feedbackEntry);
+
+    // Save the updated tour guide document
+    await foundTourGuide.save();
+
+    res.status(200).json({ message: 'Feedback submitted successfully!' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error while submitting feedback' });
+  }
+};
+
+
+
+const getBookedItineraries = async(req, res) => {
+  const { username } = req.query; // Get the username from the query parameters
+
+  try {
+
+    // Retrieve the username of the logged-in tourist
+
+    // Find the tourist by username
+    const tourist = await touristModel.findOne({ Username: username });
+    if (!tourist) {
+      return res.status(404).json({ message: 'Tourist not found' });
+    }
+
+    // Extract the Booking IDs from the tourist's Bookings array
+    const bookingIds = tourist.Bookings.map(booking => booking._id);
+
+    // Find itineraries that match the IDs in the tourist's Bookings array
+    const bookedItineraries = await itineraryModel.find({
+      _id: { $in: bookingIds } // Use the extracted booking IDs
+    });
+
+    // Return the booked itineraries
+    res.status(200).json(bookedItineraries);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+
  module.exports = {changepasswordTourist,setCurrency,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
@@ -905,4 +1000,4 @@ const bookItinerary = async (req, res) => {
   ,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange
   ,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities
   ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
-  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary};
+  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback};

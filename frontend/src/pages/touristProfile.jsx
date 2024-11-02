@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './TouristProfile.css'; // Assuming you create a CSS file for styling
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const TouristProfile = () => {
 
@@ -11,8 +12,13 @@ const TouristProfile = () => {
   const [updating, setUpdating] = useState(false); // Track update status
   const [Itineraries,setItineraries]= useState('');
   const [showingItineraries,setShowingItineraries]=useState(false);
-
+  const [bookedItineraries, setBookedItineraries] = useState([]); // State for booked itineraries
+  const [showingBookedItineraries, setShowingBookedItineraries] = useState(false); // State for showing booked itineraries
+  const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(''); // Initialize successMessage
   const [fetchedProduct, setFetchedProduct] = useState(null);//new
+  const [ratings, setRatings] = useState({});
+  const [comments, setComments] = useState({});
   const [formData, setFormData] = useState({
     Username: '',
     Email: '',
@@ -29,9 +35,32 @@ const TouristProfile = () => {
   useEffect(() => {
     fetchItineraries();
       }, []);
+      useEffect(() => {
+        fetchBookedItineraries(); // Fetch booked itineraries when the component mounts
+      }, []); // Empty dependency array means this runs once after the first render
+    
   const handleViewItineraries=()=>{
     setShowingItineraries( prev=>!prev);
   }
+  
+  
+  const handleViewBookedItineraries = () => {
+    setShowingBookedItineraries(prev => !prev);
+  };
+
+  const handleRatingChange = (itineraryId, value) => {
+    setRatings((prevRatings) => ({
+      ...prevRatings,
+      [itineraryId]: value,
+    }));
+  };
+
+  const handleCommentChange = (itineraryId, value) => {
+    setComments((prevComments) => ({
+      ...prevComments,
+      [itineraryId]: value,
+    }));
+  };
 
   const fetchTouristInfo = async () => {
     setLoading(true);
@@ -215,7 +244,65 @@ const TouristProfile = () => {
       setErrorMessage('Something went wrong. Please try again later.');
     }
   };
+  const fetchBookedItineraries = async () => {
+    setLoading(true);
+    const username = localStorage.getItem('Username');
 
+    if (!username) {
+      setErrorMessage('Username not found in localStorage. Please log in again.');
+      setLoading(false);
+      return; // Exit if username is not found
+    }
+
+    try {
+      const response = await axios.get(`http://localhost:8000/getBookedItineraries?username=${username}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming token is stored in local storage
+        },
+      });
+
+      if (response.status === 200) {
+        setBookedItineraries(response.data); // Store booked itineraries in state
+      } else {
+        setErrorMessage('Failed to retrieve booked itineraries');
+      }
+    } catch (err) {
+      setErrorMessage('Something went wrong. Please try again later.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }; 
+
+  const submitFeedback = async (Itinerary) => {
+    const tourGuideUsername = Itinerary.TourGuide;
+    const username = localStorage.getItem('Username');
+
+    console.log("Submitting feedback for itinerary:", Itinerary);
+
+
+    try {
+      const response = await axios.post(`http://localhost:8000/submitFeedback?username=${username}`, {
+        Itinerary: Itinerary,
+        rating: ratings[Itinerary],
+        comment: comments[Itinerary],
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      if (response.status === 200) {
+        setSuccessMessage('Feedback submitted successfully!');
+        setErrorMessage('');
+      }
+    } catch (err) {
+     
+      setErrorMessage(err.response?.data?.message || 'Failed to submit feedback');
+      setSuccessMessage('');
+    }
+  };
+  
   return (
     <div className="tourist-profile-container">
       <div className="profile-content">
@@ -398,7 +485,41 @@ const TouristProfile = () => {
           </ul>
         )}
       </div>
+      <div>
+      <button onClick={handleViewBookedItineraries}> {showingBookedItineraries ? 'Hide booked itineraries' : 'Show booked itineraries'}</button>
+      {showingBookedItineraries && (
+        <div>
+          {bookedItineraries.length > 0 ? (
+            bookedItineraries.map((Itinerary) => (
+              <div key={Itinerary._id}>
+                <h4>Booked Activities: {Itinerary.Activities.join(', ')}</h4>
+                <p>Locations: {Itinerary.Locations.join(', ')}</p>
+                <p>Price: ${Itinerary.price}</p>
+                <p>TourGuide: ${Itinerary.TourGuide}</p>
+                 <input 
+                  type="number" 
+                  placeholder="Rating" 
+                  onChange={(e) => handleRatingChange(Itinerary, e.target.value)}
+                  />
+                <input 
+                  type="text" 
+                  placeholder="Comment" 
+                  onChange={(e) => handleCommentChange(Itinerary, e.target.value)}
+                  />
+                <button onClick={() => submitFeedback(Itinerary)}>Submit Feedback</button>
+              </div>
+            ))
+          ) : (
+            <p>No booked itineraries found.</p>
+          )}
+        </div>
+      )}
+      </div>
+
+      {errorMessage && <div className="error">{errorMessage}</div>}
+      {successMessage && <div className="success">{successMessage}</div>}
     </div>
+    
   );
 };
 
