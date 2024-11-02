@@ -865,10 +865,10 @@ const bookActivity = async (req, res) => {
 };
 
 const bookItinerary = async (req, res) => {
-  const { Activities, Username } = req.body;
+  const { itineraryId, Username } = req.body;
 
   try {
-    const itinerary = await itineraryModel.findOne({Activities:Activities});
+    const itinerary = await itineraryModel.findById(itineraryId);
 
     if (!itinerary) {
       return res.status(404).json({ error: 'Itinerary not found' });
@@ -879,6 +879,7 @@ const bookItinerary = async (req, res) => {
     if (!tourist) {
       return res.status(404).json({ error: 'Tourist not found' });
     }
+
     const alreadyBooked = tourist.Bookings.some(
       booking => booking._id.toString() === itinerary._id.toString()
     );
@@ -890,15 +891,18 @@ const bookItinerary = async (req, res) => {
     if (itinerary.Booked) {
       return res.status(400).json({ message: 'Itinerary is Full' });
     }
+
     tourist.Bookings.push(itinerary);
     await tourist.save();
 
     res.status(200).json({
-      message: 'Itinerary booked successfully',tourist});
+      message: 'Itinerary booked successfully', tourist
+    });
   } catch (error) {
     res.status(500).json({ error: 'Error booking itinerary' });
   }
 };
+
 
 
 const submitFeedback = async (req, res) => {
