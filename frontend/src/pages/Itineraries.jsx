@@ -127,11 +127,11 @@ const Itineraries = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          Activities: itinerary.Activities,
+          itineraryId: itinerary._id, // Use the itinerary ID
           Username: username,
         }),
       });
-
+  
       if (response.ok) {
         const result = await response.json();
         alert(result.message); // Show success message
@@ -145,6 +145,7 @@ const Itineraries = () => {
       alert('An error occurred while booking the itinerary');
     }
   };
+  
 
   useEffect(() => {
     fetchASCItineraries(); // Default to ascending sort

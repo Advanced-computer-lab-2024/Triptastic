@@ -821,6 +821,31 @@ const changepasswordTourist = async (req, res) => {
 };
 
 
+const calculateAndAddPoints = async (tourist, amountPaid) => {
+  let pointsToAdd = 0;
+
+  if (tourist.badge === 1) {
+    pointsToAdd = amountPaid * 0.5;
+  } else if (tourist.badge === 2) {
+    pointsToAdd = amountPaid * 1;
+  } else if (tourist.badge === 3) {
+    pointsToAdd = amountPaid * 1.5;
+  }
+
+  tourist.points += pointsToAdd;
+
+  if (tourist.points > 500000) {
+    tourist.badge = 3;
+  } else if (tourist.points > 100000) {
+    tourist.badge = 2;
+  } else {
+    tourist.badge = 1;
+  }
+
+  await tourist.save(); 
+};
+
+
 const bookActivity = async (req, res) => {
   const { name, Username } = req.body; 
 
@@ -852,7 +877,7 @@ const bookActivity = async (req, res) => {
       return res.status(400).json({ error: 'You have already booked this activity' });
     }
 
-    // Step 4: Add the full activity object to the tourist's Bookings array
+    await calculateAndAddPoints(tourist, activity.price);
     tourist.Bookings.push(activity);
 
     // Save the updated tourist record
@@ -865,10 +890,10 @@ const bookActivity = async (req, res) => {
 };
 
 const bookItinerary = async (req, res) => {
-  const { Activities, Username } = req.body;
+  const { itineraryId, Username } = req.body;
 
   try {
-    const itinerary = await itineraryModel.findOne({Activities:Activities});
+    const itinerary = await itineraryModel.findById(itineraryId);
 
     if (!itinerary) {
       return res.status(404).json({ error: 'Itinerary not found' });
@@ -879,6 +904,7 @@ const bookItinerary = async (req, res) => {
     if (!tourist) {
       return res.status(404).json({ error: 'Tourist not found' });
     }
+
     const alreadyBooked = tourist.Bookings.some(
       booking => booking._id.toString() === itinerary._id.toString()
     );
@@ -890,15 +916,19 @@ const bookItinerary = async (req, res) => {
     if (itinerary.Booked) {
       return res.status(400).json({ message: 'Itinerary is Full' });
     }
+    await calculateAndAddPoints(tourist, itinerary.Price);
+
     tourist.Bookings.push(itinerary);
     await tourist.save();
 
     res.status(200).json({
-      message: 'Itinerary booked successfully',tourist});
+      message: 'Itinerary booked successfully', tourist
+    });
   } catch (error) {
     res.status(500).json({ error: 'Error booking itinerary' });
   }
 };
+
 
 
 const submitFeedback = async (req, res) => {
