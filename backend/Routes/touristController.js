@@ -697,25 +697,28 @@ const sortProductsByRatingTourist = async (req, res) => {
 };
 
 const shareActivity = async (req, res) => {
-  const { name } = req.params; // Get the activity ID from the request
+  const { name } = req.params; // Get the activity name from the request
 
   try {
-      // Find the activity by ID
-      const activity = await activitiesModel.findOne({ name: name });
-      if (!activity) {
-          return res.status(404).json({ error: 'Activity not found' });
-      }
+    // Find the activity by name
+    const activity = await activitiesModel.findOne({ name: name });
+    if (!activity) {
+      return res.status(404).json({ error: 'Activity not found' });
+    }
 
-      // Generate the shareable link
-      const shareableLink = `https://yourwebsite.com/activities/${name}`;
+    // Generate the shareable link using the activity ID (or another unique identifier)
+    const shareableLink =`http://localhost:3000/activities/${encodeURIComponent(activity.name)}`; // Add any other details you want
 
-      // Return the link for sharing
-      res.status(200).json({ link: shareableLink });
+
+    // Return the link for sharing
+    res.status(200).json({ link: shareableLink });
   } catch (error) {
-      console.error('Error generating shareable link:', error);
-      res.status(500).json({ error: 'Server error' });
+    console.error('Error generating shareable link:', error);
+    res.status(500).json({ error: 'Server error' });
   }
 };
+
+
 const shareHistorical = async (req, res) => {
   const { Name } = req.params; 
 
@@ -1264,9 +1267,26 @@ const getBookedActivities = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+const getActivityToShare = async (req, res) => {
+  const { name } = req.params; // Get the activity name from the request
+
+  try {
+    // Find the activity by name
+    const activity = await activitiesModel.findOne({ name: name });
+    if (!activity) {
+      return res.status(404).json({ error: 'Activity not found' });
+    }
+
+    // Return the found activity
+    res.status(200).json(activity);
+  } catch (error) {
+    console.error('Error retrieving activity:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
 
 
- module.exports = {changepasswordTourist,setCurrency,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+ module.exports = {getActivityToShare,changepasswordTourist,setCurrency,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
