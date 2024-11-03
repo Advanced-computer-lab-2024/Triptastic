@@ -29,9 +29,26 @@ const AdminPage = () => {
   const [showingItineraries,setShowingItineraries]=useState(false);
   const [showingTouristItineraries,setShowingTouristItineraries]=useState(false);
   const [showingActivities,setShowingActivities]=useState(false);
-  //new
   const [productNameToSearch, setProductNameToSearch] = useState('');
   const [productSearchResult, setProductSearchResult] = useState(null);
+  const [changePasswordData, setChangePasswordData] = useState({
+    Username: '',
+    currentPassword: '',
+    newPassword: ''
+  });
+  const [changePasswordLoading, setChangePasswordLoading] = useState(false);
+  const [changePasswordSuccess, setChangePasswordSuccess] = useState('');
+  const [changePasswordError, setChangePasswordError] = useState('');
+  const [complaintIdToSearch, setComplaintIdToSearch] = useState('');
+  const [complaintDetails, setComplaintDetails] = useState(null);
+  const [complaintLoading, setComplaintLoading] = useState(false);
+  const [complaintError, setComplaintError] = useState('');
+  const [complaintIdToUpdate, setComplaintIdToUpdate] = useState('');
+  const [complaintStatus, setComplaintStatus] = useState('pending');
+  const [updateStatusMessage, setUpdateStatusMessage] = useState('');
+  const [updateStatusError, setUpdateStatusError] = useState('');
+  const [updateStatusLoading, setUpdateStatusLoading] = useState(false);
+  
   
  
   const [productFormData, setProductFormData] = useState({
@@ -599,9 +616,98 @@ const getProductByName = async (e) => {
     }
   };
 
-
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setChangePasswordLoading(true);
+    setChangePasswordSuccess('');
+    setChangePasswordError('');
+  
+    try {
+      const response = await fetch('http://localhost:8000/changePasswordAdmin', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(changePasswordData)
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        setChangePasswordSuccess(data.message);
+        setChangePasswordData({ Username: '', currentPassword: '', newPassword: '' });
+      } else {
+        const errorData = await response.json();
+        setChangePasswordError(errorData.error || 'Failed to change password.');
+      }
+    } catch (error) {
+      setChangePasswordError('An error occurred while changing the password.');
+      console.error(error);
+    } finally {
+      setChangePasswordLoading(false);
+    }
+  };
+  const fetchComplaintDetails = async (e) => {
+    e.preventDefault();
+    setComplaintLoading(true);
+    setComplaintError('');
+    setComplaintDetails(null);
+  
+    try {
+      const response = await fetch(`http://localhost:8000/getComplaintDetails/${complaintIdToSearch.trim()}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        setComplaintDetails(data); // Store the fetched complaint details
+      } else {
+        const errorData = await response.json();
+        setComplaintError(errorData.error || 'Complaint not found.');
+      }
+    } catch (error) {
+      setComplaintError('An error occurred while fetching the complaint details.');
+      console.error(error);
+    } finally {
+      setComplaintLoading(false);
+    }
+  };
+  
+  const updateComplaintStatus = async (e) => {
+    e.preventDefault();
+    setUpdateStatusLoading(true);
+    setUpdateStatusError('');
+    setUpdateStatusMessage('');
+  
+    try {
+      const response = await fetch(`http://localhost:8000/updateComplaintStatus/${complaintIdToUpdate.trim()}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: complaintStatus }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        setUpdateStatusMessage(data.message || 'Complaint status updated successfully.');
+      } else {
+        const errorData = await response.json();
+        setUpdateStatusError(errorData.error || 'Failed to update complaint status.');
+      }
+    } catch (error) {
+      setUpdateStatusError('An error occurred while updating the complaint status.');
+      console.error(error);
+    } finally {
+      setUpdateStatusLoading(false);
+    }
+  };
+  
   return (
     <div>
+
       <h1>Admin Page</h1>
 
       <h2>Create Admin</h2>
@@ -630,6 +736,117 @@ const getProductByName = async (e) => {
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
       </form>
+
+      <h2>Change Admin Password</h2>
+<form onSubmit={handleChangePassword}>
+  <div>
+    <label>Username:</label>
+    <input
+      type="text"
+      name="Username"
+      value={changePasswordData.Username}
+      onChange={(e) =>
+        setChangePasswordData((prevData) => ({
+          ...prevData,
+          Username: e.target.value
+        }))
+      }
+      required
+    />
+  </div>
+  <div>
+    <label>Current Password:</label>
+    <input
+      type="password"
+      name="currentPassword"
+      value={changePasswordData.currentPassword}
+      onChange={(e) =>
+        setChangePasswordData((prevData) => ({
+          ...prevData,
+          currentPassword: e.target.value
+        }))
+      }
+      required
+    />
+  </div>
+  <div>
+    <label>New Password:</label>
+    <input
+      type="password"
+      name="newPassword"
+      value={changePasswordData.newPassword}
+      onChange={(e) =>
+        setChangePasswordData((prevData) => ({
+          ...prevData,
+          newPassword: e.target.value
+        }))
+      }
+      required
+    />
+  </div>
+  <button type="submit" disabled={changePasswordLoading}>
+    {changePasswordLoading ? 'Changing...' : 'Change Password'}
+  </button>
+  {changePasswordSuccess && <p style={{ color: 'green' }}>{changePasswordSuccess}</p>}
+  {changePasswordError && <p style={{ color: 'red' }}>{changePasswordError}</p>}
+</form>
+
+<h2>View Complaint Details</h2>
+<form onSubmit={fetchComplaintDetails}>
+  <div>
+    <label>Complaint ID:</label>
+    <input
+      type="text"
+      value={complaintIdToSearch}
+      onChange={(e) => setComplaintIdToSearch(e.target.value)}
+      required
+    />
+  </div>
+  <button type="submit" disabled={complaintLoading}>
+    {complaintLoading ? 'Searching...' : 'Get Complaint Details'}
+  </button>
+  {complaintError && <p style={{ color: 'red' }}>{complaintError}</p>}
+</form>
+
+{complaintDetails && (
+  <div>
+    <h3>Complaint Details</h3>
+    <p><strong>Title:</strong> {complaintDetails.title}</p>
+    <p><strong>Body:</strong> {complaintDetails.body}</p>
+    <p><strong>Date:</strong> {new Date(complaintDetails.date).toLocaleDateString()}</p>
+    <p><strong>Username:</strong> {complaintDetails.username}</p>
+    <p><strong>Status:</strong> {complaintDetails.status}</p>
+  </div>
+)}
+
+<h2>Update Complaint Status</h2>
+<form onSubmit={updateComplaintStatus}>
+  <div>
+    <label>Complaint ID:</label>
+    <input
+      type="text"
+      value={complaintIdToUpdate}
+      onChange={(e) => setComplaintIdToUpdate(e.target.value)}
+      required
+    />
+  </div>
+  <div>
+    <label>Status:</label>
+    <select
+      value={complaintStatus}
+      onChange={(e) => setComplaintStatus(e.target.value)}
+      required
+    >
+      <option value="pending">Pending</option>
+      <option value="resolved">Resolved</option>
+    </select>
+  </div>
+  <button type="submit" disabled={updateStatusLoading}>
+    {updateStatusLoading ? 'Updating...' : 'Update Status'}
+  </button>
+  {updateStatusError && <p style={{ color: 'red' }}>{updateStatusError}</p>}
+  {updateStatusMessage && <p style={{ color: 'green' }}>{updateStatusMessage}</p>}
+</form>
 
       <h2>Add Product</h2>
       <form onSubmit={handleProductSubmit}>

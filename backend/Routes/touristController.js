@@ -6,20 +6,42 @@ const itineraryModel= require('../Models/Itinerary.js');
 const museumsModel=require('../Models/Museums.js');
 const { default: mongoose } = require('mongoose');
 const complaintModel = require('../Models/Complaint.js'); // Adjust the path based on your project structure
+const axios = require('axios');
 
 
-const setCurrency = (req, res) => {
-  const { currency } = req.body;
+const getCurrencyRates = async (req, res) => {
+  try {
+    const baseCurrency = 'USD';
+    const selectedCurrency = (req.query.currency || 'USD').trim(); // Trim any extra whitespace
 
-  if (!currency) {
-    return res.status(400).json({ error: 'Currency is required' });
+    // Fetch exchange rates from an external API
+    const response = await axios.get(`https://api.exchangerate-api.com/v4/latest/${baseCurrency}`);
+    
+    if (!response.data || !response.data.rates) {
+      console.error('API response is missing expected data structure:', response.data);
+      return res.status(500).json({ error: 'API response structure issue' });
+    }
+    
+    // Log the complete response and selected currency
+    console.log('API response:', response.data);
+    console.log('Selected currency:', selectedCurrency);
+    
+    const rates = response.data.rates;
+    const exchangeRate = rates[selectedCurrency];
+
+    if (!exchangeRate) {
+      console.warn(`Currency ${selectedCurrency} is not supported by the API response.`);
+      return res.status(400).json({ error: `Currency ${selectedCurrency} not supported or unavailable` });
+    }
+
+    // Send the exchange rate for the selected currency
+    res.json({ rate: exchangeRate });
+  } catch (error) {
+    console.error('Error fetching currency rates:', error.message || error);
+    res.status(500).json({ error: 'Error fetching currency rates' });
   }
-
-  // Store the selected currency in the session
-  req.session.selectedCurrency = currency;
-
-  res.status(200).json({ message: `Currency set to ${currency}` });
 };
+
 
 const createTourist = async(req,res) => {
 
@@ -33,6 +55,7 @@ const createTourist = async(req,res) => {
  
     }
  }
+
  const getTourist= async(req,res) =>{
   const {Username}= req.query;
   
@@ -88,9 +111,6 @@ const fileComplaint = async (req, res) => {
 };
 
 
-
-
-
  const gethistoricalLocationByName= async(req,res) =>{
     const {Name}= req.query;
     
@@ -114,6 +134,7 @@ const fileComplaint = async (req, res) => {
      res.status(400).json({ error: error.message });
    }
  };
+
  const addReviewToProduct = async (req, res) => {
   const { productName, review, rating } = req.body;
 
@@ -268,38 +289,8 @@ const getUniqueHistoricalPeriods = async (req, res) => {
  //need to add to other methods still
 const viewProductsTourist = async (req, res) => {
   try {
-    // Step 1: Get the selected currency from the session, default to USD if not set
-    const selectedCurrency = req.session.selectedCurrency || 'USD';
-
-    // Step 2: Fetch products from the database
-    const products = await productModel.find();
-
-    // Step 3: Define exchange rates (you can move this to a separate file for larger applications)
-    const exchangeRates = {
-      USD: 1,      // Base currency
-      EUR: 0.85,   // Example: 1 USD = 0.85 EUR
-      GBP: 0.75,   // Example: 1 USD = 0.75 GBP
-      EGP: 15.75   // Example: 1 USD = 15.75 EGP
-    };
-
-    // Step 4: Get the exchange rate for the selected currency
-    const exchangeRate = exchangeRates[selectedCurrency] || 1;
-
-    // Step 5: Convert product prices based on the selected currency
-    const convertedProducts = products.map(product => ({
-      productName: product.productName,
-      description: product.description,
-      price: (product.price * exchangeRate).toFixed(2),  // Convert the price
-      currency: selectedCurrency,  // Add the currency info to the response
-      rating: product.rating,
-      seller: product.seller,
-      review: product.review,
-      stock: product.stock,
-      image: product.image
-    }));
-
-    // Step 6: Return the products with converted prices
-    res.status(200).json(convertedProducts);
+    const products = await productModel.find(); 
+    res.json(products); 
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -879,7 +870,8 @@ const bookItinerary = async (req, res) => {
   }
 };
  
- module.exports = {changepasswordTourist,setCurrency,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+
+ module.exports = {getCurrencyRates,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist

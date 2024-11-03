@@ -11,7 +11,6 @@ const TouristProfile = () => {
   const [updating, setUpdating] = useState(false); // Track update status
   const [Itineraries,setItineraries]= useState('');
   const [showingItineraries,setShowingItineraries]=useState(false);
-
   const [fetchedProduct, setFetchedProduct] = useState(null);//new
   const [formData, setFormData] = useState({
     Username: '',
