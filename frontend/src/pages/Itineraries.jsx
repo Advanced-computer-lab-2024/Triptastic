@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import axios from 'axios';
 const Itineraries = () => {
   const [itineraries, setItineraries] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -118,35 +118,53 @@ const Itineraries = () => {
     }));
   };
 
+  // const handleBooking = async (itinerary) => {
+  //   const username = localStorage.getItem('Username'); // Assuming you store the username in local storage
+  //   try {
+  //     const response = await fetch('http://localhost:8000/bookItinerary', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         itineraryId: itinerary._id, // Use the itinerary ID
+  //         Username: username,
+  //       }),
+  //     });
+  
+  //     if (response.ok) {
+  //       const result = await response.json();
+  //       alert(result.message); // Show success message
+  //       fetchASCItineraries(); // Refresh the itineraries to reflect the booking
+  //     } else {
+  //       const error = await response.json();
+  //       alert(error.error || 'An error occurred while booking the itinerary'); // Show error message
+  //     }
+  //   } catch (error) {
+  //     console.error('Error booking itinerary:', error);
+  //     alert('An error occurred while booking the itinerary');
+  //   }
+  // };
+  
+
   const handleBooking = async (itinerary) => {
     const username = localStorage.getItem('Username'); // Assuming you store the username in local storage
     try {
-      const response = await fetch('http://localhost:8000/bookItinerary', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          itineraryId: itinerary._id, // Use the itinerary ID
-          Username: username,
-        }),
+      const response = await axios.post('http://localhost:8000/bookItinerary', {
+        itineraryId: itinerary._id, // Use the itinerary ID
+        Username: username,
       });
-  
-      if (response.ok) {
-        const result = await response.json();
-        alert(result.message); // Show success message
+
+      if (response.status === 200) {
+        const result = response.data;
+        alert(`${result.message}\nPoints Earned: ${result.pointsEarned}\nNew Total Points: ${result.newTotalPoints}`);
         fetchASCItineraries(); // Refresh the itineraries to reflect the booking
-      } else {
-        const error = await response.json();
-        alert(error.error || 'An error occurred while booking the itinerary'); // Show error message
       }
     } catch (error) {
       console.error('Error booking itinerary:', error);
-      alert('An error occurred while booking the itinerary');
+      alert(error.response?.data?.error || 'An error occurred while booking the itinerary');
     }
   };
-  
-
   useEffect(() => {
     fetchASCItineraries(); // Default to ascending sort
   }, []);

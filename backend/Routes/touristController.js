@@ -586,10 +586,9 @@ const sortProductsByRatingTourist = async (req, res) => {
     } catch (error) {
       res.status(500).json({ error: 'Error fetching itineraries' });
     }
-  };
-  const searchActivities = async (req, res) => {
+  };const searchActivities = async (req, res) => {
     const { name, category, tag } = req.query;
-
+  
     try {
       // Create a dynamic search query
       const searchQuery = {};
@@ -603,23 +602,31 @@ const sortProductsByRatingTourist = async (req, res) => {
       if (tag) {
         searchQuery.tags = { $regex: tag, $options: 'i' }; // case-insensitive search for tags
       }
-      console.log('Search Query:', searchQuery);
-    
-  
-      const activities = await activitiesModel.find(searchQuery);
       
+      console.log('Search Query:', searchQuery);
+  
+      // Check if any activities exist for the specified category before executing full query
+      if (category) {
+        const categoryExists = await activitiesModel.exists({ Category: { $regex: category, $options: 'i' } });
+        if (!categoryExists) {
+          return res.status(404).json({ message: 'No activities found matching your category criteria.' });
+        }
+      }
+  
+      // Execute full query with dynamic criteria
+      const activities = await activitiesModel.find(searchQuery);
+  
       if (activities.length > 0) {
         res.status(200).json(activities);
       } else {
-        res.status(404).json({ message: 'No activities found matching the search criteria.' });
+        res.status(404).json({ message: 'No activities found matching your criteria.' });
       }
     } catch (error) {
       console.error('Error searching activities:', error);
       res.status(500).json({ message: 'Server error while searching for activities.', error: error.message });
     }
-
-
-  }
+  };
+  
   const commentOnActivity = async (req, res) => {
     
     const { name, Username,comment } = req.body; // Ensure you're passing Username and not username
@@ -889,18 +896,55 @@ const bookActivity = async (req, res) => {
   }
 };
 
+// const bookItinerary = async (req, res) => {
+//   const { itineraryId, Username } = req.body;
+
+//   try {
+//     const itinerary = await itineraryModel.findById(itineraryId);
+
+//     if (!itinerary) {
+//       return res.status(404).json({ error: 'Itinerary not found' });
+//     }
+   
+//     const tourist = await touristModel.findOne({ Username: Username });
+//     console.log('Tourist:', tourist);
+//     if (!tourist) {
+//       return res.status(404).json({ error: 'Tourist not found' });
+//     }
+
+//     const alreadyBooked = tourist.Bookings.some(
+//       booking => booking._id.toString() === itinerary._id.toString()
+//     );
+
+//     if (alreadyBooked) {
+//       return res.status(400).json({ error: 'You have already booked this itinerary' });
+//     }
+
+//     if (itinerary.Booked) {
+//       return res.status(400).json({ message: 'Itinerary is Full' });
+//     }
+//     await calculateAndAddPoints(tourist, itinerary.Price);
+    
+//     tourist.Bookings.push(itinerary);
+//     await tourist.save();
+
+//     res.status(200).json({
+//       message: 'Itinerary booked successfully', tourist
+//     });
+//   } catch (error) {
+//     res.status(500).json({ error: 'Error booking itinerary' });
+//   }
+// };
 const bookItinerary = async (req, res) => {
   const { itineraryId, Username } = req.body;
 
   try {
     const itinerary = await itineraryModel.findById(itineraryId);
-
     if (!itinerary) {
       return res.status(404).json({ error: 'Itinerary not found' });
     }
-   
-    const tourist = await touristModel.findOne({ Username: Username });
-    console.log('Tourist:', tourist);
+
+    const tourist = await touristModel.findOne({ Username });
     if (!tourist) {
       return res.status(404).json({ error: 'Tourist not found' });
     }
@@ -916,15 +960,49 @@ const bookItinerary = async (req, res) => {
     if (itinerary.Booked) {
       return res.status(400).json({ message: 'Itinerary is Full' });
     }
-    await calculateAndAddPoints(tourist, itinerary.Price);
-    
+
+    // Calculate points based on badge level
+    let pointsEarned;
+    if (tourist.badge === 1) {
+      pointsEarned = itinerary.Price * 0.5;
+    } else if (tourist.badge === 2) {
+      pointsEarned = itinerary.Price * 1;
+    } else if (tourist.badge === 3) {
+      pointsEarned = itinerary.Price * 1.5;
+    } else {
+      pointsEarned = 0; // In case badge level is invalid or undefined
+    }
+
+    // Add points to the tourist's total points
+    tourist.points += pointsEarned;
+
+    // Check if points reach or exceed 10,000 to add cash to wallet
+    if (tourist.points >= 10000) {
+      const cashBonus = Math.floor(tourist.points / 10000) * 100; // Calculate cash based on total points
+      tourist.Wallet = (tourist.Wallet || 0) + cashBonus;
+    }
+
+    if (tourist.points > 500000) {
+      tourist.badge = 3;
+    } else if (tourist.points > 100000) {
+      tourist.badge = 2;
+    } else {
+      tourist.badge = 1;
+    }
+  
+    // Save the booking and updated tourist information
     tourist.Bookings.push(itinerary);
     await tourist.save();
 
     res.status(200).json({
-      message: 'Itinerary booked successfully', tourist
+      message: 'Itinerary booked successfully',
+      pointsEarned,
+      newTotalPoints: tourist.points,
+      newWalletBalance: tourist.Wallet,
+      tourist,
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Error booking itinerary' });
   }
 };

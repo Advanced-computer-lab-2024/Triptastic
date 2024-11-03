@@ -30,6 +30,7 @@ const touristSchema = new Schema({
   },
   Wallet:{
     type:Number,
+    default:0,
     required:false
 
   },

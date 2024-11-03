@@ -145,6 +145,11 @@ const Activities = () => {
           setActivities(filteredActivities); // Set the activities that match the criteria
           setErrorMessage(''); // Clear error message if activities are found
         }
+      } else if (response.status === 404) {
+        // Handle 404 Not Found error for specific messages
+        const errorData = await response.json();
+        setErrorMessage(errorData.message || 'No activities found matching your criteria.');
+        setActivities([]); // Ensure the activities list is empty
       } else {
         throw new Error('Failed to fetch activities');
       }

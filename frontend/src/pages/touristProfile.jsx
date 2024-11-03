@@ -405,6 +405,10 @@ const TouristProfile = () => {
                 <p>{touristInfo.badge}</p> 
               </div>
               <div>
+                <label><strong>Wallet Balance:</strong></label>
+                <p>${touristInfo.Wallet}</p>
+              </div>
+              <div>
                 <label><strong>Email:</strong></label>
                 <input
                   type="email"
@@ -449,10 +453,7 @@ const TouristProfile = () => {
                   onChange={handleInputChange}
                 />
               </div>
-              <div>
-                <label><strong>Wallet:</strong></label>
-                <p>{touristInfo.Wallet}</p> {/* Display Wallet as text */}
-              </div>
+              
 
               <button onClick={handleUpdate} disabled={updating}>
                 {updating ? 'Updating...' : 'Update Information'}
