@@ -47,8 +47,14 @@ const touristSchema = new Schema({
   badge:{
     type:Number,
     default:1,
+  },
+  preferences: {
+    historicAreas: { type: Boolean, default: false },
+    beaches: { type: Boolean, default: false },
+    familyFriendly: { type: Boolean, default: false },
+    shopping: { type: Boolean, default: false },
+    budget: { type: String, enum: ['low', 'medium', 'high'], default: 'medium' }
   }
-  
 }, { timestamps: true });
 
 const Tourist = mongoose.models.Tourist || mongoose.model('Tourist', touristSchema);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import { Link } from 'react-router-dom'; // Import Link for routing
 const Activities = () => {
   const [activities, setActivities] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -9,7 +9,9 @@ const Activities = () => {
   const [ratingData, setRatingData] = useState({ rating: '' }); // New state for rating
   const [responseMsg, setResponseMsg] = useState('');
   const [shareableLink, setShareableLink] = useState('');
-  const [copySuccess, setCopySuccess] = useState('');
+ 
+  const [copySuccess, setCopySuccess] = useState({});
+
   // Sorting states
   const [priceSort, setPriceSort] = useState('PASC'); // 'PASC' or 'PDSC'
   const [ratingSort, setRatingSort] = useState('RASC'); // 'RASC' or 'RDSC'
@@ -195,14 +197,14 @@ const Activities = () => {
   const handleShare = async (activity) => {
      
     try {
-        const response = await fetch(`http://localhost:8000/shareActivity/${activity.name}`);
+      const response = await fetch(`http://localhost:8000/shareActivity/${activity.name}`);
         const data = await response.json();
 
         if (response.ok) {
           setShareableLink(data.link); // Set the link to state
           await navigator.clipboard.writeText(data.link); // Copy link to clipboard
-          setCopySuccess('Link copied to clipboard!'); // Set success message
-           
+ // Set success message for the specific activity
+ setCopySuccess((prev) => ({ ...prev, [activity._id]: 'Link copied to clipboard!' }));           
         } else {
             console.error("Failed to generate shareable link");
         }
@@ -360,8 +362,8 @@ const bookActivity = async (activityName) => {
                    <button onClick={() => bookActivity(activity.name)}>Book Ticket</button>
                   {/* Share Button */}
                   <button onClick={() => handleShare(activity)}>Share Activity</button>
-                  {/* Display success message after copying */}
-                  {copySuccess && <p style={{ color: 'green' }}>{copySuccess}</p>}
+        {/* Display success message after copying, specific to this activity */}
+        {copySuccess[activity._id] && <p style={{ color: 'green' }}>{copySuccess[activity._id]}</p>}
                   {/* Button to toggle activity details */}
                   <button onClick={() => toggleActivityDetails(activity._id)}>
                     {expandedActivities[activity._id] ? 'Hide Activity Details' : 'View Activity Details'}

@@ -7,6 +7,8 @@ const museumsModel=require('../Models/Museums.js');
 const { default: mongoose } = require('mongoose');
 const complaintModel = require('../Models/Complaint.js'); // Adjust the path based on your project structure
 const TourGuideModel = require('../Models/tourGuide.js'); // Adjust path as needed
+const requestModel = require('../Models/Request.js'); // Adjust path as needed
+
 
 
 const setCurrency = (req, res) => {
@@ -695,25 +697,28 @@ const sortProductsByRatingTourist = async (req, res) => {
 };
 
 const shareActivity = async (req, res) => {
-  const { name } = req.params; // Get the activity ID from the request
+  const { name } = req.params; // Get the activity name from the request
 
   try {
-      // Find the activity by ID
-      const activity = await activitiesModel.findOne({ name: name });
-      if (!activity) {
-          return res.status(404).json({ error: 'Activity not found' });
-      }
+    // Find the activity by name
+    const activity = await activitiesModel.findOne({ name: name });
+    if (!activity) {
+      return res.status(404).json({ error: 'Activity not found' });
+    }
 
-      // Generate the shareable link
-      const shareableLink = `https://yourwebsite.com/activities/${name}`;
+    // Generate the shareable link using the activity ID (or another unique identifier)
+    const shareableLink =`http://localhost:3000/activities/${encodeURIComponent(activity.name)}`; // Add any other details you want
 
-      // Return the link for sharing
-      res.status(200).json({ link: shareableLink });
+
+    // Return the link for sharing
+    res.status(200).json({ link: shareableLink });
   } catch (error) {
-      console.error('Error generating shareable link:', error);
-      res.status(500).json({ error: 'Server error' });
+    console.error('Error generating shareable link:', error);
+    res.status(500).json({ error: 'Server error' });
   }
 };
+
+
 const shareHistorical = async (req, res) => {
   const { Name } = req.params; 
 
@@ -1262,13 +1267,44 @@ const getBookedActivities = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+const setPreferences = async (req, res) => {
+  try {
+    const { username } = req.query;
+    const preferences = req.body;
+    await touristModel.findOneAndUpdate({ Username: username }, { preferences }, { new: true });
+    res.json({ message: 'Preferences updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to update preferences' });
+  }
+
+}
 
 
- module.exports = {changepasswordTourist,setCurrency,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+const getActivityToShare = async (req, res) => {
+  const { name } = req.params; // Get the activity name from the request
+
+  try {
+    // Find the activity by name
+    const activity = await activitiesModel.findOne({ name: name });
+    if (!activity) {
+      return res.status(404).json({ error: 'Activity not found' });
+    }
+
+    // Return the found activity
+    res.status(200).json(activity);
+  } catch (error) {
+    console.error('Error retrieving activity:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+
+ module.exports = {getActivityToShare,changepasswordTourist,setCurrency,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
   ,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange
   ,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities
   ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
-  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,getBookedActivities};
+  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,getBookedActivities,setPreferences};
