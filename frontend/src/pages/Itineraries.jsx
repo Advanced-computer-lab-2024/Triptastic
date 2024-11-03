@@ -157,7 +157,7 @@ const Itineraries = () => {
 
       if (response.status === 200) {
         const result = response.data;
-        alert(`${result.message}\nPoints Earned: ${result.pointsEarned}\nNew Total Points: ${result.newTotalPoints}`);
+         alert(result.message);
         fetchASCItineraries(); // Refresh the itineraries to reflect the booking
       }
     } catch (error) {
