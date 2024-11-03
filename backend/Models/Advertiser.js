@@ -41,6 +41,10 @@ const advertiserSchema = new Schema({
   TaxationRegistryCard: { 
     type: String,
     required:true,
+  },docsApproved: {
+    type: String,
+    enum: ['pending', 'accepted', 'rejected'], 
+    default: 'pending' 
   },
 
 

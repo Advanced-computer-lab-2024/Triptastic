@@ -13,7 +13,7 @@ const {createTourGuideInfo,createTourGuide}=require("./Routes/tourGuideControlle
 const {updateTourGuide}=require("./Routes/tourGuideController");
 const {getTourGuide}=require("./Routes/tourGuideController");
 const {createItinerary,getItinerary,updateItinerary,deleteItinerary,getTouristItinerary,createTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG}=require("./Routes/tourGuideController");
-const {changePasswordTourGuide}=require("./Routes/tourGuideController");
+const {changePasswordTourGuide,getPendingTourGuides}=require("./Routes/tourGuideController");
 
 //Guest
 const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActivitiesGuest,filterActivitiesGuest,filterHistoricalLocationsByTagsGuest,filterMuseumsByTagsGuest,viewAllMuseumsGuest}=require("./Routes/guestController");
@@ -27,10 +27,10 @@ const {changepasswordTourist,setCurrency,createTourist,gethistoricalLocationByNa
   fileComplaint,getComplaintsByTourist,shareActivity,shareHistorical,shareMuseum,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,getBookedActivities,getActivityToShare,setPreferences} = require("./Routes/touristController");
 
 //Advertiser
-const{changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser}=require("./Routes/advertiserController");
+const{changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers}=require("./Routes/advertiserController");
 
 //Seller
-const{changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller}=require("./Routes/sellerController");
+const{changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers}=require("./Routes/sellerController");
 
 //Admin
 const{updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin,createCategory,
@@ -124,10 +124,10 @@ app.get("/searchActivities",searchActivities);
 app.post("/commentOnActivity",commentOnActivity);
 app.post("/rateActivity",rateActivity);
 app.post('/setCurrency',setCurrency);
-app.get("/shareActivity/:name",shareActivity);shareItinerary
+app.get("/shareActivity/:name",shareActivity);
 app.get("/shareHistorical/:Name",shareHistorical);
 app.get("/shareMuseum/:Name",shareMuseum);
-app.get("/shareItinerary/:Activities",shareItinerary);
+app.get("/shareItinerary/:id",shareItinerary);
 app.post('/fileComplaint', fileComplaint);
 app.get("/getComplaintsByTourist", getComplaintsByTourist);
 app.patch("/changepasswordTourist",changepasswordTourist);
@@ -159,6 +159,7 @@ app.get("/getMyItineraries",getMyItineraries);
 app.get("/getMyTouristItineraries",getMyTouristItineraries);
 app.post("/requestAccountDeletionTourG",requestAccountDeletionTourG);
 app.patch("/changePasswordTourGuide",changePasswordTourGuide);
+app.get("/getPendingTourGuides",getPendingTourGuides);
 //Advertiser
 app.post("/addAdvertiser",upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'TaxationRegistryCard', maxCount: 1 } ]),createAdvertiser);
 app.patch("/updateAdvertiser",upload.single('Logo'),updateAdvertiser);
@@ -170,6 +171,7 @@ app.get("/getActivity",getActivity);
 app.get("/viewActivitydetails",viewActivitydetails);
 app.post("/requestAccountDeletionAdvertiser",requestAccountDeletionAdvertiser);
 app.patch("/changePasswordAdvertiser",changePasswordAdvertiser);
+app.get('/getPendingAdvertisers',getPendingAdvertisers);
 //Seller
 app.post('/createSeller', upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'TaxationRegistryCard', maxCount: 1 } ]), createSeller);
 app.patch('/updateSeller', upload.single('Logo'),updateSeller);
@@ -180,7 +182,7 @@ app.get("/viewProductsSeller",viewProductsSeller);
 app.get("/sortProductsByRatingSeller",sortProductsByRatingSeller);
 app.post("/requestAccountDeletionSeller",requestAccountDeletionSeller);
 app.patch("/changePasswordSeller",changePasswordSeller);
-
+app.get("/getPendingSellers",getPendingSellers);
 
 //Admin
 app.post("/tourismGovLogin",tourismGovLogin);
