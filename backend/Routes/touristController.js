@@ -745,7 +745,7 @@ const shareMuseum = async (req, res) => {
       }
 
       // Generate the shareable link
-      const shareableLink = `https://yourwebsite.com/Museum/${Name}`;
+      const shareableLink = `https://localhost:3000/${Name}`;
 
       // Return the link for sharing
       res.status(200).json({ link: shareableLink });
