@@ -7,6 +7,8 @@ const museumsModel=require('../Models/Museums.js');
 const { default: mongoose } = require('mongoose');
 const complaintModel = require('../Models/Complaint.js'); // Adjust the path based on your project structure
 const TourGuideModel = require('../Models/tourGuide.js'); // Adjust path as needed
+const requestModel = require('../Models/Request.js'); // Adjust path as needed
+
 
 
 const setCurrency = (req, res) => {
