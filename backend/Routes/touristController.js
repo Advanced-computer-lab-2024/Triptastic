@@ -936,7 +936,7 @@ if (tourist.points >= 10000) {
     await tourist.save();
 
     res.status(200).json({
-      message: 'Itinerary booked successfully', tourist
+      message: 'Itinerary booked successfully!', tourist
     });
   } catch (error) {
     res.status(500).json({ error: 'Error booking itinerary' });
