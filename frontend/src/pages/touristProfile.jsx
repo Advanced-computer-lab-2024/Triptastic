@@ -37,6 +37,13 @@ const TouristProfile = () => {
     body: '',  
     date: ''  
   });
+  const [preferences, setPreferences] = useState({
+    historicAreas: false,
+    beaches: false,
+    familyFriendly: false,
+    shopping: false,
+    budget: ''
+  });
   const navigate = useNavigate();
   useEffect(() => {
     fetchItineraries();
@@ -383,6 +390,35 @@ const TouristProfile = () => {
       setSuccessMessage('');
     }
   };
+  const submitPreferences = async () => {
+    try {
+      const username = localStorage.getItem('Username');
+
+      const response = await fetch(`http://localhost:8000/setPreferences?username=${username}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(preferences)
+      });
+
+      if (response.ok) {
+        setSuccessMessage('Preferences updated successfully!');
+        setErrorMessage('');
+      } else {
+        throw new Error('Failed to update preferences');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while updating preferences');
+    }
+  };
+  const handlePreferenceChange = (e) => {
+    const { name, type, value, checked } = e.target;
+    setPreferences((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
   const handleDeleteRequest = async () => {
     const Username = localStorage.getItem('Username');
     setWaiting(true);
@@ -412,6 +448,10 @@ const TouristProfile = () => {
     finally {
       setWaiting(false); // Stop waiting regardless of outcome
   }
+
+
+
+
 };
   return (
     <div className="tourist-profile-container">
@@ -497,6 +537,63 @@ const TouristProfile = () => {
         )}
         <button onClick={fetchTouristInfo}>Refresh My Information</button>
       </div>
+      
+      {/* Preferences Section */}
+      <div className="preferences-section">
+        <h3>Select Your Vacation Preferences</h3>
+        <div className="preferences-form">
+          <label>
+            <input
+              type="checkbox"
+              name="historicAreas"
+              checked={preferences.historicAreas}
+              onChange={handlePreferenceChange}
+            />
+            Historic Areas
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              name="beaches"
+              checked={preferences.beaches}
+              onChange={handlePreferenceChange}
+            />
+            Beaches
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              name="familyFriendly"
+              checked={preferences.familyFriendly}
+              onChange={handlePreferenceChange}
+            />
+            Family-Friendly
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              name="shopping"
+              checked={preferences.shopping}
+              onChange={handlePreferenceChange}
+            />
+            Shopping
+          </label>
+          <label>
+            Budget:
+            <select name="budget" value={preferences.budget} onChange={handlePreferenceChange}>
+              <option value="">Select</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </label>
+          <button onClick={submitPreferences}>Save Preferences</button>
+        </div>
+      </div>
+
+      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+      
+      
 
       {/* Fetch Product by Name */}
       <div>
@@ -663,6 +760,8 @@ const TouristProfile = () => {
 
         </ul>
       </div>
+
+      
     </div>
     
   );

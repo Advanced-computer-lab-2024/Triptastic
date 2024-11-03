@@ -1264,6 +1264,20 @@ const getBookedActivities = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+const setPreferences = async (req, res) => {
+  try {
+    const { username } = req.query;
+    const preferences = req.body;
+    await touristModel.findOneAndUpdate({ Username: username }, { preferences }, { new: true });
+    res.json({ message: 'Preferences updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to update preferences' });
+  }
+
+}
+
+
 
 
  module.exports = {changepasswordTourist,setCurrency,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
@@ -1273,4 +1287,4 @@ const getBookedActivities = async (req, res) => {
   ,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange
   ,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities
   ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
-  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,getBookedActivities};
+  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,getBookedActivities,setPreferences};
