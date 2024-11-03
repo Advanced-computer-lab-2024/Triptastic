@@ -30,6 +30,7 @@ import BookTransportation from './pages/bookTransportation';
 import Complaints from './pages/Complaints';
 import TouristOrders from './pages/touristOrders';
 import ActivityDetail from './pages/activityDetail';
+import Docs from './pages/docs';
 function Home() {
   const navigate = useNavigate();
   
@@ -97,7 +98,7 @@ function App() {
         <Route path="/Complaints" element={<Complaints/>}/>
         <Route path="/tourist-orders" element={<TouristOrders/>}/>
         <Route path="/activities/:name" element={<ActivityDetail/>} />
-
+        <Route path="/docs" element={<Docs/>}/>
 
 
       </Routes>

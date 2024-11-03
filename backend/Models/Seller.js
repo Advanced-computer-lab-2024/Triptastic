@@ -34,6 +34,10 @@ const sellerSchema = new Schema({
   TaxationRegistryCard: { 
     type: String,
     required: false,
+  },docsApproved: {
+    type: String,
+    enum: ['pending', 'accepted', 'rejected'], 
+    default: 'pending' 
   },
 }, { timestamps: true });
 

@@ -279,8 +279,15 @@ const changePasswordAdvertiser = async (req, res) => {
           res.status(500).json({ error: "Error changing password" });
         }
       };
-      
+const getPendingAdvertisers = async (req, res) => {
+    try {
+        const pendingAdvertisers = await advertiserModel.find({ docsApproved: 'pending' });
+        res.status(200).json(pendingAdvertisers);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};     
  module.exports = {changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,
    getActivity,
    updateActivity,
-   deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser};
+   deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers};

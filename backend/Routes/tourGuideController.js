@@ -271,6 +271,14 @@ const changePasswordTourGuide = async (req, res) => {
      res.status(500).json({ error: "Error changing password" });
    }
  };
- 
- module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG,changePasswordTourGuide};
+ const getPendingTourGuides=async(req,res)=>{
+   try{
+      const x=await tourGuideModel.find({docsApproved: 'pending'});
+      res.status(200).json(x);
+   }
+   catch(error){
+      res.status(400).json({error: error.message});
+   }
+};
+ module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG,changePasswordTourGuide,getPendingTourGuides};
  
