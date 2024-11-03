@@ -100,5 +100,3 @@ ratings: [{
 const Activities = mongoose.models.Activities||mongoose.model('Activities', ActivitiesSchema);
 
 module.exports = Activities;
-
-

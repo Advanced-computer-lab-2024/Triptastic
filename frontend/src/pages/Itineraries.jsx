@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import axios from 'axios';
 const Itineraries = () => {
   const [itineraries, setItineraries] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -11,7 +11,7 @@ const Itineraries = () => {
     preferences: '',
     language: '',
   });
-
+  const [copySuccess, setCopySuccess] = useState({});
   // State to track the visibility of itinerary details
   const [expandedItineraries, setExpandedItineraries] = useState({});
 
@@ -118,10 +118,71 @@ const Itineraries = () => {
     }));
   };
 
+  // const handleBooking = async (itinerary) => {
+  //   const username = localStorage.getItem('Username'); // Assuming you store the username in local storage
+  //   try {
+  //     const response = await fetch('http://localhost:8000/bookItinerary', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         itineraryId: itinerary._id, // Use the itinerary ID
+  //         Username: username,
+  //       }),
+  //     });
+  
+  //     if (response.ok) {
+  //       const result = await response.json();
+  //       alert(result.message); // Show success message
+  //       fetchASCItineraries(); // Refresh the itineraries to reflect the booking
+  //     } else {
+  //       const error = await response.json();
+  //       alert(error.error || 'An error occurred while booking the itinerary'); // Show error message
+  //     }
+  //   } catch (error) {
+  //     console.error('Error booking itinerary:', error);
+  //     alert('An error occurred while booking the itinerary');
+  //   }
+  // };
+  
+
+  const handleBooking = async (itinerary) => {
+    const username = localStorage.getItem('Username'); // Assuming you store the username in local storage
+    try {
+      const response = await axios.post('http://localhost:8000/bookItinerary', {
+        itineraryId: itinerary._id, // Use the itinerary ID
+        Username: username,
+      });
+
+      if (response.status === 200) {
+        const result = response.data;
+         alert(result.message);
+        fetchASCItineraries(); // Refresh the itineraries to reflect the booking
+      }
+    } catch (error) {
+      console.error('Error booking itinerary:', error);
+      alert(error.response?.data?.error || 'An error occurred while booking the itinerary');
+    }
+  };
   useEffect(() => {
     fetchASCItineraries(); // Default to ascending sort
   }, []);
+  const handleShare = async (itinerary) => {
+    try {
+      const response = await fetch(`http://localhost:8000/shareItinerary/${itinerary}`);
+      const data = await response.json();
 
+      if (response.ok) {
+        await navigator.clipboard.writeText(data.link); // Copy link to clipboard
+        setCopySuccess((prev) => ({ ...prev, [itinerary]: 'Link copied to clipboard!' })); // Set success message for the specific museum
+      } else {
+        console.error("Failed to generate shareable link");
+      }
+    } catch (error) {
+      console.error("Error generating shareable link:", error);
+    }
+  };
   return (
     <div>
       <h2>Itineraries</h2>
@@ -205,6 +266,9 @@ const Itineraries = () => {
                   <button onClick={() => toggleItineraryDetails(itinerary._id)}>
                     {expandedItineraries[itinerary._id] ? 'Hide Itinerary Details' : 'View Itinerary Details'}
                   </button>
+                  <button onClick={() => handleBooking(itinerary)} disabled={itinerary.Booked}>
+                    Book Ticket
+                  </button>
                   {expandedItineraries[itinerary._id] && (
                     <div>
                       <p><strong>Locations:</strong> {itinerary.Locations.join(', ')}</p>
@@ -217,6 +281,11 @@ const Itineraries = () => {
                       <p><strong>Tour Guide:</strong> {itinerary.TourGuide}</p>
                     </div>
                   )}
+                   {/* Share button and success message */}
+        <button onClick={() => handleShare(itinerary.Activities)}>Share</button>
+        {copySuccess[itinerary.Activities] && (
+          <span style={{ color: 'green', marginLeft: '10px' }}>{copySuccess[itinerary.Activities]}</span>
+        )}
                 </li>
               ))}
             </ul>

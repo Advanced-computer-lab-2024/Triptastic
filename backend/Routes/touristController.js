@@ -6,6 +6,9 @@ const itineraryModel= require('../Models/Itinerary.js');
 const museumsModel=require('../Models/Museums.js');
 const { default: mongoose } = require('mongoose');
 const complaintModel = require('../Models/Complaint.js'); // Adjust the path based on your project structure
+const TourGuideModel = require('../Models/tourGuide.js'); // Adjust path as needed
+const requestModel = require('../Models/Request.js'); // Adjust path as needed
+
 const axios = require('axios');
 
 
@@ -576,10 +579,9 @@ const sortProductsByRatingTourist = async (req, res) => {
     } catch (error) {
       res.status(500).json({ error: 'Error fetching itineraries' });
     }
-  };
-  const searchActivities = async (req, res) => {
+  };const searchActivities = async (req, res) => {
     const { name, category, tag } = req.query;
-
+  
     try {
       // Create a dynamic search query
       const searchQuery = {};
@@ -593,23 +595,31 @@ const sortProductsByRatingTourist = async (req, res) => {
       if (tag) {
         searchQuery.tags = { $regex: tag, $options: 'i' }; // case-insensitive search for tags
       }
-      console.log('Search Query:', searchQuery);
-    
-  
-      const activities = await activitiesModel.find(searchQuery);
       
+      console.log('Search Query:', searchQuery);
+  
+      // Check if any activities exist for the specified category before executing full query
+      if (category) {
+        const categoryExists = await activitiesModel.exists({ Category: { $regex: category, $options: 'i' } });
+        if (!categoryExists) {
+          return res.status(404).json({ message: 'No activities found matching your category criteria.' });
+        }
+      }
+  
+      // Execute full query with dynamic criteria
+      const activities = await activitiesModel.find(searchQuery);
+  
       if (activities.length > 0) {
         res.status(200).json(activities);
       } else {
-        res.status(404).json({ message: 'No activities found matching the search criteria.' });
+        res.status(404).json({ message: 'No activities found matching your criteria.' });
       }
     } catch (error) {
       console.error('Error searching activities:', error);
       res.status(500).json({ message: 'Server error while searching for activities.', error: error.message });
     }
-
-
-  }
+  };
+  
   const commentOnActivity = async (req, res) => {
     
     const { name, Username,comment } = req.body; // Ensure you're passing Username and not username
@@ -678,25 +688,28 @@ const sortProductsByRatingTourist = async (req, res) => {
 };
 
 const shareActivity = async (req, res) => {
-  const { name } = req.params; // Get the activity ID from the request
+  const { name } = req.params; // Get the activity name from the request
 
   try {
-      // Find the activity by ID
-      const activity = await activitiesModel.findOne({ name: name });
-      if (!activity) {
-          return res.status(404).json({ error: 'Activity not found' });
-      }
+    // Find the activity by name
+    const activity = await activitiesModel.findOne({ name: name });
+    if (!activity) {
+      return res.status(404).json({ error: 'Activity not found' });
+    }
 
-      // Generate the shareable link
-      const shareableLink = `https://yourwebsite.com/activities/${name}`;
+    // Generate the shareable link using the activity ID (or another unique identifier)
+    const shareableLink =`http://localhost:3000/activities/${encodeURIComponent(activity.name)}`; // Add any other details you want
 
-      // Return the link for sharing
-      res.status(200).json({ link: shareableLink });
+
+    // Return the link for sharing
+    res.status(200).json({ link: shareableLink });
   } catch (error) {
-      console.error('Error generating shareable link:', error);
-      res.status(500).json({ error: 'Server error' });
+    console.error('Error generating shareable link:', error);
+    res.status(500).json({ error: 'Server error' });
   }
 };
+
+
 const shareHistorical = async (req, res) => {
   const { Name } = req.params; 
 
@@ -728,7 +741,7 @@ const shareMuseum = async (req, res) => {
       }
 
       // Generate the shareable link
-      const shareableLink = `https://yourwebsite.com/Museum/${Name}`;
+      const shareableLink = `https://localhost:3000/${Name}`;
 
       // Return the link for sharing
       res.status(200).json({ link: shareableLink });
@@ -737,12 +750,32 @@ const shareMuseum = async (req, res) => {
       res.status(500).json({ error: 'Server error' });
   }
 };
-  
+const shareItinerary = async (req, res) => {
+  const { Activities } = req.params; 
+
+  try {
+      // Find the activity by ID
+      const Itinerary = await itineraryModel.findOne({ Activities: Activities });
+      if (!Itinerary) {
+          return res.status(404).json({ error: 'Itinerary not found' });
+      }
+
+      // Generate the shareable link
+      const shareableLink = `https://yourwebsite.com/Itinerary/${Activities}`;
+
+      // Return the link for sharing
+      res.status(200).json({ link: shareableLink });
+  } catch (error) {
+      console.error('Error generating shareable link:', error);
+      res.status(500).json({ error: 'Server error' });
+  }
+};
  
 const getComplaintsByTourist = async (req, res) => {
   const { username } = req.query; // Get the username from the query parameters
 
   try {
+
     if (!username) {
       return res.status(400).json({ error: 'Username is required' });
     }
@@ -791,6 +824,31 @@ const changepasswordTourist = async (req, res) => {
 };
 
 
+const calculateAndAddPoints = async (tourist, amountPaid) => {
+  let pointsToAdd = 0;
+
+  if (tourist.badge === 1) {
+    pointsToAdd = amountPaid * 0.5;
+  } else if (tourist.badge === 2) {
+    pointsToAdd = amountPaid * 1;
+  } else if (tourist.badge === 3) {
+    pointsToAdd = amountPaid * 1.5;
+  }
+
+  tourist.points += pointsToAdd;
+
+  if (tourist.points > 500000) {
+    tourist.badge = 3;
+  } else if (tourist.points > 100000) {
+    tourist.badge = 2;
+  } else {
+    tourist.badge = 1;
+  }
+
+  await tourist.save(); 
+};
+
+
 const bookActivity = async (req, res) => {
   const { name, Username } = req.body; 
 
@@ -822,7 +880,11 @@ const bookActivity = async (req, res) => {
       return res.status(400).json({ error: 'You have already booked this activity' });
     }
 
-    // Step 4: Add the full activity object to the tourist's Bookings array
+    await calculateAndAddPoints(tourist, activity.price);
+    if (tourist.points >= 10000) {
+      const cashBonus = Math.floor(tourist.points / 10000) * 100; // Calculate cash based on total points
+      tourist.Wallet = (tourist.Wallet || 0) + cashBonus;
+    }
     tourist.Bookings.push(activity);
 
     // Save the updated tourist record
@@ -835,20 +897,21 @@ const bookActivity = async (req, res) => {
 };
 
 const bookItinerary = async (req, res) => {
-  const { Activities, Username } = req.body;
+  const { itineraryId, Username } = req.body;
 
   try {
-    const itinerary = await itineraryModel.findOne({Activities:Activities});
+    const itinerary = await itineraryModel.findById(itineraryId);
 
     if (!itinerary) {
       return res.status(404).json({ error: 'Itinerary not found' });
     }
    
     const tourist = await touristModel.findOne({ Username: Username });
-    
+    console.log('Tourist:', tourist);
     if (!tourist) {
       return res.status(404).json({ error: 'Tourist not found' });
     }
+
     const alreadyBooked = tourist.Bookings.some(
       booking => booking._id.toString() === itinerary._id.toString()
     );
@@ -860,22 +923,379 @@ const bookItinerary = async (req, res) => {
     if (itinerary.Booked) {
       return res.status(400).json({ message: 'Itinerary is Full' });
     }
+    await calculateAndAddPoints(tourist, itinerary.Price);
+if (tourist.points >= 10000) {
+  const cashBonus = Math.floor(tourist.points / 10000) * 100; // Calculate cash based on total points
+  tourist.Wallet = (tourist.Wallet || 0) + cashBonus;
+}
     tourist.Bookings.push(itinerary);
     await tourist.save();
 
     res.status(200).json({
-      message: 'Itinerary booked successfully',tourist});
+      message: 'Itinerary booked successfully!', tourist
+    });
   } catch (error) {
     res.status(500).json({ error: 'Error booking itinerary' });
   }
-};
- 
+ };
+// const bookItinerary = async (req, res) => {
+//   const { itineraryId, Username } = req.body;
 
- module.exports = {getCurrencyRates,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+//   try {
+//     const itinerary = await itineraryModel.findById(itineraryId);
+//     if (!itinerary) {
+//       return res.status(404).json({ error: 'Itinerary not found' });
+//     }
+
+//     const tourist = await touristModel.findOne({ Username });
+//     if (!tourist) {
+//       return res.status(404).json({ error: 'Tourist not found' });
+//     }
+
+//     const alreadyBooked = tourist.Bookings.some(
+//       booking => booking._id.toString() === itinerary._id.toString()
+//     );
+
+//     if (alreadyBooked) {
+//       return res.status(400).json({ error: 'You have already booked this itinerary' });
+//     }
+
+//     if (itinerary.Booked) {
+//       return res.status(400).json({ message: 'Itinerary is Full' });
+//     }
+
+//     // Calculate points based on badge level
+//     let pointsEarned;
+//     if (tourist.badge === 1) {
+//       pointsEarned = itinerary.Price * 0.5;
+//     } else if (tourist.badge === 2) {
+//       pointsEarned = itinerary.Price * 1;
+//     } else if (tourist.badge === 3) {
+//       pointsEarned = itinerary.Price * 1.5;
+//     } else {
+//       pointsEarned = 0; // In case badge level is invalid or undefined
+//     }
+
+//     // Add points to the tourist's total points
+//     tourist.points += pointsEarned;
+
+//     // Check if points reach or exceed 10,000 to add cash to wallet
+//     if (tourist.points >= 10000) {
+//       const cashBonus = Math.floor(tourist.points / 10000) * 100; // Calculate cash based on total points
+//       tourist.Wallet = (tourist.Wallet || 0) + cashBonus;
+//     }
+
+//     if (tourist.points > 500000) {
+//       tourist.badge = 3;
+//     } else if (tourist.points > 100000) {
+//       tourist.badge = 2;
+//     } else {
+//       tourist.badge = 1;
+//     }
+  
+//     // Save the booking and updated tourist information
+//     tourist.Bookings.push(itinerary);
+//     await tourist.save();
+
+//     res.status(200).json({
+//       message: 'Itinerary booked successfully',
+//       pointsEarned,
+//       newTotalPoints: tourist.points,
+//       newWalletBalance: tourist.Wallet,
+//       tourist,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: 'Error booking itinerary' });
+//   }
+// };
+
+
+
+const submitFeedback = async (req, res) => {
+  const { username } = req.query; // Get the username from the query parameters
+  const { Itinerary, rating, comment} = req.body; // Use itineraryId passed in the body
+
+  // Validate input
+  if (!Itinerary || !rating || !comment) {
+   
+    return res.status(400).json({ message: 'Itinerary ID, rating, and comment are required' });
+  }
+
+  // Retrieve the tourist's username from the request or session (logged-in user)
+  const touristUsername = await touristModel.findOne({ Username: username });
+
+  // Check if the tourist is authenticated
+  if (!touristUsername) {
+    return res.status(403).json({ message: 'User is not authenticated' });
+  }
+
+  try {
+    // Fetch the itinerary to find the associated tour guide's username
+    const itinerary = await itineraryModel.findById(Itinerary).populate('TourGuide'); // Ensure you have the correct model here
+
+    if (!itinerary) {
+      return res.status(404).json({ message: 'Itinerary not found' });
+    }
+    if (rating < 0 || rating > 5) {
+      return res.status(400).json({ message: 'Rating must be between 0 and 5.' });
+    }
+    const tourGuideUsername = itinerary.TourGuide; // Get the tour guide's username from the itinerary
+
+    // Create the feedback object
+    const feedbackEntry = {
+      touristUsername: touristUsername.Username, // Add the tourist's username
+      itineraryId:Itinerary, // Use the ID from the itinerary object directly
+      rating,
+      comment,
+      date: Date.now(), // Automatically set to current date
+    };
+    
+    // Find the tour guide and add the feedback
+    const foundTourGuide = await TourGuideModel.findOne({ Username: tourGuideUsername });
+
+    if (!foundTourGuide) {
+      return res.status(404).json({ message: `Tour guide '${tourGuideUsername}' not found` });
+    }
+
+    // Add the feedback to the tour guide's feedback array
+    foundTourGuide.feedback.push(feedbackEntry);
+
+    // Save the updated tour guide document
+    await foundTourGuide.save();
+
+    res.status(200).json({ message: 'Feedback submitted successfully!' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error while submitting feedback' });
+  }
+};
+
+
+
+const getBookedItineraries = async(req, res) => {
+  const { username } = req.query; // Get the username from the query parameters
+
+  try {
+
+    // Retrieve the username of the logged-in tourist
+
+    // Find the tourist by username
+    const tourist = await touristModel.findOne({ Username: username });
+    if (!tourist) {
+      return res.status(404).json({ message: 'Tourist not found' });
+    }
+
+    // Extract the Booking IDs from the tourist's Bookings array
+    const bookingIds = tourist.Bookings.map(booking => booking._id);
+
+    // Find itineraries that match the IDs in the tourist's Bookings array
+    const bookedItineraries = await itineraryModel.find({
+      _id: { $in: bookingIds } // Use the extracted booking IDs
+    });
+
+    // Return the booked itineraries
+    res.status(200).json(bookedItineraries);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+const cancelBookedItinerary = async (req, res) => {
+  const { itineraryId } = req.params; // Get the itinerary ID from the request parameters
+  const { username } = req.query; // Get the username from the query parameters
+
+  try {
+    // Find the tourist by username
+    const tourist = await touristModel.findOne({ Username: username });
+    if (!tourist) {
+      return res.status(404).json({ message: 'Tourist not found' });
+    }
+
+    // Log the itineraryId and the tourist's bookings for debugging
+    console.log('itineraryId:', itineraryId);
+    console.log('Tourist Bookings:', tourist.Bookings);
+
+    // Find the booked itinerary by ID
+    const bookedItinerary = tourist.Bookings.find(booking => booking._id.toString() === itineraryId);
+    if (!bookedItinerary) {
+      return res.status(404).json({ message: 'Itinerary not found in the tourist\'s bookings' });
+    }
+
+    // Check if the itinerary is within the cancellation window (48 hours before start date)
+    const itineraryStartDate = new Date(bookedItinerary.DatesTimes);
+    const currentDate = new Date();
+    const timeDifference = itineraryStartDate - currentDate;
+    const hoursDifference = timeDifference / (1000 * 60 * 60); // Convert milliseconds to hours
+
+    if (hoursDifference <= 48) {
+      return res.status(400).json({ message: 'Itinerary cannot be cancelled within 48 hours of start date' });
+    }
+
+    // Remove the booked itinerary from the tourist's bookings
+    tourist.Bookings = tourist.Bookings.filter(booking => booking._id.toString() !== itineraryId);
+
+    // Save the updated tourist record
+    await tourist.save();
+
+    res.status(200).json({ message: 'Itinerary booking cancelled successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+const requestAccountDeletionTourist = async (req, res) => {
+  const { Username } = req.query;
+
+  try {
+    // Find the tourist by username
+    const tourist = await touristModel.findOne({ Username });
+    if (!tourist) {
+      return res.status(404).json({ message: 'Tourist not found' });
+    }
+
+    // Check if the tourist has any bookings
+    if (tourist.Bookings.length > 0) {
+      return res.status(400).json({
+        msg: "Your account deletion request cannot be processed because you have active bookings."
+      });
+    }
+
+   
+
+    // Create a new deletion request
+    const deleteRequest = new requestModel({
+      Username: Username,
+      requestDate: new Date(),
+      status: 'pending' // Mark as pending by default
+    });
+
+    // Save the request to the database
+    await deleteRequest.save();
+
+    // Send success response
+    res.status(200).json({
+      msg: "Your request for account deletion has been submitted and is pending approval."
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to submit deletion request" });
+  }
+};
+const cancelActivity = async (req, res) => {
+  const { activityId } = req.params; // Get the activity ID from the request parameters
+  const { username } = req.query; // Get the username from the query parameters
+
+  console.log('cancelBookedActivity function called'); // Initial log to confirm function call
+  console.log('Received activityId:', activityId); // Log received activityId
+  console.log('Received username:', username); // Log received username
+
+  try {
+    // Find the tourist by username
+    const tourist = await touristModel.findOne({ Username: username });
+    if (!tourist) {
+      console.log('Tourist not found'); // Log if tourist is not found
+      return res.status(404).json({ message: 'Tourist not found' });
+    }
+
+    // Log the tourist's bookings for debugging
+    console.log('Tourist Bookings:', tourist.Bookings);
+
+    // Find the booked activity by ID
+    const bookedActivity = tourist.Bookings.find(booking => booking._id.toString() === activityId);
+    if (!bookedActivity) {
+      console.log('Activity not found in the tourist\'s bookings'); // Log if activity is not found
+      return res.status(404).json({ message: 'Activity not found in the tourist\'s bookings' });
+    }
+
+    // Check if the activity is within the cancellation window (48 hours before start date)
+    const activityStartDate = new Date(bookedActivity.DatesTimes);
+    const currentDate = new Date();
+    const timeDifference = activityStartDate - currentDate;
+    const hoursDifference = timeDifference / (1000 * 60 * 60); // Convert milliseconds to hours
+
+    if (hoursDifference <= 48) {
+      console.log('Activity cannot be cancelled within 48 hours of start date'); // Log if within cancellation window
+      return res.status(400).json({ message: 'Activity cannot be cancelled within 48 hours of start date' });
+    }
+
+    // Remove the booked activity from the tourist's bookings
+    tourist.Bookings = tourist.Bookings.filter(booking => booking._id.toString() !== activityId);
+
+    // Save the updated tourist record
+    await tourist.save();
+
+    res.status(200).json({ message: 'Activity booking cancelled successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+const getBookedActivities = async (req, res) => {
+  const { username } = req.query; // Get the username from the query parameters
+
+  try {
+    // Find the tourist by username
+    const tourist = await touristModel.findOne({ Username: username });
+    if (!tourist) {
+      return res.status(404).json({ message: 'Tourist not found' });
+    }
+
+    // Extract the IDs of the booked activities
+    const bookingIds = tourist.Bookings.map(booking => booking._id);
+
+    // Find the booked activities by IDs
+    const bookedActivities = await activitiesModel.find({
+      _id: { $in: bookingIds } // Use the extracted booking IDs
+    });
+
+    // Return the booked activities
+    res.status(200).json(bookedActivities);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+const setPreferences = async (req, res) => {
+  try {
+    const { username } = req.query;
+    const preferences = req.body;
+    await touristModel.findOneAndUpdate({ Username: username }, { preferences }, { new: true });
+    res.json({ message: 'Preferences updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to update preferences' });
+  }
+
+}
+
+
+const getActivityToShare = async (req, res) => {
+  const { name } = req.params; // Get the activity name from the request
+
+  try {
+    // Find the activity by name
+    const activity = await activitiesModel.findOne({ name: name });
+    if (!activity) {
+      return res.status(404).json({ error: 'Activity not found' });
+    }
+
+    // Return the found activity
+    res.status(200).json(activity);
+  } catch (error) {
+    console.error('Error retrieving activity:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+
+ module.exports = {getActivityToShare,changepasswordTourist,setCurrency,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
   ,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange
   ,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities
   ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
-  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary};
+  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,getBookedActivities,setPreferences};

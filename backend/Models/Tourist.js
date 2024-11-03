@@ -30,13 +30,31 @@ const touristSchema = new Schema({
   },
   Wallet:{
     type:Number,
+    default:0,
     required:false
 
   },
   Bookings: [{
+    
     type: Object, 
     required: true,
   }],
+  points:{
+    type:Number,
+    default:0,
+
+  },
+  badge:{
+    type:Number,
+    default:1,
+  },
+  preferences: {
+    historicAreas: { type: Boolean, default: false },
+    beaches: { type: Boolean, default: false },
+    familyFriendly: { type: Boolean, default: false },
+    shopping: { type: Boolean, default: false },
+    budget: { type: String, enum: ['low', 'medium', 'high'], default: 'medium' }
+  }
 }, { timestamps: true });
 
 const Tourist = mongoose.models.Tourist || mongoose.model('Tourist', touristSchema);
