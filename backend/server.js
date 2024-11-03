@@ -123,7 +123,6 @@ app.get("/filterItineraries",filterItineraries);
 app.get("/searchActivities",searchActivities);
 app.post("/commentOnActivity",commentOnActivity);
 app.post("/rateActivity",rateActivity);
-app.post('/setCurrency',setCurrency);
 app.get("/shareActivity/:name",shareActivity);shareItinerary
 app.get("/shareHistorical/:Name",shareHistorical);
 app.get("/shareMuseum/:Name",shareMuseum);

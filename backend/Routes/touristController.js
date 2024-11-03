@@ -1291,7 +1291,7 @@ const getActivityToShare = async (req, res) => {
 };
 
 
- module.exports = {getActivityToShare,changepasswordTourist,setCurrency,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+ module.exports = {getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
