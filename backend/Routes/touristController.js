@@ -885,6 +885,10 @@ const bookActivity = async (req, res) => {
     }
 
     await calculateAndAddPoints(tourist, activity.price);
+    if (tourist.points >= 10000) {
+      const cashBonus = Math.floor(tourist.points / 10000) * 100; // Calculate cash based on total points
+      tourist.Wallet = (tourist.Wallet || 0) + cashBonus;
+    }
     tourist.Bookings.push(activity);
 
     // Save the updated tourist record
