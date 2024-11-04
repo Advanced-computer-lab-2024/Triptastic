@@ -10,6 +10,7 @@ const Museums = () => {
   const [searchTerm, setSearchTerm] = useState(''); // New state for search term
   const [shareableLink, setShareableLink] = useState('');
   const [copySuccess, setCopySuccess] = useState({});
+  
 
   // Fetch museums from the backend
   const handleViewAllMuseums = async () => {
@@ -99,6 +100,7 @@ const Museums = () => {
       const data = await response.json();
 
       if (response.ok) {
+        setShareableLink(data.link); // Set the link to state
         await navigator.clipboard.writeText(data.link); // Copy link to clipboard
         setCopySuccess((prev) => ({ ...prev, [museumName]: 'Link copied to clipboard!' })); // Set success message for the specific museum
       } else {

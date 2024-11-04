@@ -9,6 +9,7 @@ const HistoricalLocations = () => {
   const [selectedTag, setSelectedTag] = useState('');
   const [searchQuery, setSearchQuery] = useState(''); // State for search query
   const [copySuccess, setCopySuccess] = useState({});
+  const [shareableLink, setShareableLink] = useState('');
   // Fetch historical places without filter
   const handleViewAllHistoricalPlaces = async () => {
     setLoading(true);
@@ -128,6 +129,7 @@ const HistoricalLocations = () => {
       const data = await response.json();
 
       if (response.ok) {
+        setShareableLink(data.link); // Set the link to state
         await navigator.clipboard.writeText(data.link); // Copy link to clipboard
         setCopySuccess((prev) => ({ ...prev, [historicallocation]: 'Link copied to clipboard!' })); // Set success message for the specific museum
       } else {

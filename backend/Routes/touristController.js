@@ -750,7 +750,7 @@ const shareHistorical = async (req, res) => {
       }
 
       // Generate the shareable link
-      const shareableLink = `https://yourwebsite.com/historical/${Name}`;
+      const shareableLink =`http://localhost:3000/Historical/${encodeURIComponent(historical.Name)}`;
 
       // Return the link for sharing
       res.status(200).json({ link: shareableLink });
@@ -770,7 +770,7 @@ const shareMuseum = async (req, res) => {
       }
 
       // Generate the shareable link
-      const shareableLink = `https://localhost:3000/${Name}`;
+      const shareableLink =`http://localhost:3000/Museum/${encodeURIComponent(Museum.Name)}`;
 
       // Return the link for sharing
       res.status(200).json({ link: shareableLink });
@@ -1300,40 +1300,7 @@ const getActivityToShare = async (req, res) => {
   }
 };
 
-const getMuseumToShare = async (req, res) => {
-  const { name } = req.params; // Get the Museum name from the request
 
-  try {
-    // Find the Museum by name
-    const Museum = await museumsModel.findOne({ Name: name });
-    if (!Museum) {
-      return res.status(404).json({ error: 'Activity not found' });
-    }
-
-    // Return the found Museum
-    res.status(200).json(Museum);
-  } catch (error) {
-    console.error('Error retrieving Museum:', error);
-    res.status(500).json({ error: 'Server error' });
-  }
-};
-const getHistoricalToShare = async (req, res) => {
-  const { name } = req.params; // Get the Historical name from the request
-
-  try {
-    // Find the Historical by name
-    const Historical = await historicalLocationModel.findOne({ Name: name });
-    if (!Historical) {
-      return res.status(404).json({ error: 'Activity not found' });
-    }
-
-    // Return the found Historical
-    res.status(200).json(Historical);
-  } catch (error) {
-    console.error('Error retrieving Historical:', error);
-    res.status(500).json({ error: 'Server error' });
-  }
-};
 
 
  module.exports = {getActivityToShare,changepasswordTourist,setCurrency,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,

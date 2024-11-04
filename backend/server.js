@@ -46,7 +46,7 @@ tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,fl
 
 //TourismGoverner
 const{changePasswordTourismGov,createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,deletehistoricalLocation,
-  createMuseum,getMuseum,deleteMuseum,updateMuseum,viewMyLocations,viewMyMuseums
+  createMuseum,getMuseum,deleteMuseum,updateMuseum,viewMyLocations,viewMyMuseums,gethistoricalDetails,getMuseumDetails
 }=require("./Routes/tourismGovController");
 
 
@@ -224,9 +224,11 @@ app.patch('/updateComplaintStatus/:id', updateComplaintStatus);
 app.post("/createHistoricalLocation",createhistoricalLocation);
 app.patch("/updateHistoricalLocation",updatehistoricalLocation);
 app.get("/getHistoricalLocation",gethistoricalLocation);
+app.get("/gethistoricalDetails/:Name",gethistoricalDetails);
 app.delete("/deleteHistoricalLocation",deletehistoricalLocation);
 app.post("/createMuseum",createMuseum);
 app.patch("/updateMuseum",updateMuseum);
+app.get("/getMuseumDetails/:Name",getMuseumDetails);
 app.get("/getMuseum",getMuseum);
 app.delete("/deleteMuseum",deleteMuseum);
 app.get("/viewMyLocations",viewMyLocations);

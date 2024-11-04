@@ -32,6 +32,8 @@ import TouristOrders from './pages/touristOrders';
 import ActivityDetail from './pages/activityDetail';
 import Docs from './pages/docs';
 import ItineraryDetail from './pages/itineraryDetails';
+import HistoricalDetail from './pages/historicalDetails';
+import MuseumDetail from './pages/MuseumDetails';
 function Home() {
   const navigate = useNavigate();
   
@@ -99,7 +101,10 @@ function App() {
         <Route path="/Complaints" element={<Complaints/>}/>
         <Route path="/tourist-orders" element={<TouristOrders/>}/>
         <Route path="/activities/:name" element={<ActivityDetail/>} />
-        <Route path="/docs" element={<Docs/>}/>        <Route path="/itineraries/:id" element={<ItineraryDetail/>} />
+        <Route path="/docs" element={<Docs/>}/>        
+        <Route path="/itineraries/:id" element={<ItineraryDetail/>} />
+        <Route path="/Historical/:Name" element={<HistoricalDetail/>} />
+        <Route path="/Museum/:Name" element={<MuseumDetail/>} />
 
 
 

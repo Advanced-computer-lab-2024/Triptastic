@@ -95,7 +95,18 @@ const gethistoricalLocation= async(req,res) =>{
         res.status(400).json({ error: error.message }); 
     }
  }
- 
+ const gethistoricalDetails= async(req,res) =>{
+    const {Name}= req.params;
+    
+    try {
+        const historicalLocation = await historicalLocationModel.findOne({ Name:Name }); 
+
+            res.status(200).json(historicalLocation);
+    } 
+    catch (error) {
+        res.status(400).json({ error: error.message }); 
+    }
+ }
 
  const deletehistoricalLocation = async (req, res) => {
     const { Name } = req.query; // Extract Name from req.query
@@ -186,6 +197,18 @@ const createMuseum = async (req, res) => {
          res.status(400).json({ error: error.message }); 
      }
   }
+  const getMuseumDetails= async(req,res) =>{
+    const {Name}= req.params;
+    
+    try {
+        const museum = await museumModel.findOne({ Name: Name }); 
+
+            res.status(200).json(museum);
+    } 
+    catch (error) {
+        res.status(400).json({ error: error.message }); 
+    }
+ }
   
  
   const deleteMuseum = async (req, res) => {
@@ -275,6 +298,6 @@ const viewMyLocations= async(req,res) =>{
 
 
 
-module.exports = {changePasswordTourismGov,createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,deletehistoricalLocation,createMuseum,updateMuseum,getMuseum,deleteMuseum,
+module.exports = {getMuseumDetails,gethistoricalDetails,changePasswordTourismGov,createhistoricalLocation,updatehistoricalLocation,gethistoricalLocation,deletehistoricalLocation,createMuseum,updateMuseum,getMuseum,deleteMuseum,
     viewMyLocations,viewMyMuseums
 };
