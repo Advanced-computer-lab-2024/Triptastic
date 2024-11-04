@@ -182,7 +182,7 @@ const updateActivity = async (req, res) => {
 
 
 const deleteActivity = async (req, res) => {
-   const {Advertiser,name}= req.body;
+   const {Advertiser,name}= req.query;
    try {
        const activity = await activitiesModel.findOneAndDelete({ Advertiser:Advertiser,name:name });
       
@@ -217,7 +217,7 @@ const requestAccountDeletionAdvertiser = async (req, res) => {
             await deleteRequest.save();
 
             return res.status(400).json({
-                msg: "Your account deletion request has been rejected due to upcoming activities with paid bookings."
+                msg: "Your account deletion request has been rejected due to upcoming activities "
             });
         }
 

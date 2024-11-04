@@ -336,7 +336,16 @@ const AdvertiserProfile = () => {
       ) : (
         <p>No activities found.</p>
       )}
+      <div className="sidebar">
+        <h3>Explore</h3>
+        <ul>
+          <li onClick={() => navigate('/advertiser-Activities')}>MY Activities</li>
+          
+
+        </ul>
+      </div>
     </div>
+    
   );
 };
 

@@ -6,7 +6,7 @@ const AdminPage = () => {
     Username: '',
     Password: ''
   });
-
+  const [requests, setRequests] = useState([]);
   const [createCategoryName, setCreateCategoryName] = useState('');
   const [searchCategoryName, setSearchCategoryName] = useState('');
   const [categorySearchResult, setCategorySearchResult] = useState(null);
@@ -704,6 +704,52 @@ const getProductByName = async (e) => {
       setUpdateStatusLoading(false);
     }
   };
+ 
+    
+  
+    useEffect(() => {
+      const fetchRequests = async () => {
+        try {
+          const response = await fetch('http://localhost:8000/getPendingDeletionRequests');
+          const data = await response.json();
+          setRequests(data);
+        } catch (error) {
+          console.error('Error fetching requests:', error);
+        }
+      };
+  
+      fetchRequests();
+    }, []);
+  
+    const handleAccept = async (id) => {
+      try {
+        const response = await fetch('http://localhost:8000/acceptDeletionRequest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ requestId: id }),
+        });
+        const result = await response.json();
+        alert(result.message);
+        setRequests(requests.filter(request => request._id !== id));
+      } catch (error) {
+        console.error('Error accepting request:', error);
+      }
+    };
+  
+    const handleReject = async (id) => {
+      try {
+        const response = await fetch('http://localhost:8000/rejectDeletionRequest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ requestId: id }),
+        });
+        const result = await response.json();
+        alert(result.message);
+        setRequests(requests.filter(request => request._id !== id));
+      } catch (error) {
+        console.error('Error rejecting request:', error);
+      }
+    };
   
   return (
     <div>
@@ -1182,6 +1228,24 @@ const getProductByName = async (e) => {
          </div>
         )}
       </div>
+      <div>
+      <h2>Pending Account Deletion Requests</h2>
+      {requests.length === 0 ? (
+        <p>No pending requests.</p>
+      ) : (
+        <ul>
+          {requests.map((request) => (
+            <li key={request._id}>
+              <p>Username: {request.Username}</p>
+              <p>Request Date: {new Date(request.requestDate).toLocaleDateString()}</p>
+              <p>Status: {request.status}</p>
+              <button onClick={() => handleAccept(request._id)}>Accept</button>
+              <button onClick={() => handleReject(request._id)}>Reject</button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
       <div>
       <button onClick={() => navigate('/Complaints')}>Go to complaints</button>
       </div>

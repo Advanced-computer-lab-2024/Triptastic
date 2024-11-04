@@ -33,7 +33,7 @@ const{changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,c
 const{changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller}=require("./Routes/sellerController");
 
 //Admin
-const{updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin,createCategory,
+const{rejectDeletionRequest,acceptDeletionRequest,getPendingDeletionRequests,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin,createCategory,
   getCategory,
   updateCategory,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
@@ -222,6 +222,12 @@ app.patch("/changePasswordAdmin",changePasswordAdmin);
 app.get("/getComplaints",getComplaints);
 app.get('/getComplaintDetails/:id', getComplaintDetails);
 app.patch('/updateComplaintStatus/:id', updateComplaintStatus);
+app.get("/getPendingDeletionRequests",getPendingDeletionRequests);
+app.post("/acceptDeletionRequest",acceptDeletionRequest);
+app.post("/rejectDeletionRequest",rejectDeletionRequest);
+
+
+
 
 
 //TourismGoverner

@@ -12,6 +12,8 @@ const itineraryModel= require('../Models/Itinerary.js');
 const touristItineraryModel=require('../Models/touristItinerary.js');
 const activityModel= require('../Models/Activities.js');
 const complaintsModel=require('../Models/Complaint.js');
+const requestModel=require('../Models/Request.js');
+
 const AdminLogin = async (req, res) => {
   const { Username, Password } = req.body;
 
@@ -492,7 +494,93 @@ const sortProductsByRatingAdmin = async (req, res) => {
         res.status(500).json({ error: 'Error updating complaint status' });
       }
     };
-    
+   // Route to get all pending deletion requests
+const getPendingDeletionRequests = async (req, res) => {
+  try {
+    const requests = await requestModel.find({ Status: 'pending' });
+    res.status(200).json(requests);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch pending deletion requests" });
+  }
+}; 
+// Route for admin to accept a deletion request
+const acceptDeletionRequest = async (req, res) => {
+  const { requestId } = req.body;
 
-module.exports = {updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
+  try {
+    // Find the deletion request by ID
+    const deleteRequest = await requestModel.findById(requestId);
+    if (!deleteRequest) {
+      return res.status(404).json({ message: "Deletion request not found" });
+    }
+
+    const { Username } = deleteRequest;
+
+    // Check each model for a user match
+    let userModel = null;
+    let userRole = null;
+
+    const advertiser = await advertiserModel.findOne({ Username });
+    const seller = await sellerModel.findOne({ Username });
+    const tourGuide = await tourGuideModel.findOne({ Username });
+    const tourist = await touristModel.findOne({ Username });
+
+    if (advertiser) {
+      userModel = advertiserModel;
+      userRole = "Advertiser";
+      // Delete associated activities
+      await activityModel.deleteMany({ Advertiser: Username });
+    } else if (seller) {
+      userModel = sellerModel;
+      userRole = "Seller";
+      // Delete any seller-specific data if applicable
+    } else if (tourGuide) {
+      userModel = tourGuideModel;
+      userRole = "TourGuide";
+      // Delete associated itineraries
+      await itineraryModel.deleteMany({ TourGuide: Username });
+    } else if (tourist) {
+      userModel = touristModel;
+      userRole = "Tourist";
+      // Delete any tourist-specific data if needed (e.g., bookings)
+    } else {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Delete the user account
+     await userModel.deleteOne({ Username });
+
+    // Update the request status to 'approved' and save it
+    deleteRequest.Status = 'approved';
+    await deleteRequest.save();
+
+    res.status(200).json({ message: `${userRole} account and associated data successfully deleted` });
+  } catch (error) {
+    console.error("Error processing deletion request:", error);
+    res.status(500).json({ error: "Failed to process deletion request" });
+  }
+};
+
+const rejectDeletionRequest = async (req, res) => {
+  const { requestId } = req.body;
+
+  try {
+    // Find the deletion request by ID
+    const deleteRequest = await requestModel.findById(requestId);
+    if (!deleteRequest) {
+      return res.status(404).json({ message: "Deletion request not found" });
+    }
+
+    // Update the request status to 'rejected'
+    deleteRequest.Status = 'rejected';
+    await deleteRequest.save();
+
+    res.status(200).json({ message: "Deletion request rejected" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to reject deletion request" });
+  }
+};
+
+
+module.exports = {getPendingDeletionRequests,acceptDeletionRequest,rejectDeletionRequest,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
     ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,flagActivity,getallItineraries,getallActivities,getallTouristItineraries,getComplaints};
