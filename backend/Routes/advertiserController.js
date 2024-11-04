@@ -1,4 +1,4 @@
-const advertiserModel = require('../Models/Advertiser.js');
+  const advertiserModel = require('../Models/Advertiser.js');
 const activitiescategoryModel = require('../Models/Activitiescategory.js');
 const activitiesModel = require('../Models/Activities.js');
 const PreferenceTagsModel = require('../Models/PreferenceTags.js');
