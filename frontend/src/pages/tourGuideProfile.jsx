@@ -215,21 +215,29 @@ function TourGuideProfile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const Username = localStorage.getItem('Username');
-
+    
+    const formDataToSend = new FormData();
+    formDataToSend.append('Username', Username);
+    formDataToSend.append('Email', formData.Email);
+    formDataToSend.append('mobileNumber', formData.mobileNumber);
+    formDataToSend.append('yearsOfExperience', formData.yearsOfExperience);
+    formDataToSend.append('previousWork', formData.previousWork);
+    if (formData.photo) {
+      formDataToSend.append('photo', formData.photo);
+    }
+  
     try {
       const response = await fetch(`http://localhost:8000/updateTourGuide/${Username}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+        body: formDataToSend,
       });
-
+  
       if (response.ok) {
-        await fetchTourGuideData();
+        await fetchTourGuideData(); // Refresh the data after update
         setErrorMessage('');
         setIsEditing(false);
-
+  
+        // Update the photo in local storage if it was uploaded
         if (formData.photo) {
           const photoURL = URL.createObjectURL(formData.photo);
           setPhoto(photoURL);
@@ -243,6 +251,7 @@ function TourGuideProfile() {
       console.error(error);
     }
   };
+  
 
   const handleItinerarySubmit = async (e) => {
     e.preventDefault();
