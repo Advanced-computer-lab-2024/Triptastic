@@ -55,7 +55,7 @@ const AdvertiserProfile = () => {
             // Set logo URL if available and save it to local storage
             if (data.logo) {
               setLogo(data.logo);
-              localStorage.setItem('advertiserLogo', data.logo); // Store logo URL in local storage
+              localStorage.setItem('logo', data.logo); // Store logo URL in local storage
             }
           } else {
             setErrorMessage('No advertiser information found.');
@@ -75,7 +75,7 @@ const AdvertiserProfile = () => {
 
   useEffect(() => {
     // Check local storage for logo URL on mount
-    const savedLogo = localStorage.getItem('advertiserLogo');
+    const savedLogo = localStorage.getItem('logo');
     if (savedLogo) {
       setLogo(savedLogo);
     }
@@ -150,7 +150,7 @@ const AdvertiserProfile = () => {
         if (formData.Logo) {
           const logoURL = URL.createObjectURL(formData.Logo);
           setLogo(logoURL);
-          localStorage.setItem('advertiserLogo', logoURL); // Update logo URL in local storage
+          localStorage.setItem('logo', logoURL); // Update logo URL in local storage
         }
       } else {
         throw new Error('Failed to update advertiser profile');

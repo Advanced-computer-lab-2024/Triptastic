@@ -169,6 +169,26 @@ const getPendingSellers=async(req,res)=>{
      res.status(400).json({error: error.message});
   }
 };
+const settleDocsSeller = async (req, res) => {
+  const { Username } = req.query; 
+  const { docsApproved } = req.body; 
 
+  try {
+      
+      const seller = await sellerModel.findOneAndUpdate(
+          { Username },
+          { $set: { docsApproved } },
+          { new: true }
+      );
 
- module.exports = {changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers};
+      if (!seller) {
+          return res.status(404).json({ error: 'Seller not found' });
+      }
+
+      res.status(200).json(seller);
+  } catch (error) {
+      res.status(400).json({ error: error.message });
+  }
+};
+
+ module.exports = {changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller};
