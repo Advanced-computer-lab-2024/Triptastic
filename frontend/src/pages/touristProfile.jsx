@@ -23,6 +23,14 @@ const TouristProfile = () => {
   const [comments, setComments] = useState({});
   const [requestSent, setRequestSent] = useState(false); // Track if request was successfully sent
   const [waiting, setWaiting] = useState(false);
+
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [passwordChangeMessage, setPasswordChangeMessage] = useState('');
+  const [passwordChangeError, setPasswordChangeError] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
+
   const [formData, setFormData] = useState({
     Username: '',
     points:'',
@@ -77,6 +85,42 @@ const TouristProfile = () => {
       [itineraryId]: value,
     }));
   };
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    
+    if (newPassword !== confirmNewPassword) {
+      setPasswordChangeError('New passwords do not match.');
+      return;
+    }
+  
+    setChangingPassword(true);
+    setPasswordChangeError('');
+    setPasswordChangeMessage('');
+  
+    try {
+      const username = localStorage.getItem('Username'); // Assuming the username is saved in localStorage
+      const response = await axios.patch('http://localhost:8000/changePasswordTourist', {
+        Username: username,
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      });
+  
+      if (response.status === 200) {
+        setPasswordChangeMessage('Password changed successfully!');
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmNewPassword('');
+      } else {
+        setPasswordChangeError('Failed to change password.');
+      }
+    } catch (error) {
+      setPasswordChangeError(error.response?.data?.error || 'An error occurred.');
+    } finally {
+      setChangingPassword(false);
+    }
+  };
+  
   const fetchTouristInfo = async () => {
     setLoading(true);
     const Username = localStorage.getItem('Username');
@@ -457,6 +501,7 @@ const TouristProfile = () => {
     <div className="tourist-profile-container">
       <div className="profile-content">
         <h2>Tourist Profile</h2>
+        
         <button onClick={handleDeleteRequest} disabled={waiting || requestSent}>
               {waiting ? 'Waiting to be deleted...' : requestSent ? 'Request Sent' : 'Delete Account'}
             </button>
@@ -537,7 +582,44 @@ const TouristProfile = () => {
         )}
         <button onClick={fetchTouristInfo}>Refresh My Information</button>
       </div>
-      
+      <div className="change-password-section">
+  <h3>Change Password</h3>
+  <form onSubmit={handlePasswordChange}>
+    <div>
+      <label>Current Password:</label>
+      <input
+        type="password"
+        value={currentPassword}
+        onChange={(e) => setCurrentPassword(e.target.value)}
+        required
+      />
+    </div>
+    <div>
+      <label>New Password:</label>
+      <input
+        type="password"
+        value={newPassword}
+        onChange={(e) => setNewPassword(e.target.value)}
+        required
+      />
+    </div>
+    <div>
+      <label>Confirm New Password:</label>
+      <input
+        type="password"
+        value={confirmNewPassword}
+        onChange={(e) => setConfirmNewPassword(e.target.value)}
+        required
+      />
+    </div>
+    <button type="submit" disabled={changingPassword}>
+      {changingPassword ? 'Changing Password...' : 'Change Password'}
+    </button>
+  </form>
+  {passwordChangeMessage && <p style={{ color: 'green' }}>{passwordChangeMessage}</p>}
+  {passwordChangeError && <p style={{ color: 'red' }}>{passwordChangeError}</p>}
+</div>
+
       {/* Preferences Section */}
       <div className="preferences-section">
         <h3>Select Your Vacation Preferences</h3>
