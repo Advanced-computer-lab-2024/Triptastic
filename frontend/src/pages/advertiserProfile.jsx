@@ -10,6 +10,9 @@ const AdvertiserProfile = () => {
   const [updating, setUpdating] = useState(false);
   const [waiting, setWaiting] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+
   const [formData, setFormData] = useState({
     Username: '',
     Email: '',
@@ -159,7 +162,36 @@ const AdvertiserProfile = () => {
 
     setUpdating(false);
   };
-
+  const handlePasswordChange = async () => {
+    const Username = localStorage.getItem('Username');
+  
+    try {
+      const response = await fetch(`http://localhost:8000/changePasswordAdvertiser`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          Username,
+          currentPassword,
+          newPassword,
+        }),
+      });
+  
+      if (response.ok) {
+        alert('Password changed successfully!');
+        setCurrentPassword('');
+        setNewPassword('');
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Failed to change password');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while changing the password');
+      console.error(error);
+    }
+  };
+  
   const handleDeleteRequest = async () => {
     const Username = localStorage.getItem('Username');
     setWaiting(true);
@@ -189,6 +221,27 @@ const AdvertiserProfile = () => {
   return (
     <div>
       <h2>Advertiser Profile</h2>
+      <div>
+  <h3>Change Password</h3>
+  <div>
+    <label>Current Password:</label>
+    <input
+      type="password"
+      value={currentPassword}
+      onChange={(e) => setCurrentPassword(e.target.value)}
+    />
+  </div>
+  <div>
+    <label>New Password:</label>
+    <input
+      type="password"
+      value={newPassword}
+      onChange={(e) => setNewPassword(e.target.value)}
+    />
+  </div>
+  <button onClick={handlePasswordChange}>Change Password</button>
+</div>
+
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
       {loading ? (
         <p>Loading advertiser information...</p>
