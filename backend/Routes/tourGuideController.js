@@ -81,16 +81,21 @@ const createTourGuideInfo = async (req, res) => {
 
    }
  }
- const getItinerary= async(req,res)=>{
-   const iq=req.params.id
-   try{
-      const x=await itineraryModel.findById(id);
-      res.status(200).json(x);
+ const getItinerary = async (req, res) => {
+   const { id } = req.params; // Ensure you're using destructuring to get 'id' from req.params
+   try {
+     // Use the variable 'id' obtained from req.params
+     const itinerary = await itineraryModel.findById(id);
+     if (!itinerary) {
+       return res.status(404).json({ error: 'Itinerary not found' });
+     }
+     res.status(200).json(itinerary);
+   } catch (error) {
+     console.error('Error retrieving itinerary:', error);
+     res.status(400).json({ error: error.message });
    }
-   catch (error){
-      res.status(400).json({error: error.message});
-   }
- }
+ };
+ 
  const updateItinerary= async(req,res)=>{
    const {id}=req.params;
    const update= req.body;

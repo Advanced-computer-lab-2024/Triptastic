@@ -717,6 +717,26 @@ const shareActivity = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+const shareItinerary = async (req, res) => {
+  const { id } = req.params; // Get the itinerary ID from the request
+
+  try {
+    // Find the itinerary by ID
+    const itinerary = await itineraryModel.findById(id);
+    if (!itinerary) {
+      return res.status(404).json({ error: 'Itinerary not found' });
+    }
+
+    // Generate the shareable link using the itinerary ID (or other details)
+    const shareableLink = `http://localhost:3000/itineraries/${encodeURIComponent(itinerary._id)}`;
+
+    // Return the link for sharing
+    res.status(200).json({ link: shareableLink });
+  } catch (error) {
+    console.error('Error generating shareable link:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
 
 
 const shareHistorical = async (req, res) => {
@@ -759,26 +779,7 @@ const shareMuseum = async (req, res) => {
       res.status(500).json({ error: 'Server error' });
   }
 };
-const shareItinerary = async (req, res) => {
-  const { Activities } = req.params; 
 
-  try {
-      // Find the activity by ID
-      const Itinerary = await itineraryModel.findOne({ Activities: Activities });
-      if (!Itinerary) {
-          return res.status(404).json({ error: 'Itinerary not found' });
-      }
-
-      // Generate the shareable link
-      const shareableLink = `https://yourwebsite.com/Itinerary/${Activities}`;
-
-      // Return the link for sharing
-      res.status(200).json({ link: shareableLink });
-  } catch (error) {
-      console.error('Error generating shareable link:', error);
-      res.status(500).json({ error: 'Server error' });
-  }
-};
  
 const getComplaintsByTourist = async (req, res) => {
   const { username } = req.query; // Get the username from the query parameters
@@ -1295,6 +1296,41 @@ const getActivityToShare = async (req, res) => {
     res.status(200).json(activity);
   } catch (error) {
     console.error('Error retrieving activity:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const getMuseumToShare = async (req, res) => {
+  const { name } = req.params; // Get the Museum name from the request
+
+  try {
+    // Find the Museum by name
+    const Museum = await museumsModel.findOne({ Name: name });
+    if (!Museum) {
+      return res.status(404).json({ error: 'Activity not found' });
+    }
+
+    // Return the found Museum
+    res.status(200).json(Museum);
+  } catch (error) {
+    console.error('Error retrieving Museum:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+const getHistoricalToShare = async (req, res) => {
+  const { name } = req.params; // Get the Historical name from the request
+
+  try {
+    // Find the Historical by name
+    const Historical = await historicalLocationModel.findOne({ Name: name });
+    if (!Historical) {
+      return res.status(404).json({ error: 'Activity not found' });
+    }
+
+    // Return the found Historical
+    res.status(200).json(Historical);
+  } catch (error) {
+    console.error('Error retrieving Historical:', error);
     res.status(500).json({ error: 'Server error' });
   }
 };

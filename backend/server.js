@@ -124,10 +124,10 @@ app.get("/searchActivities",searchActivities);
 app.post("/commentOnActivity",commentOnActivity);
 app.post("/rateActivity",rateActivity);
 app.post('/setCurrency',setCurrency);
-app.get("/shareActivity/:name",shareActivity);shareItinerary
+app.get("/shareActivity/:name",shareActivity);
 app.get("/shareHistorical/:Name",shareHistorical);
 app.get("/shareMuseum/:Name",shareMuseum);
-app.get("/shareItinerary/:Activities",shareItinerary);
+app.get("/shareItinerary/:id",shareItinerary);
 app.post('/fileComplaint', fileComplaint);
 app.get("/getComplaintsByTourist", getComplaintsByTourist);
 app.patch("/changepasswordTourist",changepasswordTourist);
