@@ -82,7 +82,7 @@ function TourGuideProfile() {
     Accesibility: '',
     pickUpDropOff: '',
   });
-  const [logo, setLogo] = useState(null);
+  const [photo, setPhoto] = useState(null);
   const [isCreatingItinerary, setIsCreatingItinerary] = useState(false);
   const [isEditingItinerary, setIsEditingItinerary] = useState(false); // New state for editing itinerary
   const [isCreatingTouristItinerary, setIsCreatingTouristItinerary] = useState(false);
@@ -106,9 +106,9 @@ function TourGuideProfile() {
             setFormData(data);
             setErrorMessage('');
 
-            if (data.logo) {
-              setLogo(data.logo);
-              localStorage.setItem('tourGuideLogo', data.logo); // Store logo URL in local storage
+            if (data.photo) {
+              setPhoto(data.photo);
+              localStorage.setItem('photo', data.photo); // Store photo URL in local storage
             }
           } else {
             setErrorMessage('No tour guide information found.');
@@ -160,9 +160,9 @@ function TourGuideProfile() {
     }
   };
   useEffect(() => {
-    const savedLogo = localStorage.getItem('tourGuideLogo');
-    if (savedLogo) {
-      setLogo(savedLogo);
+    const savedPhoto = localStorage.getItem('photo');
+    if (savedPhoto) {
+      setPhoto(savedPhoto);
     }
     fetchTourGuideData();
     fetchItineraries();
@@ -189,11 +189,11 @@ function TourGuideProfile() {
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const logoURL = URL.createObjectURL(file);
-      setLogo(logoURL); // Display the selected logo immediately
+      const photoURL = URL.createObjectURL(file);
+      setPhoto(photoURL); 
       setFormData((prevData) => ({
         ...prevData,
-        Logo: file, // Store the file for uploading
+        photo: file,
       }));
     }
   };
@@ -230,10 +230,10 @@ function TourGuideProfile() {
         setErrorMessage('');
         setIsEditing(false);
 
-        if (formData.Logo) {
-          const logoURL = URL.createObjectURL(formData.Logo);
-          setLogo(logoURL);
-          localStorage.setItem('tourGuideLogo', logoURL); // Update logo URL in local storage
+        if (formData.photo) {
+          const photoURL = URL.createObjectURL(formData.photo);
+          setPhoto(photoURL);
+          localStorage.setItem('photo', photoURL); // Update photo URL in local storage
         }
       } else {
         throw new Error('Failed to update tour guide information');
@@ -535,7 +535,7 @@ function TourGuideProfile() {
             {isVisible && (
               <div>
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                {logo && <img src={logo} alt="Tour Guide Logo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
+                {photo && <img src={photo} alt="Tour Guide Photo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
                 <p><strong>Username:</strong> {tourGuideInfo?.Username}</p> </div>
                 <div>
                 <p><strong>Email:</strong> {tourGuideInfo?.Email}</p> 
@@ -550,7 +550,7 @@ function TourGuideProfile() {
             {isEditing && (
               <form onSubmit={handleSubmit}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                {logo && <img src={logo} alt="Tour Guide Logo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
+                {photo && <img src={photo} alt="photo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
                   <label>Username:</label>
                   <input
                     type="text"
