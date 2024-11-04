@@ -28,7 +28,6 @@ const SellerProfile = () => {
     Password: '',
     Name: '',
     Description: '',
-    logo: '' // Adding a logo field
   });
   const [logo, setLogo] = useState(null);
   const navigate = useNavigate();
@@ -58,6 +57,7 @@ const SellerProfile = () => {
 
             // Store the logo in localStorage for persistence
             if (data.logo) {
+              setLogo(data.logo);
               localStorage.setItem('logo', data.logo);
             }
           } else {
@@ -77,6 +77,11 @@ const SellerProfile = () => {
   };
 
   useEffect(() => {
+
+    const savedLogo=localStorage.getItem('logo');
+    if (savedLogo) {
+      setLogo(savedLogo);
+    }
     fetchSellerInfo();
   }, []);
 
@@ -91,17 +96,12 @@ const SellerProfile = () => {
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prevData) => ({
-          ...prevData,
-          logo: reader.result // Store the logo data URL
-        }));
-        
-        // Save logo to local storage for persistence
-        localStorage.setItem('logo', reader.result);
-      };
-      reader.readAsDataURL(file); // Convert file to base64
+      const logoURL = URL.createObjectURL(file);
+      setLogo(logoURL); // Display the selected logo immediately
+      setFormData((prevData) => ({
+        ...prevData,
+        Logo: file, // Store the file for uploading
+      }));
     }
   };
 
@@ -121,10 +121,16 @@ const SellerProfile = () => {
         setSellerInfo(updatedSeller);
         setErrorMessage('');
         alert('Information updated successfully!');
+
+        if (formData.Logo) {
+          const logoURL = URL.createObjectURL(formData.Logo);
+          setLogo(logoURL);
+          localStorage.setItem('logo', logoURL);
+
       } else {
         throw new Error('Failed to update seller information');
       }
-    } catch (error) {
+    }} catch (error) {
       setErrorMessage('An error occurred while updating seller information');
       console.error(error);
     }
@@ -228,12 +234,10 @@ const SellerProfile = () => {
         ) : (
           sellerInfo && (
             <div>
-              <div>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+              {logo && <img src={logo} alt="Logo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
                 <label><strong>Username:</strong></label>
-                <p>
-                  <img src={formData.logo || localStorage.getItem('logo')} alt="Logo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />
-                  {sellerInfo.Username}
-                </p> {/* Display Username with logo */}
+                <p> {sellerInfo.Username}</p> {/* Display Username with logo */}
               </div>
               <div>
                 <label><strong>Email:</strong></label>
@@ -247,7 +251,7 @@ const SellerProfile = () => {
               <div>
                 <label><strong>Password:</strong></label>
                 <input
-                  type="text" // Visible password
+                  type="password" // Visible password
                   name="Password"
                   value={formData.Password}
                   onChange={handleInputChange}
@@ -280,7 +284,6 @@ const SellerProfile = () => {
                   accept="image/*" // This allows any image type
                   onChange={handleLogoChange}
                 />
-                {formData.logo && <img src={formData.logo} alt="Logo Preview" style={{ width: '100px', height: '100px', marginTop: '10px' }} />}
               </div>
 
               <button onClick={handleUpdate} disabled={updating}>

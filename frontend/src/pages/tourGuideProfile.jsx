@@ -39,6 +39,7 @@ function TourGuideProfile() {
     Accesibility: '',
     pickUpDropOff: '',
   });
+  const [logo, setLogo] = useState(null);
   const [isCreatingItinerary, setIsCreatingItinerary] = useState(false);
   const [isEditingItinerary, setIsEditingItinerary] = useState(false); // New state for editing itinerary
   const [isCreatingTouristItinerary, setIsCreatingTouristItinerary] = useState(false);
@@ -61,6 +62,11 @@ function TourGuideProfile() {
             setTourGuideInfo(data);
             setFormData(data);
             setErrorMessage('');
+
+            if (data.logo) {
+              setLogo(data.logo);
+              localStorage.setItem('tourGuideLogo', data.logo); // Store logo URL in local storage
+            }
           } else {
             setErrorMessage('No tour guide information found.');
           }
@@ -111,6 +117,10 @@ function TourGuideProfile() {
     }
   };
   useEffect(() => {
+    const savedLogo = localStorage.getItem('tourGuideLogo');
+    if (savedLogo) {
+      setLogo(savedLogo);
+    }
     fetchTourGuideData();
     fetchItineraries();
     setLoading(false);
@@ -131,6 +141,18 @@ function TourGuideProfile() {
       ...prevData,
       [name]: value,
     }));
+  };
+
+  const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const logoURL = URL.createObjectURL(file);
+      setLogo(logoURL); // Display the selected logo immediately
+      setFormData((prevData) => ({
+        ...prevData,
+        Logo: file, // Store the file for uploading
+      }));
+    }
   };
 
   const handleItineraryChange = (e) => {
@@ -164,6 +186,12 @@ function TourGuideProfile() {
         await fetchTourGuideData();
         setErrorMessage('');
         setIsEditing(false);
+
+        if (formData.Logo) {
+          const logoURL = URL.createObjectURL(formData.Logo);
+          setLogo(logoURL);
+          localStorage.setItem('tourGuideLogo', logoURL); // Update logo URL in local storage
+        }
       } else {
         throw new Error('Failed to update tour guide information');
       }
@@ -460,18 +488,23 @@ function TourGuideProfile() {
             <button onClick={toggleProfileDetails}>{isVisible ? 'Hide' : 'Show'} Profile Details</button>
             {isVisible && (
               <div>
-                <p><strong>Username:</strong> {tourGuideInfo?.Username}</p>
-                <p><strong>Email:</strong> {tourGuideInfo?.Email}</p>
-                <p><strong>Mobile Number:</strong> {tourGuideInfo?.mobileNumber}</p>
-                <p><strong>Years of Experience:</strong> {tourGuideInfo?.yearsOfExperience}</p>
-                <p><strong>Previous Work:</strong> {tourGuideInfo?.previousWork}</p>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                {logo && <img src={logo} alt="Tour Guide Logo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
+                <p><strong>Username:</strong> {tourGuideInfo?.Username}</p> </div>
+                <div>
+                <p><strong>Email:</strong> {tourGuideInfo?.Email}</p> 
+                <p><strong>Mobile Number:</strong> {tourGuideInfo?.mobileNumber}</p> 
+               <p><strong>Years of Experience:</strong> {tourGuideInfo?.yearsOfExperience}</p> 
+               <p><strong>Previous Work:</strong> {tourGuideInfo?.previousWork}</p> 
                 <button onClick={handleEditToggle}>{isEditing ? 'Cancel Edit' : 'Edit Data'}</button>
+              </div>
               </div>
             )}
     
             {isEditing && (
               <form onSubmit={handleSubmit}>
-                <div>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                {logo && <img src={logo} alt="Tour Guide Logo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
                   <label>Username:</label>
                   <input
                     type="text"
@@ -518,6 +551,14 @@ function TourGuideProfile() {
                     onChange={handleChange}
                   />
                 </div>
+                <div>
+              <label><strong>Photo:</strong></label>
+              <input
+                type="file"
+                accept="image/*" // Accept any image type
+                onChange={handleLogoChange}
+              />
+            </div>
                 <button type="submit">Update Data</button>
               </form>
             )}
