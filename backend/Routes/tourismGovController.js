@@ -1,4 +1,4 @@
-const tourismGovModel = require('../Models/tourismGov.js');
+     const tourismGovModel = require('../Models/tourismGov.js');
 const museumModel=require('../Models/Museums.js');
 const historicalLocationModel = require('../Models/historicalLocation.js');
 const { default: mongoose } = require('mongoose');
