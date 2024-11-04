@@ -65,7 +65,7 @@ const handleShowAll = () => {
             <h3 className="complaint-title">{complaint.title}</h3>
             <p className="complaint-date">Date: {new Date(complaint.date).toLocaleDateString()}</p>
             <p className={`complaint-status ${complaint.status}`}>Status: {complaint.status}</p>
-            <button className="reply-button" onClick={() => handleReply(complaint._id)}>Reply / Change Status</button>
+            <button className="reply-button" onClick={() => handleReply(complaint._id)}>Reply </button>
           </div>
         ))}
       </div>
