@@ -21,6 +21,7 @@ const SellerProfile = () => {
     stock: '',
     image: null // Change to null to store the file
   });
+
   
   const [formData, setFormData] = useState({
     Username: '',
@@ -53,101 +54,101 @@ const SellerProfile = () => {
     }
   };
 
-  useEffect(() => {
-    const savedLogo = localStorage.getItem('logo');
-    if (savedLogo) {
-      setLogo(savedLogo);
-    }
-    fetchSellerInfo();
-  }, []);
-  
-  const fetchSellerInfo = async () => {
-    setLoading(true);
-    const Username = localStorage.getItem('Username');
-    if (Username) {
-      try {
-        const response = await fetch(`http://localhost:8000/getSeller?Username=${Username}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-  
-        if (response.ok) {
-          const data = await response.json();
-          if (data) {
-            setSellerInfo(data);
-            setFormData(data);
-            setProductFormData((prevData) => ({
-              ...prevData,
-              seller: data.Username,
-            }));
-            setErrorMessage('');
-  
-            // Set and persist the logo URL
-            if (data.logo) {
-              const logoURL = data.logo;
-              setLogo(logoURL);
-              localStorage.setItem('logo', logoURL); // Persist logo in local storage
-            }
-          } else {
-            setErrorMessage('No seller information found.');
+ useEffect(() => {
+  const savedLogo = localStorage.getItem('logo');
+  if (savedLogo) {
+    setLogo(savedLogo);
+  }
+  fetchSellerInfo();
+}, []);
+
+const fetchSellerInfo = async () => {
+  setLoading(true);
+  const Username = localStorage.getItem('Username');
+  if (Username) {
+    try {
+      const response = await fetch(`http://localhost:8000/getSeller?Username=${Username}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data) {
+          setSellerInfo(data);
+          setFormData(data);
+          setProductFormData((prevData) => ({
+            ...prevData,
+            seller: data.Username,
+          }));
+          setErrorMessage('');
+
+          // Set and persist the logo URL
+          if (data.logo) {
+            const logoURL = data.logo;
+            setLogo(logoURL);
+            localStorage.setItem('logo', logoURL); // Persist logo in local storage
           }
         } else {
-          throw new Error('Failed to fetch seller information');
-        }
-      } catch (error) {
-        setErrorMessage('An error occurred while fetching seller information');
-        console.error(error);
-      }
-    } else {
-      setErrorMessage('No seller information found.');
-    }
-    setLoading(false);
-  };
-  
-  const handleUpdate = async () => {
-    setUpdating(true);
-  
-    const formDataToSubmit = new FormData();
-    formDataToSubmit.append('Username', formData.Username);
-    formDataToSubmit.append('Email', formData.Email);
-    formDataToSubmit.append('Password', formData.Password);
-    formDataToSubmit.append('Name', formData.Name);
-    formDataToSubmit.append('Description', formData.Description);
-  
-    if (formData.Logo) {
-      formDataToSubmit.append('Logo', formData.Logo);
-    }
-  
-    try {
-      const response = await fetch('http://localhost:8000/updateSeller', {
-        method: 'PATCH',
-        body: formDataToSubmit,
-      });
-  
-      if (response.ok) {
-        const updatedSeller = await response.json();
-        setSellerInfo(updatedSeller);
-        setErrorMessage('');
-        alert('Information updated successfully!');
-  
-        // Update and persist the logo URL
-        if (updatedSeller.logo) {
-          const logoURL = updatedSeller.logo;
-          setLogo(logoURL);
-          localStorage.setItem('logo', logoURL);
+          setErrorMessage('No seller information found.');
         }
       } else {
-        throw new Error('Failed to update seller information');
+        throw new Error('Failed to fetch seller information');
       }
     } catch (error) {
-      setErrorMessage('An error occurred while updating seller information');
+      setErrorMessage('An error occurred while fetching seller information');
       console.error(error);
     }
-    setUpdating(false);
-  };
-  
+  } else {
+    setErrorMessage('No seller information found.');
+  }
+  setLoading(false);
+};
+
+const handleUpdate = async () => {
+  setUpdating(true);
+
+  const formDataToSubmit = new FormData();
+  formDataToSubmit.append('Username', formData.Username);
+  formDataToSubmit.append('Email', formData.Email);
+  formDataToSubmit.append('Password', formData.Password);
+  formDataToSubmit.append('Name', formData.Name);
+  formDataToSubmit.append('Description', formData.Description);
+
+  if (formData.Logo) {
+    formDataToSubmit.append('Logo', formData.Logo);
+  }
+
+  try {
+    const response = await fetch('http://localhost:8000/updateSeller', {
+      method: 'PATCH',
+      body: formDataToSubmit,
+    });
+
+    if (response.ok) {
+      const updatedSeller = await response.json();
+      setSellerInfo(updatedSeller);
+      setErrorMessage('');
+      alert('Information updated successfully!');
+
+      // Update and persist the logo URL
+      if (updatedSeller.logo) {
+        const logoURL = updatedSeller.logo;
+        setLogo(logoURL);
+        localStorage.setItem('logo', logoURL);
+      }
+    } else {
+      throw new Error('Failed to update seller information');
+    }
+  } catch (error) {
+    setErrorMessage('An error occurred while updating seller information');
+    console.error(error);
+  }
+  setUpdating(false);
+};
+
   const handleProductInputChange = (e) => {
     const { name, value } = e.target;
     setProductFormData((prevData) => ({
