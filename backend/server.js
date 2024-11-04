@@ -140,6 +140,7 @@ app.delete('/cancelBookedActivity/:activityId', cancelActivity);
 app.get('/getBookedActivities',getBookedActivities)
 app.get('/getActivityToShare/:name',getActivityToShare)
 app.post('/setPreferences',setPreferences);
+app.get('/getCurrencyRates',getCurrencyRates)
 
 //TourGuide
 app.post("/addTourGuide",upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'Certificate', maxCount: 1 } ]),createTourGuide);
