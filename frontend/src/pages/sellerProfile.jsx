@@ -11,6 +11,11 @@ const SellerProfile = () => {
   const [requestSent, setRequestSent] = useState(false);
   const [fetchedProduct, setFetchedProduct] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [passwordMessage, setPasswordMessage] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
+
   const [productFormData, setProductFormData] = useState({
     productName: '',
     description: '',
@@ -234,12 +239,69 @@ const handleUpdate = async () => {
     finally {
       setWaiting(false);
     }
+
+
+  };
+  const handlePasswordChange = async () => {
+    setChangingPassword(true);
+    const Username = localStorage.getItem('Username');
+
+    try {
+      const response = await fetch('http://localhost:8000/changePasswordSeller', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          Username,
+          currentPassword,
+          newPassword,
+        }),
+      });
+
+      if (response.ok) {
+        setPasswordMessage('Password changed successfully');
+        setCurrentPassword('');
+        setNewPassword('');
+      } else {
+        const data = await response.json();
+        setPasswordMessage(data.error || 'Failed to change password');
+      }
+    } catch (error) {
+      setPasswordMessage('An error occurred while changing the password');
+      console.error(error);
+    }
+    setChangingPassword(false);
   };
 
+  const handleCurrentPasswordChange = (e) => setCurrentPassword(e.target.value);
+  const handleNewPasswordChange = (e) => setNewPassword(e.target.value);
   return (
     <div className="seller-profile-container">
       <div className="profile-content">
         <h2>Seller Profile</h2>
+        <div>
+  <h3>Change Password</h3>
+  {passwordMessage && <p style={{ color: passwordMessage.includes('successfully') ? 'green' : 'red' }}>{passwordMessage}</p>}
+  <div>
+    <label>Current Password:</label>
+    <input
+      type="password"
+      value={currentPassword}
+      onChange={handleCurrentPasswordChange}
+    />
+  </div>
+  <div>
+    <label>New Password:</label>
+    <input
+      type="password"
+      value={newPassword}
+      onChange={handleNewPasswordChange}
+    />
+  </div>
+  <button onClick={handlePasswordChange} disabled={changingPassword}>
+    {changingPassword ? 'Changing Password...' : 'Change Password'}
+  </button>
+</div>
+
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         {loading ? (
           <p>Loading seller information...</p>
@@ -310,6 +372,8 @@ const handleUpdate = async () => {
 {!addingProduct && (
   <button onClick={() => setAddingProduct(true)}>Add Product</button>
 )}
+
+
 
 {/* Product Form */}
 {addingProduct && (
@@ -394,6 +458,7 @@ const handleUpdate = async () => {
       </div>
     </div>
   );
+  
 };
 
 export default SellerProfile;

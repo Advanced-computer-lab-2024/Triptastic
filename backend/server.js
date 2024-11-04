@@ -145,9 +145,9 @@ app.get('/getCurrencyRates',getCurrencyRates)
 
 //TourGuide
 app.post("/addTourGuide",upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'Certificate', maxCount: 1 } ]),createTourGuide);
-app.patch("/addTourGuideInfo",upload.single('photo'),createTourGuideInfo);
+app.patch("/addTourGuideInfo",createTourGuideInfo);
 app.get("/getTourGuide/",getTourGuide);
-app.patch("/updateTourGuide/:Username",updateTourGuide);
+app.patch("/updateTourGuide/:Username",upload.single('photo'),updateTourGuide);
 app.post("/addItinerary",createItinerary);
 app.get("/getItinerary/:id",getItinerary);
 app.patch("/updateItinerary/:id",updateItinerary);
