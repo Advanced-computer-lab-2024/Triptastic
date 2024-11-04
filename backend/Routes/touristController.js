@@ -4,6 +4,8 @@ const productModel= require('../Models/Product.js');
 const activitiesModel=require('../Models/Activities.js');
 const itineraryModel= require('../Models/Itinerary.js');
 const museumsModel=require('../Models/Museums.js');
+const TransportationModel = require('../Models/Transportation.js');
+
 const { default: mongoose } = require('mongoose');
 const complaintModel = require('../Models/Complaint.js'); // Adjust the path based on your project structure
 const TourGuideModel = require('../Models/tourGuide.js'); // Adjust path as needed
@@ -1299,6 +1301,18 @@ const getActivityToShare = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+const getTransportation=async(req,res)=>{
+  try{
+    const Transportation=await TransportationModel.find();
+    res.status(200).json(Transportation);
+
+
+  }
+  catch(error){
+    console.error(error);
+    res.status(500).json({ error: 'Failed to get Transportation' });
+  }
+};
 
 
 
@@ -1310,4 +1324,4 @@ const getActivityToShare = async (req, res) => {
   ,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange
   ,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities
   ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
-  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,getBookedActivities,setPreferences};
+  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,getBookedActivities,setPreferences,getTransportation};
