@@ -28,7 +28,9 @@ const createSeller = async(req,res) => {
   const Logo = req.file ? req.file.path : null;  
   
   try{
-     const seller=await sellerModel.findOneAndUpdate({Username: Username },{$set:{Email: Email,Password:Password,Name:Name,Description:Description,...(Logo && { Logo })
+     const seller=await sellerModel.findOneAndUpdate(
+      {Username },
+      {$set:{Email,Password,Name,Description,...(Logo && { Logo })
     } 
   },{ new: true });
      res.status(200).json(seller);

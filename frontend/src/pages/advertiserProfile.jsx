@@ -17,6 +17,7 @@ const AdvertiserProfile = () => {
     Website_Link: '',
     Hotline: '',
     Company_Profile: '',
+    Logo:''
   });
   const [logo, setLogo] = useState(null); // State for the logo file
   const navigate = useNavigate();
