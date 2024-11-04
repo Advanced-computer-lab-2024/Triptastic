@@ -1,6 +1,49 @@
 import React, { useState, useEffect } from 'react';
 
 function TourGuideProfile() {
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [passwordChangeMessage, setPasswordChangeMessage] = useState('');
+  const [passwordChangeError, setPasswordChangeError] = useState('');
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    setIsChangingPassword(true);
+    setPasswordChangeMessage('');
+    setPasswordChangeError('');
+  
+    const Username = localStorage.getItem('Username');
+  
+    try {
+      const response = await fetch('http://localhost:8000/changePasswordTourGuide', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          Username,
+          currentPassword,
+          newPassword,
+        }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        setPasswordChangeMessage(data.message);
+        setCurrentPassword('');
+        setNewPassword('');
+      } else {
+        const errorData = await response.json();
+        setPasswordChangeError(errorData.error || 'Error changing password');
+      }
+    } catch (error) {
+      console.error('Error changing password:', error);
+      setPasswordChangeError('Error changing password');
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+
   const [tourGuideInfo, setTourGuideInfo] = useState(null);
   const [itineraries, setItineraries] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -471,6 +514,8 @@ function TourGuideProfile() {
     finally {
       setWaiting(false); // Stop waiting regardless of outcome
   }
+
+  
 };
   return (
   
@@ -485,6 +530,7 @@ function TourGuideProfile() {
           <button onClick={handleDeleteRequest} disabled={waiting || requestSent}>
               {waiting ? 'Waiting to be deleted...' : requestSent ? 'Request Sent' : 'Delete Account'}
             </button>
+            
             <button onClick={toggleProfileDetails}>{isVisible ? 'Hide' : 'Show'} Profile Details</button>
             {isVisible && (
               <div>
@@ -562,6 +608,8 @@ function TourGuideProfile() {
                 <button type="submit">Update Data</button>
               </form>
             )}
+            
+            
     
             <h3>Itineraries</h3>
             <button onClick={() => setIsCreatingItinerary((prev) => !prev)}>
@@ -850,6 +898,7 @@ function TourGuideProfile() {
             <button type="submit">Add Tourist Itinerary</button>
           </form>
         )}
+        
     
         {touristItineraries.length > 0 ? (
           touristItineraries.map((touristItinerary) => (
@@ -933,6 +982,36 @@ function TourGuideProfile() {
             </form>
           </div>
         )}
+        <div>
+  <h3>Change Password</h3>
+  <form onSubmit={handlePasswordChange}>
+    <div>
+      <label>Current Password:</label>
+      <input
+        type="password"
+        value={currentPassword}
+        onChange={(e) => setCurrentPassword(e.target.value)}
+        required
+      />
+    </div>
+    <div>
+      <label>New Password:</label>
+      <input
+        type="password"
+        value={newPassword}
+        onChange={(e) => setNewPassword(e.target.value)}
+        required
+      />
+    </div>
+    <button type="submit" disabled={isChangingPassword}>
+      {isChangingPassword ? 'Changing Password...' : 'Change Password'}
+    </button>
+  </form>
+
+  {passwordChangeMessage && <p style={{ color: 'green' }}>{passwordChangeMessage}</p>}
+  {passwordChangeError && <p style={{ color: 'red' }}>{passwordChangeError}</p>}
+</div>
+
       </div>
       
    
