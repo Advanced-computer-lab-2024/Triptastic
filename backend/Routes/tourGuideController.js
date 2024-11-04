@@ -286,5 +286,26 @@ const changePasswordTourGuide = async (req, res) => {
       res.status(400).json({error: error.message});
    }
 };
- module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG,changePasswordTourGuide,getPendingTourGuides};
+const settleDocsTourGuide = async (req, res) => {
+   const { Username } = req.query; 
+   const { docsApproved } = req.body; 
+ 
+   try {
+       
+       const tourGuide = await tourGuideModel.findOneAndUpdate(
+           { Username },
+           { $set: { docsApproved } },
+           { new: true }
+       );
+ 
+       if (!tourGuide) {
+           return res.status(404).json({ error: 'Tour guide not found' });
+       }
+ 
+       res.status(200).json(tourGuide);
+   } catch (error) {
+       res.status(400).json({ error: error.message });
+   }
+ };
+ module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG,changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide};
  

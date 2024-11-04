@@ -310,8 +310,29 @@ const createTransportation = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+const settleDocsAdvertiser = async (req, res) => {
+    const { Username } = req.query; 
+    const { docsApproved } = req.body; 
+  
+    try {
+        
+        const advertiser = await advertiserModel.findOneAndUpdate(
+            { Username },
+            { $set: { docsApproved } },
+            { new: true }
+        );
+  
+        if (!advertiser) {
+            return res.status(404).json({ error: 'Advertiser not found' });
+        }
+  
+        res.status(200).json(advertiser);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+  }
 
  module.exports = {changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,
    getActivity,
    updateActivity,
-   deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation};
+   deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser};
