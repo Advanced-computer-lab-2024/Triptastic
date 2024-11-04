@@ -294,73 +294,80 @@ const SellerProfile = () => {
         )}
         <button onClick={fetchSellerInfo}>Refresh Profile</button>
 
-        {/* Product Form */}
-        {addingProduct && (
-          <form onSubmit={handleProductSubmit}>
-            <h3>Add Product</h3>
-            <div>
-              <label><strong>Product Name:</strong></label>
-              <input
-                type="text"
-                name="productName"
-                value={productFormData.productName}
-                onChange={handleProductInputChange}
-                required
-              />
-            </div>
-            <div>
-              <label><strong>Description:</strong></label>
-              <input
-                type="text"
-                name="description"
-                value={productFormData.description}
-                onChange={handleProductInputChange}
-                required
-              />
-            </div>
-            <div>
-              <label><strong>Price:</strong></label>
-              <input
-                type="number"
-                name="price"
-                value={productFormData.price}
-                onChange={handleProductInputChange}
-                required
-              />
-            </div>
-            <div>
-              <label><strong>Rating:</strong></label>
-              <input
-                type="number"
-                name="rating"
-                value={productFormData.rating}
-                onChange={handleProductInputChange}
-                required
-              />
-            </div>
-            <div>
-              <label><strong>Stock:</strong></label>
-              <input
-                type="number"
-                name="stock"
-                value={productFormData.stock}
-                onChange={handleProductInputChange}
-                required
-              />
-            </div>
-            <div>
-              <label><strong>Image:</strong></label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                required
-              />
-            </div>
-            {imagePreview && <img src={imagePreview} alt="Product Preview" style={{ width: '100px', height: '100px' }} />}
-            <button onClick={() => setAddingProduct(true)}>Add Product</button>
-          </form>
-        )}
+        {/* Button to Show Add Product Form */}
+{!addingProduct && (
+  <button onClick={() => setAddingProduct(true)}>Add Product</button>
+)}
+
+{/* Product Form */}
+{addingProduct && (
+  <form onSubmit={handleProductSubmit}>
+    <h3>Add Product</h3>
+    <div>
+      <label><strong>Product Name:</strong></label>
+      <input
+        type="text"
+        name="productName"
+        value={productFormData.productName}
+        onChange={handleProductInputChange}
+        required
+      />
+    </div>
+    <div>
+      <label><strong>Description:</strong></label>
+      <input
+        type="text"
+        name="description"
+        value={productFormData.description}
+        onChange={handleProductInputChange}
+        required
+      />
+    </div>
+    <div>
+      <label><strong>Price:</strong></label>
+      <input
+        type="number"
+        name="price"
+        value={productFormData.price}
+        onChange={handleProductInputChange}
+        required
+      />
+    </div>
+    <div>
+      <label><strong>Rating:</strong></label>
+      <input
+        type="number"
+        name="rating"
+        value={productFormData.rating}
+        onChange={handleProductInputChange}
+        required
+      />
+    </div>
+    <div>
+      <label><strong>Stock:</strong></label>
+      <input
+        type="number"
+        name="stock"
+        value={productFormData.stock}
+        onChange={handleProductInputChange}
+        required
+      />
+    </div>
+    <div>
+      <label><strong>Image:</strong></label>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleImageChange}
+        required
+      />
+    </div>
+    {imagePreview && <img src={imagePreview} alt="Product Preview" style={{ width: '100px', height: '100px' }} />}
+    
+    {/* Submit Button */}
+    <button type="submit">Submit Product</button>
+  </form>
+)}
         
         {waiting && <p>Waiting for deletion request...</p>}
         <button onClick={handleDeleteRequest} disabled={waiting}>
