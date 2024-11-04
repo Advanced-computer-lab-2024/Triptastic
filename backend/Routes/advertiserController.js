@@ -3,6 +3,8 @@ const activitiescategoryModel = require('../Models/Activitiescategory.js');
 const activitiesModel = require('../Models/Activities.js');
 const PreferenceTagsModel = require('../Models/PreferenceTags.js');
 const RequestModel = require('../Models/Request.js');
+const TransportationModel = require('../Models/Transportation.js');
+
 const { default: mongoose } = require('mongoose');
 const createAdvertiser = async(req,res) => {
 
@@ -279,8 +281,37 @@ const changePasswordAdvertiser = async (req, res) => {
           res.status(500).json({ error: "Error changing password" });
         }
       };
-      
+const getPendingAdvertisers = async (req, res) => {
+    try {
+        const pendingAdvertisers = await advertiserModel.find({ docsApproved: 'pending' });
+        res.status(200).json(pendingAdvertisers);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}; 
+const createTransportation = async (req, res) => {
+    const { type, company, origin, destination, departureTime, arrivalTime, price, availability, seatsAvailable } = req.body;
+
+    try {
+        const transportation = await TransportationModel.create({
+            type,
+            company,
+            origin,
+            destination,
+            departureTime,
+            arrivalTime,
+            price,
+            availability,
+            seatsAvailable,
+        });
+
+        res.status(201).json(transportation);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
  module.exports = {changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,
    getActivity,
    updateActivity,
-   deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser};
+   deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation};

@@ -4,6 +4,7 @@ const Itineraries = () => {
   const [itineraries, setItineraries] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(true);
+  const [shareableLink, setShareableLink] = useState('');
   const [filters, setFilters] = useState({
     minBudget: '',
     maxBudget: '',
@@ -168,14 +169,18 @@ const Itineraries = () => {
   useEffect(() => {
     fetchASCItineraries(); // Default to ascending sort
   }, []);
-  const handleShare = async (itinerary) => {
+  const handleShare = async (itineraryId) => {
     try {
-      const response = await fetch(`http://localhost:8000/shareItinerary/${itinerary}`);
+      // Make a request to the backend with the itinerary ID
+      const response = await fetch(`http://localhost:8000/shareItinerary/${itineraryId}`);
       const data = await response.json();
-
+  
       if (response.ok) {
-        await navigator.clipboard.writeText(data.link); // Copy link to clipboard
-        setCopySuccess((prev) => ({ ...prev, [itinerary]: 'Link copied to clipboard!' })); // Set success message for the specific museum
+        setShareableLink(data.link); // Set the link to state
+        // Copy the generated link to the clipboard
+        await navigator.clipboard.writeText(data.link);
+        // Set the success message for the specific itinerary
+        setCopySuccess((prev) => ({ ...prev, [itineraryId]: 'Link copied to clipboard!' }));
       } else {
         console.error("Failed to generate shareable link");
       }
@@ -183,6 +188,7 @@ const Itineraries = () => {
       console.error("Error generating shareable link:", error);
     }
   };
+  
   return (
     <div>
       <h2>Itineraries</h2>
@@ -282,9 +288,9 @@ const Itineraries = () => {
                     </div>
                   )}
                    {/* Share button and success message */}
-        <button onClick={() => handleShare(itinerary.Activities)}>Share</button>
-        {copySuccess[itinerary.Activities] && (
-          <span style={{ color: 'green', marginLeft: '10px' }}>{copySuccess[itinerary.Activities]}</span>
+        <button onClick={() => handleShare(itinerary._id)}>Share</button>
+        {copySuccess[itinerary._id] && (
+          <span style={{ color: 'green', marginLeft: '10px' }}>{copySuccess[itinerary._id]}</span>
         )}
                 </li>
               ))}

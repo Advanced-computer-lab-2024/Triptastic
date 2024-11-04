@@ -38,6 +38,11 @@ const tourGuideSchema = new Schema({
     type: String,
     required: false,
   },
+  docsApproved: {
+    type: String,
+    enum: ['pending', 'accepted', 'rejected'], 
+    default: 'pending' 
+  },
   feedback: [
     {
       touristUsername: { // Add this field to store the tourist's name who submitted the feedback

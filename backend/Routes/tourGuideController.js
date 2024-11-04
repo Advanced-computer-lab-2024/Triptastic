@@ -57,9 +57,10 @@ const createTourGuideInfo = async (req, res) => {
  }
  const updateTourGuide= async(req,res)=>{
    const Username=req.params.Username;
+   const photo = req.file ? req.file.path : null; 
    const updates=req.body;
    try{
-      const result=await tourGuideModel.updateOne({Username: Username},{$set: updates});
+      const result=await tourGuideModel.updateOne({Username: Username},{$set: updates,...(photo && { photo }) });
       if (result.modifiedCount === 0) {
          return res.status(404).json({ msg: "No user found " });}
       res.status(200).json({msg:" user is updated"});
@@ -81,16 +82,21 @@ const createTourGuideInfo = async (req, res) => {
 
    }
  }
- const getItinerary= async(req,res)=>{
-   const iq=req.params.id
-   try{
-      const x=await itineraryModel.findById(id);
-      res.status(200).json(x);
+ const getItinerary = async (req, res) => {
+   const { id } = req.params; // Ensure you're using destructuring to get 'id' from req.params
+   try {
+     // Use the variable 'id' obtained from req.params
+     const itinerary = await itineraryModel.findById(id);
+     if (!itinerary) {
+       return res.status(404).json({ error: 'Itinerary not found' });
+     }
+     res.status(200).json(itinerary);
+   } catch (error) {
+     console.error('Error retrieving itinerary:', error);
+     res.status(400).json({ error: error.message });
    }
-   catch (error){
-      res.status(400).json({error: error.message});
-   }
- }
+ };
+ 
  const updateItinerary= async(req,res)=>{
    const {id}=req.params;
    const update= req.body;
@@ -271,6 +277,14 @@ const changePasswordTourGuide = async (req, res) => {
      res.status(500).json({ error: "Error changing password" });
    }
  };
- 
- module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG,changePasswordTourGuide};
+ const getPendingTourGuides=async(req,res)=>{
+   try{
+      const x=await tourGuideModel.find({docsApproved: 'pending'});
+      res.status(200).json(x);
+   }
+   catch(error){
+      res.status(400).json({error: error.message});
+   }
+};
+ module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG,changePasswordTourGuide,getPendingTourGuides};
  

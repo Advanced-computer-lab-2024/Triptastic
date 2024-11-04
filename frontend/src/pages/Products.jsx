@@ -115,7 +115,8 @@ const Products = () => {
               <p><strong>Seller:</strong> {product.seller}</p>
               <p><strong>Review:</strong> {product.review}</p>
               <p><strong>Stock:</strong> {product.stock}</p>
-              {product.image && <img src={`http://localhost:8000${product.image}`} alt={product.productName} style={{ width: '100px', height: 'auto' }} />
+              {product.image && <img src={`http://localhost:8000/${product.image.replace(/\\/g, '/')}`} alt={product.productName} style={{ width: '400px', height: '300px' }}/>
+
             } {/* Display product image */}
             </li>
           ))}

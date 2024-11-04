@@ -25,7 +25,9 @@ const createSeller = async(req,res) => {
  const updateSeller = async(req,res) => {
 
   const{Username,Email,Password,Name,Description}=req.body;
-  const Logo = req.file ? req.file.path : null;  try{
+  const Logo = req.file ? req.file.path : null;  
+  
+  try{
      const seller=await sellerModel.findOneAndUpdate({Username: Username },{$set:{Email: Email,Password:Password,Name:Name,Description:Description,...(Logo && { Logo })
     } 
   },{ new: true });
@@ -156,7 +158,15 @@ const changePasswordSeller = async (req, res) => {
     res.status(500).json({ error: "Error changing password" });
   }
 };
+const getPendingSellers=async(req,res)=>{
+  try{
+     const x=await sellerModel.find({docsApproved: 'pending'});
+     res.status(200).json(x);
+  }
+  catch(error){
+     res.status(400).json({error: error.message});
+  }
+};
 
 
-
- module.exports = {changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller};
+ module.exports = {changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers};
