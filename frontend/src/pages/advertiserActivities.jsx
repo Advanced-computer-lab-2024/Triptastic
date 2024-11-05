@@ -125,7 +125,7 @@ const handleUpdate = async (e) => {
       location: formData.location, // Ensure this matches your backend
       price: formData.price,
       tags: formData.tags,
-      
+      rating:formData.rating,
       specialDiscounts: formData.specialDiscounts,
       bookingOpen: formData.bookingOpen,
       
@@ -157,7 +157,7 @@ const handleUpdate = async (e) => {
               price: '',
               Category: '',
               tags: '',
-             
+              rating:0,
               specialDiscounts: '',
               bookingOpen: false,
               location: '',
@@ -293,6 +293,15 @@ const handleUpdate = async (e) => {
             />
           </div>
           <div>
+            <label><strong>Rating:</strong></label>
+            <input
+              type="Number"
+              name="rating"
+              value={formData.rating}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div>
             <label><strong>Booking Open:</strong></label>
             <input
               type="checkbox"
@@ -341,6 +350,7 @@ const handleUpdate = async (e) => {
   <p><strong>Time:</strong> {viewData.time}</p>
   <p><strong>Price:</strong> {viewData.price}</p>
   <p><strong>Category:</strong> {viewData.Category}</p>
+  <p><strong>Rating:</strong> {viewData.rating}</p>
   
   {/* Displaying tags as a comma-separated string */}
   <p><strong>Tags:</strong> {viewData.tags.join(', ')}</p>

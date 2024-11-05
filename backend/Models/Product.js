@@ -39,6 +39,11 @@ const productSchema = new Schema({
   image: {  
     type: String,  
     required: false,
+  },
+  sales: {  // New field for tracking sales
+    type: Number,
+    required: false,
+    default: 0
   }
 }, { timestamps: true });
 

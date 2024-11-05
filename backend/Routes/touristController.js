@@ -395,7 +395,7 @@ const sortItinPDSC= async (req,res)=>{
  const sortActPASCRASC= async(req,res)=>{
   try{
    const currentDate= new Date();
-   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort({Price : 1, Rating : 1}); 
+   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort({Price : 1, rating : 1}); 
    res.status(200).json(data);
 
  }
@@ -406,7 +406,7 @@ const sortItinPDSC= async (req,res)=>{
 const sortActPASCRDSC= async(req,res)=>{
   try{
    const currentDate= new Date();
-   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort({Price : 1, Rating : -1}); 
+   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort({Price : 1, rating : -1}); 
    res.status(200).json(data);
 
  }
@@ -417,7 +417,7 @@ const sortActPASCRDSC= async(req,res)=>{
 const sortActPDSCRASC= async(req,res)=>{
   try{
    const currentDate= new Date();
-   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort({Price : -1, Rating : 1}); 
+   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort({Price : -1, rating : 1}); 
    res.status(200).json(data);
 
  }
@@ -428,7 +428,7 @@ const sortActPDSCRASC= async(req,res)=>{
 const sortActPDSCRDSC= async(req,res)=>{
   try{
    const currentDate= new Date();
-   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort({Price : -1, Rating : -1}); 
+   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort({Price : -1, rating : -1}); 
    res.status(200).json(data);
 
  }
