@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './TouristProfile.css'; // Assuming you create a CSS file for styling
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { CurrencyContext } from '../pages/CurrencyContext';
 
 const TouristProfile = () => {
 
@@ -21,6 +22,8 @@ const TouristProfile = () => {
   const [fetchedProduct, setFetchedProduct] = useState(null);//new
   const [ratings, setRatings] = useState({});
   const [comments, setComments] = useState({});
+  const [ratingsI, setRatingsI] = useState({});
+  const [commentsI, setCommentsI] = useState({});
   const [requestSent, setRequestSent] = useState(false); // Track if request was successfully sent
   const [waiting, setWaiting] = useState(false);
 
@@ -30,6 +33,9 @@ const TouristProfile = () => {
   const [passwordChangeMessage, setPasswordChangeMessage] = useState('');
   const [passwordChangeError, setPasswordChangeError] = useState('');
   const [changingPassword, setChangingPassword] = useState(false);
+
+
+  const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
 
   const [formData, setFormData] = useState({
     Username: '',
@@ -67,7 +73,20 @@ const TouristProfile = () => {
   const toggleViewBookedActivites = () => {
     setShowingBookedActivities((prev) => !prev);
   }
-  
+  const handleRatingChangeI = (itineraryId, value) => {
+    setRatingsI((prevRatings) => ({
+      ...prevRatings,
+      [itineraryId]: value,
+    }));
+  };
+
+  const handleCommentChangeI = (itineraryId, value) => {
+    setCommentsI((prevComments) => ({
+      ...prevComments,
+      [itineraryId]: value,
+    }));
+  };
+
   const handleViewBookedItineraries = () => {
     setShowingBookedItineraries(prev => !prev);
   };
@@ -85,7 +104,9 @@ const TouristProfile = () => {
       [itineraryId]: value,
     }));
   };
-
+  const handleCurrencyChange = (event) => {
+    fetchConversionRate(event.target.value);
+  };
   const handlePasswordChange = async (e) => {
     e.preventDefault();
     
@@ -124,6 +145,7 @@ const TouristProfile = () => {
   const fetchTouristInfo = async () => {
     setLoading(true);
     const Username = localStorage.getItem('Username');
+    
     if (Username) {
       try {
         const response = await fetch(`http://localhost:8000/getTourist?Username=${Username}`, {
@@ -136,6 +158,8 @@ const TouristProfile = () => {
         if (response.ok) {
           const data = await response.json();
           if (data) {
+            // Apply currency conversion to Wallet balance
+            data.Wallet = (data.Wallet * conversionRate).toFixed(2);
             setTouristInfo(data);
             setFormData(data); // Pre-fill the form with current data
             setErrorMessage('');
@@ -251,6 +275,8 @@ const TouristProfile = () => {
       [name]: value
     }));
   };
+
+
 
   const handleUpdate = async () => {
     setUpdating(true);
@@ -412,7 +438,34 @@ const TouristProfile = () => {
       setLoading(false);
     }
   }; 
+  const submitFeedbackItinerary = async (Itinerary) => {
+    const username = localStorage.getItem('Username'); // Get the username from local storage
+  
+    console.log("Submitting feedback for itinerary:", Itinerary);
+  
+    try {
+      const response = await axios.post(`http://localhost:8000/submitFeedbackItinerary?username=${username}`, {
+        Itinerary: Itinerary, // Send the itinerary ID
+        rating: ratingsI[Itinerary], // Ensure you are using the correct ID to get the rating
+        comment: commentsI[Itinerary], // Ensure you are using the correct ID to get the comment
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`, // Include authorization if needed
+        },
+      });
+  
+      if (response.status === 200) {
+        setSuccessMessage('Feedback submitted successfully!');
+        setErrorMessage('');
+      }
+    } catch (err) {
+      console.log(Itinerary);
 
+      setErrorMessage(err.response?.data?.message || 'Failed to submit feedback');
+      setSuccessMessage('');
+    }
+  };
+  
   const submitFeedback = async (Itinerary) => {
     const tourGuideUsername = Itinerary.TourGuide;
     const username = localStorage.getItem('Username');
@@ -501,6 +554,9 @@ const TouristProfile = () => {
   }
 
 
+  
+
+  
 
 
 };
@@ -508,7 +564,6 @@ const TouristProfile = () => {
     <div className="tourist-profile-container">
       <div className="profile-content">
         <h2>Tourist Profile</h2>
-        
         <button onClick={handleDeleteRequest} disabled={waiting || requestSent}>
               {waiting ? 'Waiting to be deleted...' : requestSent ? 'Request Sent' : 'Delete Account'}
             </button>
@@ -532,7 +587,7 @@ const TouristProfile = () => {
               </div>
               <div>
                 <label><strong>Wallet Balance:</strong></label>
-                <p>${touristInfo.Wallet}</p>
+                <p>{touristInfo.Wallet} {selectedCurrency}</p> 
               </div>
               <div>
                 <label><strong>Email:</strong></label>
@@ -543,6 +598,7 @@ const TouristProfile = () => {
                   onChange={handleInputChange}
                 />
               </div>
+
               <div>
                 <label><strong>Password:</strong></label>
                 <input
@@ -580,7 +636,17 @@ const TouristProfile = () => {
                 />
               </div>
               
-
+        <div>
+  <label><strong>Select Currency:</strong></label>
+  <select value={selectedCurrency} onChange={handleCurrencyChange}>
+    <option value="EGP">Egyptian Pound (EGP)</option>
+    <option value="USD">US Dollar (USD)</option>
+    <option value="EUR">Euro (EUR)</option>
+    <option value="GBP">British Pound (GBP)</option>
+    {/* Add more currency options as needed */}
+  </select>
+</div>
+<p>Price: {(touristInfo.Wallet * conversionRate).toFixed(2)} {selectedCurrency}</p>
               <button onClick={handleUpdate} disabled={updating}>
                 {updating ? 'Updating...' : 'Update Information'}
               </button>
@@ -683,28 +749,30 @@ const TouristProfile = () => {
       {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
       
       
+{/* Fetch Product by Name */}
+<div>
+  <h3>Fetch Product by Name</h3>
+  <input
+    type="text"
+    name="productName"
+    value={formData.productName}
+    onChange={handleInputChange}
+  />
+  <button onClick={handleFetchProduct}>Fetch Product</button>
 
-      {/* Fetch Product by Name */}
-      <div>
-        <h3>Fetch Product by Name</h3>
-        <input
-          type="text"
-          name="productName"
-          value={formData.productName}
-          onChange={handleInputChange}
-        />
-        <button onClick={handleFetchProduct}>Fetch Product</button>
+  {fetchedProduct && (
+    <div>
+      <h4>Product Details</h4>
+      <p><strong>Name:</strong> {fetchedProduct.productName}</p>
+      <p><strong>Description:</strong> {fetchedProduct.description}</p>
+      <p>
+        <strong>Price:</strong> {(fetchedProduct.price * conversionRate).toFixed(2)} {selectedCurrency}
+      </p>
+      <p><strong>Stock:</strong> {fetchedProduct.stock}</p>
+    </div>
+  )}
+</div>
 
-        {fetchedProduct && (
-          <div>
-            <h4>Product Details</h4>
-            <p><strong>Name:</strong> {fetchedProduct.productName}</p>
-            <p><strong>Description:</strong> {fetchedProduct.description}</p>
-            <p><strong>Price:</strong> {fetchedProduct.price}</p>
-            <p><strong>Stock:</strong> {fetchedProduct.stock}</p>
-          </div>
-        )}
-      </div>
       <div>
         <button onClick={handleViewItineraries}> {showingItineraries ? 'Hide itineraries' : 'Show itineraries'}</button>
         { showingItineraries && (
@@ -807,10 +875,26 @@ const TouristProfile = () => {
               <div key={Itinerary._id}>
                 <h4>Booked Activities: {Itinerary.Activities.join(', ')}</h4>
                 <p>Locations: {Itinerary.Locations.join(', ')}</p>
-                <p>Price: ${Itinerary.price}</p>
+                <p>Price: {(Itinerary.price * conversionRate).toFixed(2)} {selectedCurrency}</p> 
                 <p>TourGuide: {Itinerary.TourGuide}</p>
                 <p>Date:{Itinerary.DatesTimes}</p>
-                <p>Feedback on Tour Guide:</p>
+  <h4>Feedback on Itinerary</h4>
+  
+  <input 
+    type="number" 
+    placeholder="Rating" 
+    onChange={(e) => handleRatingChangeI(Itinerary, e.target.value)} // Update the rating state
+  />
+
+  <input 
+    type="text" 
+    placeholder="Comment" 
+    onChange={(e) => handleCommentChangeI(Itinerary, e.target.value)} // Update the comment state
+  />
+
+  <button onClick={() => submitFeedbackItinerary(Itinerary)}>Submit Feedback</button>
+  <h4>Feedback on Tour Guide:</h4>
+
                  <input 
                   type="number" 
                   placeholder="Rating" 
@@ -824,6 +908,7 @@ const TouristProfile = () => {
                 <button onClick={() => submitFeedback(Itinerary)}>Submit Feedback</button>
                 <button onClick={()=>handleCancelItineraryBooking(Itinerary._id)}>Cancel Booking( 2 days before )</button>
               </div>
+              
             ))
           ) : (
             <p>No booked itineraries found.</p>
@@ -840,7 +925,7 @@ const TouristProfile = () => {
               <div key={Activity._id}>
                 <h4>Name: {Activity.name}</h4>
                 <p>Cateogry: {Activity.Category}</p>
-                <p>Price: ${Activity.price}</p>
+                <p>Price: {(Activity.price * conversionRate).toFixed(2)} {selectedCurrency}</p> {/* Convert price here */}
                 <p>Date: {Activity.date}</p>
                 <p>Location:{Activity.Location}</p>                 
                 <button onClick={()=>handleCancelActivityBooking(Activity._id)}>Cancel Booking( 2 days before )</button>

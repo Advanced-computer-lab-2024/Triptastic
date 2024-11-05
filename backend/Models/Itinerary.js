@@ -44,9 +44,35 @@ const itinerarySchema = new Schema({
     FlagInappropriate:{
         type: Boolean,
         default: false
-    }
-
-},{timestamps: true})
+    },
+    feedback: [
+        {
+          touristUsername: { // Add this field to store the tourist's name who submitted the feedback
+            type: String,
+            required: true,
+          },
+          rating: {
+            type: Number,
+            required: true,
+            min: 1,
+            max: 5, // Assuming ratings are from 1 to 5
+          },
+          comment: {
+            type: String,
+            required: false,
+          },
+          itineraryId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Itinerary', // Reference to the itinerary model
+            required: true,
+          },
+          date: {
+            type: Date,
+            default: Date.now,
+          },
+        },
+      ],
+    },{timestamps: true})
 
 const Itinerary = mongoose.models.Itinerary || mongoose.model('Itinerary', itinerarySchema);
 module.exports = Itinerary;

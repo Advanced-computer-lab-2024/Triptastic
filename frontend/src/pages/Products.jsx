@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import { CurrencyContext } from '../pages/CurrencyContext';
 
 const Products = () => {
+  const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -29,6 +32,10 @@ const Products = () => {
   useEffect(() => {
     fetchProducts(); // Fetch all products on page load
   }, []);
+
+  const handleCurrencyChange = (event) => {
+    fetchConversionRate(event.target.value);
+  };
 
   const fetchProducts = async (minPrice = '', maxPrice = '') => {
     setLoading(true);
