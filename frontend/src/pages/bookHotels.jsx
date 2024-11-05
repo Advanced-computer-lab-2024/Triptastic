@@ -3,15 +3,47 @@ import React, { useState, useEffect } from 'react';
 const BookHotels = () => {
   const [hotelDetails, setHotelDetails] = useState({
     cityCode: '',
-    radius: '', // Optional
-    radiusUnit: 'KM', // Default to KM
-    amenities: '', // Optional (comma-separated string)
-    ratings: '', // Optional (comma-separated string)
+    checkInDate: '',
+    checkOutDate: '',
   });
   const [hotels, setHotels] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [bookedHotels, setBookedHotels] = useState([]); // Array to track booked status for each hotel
+  const [token, setToken] = useState(null);
+  const [bookedHotels, setBookedHotels] = useState([]); // Track booked status for each hotel
+
+  // Fetch access token from Amadeus API when component mounts
+  useEffect(() => {
+    const fetchToken = async () => {
+      const API_KEY = process.env.REACT_APP_API_KEY;
+      const API_SECRET = process.env.REACT_APP_API_SECRET;
+
+      try {
+        const res = await fetch('https://test.api.amadeus.com/v1/security/oauth2/token', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            'grant_type': 'client_credentials',
+            'client_id': API_KEY,
+            'client_secret': API_SECRET,
+          }),
+        });
+
+        const data = await res.json();
+        if (data.access_token) {
+          setToken(data.access_token);
+        } else {
+          throw new Error('Failed to obtain access token');
+        }
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    fetchToken();
+  }, []);
 
   // Update form inputs
   const handleInputChange = (e) => {
@@ -22,48 +54,37 @@ const BookHotels = () => {
     });
   };
 
-  // Fetch access token from Amadeus API
-  const getToken = async () => {
-    const API_KEY = process.env.REACT_APP_API_KEY;
-    const API_SECRET = process.env.REACT_APP_API_SECRET;
+  // Fetch hotel IDs by city code and limit to 20 IDs
+  const fetchHotelIds = async () => {
+    const API_URL = 'https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city';
+    const { cityCode } = hotelDetails;
 
     try {
-      const res = await fetch('https://test.api.amadeus.com/v1/security/oauth2/token', {
-        method: 'POST',
+      const res = await fetch(`${API_URL}?cityCode=${cityCode}`, {
+        method: 'GET',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
-        body: new URLSearchParams({
-          'grant_type': 'client_credentials',
-          'client_id': API_KEY,
-          'client_secret': API_SECRET,
-        }),
       });
 
+      if (!res.ok) throw new Error('Failed to fetch hotel IDs');
+
       const data = await res.json();
-      if (data.access_token) {
-        return data.access_token;
-      } else {
-        throw new Error('Failed to obtain access token');
-      }
+      return data.data.slice(0, 20).map((hotel) => hotel.hotelId); // Limit to 20 hotels
     } catch (err) {
       setError(err.message);
-      return null;
+      return [];
     }
   };
 
-  // Fetch hotel offers from Amadeus API using the access token
-  const searchHotels = async (token) => {
-    const API_URL = 'https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city';
-    const { cityCode, radius, radiusUnit, amenities, ratings } = hotelDetails;
+  // Fetch hotel offers for the first 20 hotel IDs
+  const fetchHotelOffers = async (hotelIds) => {
+    const { checkInDate, checkOutDate } = hotelDetails;
 
-    // Construct URL with only the available parameters
-    let url = `${API_URL}?cityCode=${cityCode}`;
-
-    if (radius) url += `&radius=${radius}`;
-    if (radiusUnit) url += `&radiusUnit=${radiusUnit}`;
-    if (amenities) url += `&amenities=${amenities.split(',').join(',')}`;
-    if (ratings) url += `&ratings=${ratings.split(',').join(',')}`;
+    // Join hotel IDs as a single comma-separated string
+    const hotelIdsString = hotelIds.join(',');
+    const url = `https://test.api.amadeus.com/v3/shopping/hotel-offers?hotelIds=${hotelIdsString}&checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&adults=1`;
 
     try {
       const res = await fetch(url, {
@@ -75,13 +96,15 @@ const BookHotels = () => {
       });
 
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error('Failed to fetch hotel data');
+        const errorData = await res.json();
+        console.error("Error from Amadeus API:", errorData);
+        throw new Error(errorData.message || 'Failed to fetch hotel offers');
       }
-
       const data = await res.json();
-      setHotels(data.data); // Assuming response contains a 'data' array with hotel offers
-      setBookedHotels(new Array(data.data.length).fill(false)); // Initialize booked status array with false
+      
+      // Set hotels state with the fetched offers and reset booked status
+      setHotels(data.data);
+      setBookedHotels(new Array(data.data.length).fill(false)); // Initialize booked status array
     } catch (err) {
       setError(err.message);
     } finally {
@@ -95,20 +118,25 @@ const BookHotels = () => {
     setLoading(true);
     setError(null);
 
-    const token = await getToken();
+    if (!token) {
+      setError('Authorization token is not available.');
+      setLoading(false);
+      return;
+    }
 
-    if (token) {
-      await searchHotels(token);
+    const hotelIds = await fetchHotelIds();
+    if (hotelIds.length > 0) {
+      await fetchHotelOffers(hotelIds);
     } else {
-      setError('Could not get access token.');
+      setError('No hotels found for the specified city.');
       setLoading(false);
     }
   };
 
-  // Handle booking button (mark the flight as booked)
+  // Handle booking a hotel
   const handleBooking = (index) => {
     const updatedBookings = [...bookedHotels];
-    updatedBookings[index] = true; // Set the specific hotel as booked
+    updatedBookings[index] = true; // Mark the specific hotel as booked
     setBookedHotels(updatedBookings);
   };
 
@@ -127,37 +155,23 @@ const BookHotels = () => {
           />
         </label>
         <label>
-          Radius (optional):
+          Check-In Date:
           <input
-            type="number"
-            name="radius"
-            value={hotelDetails.radius}
+            type="date"
+            name="checkInDate"
+            value={hotelDetails.checkInDate}
             onChange={handleInputChange}
+            required
           />
         </label>
         <label>
-          Radius Unit:
-          <select name="radiusUnit" value={hotelDetails.radiusUnit} onChange={handleInputChange}>
-            <option value="KM">KM</option>
-            <option value="MILE">MILE</option>
-          </select>
-        </label>
-        <label>
-          Amenities (optional, comma-separated):
+          Check-Out Date:
           <input
-            type="text"
-            name="amenities"
-            value={hotelDetails.amenities}
+            type="date"
+            name="checkOutDate"
+            value={hotelDetails.checkOutDate}
             onChange={handleInputChange}
-          />
-        </label>
-        <label>
-          Ratings (optional, comma-separated):
-          <input
-            type="text"
-            name="ratings"
-            value={hotelDetails.ratings}
-            onChange={handleInputChange}
+            required
           />
         </label>
         <button type="submit" disabled={loading}>
@@ -168,26 +182,24 @@ const BookHotels = () => {
       {hotels.length > 0 && (
         <div>
           <h3>Hotel Offers</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
-            {hotels.map((hotel, index) => (
-              <div key={index} style={{ border: '1px solid #ccc', padding: '16px', borderRadius: '8px', position: 'relative' }}>
-                <p><strong>Hotel ID:</strong> {hotel.id}</p>
-                <p><strong>Name:</strong> {hotel.name}</p>
-                <p><strong>Rating:</strong> {hotel.rating}</p>
+          {hotels.map((hotel, index) => (
+            <div key={index} style={{ border: '1px solid #ccc', padding: '16px', borderRadius: '8px', marginBottom: '16px', position: 'relative' }}>
+              <p><strong>Hotel ID:</strong> {hotel.hotel.hotelId}</p>
+              <p><strong>Name:</strong> {hotel.hotel.name}</p>
+              <p><strong>Rating:</strong> {hotel.hotel.rating}</p>
 
-                {bookedHotels[index] ? (
-                  <p style={{ color: 'green', fontWeight: 'bold', position: 'absolute', top: '10px', right: '10px' }}>Booked!</p>
-                ) : (
-                  <button
-                    onClick={() => handleBooking(index)} // Pass the index to track the specific hotel
-                    style={{ marginTop: '8px', backgroundColor: '#007bff', color: '#fff', padding: '8px 16px', border: 'none', borderRadius: '4px' }}
-                  >
-                    Book
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
+              {bookedHotels[index] ? (
+                <p style={{ color: 'green', fontWeight: 'bold', position: 'absolute', top: '10px', right: '10px' }}>Booked!</p>
+              ) : (
+                <button
+                  onClick={() => handleBooking(index)} // Pass the index to mark this hotel as booked
+                  style={{ marginTop: '8px', backgroundColor: '#007bff', color: '#fff', padding: '8px 16px', border: 'none', borderRadius: '4px' }}
+                >
+                  Book
+                </button>
+              )}
+            </div>
+          ))}
         </div>
       )}
 
