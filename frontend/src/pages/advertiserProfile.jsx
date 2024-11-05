@@ -20,10 +20,40 @@ const AdvertiserProfile = () => {
     Website_Link: '',
     Hotline: '',
     Company_Profile: '',
-    Logo:''
+    Logo:null
   });
   const [logo, setLogo] = useState(null); // State for the logo file
   const navigate = useNavigate();
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const logoURL = URL.createObjectURL(file);
+      setLogo(logoURL); // Display the selected logo immediately
+      setFormData((prevData) => ({
+        ...prevData,
+        Logo: file, // Store the file for uploading
+      }));
+    }
+  };
+
+  useEffect(() => {
+    // Check local storage for logo URL on mount
+    const savedLogo = localStorage.getItem('logo');
+    if (savedLogo) {
+      setLogo(savedLogo);
+    }
+    fetchAdvertiserInfo();
+    fetchActivities();
+  }, []);
 
   const fetchAdvertiserInfo = async () => {
     setLoading(true);
@@ -54,8 +84,9 @@ const AdvertiserProfile = () => {
 
             // Set logo URL if available and save it to local storage
             if (data.logo) {
-              setLogo(data.logo);
-              localStorage.setItem('logo', data.logo); // Store logo URL in local storage
+            const logoURL = data.logo;
+            setLogo(logoURL);
+            localStorage.setItem('logo', logoURL); // Store logo URL in local storage
             }
           } else {
             setErrorMessage('No advertiser information found.');
@@ -71,58 +102,6 @@ const AdvertiserProfile = () => {
       setErrorMessage('No advertiser information found.');
     }
     setLoading(false);
-  };
-
-  useEffect(() => {
-    // Check local storage for logo URL on mount
-    const savedLogo = localStorage.getItem('logo');
-    if (savedLogo) {
-      setLogo(savedLogo);
-    }
-    fetchAdvertiserInfo();
-    fetchActivities();
-  }, []);
-
-  const fetchActivities = async () => {
-    const Username = localStorage.getItem('Username');
-
-    try {
-      const response = await fetch(`http://localhost:8000/getActivity?Advertiser=${Username}`);
-      if (response.ok) {
-        const data = await response.json();
-        if (data.length === 0) {
-          setErrorMessage('No activities found for this advertiser.');
-        } else {
-          setActivities(data);
-          setErrorMessage('');
-        }
-      } else {
-        throw new Error('Failed to fetch activities');
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while fetching activities');
-      console.error(error);
-    }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleLogoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const logoURL = URL.createObjectURL(file);
-      setLogo(logoURL); // Display the selected logo immediately
-      setFormData((prevData) => ({
-        ...prevData,
-        Logo: file, // Store the file for uploading
-      }));
-    }
   };
 
   const handleUpdate = async () => {
@@ -162,6 +141,30 @@ const AdvertiserProfile = () => {
 
     setUpdating(false);
   };
+
+  const fetchActivities = async () => {
+    const Username = localStorage.getItem('Username');
+
+    try {
+      const response = await fetch(`http://localhost:8000/getActivity?Advertiser=${Username}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.length === 0) {
+          setErrorMessage('No activities found for this advertiser.');
+        } else {
+          setActivities(data);
+          setErrorMessage('');
+        }
+      } else {
+        throw new Error('Failed to fetch activities');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while fetching activities');
+      console.error(error);
+    }
+  };
+
+
   const handlePasswordChange = async () => {
     const Username = localStorage.getItem('Username');
   

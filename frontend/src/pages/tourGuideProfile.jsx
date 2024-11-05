@@ -60,6 +60,7 @@ function TourGuideProfile() {
     mobileNumber: '',
     yearsOfExperience: '',
     previousWork: '',
+    photo:null
   });
   const [touristItineraryData, setTouristItineraryData] = useState({
     Activities: '',
@@ -87,6 +88,38 @@ function TourGuideProfile() {
   const [isEditingItinerary, setIsEditingItinerary] = useState(false); // New state for editing itinerary
   const [isCreatingTouristItinerary, setIsCreatingTouristItinerary] = useState(false);
   const [isEditingTouristItinerary, setIsEditingTouristItinerary] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+ 
+  const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const photoURL = URL.createObjectURL(file);
+      setPhoto(photoURL); 
+      setFormData((prevData) => ({
+        ...prevData,
+        photo: file,
+      }));
+    }
+  };
+
+  useEffect(() => {
+    const savedPhoto = localStorage.getItem('photo');
+    if (savedPhoto) {
+      setPhoto(savedPhoto);
+    }
+    fetchTourGuideData();
+    fetchItineraries();
+    setLoading(false);
+    fetchTouristItineraries();
+  }, []);
+
   const fetchTourGuideData = async () => {
     const Username = localStorage.getItem('Username');
 
@@ -107,8 +140,9 @@ function TourGuideProfile() {
             setErrorMessage('');
 
             if (data.photo) {
-              setPhoto(data.photo);
-              localStorage.setItem('photo', data.photo); // Store photo URL in local storage
+              const photoURL = data.photo;
+              setPhoto(photoURL);
+              localStorage.setItem('photo', photoURL); // Store photo URL in local storage
             }
           } else {
             setErrorMessage('No tour guide information found.');
@@ -125,6 +159,44 @@ function TourGuideProfile() {
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const Username = localStorage.getItem('Username');
+  
+    const formDataToSend = new FormData();
+    formDataToSend.append('Username', Username);
+  
+    if (formData.Email) formDataToSend.append('Email', formData.Email);
+    if (formData.mobileNumber) formDataToSend.append('mobileNumber', formData.mobileNumber);
+    if (formData.yearsOfExperience) formDataToSend.append('yearsOfExperience', formData.yearsOfExperience);
+    if (formData.previousWork) formDataToSend.append('previousWork', formData.previousWork);
+    if (formData.photo) formDataToSend.append('photo', formData.photo);
+  
+    try {
+      const response = await fetch(`http://localhost:8000/updateTourGuide/${Username}`, {
+        method: 'PATCH',
+        body: formDataToSend,
+      });
+  
+      if (response.ok) {
+        await fetchTourGuideData();
+        setErrorMessage('');
+        setIsEditing(false);
+  
+        if (formData.photo) {
+          const photoURL = URL.createObjectURL(formData.photo);
+          setPhoto(photoURL);
+          localStorage.setItem('photo', photoURL);
+        }
+      } else {
+        throw new Error('Failed to update tour guide information');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while updating tour guide information');
+      console.error(error);
+    }
+  };
+  
   const fetchItineraries = async () => {
     const Username = localStorage.getItem('Username');
 
@@ -159,16 +231,6 @@ function TourGuideProfile() {
       }
     }
   };
-  useEffect(() => {
-    const savedPhoto = localStorage.getItem('photo');
-    if (savedPhoto) {
-      setPhoto(savedPhoto);
-    }
-    fetchTourGuideData();
-    fetchItineraries();
-    setLoading(false);
-    fetchTouristItineraries();
-  }, []);
 
   const toggleProfileDetails = () => {
     setIsVisible((prevState) => !prevState);
@@ -176,26 +238,6 @@ function TourGuideProfile() {
 
   const handleEditToggle = () => {
     setIsEditing((prev) => !prev);
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleLogoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const photoURL = URL.createObjectURL(file);
-      setPhoto(photoURL); 
-      setFormData((prevData) => ({
-        ...prevData,
-        photo: file,
-      }));
-    }
   };
 
   const handleItineraryChange = (e) => {
@@ -211,45 +253,6 @@ function TourGuideProfile() {
       ...prevData,
       [name]: value,
     }));
-  };
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const Username = localStorage.getItem('Username');
-    
-    const formDataToSend = new FormData();
-    formDataToSend.append('Username', Username);
-    formDataToSend.append('Email', formData.Email);
-    formDataToSend.append('mobileNumber', formData.mobileNumber);
-    formDataToSend.append('yearsOfExperience', formData.yearsOfExperience);
-    formDataToSend.append('previousWork', formData.previousWork);
-    if (formData.photo) {
-      formDataToSend.append('photo', formData.photo);
-    }
-  
-    try {
-      const response = await fetch(`http://localhost:8000/updateTourGuide/${Username}`, {
-        method: 'PATCH',
-        body: formDataToSend,
-      });
-  
-      if (response.ok) {
-        await fetchTourGuideData(); // Refresh the data after update
-        setErrorMessage('');
-        setIsEditing(false);
-  
-        // Update the photo in local storage if it was uploaded
-        if (formData.photo) {
-          const photoURL = URL.createObjectURL(formData.photo);
-          setPhoto(photoURL);
-          localStorage.setItem('photo', photoURL); // Update photo URL in local storage
-        }
-      } else {
-        throw new Error('Failed to update tour guide information');
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while updating tour guide information');
-      console.error(error);
-    }
   };
   
 
