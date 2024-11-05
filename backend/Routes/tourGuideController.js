@@ -203,14 +203,7 @@ const requestAccountDeletionTourG = async (req, res) => {
 
         if (hasUpcomingItineraries) {
             // Create a new deletion request with a rejected status
-            const deleteRequest = new requestModel({
-                Username: Username,
-                requestDate: new Date(),
-                status: 'rejected' // Mark as rejected due to upcoming activities
-            });
-
-            // Save the request to the database
-            await deleteRequest.save();
+            
 
             return res.status(400).json({
                 msg: "Your account deletion request has been rejected due to upcoming Itineraries with paid bookings."
