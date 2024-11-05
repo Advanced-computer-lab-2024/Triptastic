@@ -59,6 +59,10 @@ FlagInappropriate:{
   type: Boolean,
   default: false
 },
+rating:{
+  type: Number,
+  required: false,
+},
 ratings: [{
     Username: {
       type: String,
