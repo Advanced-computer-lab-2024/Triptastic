@@ -144,7 +144,7 @@ const Products = () => {
             <li key={product.productName} style={{ marginBottom: '20px', border: '1px solid #ccc', padding: '10px' }}>
               <h2>{product.productName}</h2> {/* Display product name */}
               <p><strong>Description:</strong> {product.description}</p>
-              <p><strong>Price:</strong> ${product.price}</p>
+              <p><strong>Price:</strong> {selectedCurrency} {(product.price * conversionRate).toFixed(2)}</p>
               <p><strong>Rating:</strong> {product.rating}</p>
               <p><strong>Seller:</strong> {product.seller}</p>
               <p><strong>Review:</strong> {product.review}</p>

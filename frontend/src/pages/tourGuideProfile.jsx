@@ -89,26 +89,6 @@ function TourGuideProfile() {
   const [isCreatingTouristItinerary, setIsCreatingTouristItinerary] = useState(false);
   const [isEditingTouristItinerary, setIsEditingTouristItinerary] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
- 
-  const handleLogoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const photoURL = URL.createObjectURL(file);
-      setPhoto(photoURL); 
-      setFormData((prevData) => ({
-        ...prevData,
-        photo: file,
-      }));
-    }
-  };
-
   useEffect(() => {
     const savedPhoto = localStorage.getItem('photo');
     if (savedPhoto) {
@@ -120,6 +100,26 @@ function TourGuideProfile() {
     fetchTouristItineraries();
   }, []);
 
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const photoURL = URL.createObjectURL(file);
+      setPhoto(photoURL); 
+      setFormData((prevData) => ({
+        ...prevData,
+        photo: file,
+      }));
+    }
+  };
   const fetchTourGuideData = async () => {
     const Username = localStorage.getItem('Username');
 
@@ -140,9 +140,8 @@ function TourGuideProfile() {
             setErrorMessage('');
 
             if (data.photo) {
-              const photoURL = data.photo;
-              setPhoto(photoURL);
-              localStorage.setItem('photo', photoURL); // Store photo URL in local storage
+              setPhoto(data.photo);
+              localStorage.setItem('photo', data.photo); // Store photo URL in local storage
             }
           } else {
             setErrorMessage('No tour guide information found.');
@@ -171,7 +170,6 @@ function TourGuideProfile() {
     if (formData.yearsOfExperience) formDataToSend.append('yearsOfExperience', formData.yearsOfExperience);
     if (formData.previousWork) formDataToSend.append('previousWork', formData.previousWork);
     if (formData.photo) formDataToSend.append('photo', formData.photo);
-  
     try {
       const response = await fetch(`http://localhost:8000/updateTourGuide/${Username}`, {
         method: 'PATCH',
@@ -179,14 +177,15 @@ function TourGuideProfile() {
       });
   
       if (response.ok) {
-        await fetchTourGuideData();
+        await fetchTourGuideData(); // Refresh the data after update
         setErrorMessage('');
         setIsEditing(false);
   
+        // Update the photo in local storage if it was uploaded
         if (formData.photo) {
           const photoURL = URL.createObjectURL(formData.photo);
           setPhoto(photoURL);
-          localStorage.setItem('photo', photoURL);
+          localStorage.setItem('photo', photoURL); // Update photo URL in local storage
         }
       } else {
         throw new Error('Failed to update tour guide information');
@@ -254,7 +253,7 @@ function TourGuideProfile() {
       [name]: value,
     }));
   };
-  
+
 
   const handleItinerarySubmit = async (e) => {
     e.preventDefault();
@@ -564,13 +563,7 @@ function TourGuideProfile() {
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                 {photo && <img src={photo} alt="photo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
                   <label>Username:</label>
-                  <input
-                    type="text"
-                    name="Username"
-                    value={formData.Username}
-                    onChange={handleChange}
-                    required
-                  />
+                  <p> {tourGuideInfo?.Username}</p> 
                 </div>
                 <div>
                   <label>Email:</label>
@@ -1032,4 +1025,5 @@ function TourGuideProfile() {
 }
 
 export default TourGuideProfile;
+
 
