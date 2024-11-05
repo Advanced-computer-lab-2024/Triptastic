@@ -5,6 +5,7 @@ import { CurrencyContext } from '../pages/CurrencyContext';
 const Products = () => {
   const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
   const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [minPrice, setMinPrice] = useState(''); // State for minimum price
@@ -80,7 +81,33 @@ const Products = () => {
   if (error) {
     return <div>Error: {error}</div>;
   }
-
+  const handleAddToCart = async (product) => {
+    const username = localStorage.getItem('Username'); 
+    try {
+      const response = await fetch(`http://localhost:8000/addProductToCart?Username=${username}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productName: product.productName,
+          quantity: 1, // Default quantity, can be changed
+        }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        alert(`${product.productName} added to cart successfully!`);
+        setCart([...cart, { ...product, quantity: 1 }]); // Update cart state if needed
+      } else {
+        throw new Error('Failed to add product to cart');
+      }
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+      alert('Failed to add product to cart');
+    }
+  };
+  
   return (
     <div>
       <h1>Products Page</h1>
@@ -122,9 +149,12 @@ const Products = () => {
               <p><strong>Seller:</strong> {product.seller}</p>
               <p><strong>Review:</strong> {product.review}</p>
               <p><strong>Stock:</strong> {product.stock}</p>
+              <p><strong>Sales:</strong> {product.sales}</p>
+       
               {product.image && <img src={`http://localhost:8000/${product.image.replace(/\\/g, '/')}`} alt={product.productName} style={{ width: '400px', height: '300px' }}/>
 
             } {/* Display product image */}
+             <button onClick={() => handleAddToCart(product)}>Add to Cart</button>
             </li>
           ))}
         </ul>

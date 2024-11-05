@@ -230,45 +230,9 @@ const viewProductSales = async (req, res) => {
 
 
 
-const addProductToCart = async (req, res) => {
-  const { Username, productId, quantity } = req.body; // Username, productId, and quantity should be passed in the request body
-
-  try {
-    // Find the cart for the given user
-    let cart = await cartModel.findOne({ Username });
-
-    if (!cart) {
-      // If the cart doesn't exist, create a new one
-      cart = new cartModel({ Username, products: [] });
-    }
-
-    // Check if the product is already in the cart
-    const existingProductIndex = cart.products.findIndex(product => product.productId.toString() === productId);
-
-    if (existingProductIndex > -1) {
-      // Product exists, update the quantity
-      cart.products[existingProductIndex].quantity += quantity;
-    } else {
-      // Add new product to the cart
-      cart.products.push({ productId, quantity });
-    }
-
-    // Save the updated cart
-    await cart.save();
-
-    // Increment the sales count for the product
-    await productModel.findByIdAndUpdate(
-      productId,
-      { $inc: { stock: -quantity, sales: quantity } }, // Decrease stock and increase sales
-      { new: true }
-    );
-
-    res.status(200).json({ message: 'Product added to cart successfully and sales updated', cart });
-  } catch (error) {
-    console.error('Error adding product to cart:', error);
-    res.status(500).json({ error: 'Failed to add product to cart' });
-  }
-};
 
 
- module.exports = {changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller};
+
+
+
+ module.exports = {incrementProductSales,viewProductSales ,changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller};

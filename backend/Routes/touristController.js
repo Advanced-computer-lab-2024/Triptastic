@@ -5,7 +5,7 @@ const activitiesModel=require('../Models/Activities.js');
 const itineraryModel= require('../Models/Itinerary.js');
 const museumsModel=require('../Models/Museums.js');
 const TransportationModel = require('../Models/Transportation.js');
-
+const cartModel = require('../Models/Cart.js'); // Import the Cart model
 const { default: mongoose } = require('mongoose');
 const complaintModel = require('../Models/Complaint.js'); // Adjust the path based on your project structure
 const TourGuideModel = require('../Models/tourGuide.js'); // Adjust path as needed
@@ -1315,9 +1315,78 @@ const getAttendedActivities = async (req, res) => {
   }
 };
 
+const addProductToCart = async (req, res) => {
+  const { productName, quantity } = req.body; // Product name and quantity passed in the request body
+  const { Username } = req.query; // Username passed in the query params, adjust if needed
 
+  try {
+    // Find the product by its name to get its details
+    const product = await productModel.findOne({ productName });
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
 
- module.exports = {getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+    // Find the cart for the given user (tourist)
+    let cart = await cartModel.findOne({ Username });
+
+    if (!cart) {
+      // If the cart doesn't exist, create a new one
+      cart = new cartModel({ Username, products: [] });
+    }
+
+    // Check if the product is already in the cart
+    const existingProductIndex = cart.products.findIndex(item => item.productName === productName);
+
+    if (existingProductIndex > -1) {
+      // Product exists, update the quantity
+      cart.products[existingProductIndex].quantity += quantity;
+    } else {
+      // Add new product with its details to the cart
+      cart.products.push({
+        productId: product._id,
+        productName: product.productName,
+        price: product.price,
+        description: product.description,
+        quantity
+      });
+    }
+
+    // Save the updated cart
+    await cart.save();
+
+    // Increment the sales count for the product and decrease stock
+    await productModel.findByIdAndUpdate(
+      product._id, // Use product._id for the update
+      { $inc: { stock: -quantity, sales: quantity } }, // Decrease stock and increase sales
+      { new: true }
+    );
+
+    res.status(200).json({ message: 'Product added to cart successfully and sales updated', cart });
+  } catch (error) {
+    console.error('Error adding product to cart:', error);
+    res.status(500).json({ error: 'Failed to add product to cart' });
+  }
+};
+
+const getCart = async (req, res) => {
+  const { Username } = req.query; // Username passed as a query parameter
+
+  try {
+    // Find the cart for the given user
+    const cart = await cartModel.findOne({ Username }).populate('products.productId');
+
+    if (!cart) {
+      return res.status(404).json({ error: 'Cart not found for this user' });
+    }
+
+    res.status(200).json(cart); // Return the cart data as JSON
+  } catch (error) {
+    console.error('Error fetching cart:', error);
+    res.status(500).json({ error: 'Failed to fetch cart' });
+  }
+};
+
+ module.exports = {getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
