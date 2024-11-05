@@ -337,7 +337,7 @@ const TouristProfile = () => {
       if (response.ok) {
         alert('Complaint filed successfully!');
         setErrorMessage('');
-        setFormData((prev) => ({ ...prev, ...complaintData, title: '', body: '', date: '' }));
+        setFormData((prev) => ({ ...prev, ...complaintData, title: '', body: '', date: '' ,Reply:''}));
         fetchComplaints(); // Refresh complaints after filing a new one
       } else {
         const errorData = await response.json();
@@ -755,23 +755,42 @@ const TouristProfile = () => {
         </form>
       </div>
 
-      {/* Display Complaints */}
-      <div>
-        <h3>Your Complaints</h3>
-        {complaints.length === 0 ? (
-          <p>No complaints filed yet.</p>
-        ) : (
-          <ul>
-            {complaints.map((complaint) => (
-              <li key={complaint._id}>
-                <p><strong>Title:</strong> {complaint.title}</p>
-                <p><strong>Status:</strong> {complaint.status}</p>
-                <p><strong>Date:</strong> {new Date(complaint.date).toLocaleDateString()}</p>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+    {/* Display Complaints */}
+<div>
+  <h3>Your Complaints</h3>
+  {complaints.length === 0 ? (
+    <p>No complaints filed yet.</p>
+  ) : (
+    <ul>
+      {complaints.map((complaint) => (
+        <li key={complaint._id}>
+          <p><strong>Title:</strong> {complaint.title}</p>
+          <p><strong>Status:</strong> {complaint.status}</p>
+          <p><strong>Date:</strong> {new Date(complaint.date).toLocaleDateString()}</p>
+
+          {/* Display replies if they exist */}
+          {complaint.replies && complaint.replies.length > 0 ? (
+            <div className="replies-section">
+              <h4>Replies:</h4>
+              <ul>
+                {complaint.replies.map((reply, index) => (
+                  <li key={index}>
+                    <p><strong>Reply:</strong> {reply.content}</p>
+                    <p><strong>Date:</strong> {new Date(reply.date).toLocaleDateString()}</p>
+                    {reply.replier && <p><strong>Replier:</strong> {reply.replier}</p>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p><em>No replies yet.</em></p>
+          )}
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
+
       <div>
       <button onClick={handleViewBookedItineraries}> {showingBookedItineraries ? 'Hide booked itineraries' : 'Show booked itineraries'}</button>
       {showingBookedItineraries && (

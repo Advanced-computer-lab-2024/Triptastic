@@ -33,7 +33,7 @@ const{changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,c
 const{changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller}=require("./Routes/sellerController");
 
 //Admin
-const{rejectDeletionRequest,acceptDeletionRequest,getPendingDeletionRequests,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin,createCategory,
+const{replyToComplaint,rejectDeletionRequest,acceptDeletionRequest,getPendingDeletionRequests,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin,createCategory,
   getCategory,
   updateCategory,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
@@ -225,7 +225,7 @@ app.patch('/updateComplaintStatus/:id', updateComplaintStatus);
 app.get("/getPendingDeletionRequests",getPendingDeletionRequests);
 app.post("/acceptDeletionRequest",acceptDeletionRequest);
 app.post("/rejectDeletionRequest",rejectDeletionRequest);
-
+app.post("/replyToComplaint/:id",replyToComplaint);
 
 
 

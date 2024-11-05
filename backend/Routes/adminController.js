@@ -494,6 +494,39 @@ const sortProductsByRatingAdmin = async (req, res) => {
         res.status(500).json({ error: 'Error updating complaint status' });
       }
     };
+    const replyToComplaint = async (req, res) => {
+      const { id } = req.params; // Complaint ID from URL parameters
+      const { content, replier } = req.body; // Reply content and the user replying
+    
+      if (!content || !replier) {
+        return res.status(400).json({ error: 'Reply content and replier name are required' });
+      }
+    
+      try {
+        const updatedComplaint = await complaintsModel.findByIdAndUpdate(
+          id.trim(),
+          {
+            $push: {
+              replies: {
+                content,
+                replier,
+              },
+            },
+          },
+          { new: true }
+        );
+    
+        if (!updatedComplaint) {
+          return res.status(404).json({ error: 'Complaint not found' });
+        }
+    
+        res.status(200).json({ message: 'Reply added successfully', updatedComplaint });
+      } catch (error) {
+        console.error('Error replying to complaint:', error.message);
+        res.status(500).json({ error: 'Error replying to complaint' });
+      }
+    };
+    
    // Route to get all pending deletion requests
 const getPendingDeletionRequests = async (req, res) => {
   try {
@@ -582,5 +615,5 @@ const rejectDeletionRequest = async (req, res) => {
 };
 
 
-module.exports = {getPendingDeletionRequests,acceptDeletionRequest,rejectDeletionRequest,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
+module.exports = {replyToComplaint,getPendingDeletionRequests,acceptDeletionRequest,rejectDeletionRequest,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
     ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,flagActivity,getallItineraries,getallActivities,getallTouristItineraries,getComplaints};
