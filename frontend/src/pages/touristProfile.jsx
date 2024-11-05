@@ -810,6 +810,7 @@ const TouristProfile = () => {
                 <p>Price: ${Itinerary.price}</p>
                 <p>TourGuide: {Itinerary.TourGuide}</p>
                 <p>Date:{Itinerary.DatesTimes}</p>
+                <p>Feedback on Tour Guide:</p>
                  <input 
                   type="number" 
                   placeholder="Rating" 
