@@ -103,6 +103,139 @@ const handleViewTourGuideDocs = (tourGuideId) => {
 const handleViewAdvertiserDocs = (advertiserId) => {
       setViewingDocsAdvertiserId((prevId) => (prevId === advertiserId ? null : advertiserId));
     };
+const handleTourGuideAccept = async (Username) => {
+    
+      try {
+        const response = await fetch(`http://localhost:8000/settleDocsTourGuide?Username=${Username}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            docsApproved: "accepted"
+          }),
+        });
+    
+        if (response.ok) {
+          const data = await response.json();
+          alert("Tour guide accepted");
+          fetchTourGuides();
+        }
+      } catch (error) {
+        console.error('Error accepting tour guide:', error);
+      } 
+    };
+  const handleTourGuideReject = async (Username) => {
+    
+      try {
+        const response = await fetch(`http://localhost:8000/settleDocsTourGuide?Username=${Username}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            docsApproved: "rejected"
+          }),
+        });
+    
+        if (response.ok) {
+          const data = await response.json();
+          alert("Tour guide rejected");
+          fetchTourGuides();
+        }
+      } catch (error) {
+        console.error('Error rejecting tour guide:', error);
+      } 
+    };
+    const handleSellerReject = async (Username) => {
+    
+      try {
+        const response = await fetch(`http://localhost:8000/settleDocsSeller?Username=${Username}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            docsApproved: "rejected"
+          }),
+        });
+    
+        if (response.ok) {
+          const data = await response.json();
+          alert("Seller rejected");
+          fetchSellers();
+        }
+      } catch (error) {
+        console.error('Error rejecting seller:', error);
+      } 
+    };    
+const handleSellerAccept = async (Username) => {
+    
+      try {
+        const response = await fetch(`http://localhost:8000/settleDocsSeller?Username=${Username}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            docsApproved: "accepted"
+          }),
+        });
+    
+        if (response.ok) {
+          const data = await response.json();
+          alert("Seller accepted");
+          fetchSellers();
+        }
+      } catch (error) {
+        console.error('Error accepting seller:', error);
+      } 
+    };   
+const handleAdvertiserAccept = async (Username) => {
+    
+      try {
+        const response = await fetch(`http://localhost:8000/settleDocsAdvertiser?Username=${Username}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            docsApproved: "accepted"
+          }),
+        });
+    
+        if (response.ok) {
+          const data = await response.json();
+          alert("Advertiser accepted");
+          fetchAdvertisers();
+        }
+      } catch (error) {
+        console.error('Error accepting advertiser:', error);
+      } 
+    };     
+const handleAdvertiserReject = async (Username) => {
+    
+      try {
+        const response = await fetch(`http://localhost:8000/settleDocsAdvertiser?Username=${Username}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            docsApproved: "rejected"
+          }),
+        });
+    
+        if (response.ok) {
+          const data = await response.json();
+          alert("Advertiser rejected");
+          fetchAdvertisers();
+
+        }
+      } catch (error) {
+        console.error('Error rejecting advertiser:', error);
+      } 
+    };     
     return(
      <div>
        <div>
@@ -121,6 +254,8 @@ const handleViewAdvertiserDocs = (advertiserId) => {
                   <p><strong>Description:{seller.Description}</strong></p>
                   <p><strong>Username:{seller.Username}</strong></p>
                   <button onClick={()=>handleViewSellerDocs(seller._id)}>View Docs</button>
+                  <button onClick={()=>handleSellerAccept(seller.Username)}>Accept</button>
+                  <button onClick={()=>handleSellerReject(seller.Username)}>Reject</button>
                   {viewingDocsSellerId === seller._id && (
                     <div>
                       <img src={`http://localhost:8000/${seller.Id.replace(/\\/g, '/')}`} alt={seller.Id} style={{ width: '400px', height: '300px' }}/>
@@ -143,6 +278,8 @@ const handleViewAdvertiserDocs = (advertiserId) => {
                   <p><strong>Username:{tourGuide.Username}</strong></p>
                   <p><strong>Email:{tourGuide.Email}</strong></p>
                   <button onClick={()=>handleViewTourGuideDocs(tourGuide._id)}>View Docs</button>
+                  <button onClick={()=>handleTourGuideAccept(tourGuide.Username)}>Accept</button>
+                  <button onClick={()=>handleTourGuideReject(tourGuide.Username)}>Reject</button>
                   {viewingDocsTourGuideId === tourGuide._id && (
                     <div>
                       <img src={`http://localhost:8000/${tourGuide.Id.replace(/\\/g, '/')}`} alt={tourGuide.Id} style={{ width: '400px', height: '300px' }}/>
@@ -165,6 +302,8 @@ const handleViewAdvertiserDocs = (advertiserId) => {
                   <p><strong>Username:{advertiser.Username}</strong></p>
                   <p><strong>Email:{advertiser.Email}</strong></p>
                   <button onClick={()=>handleViewAdvertiserDocs(advertiser._id)}>View Docs</button>
+                  <button onClick={()=>handleAdvertiserAccept(advertiser.Username)}>Accept</button>
+                  <button onClick={()=>handleAdvertiserReject(advertiser.Username)}>Reject</button>
                   {viewingDocsAdvertiserId === advertiser._id && (
                     <div>
                       <img src={`http://localhost:8000/${advertiser.Id.replace(/\\/g, '/')}`} alt={advertiser.Id} style={{ width: '400px', height: '300px' }}/>
