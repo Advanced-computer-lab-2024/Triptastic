@@ -6,7 +6,7 @@ const AdminPage = () => {
     Username: '',
     Password: ''
   });
-
+  const [requests, setRequests] = useState([]);
   const [createCategoryName, setCreateCategoryName] = useState('');
   const [searchCategoryName, setSearchCategoryName] = useState('');
   const [categorySearchResult, setCategorySearchResult] = useState(null);
@@ -31,6 +31,8 @@ const AdminPage = () => {
   const [showingActivities,setShowingActivities]=useState(false);
   const [productNameToSearch, setProductNameToSearch] = useState('');
   const [productSearchResult, setProductSearchResult] = useState(null);
+  const [productNameToArchive, setProductNameToArchive] = useState(''); // New state variable
+
   const [changePasswordData, setChangePasswordData] = useState({
     Username: '',
     currentPassword: '',
@@ -402,7 +404,9 @@ const getProductByName = async (e) => {
 
     if (response.ok) {
       const product = await response.json();
+      console.log(productSearchResult);
       setProductSearchResult(product);
+      setProductNameToArchive(product.productName); // Store product name for archiving
       setSuccessMessage(`Product found successfully!: ${JSON.stringify(product.productName)}`);
     } else {
       const errorData = await response.json();
@@ -410,6 +414,82 @@ const getProductByName = async (e) => {
     }
   } catch (error) {
     setErrorMessage('An error occurred while searching for the product.');
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
+const archiveProduct = async () => {
+  if (!productNameToArchive) {
+    setErrorMessage('No product selected to archive.');
+    return;
+  }
+
+  setLoading(true);
+  setErrorMessage('');
+  setSuccessMessage('');
+
+  try {
+    const response = await fetch(`http://localhost:8000/archiveProduct/${productNameToArchive}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      setSuccessMessage(`Product "${productNameToArchive}" archived successfully.`);
+
+      // Update the productSearchResult state to reflect the new archived status
+      setProductSearchResult(prevProduct => ({
+        ...prevProduct,
+        archived: result.product.archived, // Ensure this matches the response structure
+      }));
+    } else {
+      const errorData = await response.json();
+      setErrorMessage(errorData.error || 'Failed to archive product.');
+    }
+  } catch (error) {
+    setErrorMessage('An error occurred while archiving the product.');
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
+const unarchiveProduct = async () => {
+  if (!productNameToArchive) {
+    setErrorMessage('No product selected to unarchive.');
+    return;
+  }
+
+  setLoading(true);
+  setErrorMessage('');
+  setSuccessMessage('');
+
+  try {
+    const response = await fetch(`http://localhost:8000/unarchiveProduct/${productNameToArchive}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      setSuccessMessage(`Product "${productNameToArchive}" unarchived successfully.`);
+
+      // Update the productSearchResult state to reflect the new archived status
+      setProductSearchResult(prevProduct => ({
+        ...prevProduct,
+        archived: result.product.archived, // Ensure this matches the response structure
+      }));
+    } else {
+      const errorData = await response.json();
+      setErrorMessage(errorData.error || 'Failed to unarchive product.');
+    }
+  } catch (error) {
+    setErrorMessage('An error occurred while unarchiving the product.');
     console.error(error);
   } finally {
     setLoading(false);
@@ -704,6 +784,52 @@ const getProductByName = async (e) => {
       setUpdateStatusLoading(false);
     }
   };
+ 
+    
+  
+    useEffect(() => {
+      const fetchRequests = async () => {
+        try {
+          const response = await fetch('http://localhost:8000/getPendingDeletionRequests');
+          const data = await response.json();
+          setRequests(data);
+        } catch (error) {
+          console.error('Error fetching requests:', error);
+        }
+      };
+  
+      fetchRequests();
+    }, []);
+  
+    const handleAccept = async (id) => {
+      try {
+        const response = await fetch('http://localhost:8000/acceptDeletionRequest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ requestId: id }),
+        });
+        const result = await response.json();
+        alert(result.message);
+        setRequests(requests.filter(request => request._id !== id));
+      } catch (error) {
+        console.error('Error accepting request:', error);
+      }
+    };
+  
+    const handleReject = async (id) => {
+      try {
+        const response = await fetch('http://localhost:8000/rejectDeletionRequest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ requestId: id }),
+        });
+        const result = await response.json();
+        alert(result.message);
+        setRequests(requests.filter(request => request._id !== id));
+      } catch (error) {
+        console.error('Error rejecting request:', error);
+      }
+    };
   
   return (
     <div>
@@ -1112,6 +1238,10 @@ const getProductByName = async (e) => {
           <p>Price: {productSearchResult.price}</p>
           <p>Rating: {productSearchResult.rating}</p>
           <p>Seller: {productSearchResult.seller}</p>
+          <p>Archived: {productSearchResult.archived !== undefined ? productSearchResult.archived.toString() : 'N/A'}</p>
+          <button onClick={archiveProduct} disabled={loading}>Archive Product</button>
+          <button onClick={unarchiveProduct} disabled={loading || !productSearchResult.archived}>Unarchive Product</button>
+
           {/* Add more product details as needed */}
         </div>
       )}
@@ -1182,6 +1312,24 @@ const getProductByName = async (e) => {
          </div>
         )}
       </div>
+      <div>
+      <h2>Pending Account Deletion Requests</h2>
+      {requests.length === 0 ? (
+        <p>No pending requests.</p>
+      ) : (
+        <ul>
+          {requests.map((request) => (
+            <li key={request._id}>
+              <p>Username: {request.Username}</p>
+              <p>Request Date: {new Date(request.requestDate).toLocaleDateString()}</p>
+              <p>Status: {request.status}</p>
+              <button onClick={() => handleAccept(request._id)}>Accept</button>
+              <button onClick={() => handleReject(request._id)}>Reject</button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
       <div>
       <button onClick={() => navigate('/Complaints')}>Go to complaints</button>
       </div>

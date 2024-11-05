@@ -295,21 +295,20 @@ const getUniqueHistoricalPeriods = async (req, res) => {
  //need to add to other methods still
 const viewProductsTourist = async (req, res) => {
   try {
-    const products = await productModel.find(); 
+    const products = await productModel.find({ archived: false });
     res.json(products); 
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
-
 const filterProductsByPriceRange = async (req, res) => {
   const { minPrice, maxPrice } = req.query;
 
   try {
     // Set up filter criteria based on provided min and max prices
-    let filter = {};
-    
+    let filter = { archived: false }; // Include archived condition
+
     if (minPrice && maxPrice) {
       filter.price = { $gte: parseFloat(minPrice), $lte: parseFloat(maxPrice) }; // Price between min and max
     } else if (minPrice) {
@@ -331,6 +330,7 @@ const filterProductsByPriceRange = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 const viewAllUpcomingActivitiesTourist = async (req, res) => {
  try {
@@ -942,78 +942,60 @@ if (tourist.points >= 10000) {
     res.status(500).json({ error: 'Error booking itinerary' });
   }
  };
-// const bookItinerary = async (req, res) => {
-//   const { itineraryId, Username } = req.body;
+const submitFeedbackItinerary = async (req, res) => {
+  const { username } = req.query; // Get the username from the query parameters
+  const { Itinerary, rating, comment } = req.body; // Use itineraryId passed in the body
 
-//   try {
-//     const itinerary = await itineraryModel.findById(itineraryId);
-//     if (!itinerary) {
-//       return res.status(404).json({ error: 'Itinerary not found' });
-//     }
+  // Validate input
+  if (!Itinerary || !rating || !comment) {
+    return res.status(400).json({ message: 'Itinerary ID, rating, and comment are required' });
+  }
 
-//     const tourist = await touristModel.findOne({ Username });
-//     if (!tourist) {
-//       return res.status(404).json({ error: 'Tourist not found' });
-//     }
+  // Retrieve the tourist's username from the request or session (logged-in user)
+  const touristUsername = await touristModel.findOne({ Username: username });
 
-//     const alreadyBooked = tourist.Bookings.some(
-//       booking => booking._id.toString() === itinerary._id.toString()
-//     );
+  // Check if the tourist is authenticated
+  if (!touristUsername) {
+    return res.status(403).json({ message: 'User is not authenticated' });
+  }
 
-//     if (alreadyBooked) {
-//       return res.status(400).json({ error: 'You have already booked this itinerary' });
-//     }
+  try {
+    // Fetch the itinerary
+    const itinerary = await itineraryModel.findById(Itinerary); // Ensure you have the correct model here
+    console.log(Itinerary);
 
-//     if (itinerary.Booked) {
-//       return res.status(400).json({ message: 'Itinerary is Full' });
-//     }
+    if (!itinerary) {
+      return res.status(404).json({ message: 'Itinerary not found' });
+    }
 
-//     // Calculate points based on badge level
-//     let pointsEarned;
-//     if (tourist.badge === 1) {
-//       pointsEarned = itinerary.Price * 0.5;
-//     } else if (tourist.badge === 2) {
-//       pointsEarned = itinerary.Price * 1;
-//     } else if (tourist.badge === 3) {
-//       pointsEarned = itinerary.Price * 1.5;
-//     } else {
-//       pointsEarned = 0; // In case badge level is invalid or undefined
-//     }
+    if (rating < 1 || rating > 5) {
+      return res.status(400).json({ message: 'Rating must be between 1 and 5.' });
+    }
 
-//     // Add points to the tourist's total points
-//     tourist.points += pointsEarned;
+    // Create the feedback object
+    const feedbackEntry = {
+      touristUsername: touristUsername.Username, // Add the tourist's username
+      itineraryId: Itinerary, // Use the ID from the itinerary object directly
+      rating,
+      comment,
+      date: Date.now(), // Automatically set to current date
+    };
 
-//     // Check if points reach or exceed 10,000 to add cash to wallet
-//     if (tourist.points >= 10000) {
-//       const cashBonus = Math.floor(tourist.points / 10000) * 100; // Calculate cash based on total points
-//       tourist.Wallet = (tourist.Wallet || 0) + cashBonus;
-//     }
+    // Add the feedback to the itinerary's feedback array
+    itinerary.feedback.push(feedbackEntry);
 
-//     if (tourist.points > 500000) {
-//       tourist.badge = 3;
-//     } else if (tourist.points > 100000) {
-//       tourist.badge = 2;
-//     } else {
-//       tourist.badge = 1;
-//     }
-  
-//     // Save the booking and updated tourist information
-//     tourist.Bookings.push(itinerary);
-//     await tourist.save();
+    // Save the updated itinerary document
+    await itinerary.save();
 
-//     res.status(200).json({
-//       message: 'Itinerary booked successfully',
-//       pointsEarned,
-//       newTotalPoints: tourist.points,
-//       newWalletBalance: tourist.Wallet,
-//       tourist,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: 'Error booking itinerary' });
-//   }
-// };
+    res.status(200).json({ message: 'Feedback submitted successfully!' });
+  } catch (error) {
+    console.log(comment);
+    console.log(rating);
 
+    console.error(error);
+    res.status(500).json({ message: 'Server error while submitting feedback' });
+  }
+};
 
 
 const submitFeedback = async (req, res) => {
@@ -1306,14 +1288,43 @@ const getTransportation=async(req,res)=>{
   }
 };
 
+const getAttendedActivities = async (req, res) => {
+  const { Username } = req.query; // Retrieve username from query parameters
+
+  try {
+    // Find the tourist by their username
+    const tourist = await touristModel.findOne({ Username: Username }); 
+    if (!tourist) {
+      return res.status(404).json({ message: 'Tourist not found' });
+    }
+
+    // Extract the IDs and details of booked activities
+    const bookingNames = tourist.Bookings.map(booking => booking.name);
+
+    // Find activities that were booked and have already taken place (date has passed)
+    const attendedActivities = await activitiesModel.find({
+      name: { $in: bookingNames },
+      date: { $lt: new Date() } // Check if the date is in the past
+    });
+
+    // Return the attended activities
+    res.status(200).json(attendedActivities);
+  } catch (error) {
+    console.error('Error fetching attended activities:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
 
 
- module.exports = {getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+ module.exports = {getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
   ,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange
   ,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities
   ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
-  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,getBookedActivities,setPreferences,getTransportation};
+  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary
+  
+  ,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,
+  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary};

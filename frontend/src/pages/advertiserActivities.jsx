@@ -212,19 +212,7 @@ const handleUpdate = async (e) => {
         setActivities((prevActivities) =>
           prevActivities.filter((Act) => Act.name !== name)
         );
-        setFormData({
-          date: '',
-          time: '',
-          price: '',
-          Category: '',
-          tags: '',
-         
-          specialDiscounts: '',
-          bookingOpen: false,
-          location: '',
-          name: '',
-          Advertiser: '',
-        });
+      
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.error || 'Failed to delete activity.');
@@ -234,6 +222,24 @@ const handleUpdate = async (e) => {
       console.error(error);
     }
   };
+  useEffect(() => {
+    const fetchActivities = async () => {
+      try {
+        const username = localStorage.getItem('Username');
+        const response = await fetch(`http://localhost:8000/getActivity?Advertiser=${username}`);
+        if (!response.ok) throw new Error('Failed to fetch activities');
+  
+        const data = await response.json();
+        setActivities(data);
+      } catch (error) {
+        console.error('Error fetching activities:', error);
+        setErrorMessage('Failed to load activities.');
+      }
+    };
+  
+    fetchActivities();
+  }, []);
+  
 
   return (
     <div>

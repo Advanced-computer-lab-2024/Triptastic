@@ -4,6 +4,8 @@ const Complaints=()=>{
 const [complaints,setComplaints]=useState([]);
 const [sortOrder, setSortOrder] = useState('asc');
 const [filterStatus, setFilterStatus] = useState('all');
+const [replyText, setReplyText] = useState('');
+const [activeComplaintId, setActiveComplaintId] = useState(null);
 const fetchData= async ()=>{
         try {
             const response = await fetch(`http://localhost:8000/getComplaints?sortOrder=${sortOrder}&filterStatus=${filterStatus}`, {
@@ -45,9 +47,32 @@ const handleShowAll = () => {
     setFilterStatus('all');
     fetchData();
   };
-  const handleReply = (id) => {
-    // Add logic to handle replying or changing status
-    alert(`Replying to complaint ID: ${id}`);
+  const handleReplyClick = (id) => {
+    setActiveComplaintId(id);
+  };
+
+  const handleReplySubmit = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8000/replyToComplaint/${id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content: replyText, replier: 'Admin' }),
+      });
+
+      if (response.ok) {
+        alert('Reply submitted successfully');
+        setReplyText('');
+        setActiveComplaintId(null);
+        fetchData(); // Refresh complaints list after reply
+      } else {
+        const result = await response.json();
+        alert(`Failed to submit reply: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Error submitting reply:', error);
+    }
   };
 
   return (
@@ -65,7 +90,18 @@ const handleShowAll = () => {
             <h3 className="complaint-title">{complaint.title}</h3>
             <p className="complaint-date">Date: {new Date(complaint.date).toLocaleDateString()}</p>
             <p className={`complaint-status ${complaint.status}`}>Status: {complaint.status}</p>
-            <button className="reply-button" onClick={() => handleReply(complaint._id)}>Reply </button>
+            <button className="reply-button" onClick={() => handleReplyClick(complaint._id)}>Reply</button>
+
+            {activeComplaintId === complaint._id && (
+              <div className="reply-form">
+                <textarea
+                  value={replyText}
+                  onChange={(e) => setReplyText(e.target.value)}
+                  placeholder="Write your reply here"
+                />
+                <button onClick={() => handleReplySubmit(complaint._id)}>Submit Reply</button>
+              </div>
+            )}
           </div>
         ))}
       </div>

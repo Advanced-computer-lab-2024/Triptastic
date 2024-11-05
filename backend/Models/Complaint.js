@@ -24,6 +24,22 @@ const ComplaintSchema = new mongoose.Schema({
     enum: ['pending', 'solved'],
     default: 'pending', // Default status when a complaint is filed
   },
+  replies: [
+    {
+      content: {
+        type: String,
+        required: false,
+      },
+      date: {
+        type: Date,
+        default: Date.now,
+      },
+      replier: {
+        type: String,
+        required: false, // To identify who replied (e.g., admin or support staff)
+      },
+    },
+  ],
 }, { timestamps: true });
 
 const Complaint = mongoose.model('Complaint', ComplaintSchema);

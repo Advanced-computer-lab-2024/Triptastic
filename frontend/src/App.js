@@ -36,6 +36,7 @@ import HistoricalDetail from './pages/historicalDetails';
 import MuseumDetail from './pages/MuseumDetails';
 import { CurrencyProvider } from './pages/CurrencyContext'; // Import the provider from correct path
 
+import AttendedActivitiesPage from './pages/AttendedActivities';
 function Home() {
   const navigate = useNavigate();
   
@@ -109,6 +110,7 @@ function App() {
         <Route path="/itineraries/:id" element={<ItineraryDetail/>} />
         <Route path="/Historical/:Name" element={<HistoricalDetail/>} />
         <Route path="/Museum/:Name" element={<MuseumDetail/>} />
+        <Route path="/AttendedActivitiesPage" element={<AttendedActivitiesPage/>}/> 
 
 
 

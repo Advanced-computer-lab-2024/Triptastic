@@ -22,6 +22,8 @@ const TouristProfile = () => {
   const [fetchedProduct, setFetchedProduct] = useState(null);//new
   const [ratings, setRatings] = useState({});
   const [comments, setComments] = useState({});
+  const [ratingsI, setRatingsI] = useState({});
+  const [commentsI, setCommentsI] = useState({});
   const [requestSent, setRequestSent] = useState(false); // Track if request was successfully sent
   const [waiting, setWaiting] = useState(false);
 
@@ -71,7 +73,20 @@ const TouristProfile = () => {
   const toggleViewBookedActivites = () => {
     setShowingBookedActivities((prev) => !prev);
   }
-  
+  const handleRatingChangeI = (itineraryId, value) => {
+    setRatingsI((prevRatings) => ({
+      ...prevRatings,
+      [itineraryId]: value,
+    }));
+  };
+
+  const handleCommentChangeI = (itineraryId, value) => {
+    setCommentsI((prevComments) => ({
+      ...prevComments,
+      [itineraryId]: value,
+    }));
+  };
+
   const handleViewBookedItineraries = () => {
     setShowingBookedItineraries(prev => !prev);
   };
@@ -299,11 +314,18 @@ const TouristProfile = () => {
           'Content-Type': 'application/json',
         },
       });
-
+  
       if (response.ok) {
         const product = await response.json();
-        setFetchedProduct(product); // Store the fetched product
-        setErrorMessage('');
+  
+        // Check if the product exists and if it is archived
+        if (!product || product.archived === true) {
+          setErrorMessage('Product not found');
+          setFetchedProduct(null); // Clear the fetched product state
+        } else {
+          setFetchedProduct(product); // Store the fetched product
+          setErrorMessage(''); // Clear any previous error messages
+        }
       } else {
         throw new Error('Failed to fetch product');
       }
@@ -313,7 +335,7 @@ const TouristProfile = () => {
     }
     setLoading(false);
   };
-
+  
   const handleFetchProduct = () => {
     const productName = formData.productName; // Assuming there's an input for productName
     fetchProductByName(productName);
@@ -348,7 +370,7 @@ const TouristProfile = () => {
       if (response.ok) {
         alert('Complaint filed successfully!');
         setErrorMessage('');
-        setFormData((prev) => ({ ...prev, ...complaintData, title: '', body: '', date: '' }));
+        setFormData((prev) => ({ ...prev, ...complaintData, title: '', body: '', date: '' ,Reply:''}));
         fetchComplaints(); // Refresh complaints after filing a new one
       } else {
         const errorData = await response.json();
@@ -416,7 +438,34 @@ const TouristProfile = () => {
       setLoading(false);
     }
   }; 
+  const submitFeedbackItinerary = async (Itinerary) => {
+    const username = localStorage.getItem('Username'); // Get the username from local storage
+  
+    console.log("Submitting feedback for itinerary:", Itinerary);
+  
+    try {
+      const response = await axios.post(`http://localhost:8000/submitFeedbackItinerary?username=${username}`, {
+        Itinerary: Itinerary, // Send the itinerary ID
+        rating: ratingsI[Itinerary], // Ensure you are using the correct ID to get the rating
+        comment: commentsI[Itinerary], // Ensure you are using the correct ID to get the comment
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`, // Include authorization if needed
+        },
+      });
+  
+      if (response.status === 200) {
+        setSuccessMessage('Feedback submitted successfully!');
+        setErrorMessage('');
+      }
+    } catch (err) {
+      console.log(Itinerary);
 
+      setErrorMessage(err.response?.data?.message || 'Failed to submit feedback');
+      setSuccessMessage('');
+    }
+  };
+  
   const submitFeedback = async (Itinerary) => {
     const tourGuideUsername = Itinerary.TourGuide;
     const username = localStorage.getItem('Username');
@@ -781,23 +830,42 @@ const TouristProfile = () => {
         </form>
       </div>
 
-      {/* Display Complaints */}
-      <div>
-        <h3>Your Complaints</h3>
-        {complaints.length === 0 ? (
-          <p>No complaints filed yet.</p>
-        ) : (
-          <ul>
-            {complaints.map((complaint) => (
-              <li key={complaint._id}>
-                <p><strong>Title:</strong> {complaint.title}</p>
-                <p><strong>Status:</strong> {complaint.status}</p>
-                <p><strong>Date:</strong> {new Date(complaint.date).toLocaleDateString()}</p>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+    {/* Display Complaints */}
+<div>
+  <h3>Your Complaints</h3>
+  {complaints.length === 0 ? (
+    <p>No complaints filed yet.</p>
+  ) : (
+    <ul>
+      {complaints.map((complaint) => (
+        <li key={complaint._id}>
+          <p><strong>Title:</strong> {complaint.title}</p>
+          <p><strong>Status:</strong> {complaint.status}</p>
+          <p><strong>Date:</strong> {new Date(complaint.date).toLocaleDateString()}</p>
+
+          {/* Display replies if they exist */}
+          {complaint.replies && complaint.replies.length > 0 ? (
+            <div className="replies-section">
+              <h4>Replies:</h4>
+              <ul>
+                {complaint.replies.map((reply, index) => (
+                  <li key={index}>
+                    <p><strong>Reply:</strong> {reply.content}</p>
+                    <p><strong>Date:</strong> {new Date(reply.date).toLocaleDateString()}</p>
+                    {reply.replier && <p><strong>Replier:</strong> {reply.replier}</p>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p><em>No replies yet.</em></p>
+          )}
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
+
       <div>
       <button onClick={handleViewBookedItineraries}> {showingBookedItineraries ? 'Hide booked itineraries' : 'Show booked itineraries'}</button>
       {showingBookedItineraries && (
@@ -810,6 +878,23 @@ const TouristProfile = () => {
                 <p>Price: {(Itinerary.price * conversionRate).toFixed(2)} {selectedCurrency}</p> 
                 <p>TourGuide: {Itinerary.TourGuide}</p>
                 <p>Date:{Itinerary.DatesTimes}</p>
+  <h4>Feedback on Itinerary</h4>
+  
+  <input 
+    type="number" 
+    placeholder="Rating" 
+    onChange={(e) => handleRatingChangeI(Itinerary, e.target.value)} // Update the rating state
+  />
+
+  <input 
+    type="text" 
+    placeholder="Comment" 
+    onChange={(e) => handleCommentChangeI(Itinerary, e.target.value)} // Update the comment state
+  />
+
+  <button onClick={() => submitFeedbackItinerary(Itinerary)}>Submit Feedback</button>
+  <h4>Feedback on Tour Guide:</h4>
+
                  <input 
                   type="number" 
                   placeholder="Rating" 
@@ -823,6 +908,7 @@ const TouristProfile = () => {
                 <button onClick={() => submitFeedback(Itinerary)}>Submit Feedback</button>
                 <button onClick={()=>handleCancelItineraryBooking(Itinerary._id)}>Cancel Booking( 2 days before )</button>
               </div>
+              
             ))
           ) : (
             <p>No booked itineraries found.</p>
@@ -865,6 +951,7 @@ const TouristProfile = () => {
           <li onClick={() => navigate('/book-hotels')}>Book a Hotel</li>
           <li onClick={() => navigate('/book-transportation')}>Book Transportation</li>
           <li onClick={() => navigate('/tourist-orders')}>Past Orders</li>
+          <li onClick={() => navigate('/AttendedActivitiesPage')}>Review Activities</li>
 
         </ul>
       </div>
