@@ -15,7 +15,10 @@ const SellerProfile = () => {
   const [newPassword, setNewPassword] = useState('');
   const [passwordMessage, setPasswordMessage] = useState('');
   const [changingPassword, setChangingPassword] = useState(false);
-
+  const [productNameToSearch, setProductNameToSearch] = useState('');
+  const [productSearchResult, setProductSearchResult] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [productNameToArchive, setProductNameToArchive] = useState(''); // New state variable
   const [productFormData, setProductFormData] = useState({
     productName: '',
     description: '',
@@ -272,6 +275,120 @@ const handleUpdate = async () => {
     setChangingPassword(false);
   };
 
+  const getProductByName = async (e) => {
+    e.preventDefault();
+    console.log("Search function triggered");
+  
+  
+    setLoading(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+    setProductSearchResult(null);
+  
+    try {
+      const response = await fetch(`http://localhost:8000/getProduct?productName=${productNameToSearch}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const product = await response.json();
+        console.log(productSearchResult);
+        setProductSearchResult(product);
+        setProductNameToArchive(product.productName); // Store product name for archiving
+        setSuccessMessage(`Product found successfully!: ${JSON.stringify(product.productName)}`);
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Product not found.');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while searching for the product.');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+const archiveProduct = async () => {
+  if (!productNameToArchive) {
+    setErrorMessage('No product selected to archive.');
+    return;
+  }
+
+  setLoading(true);
+  setErrorMessage('');
+  setSuccessMessage('');
+
+  try {
+    const response = await fetch(`http://localhost:8000/archiveProduct/${productNameToArchive}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      setSuccessMessage(`Product "${productNameToArchive}" archived successfully.`);
+
+      // Update the productSearchResult state to reflect the new archived status
+      setProductSearchResult(prevProduct => ({
+        ...prevProduct,
+        archived: result.product.archived, // Ensure this matches the response structure
+      }));
+    } else {
+      const errorData = await response.json();
+      setErrorMessage(errorData.error || 'Failed to archive product.');
+    }
+  } catch (error) {
+    setErrorMessage('An error occurred while archiving the product.');
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
+const unarchiveProduct = async () => {
+  if (!productNameToArchive) {
+    setErrorMessage('No product selected to unarchive.');
+    return;
+  }
+
+  setLoading(true);
+  setErrorMessage('');
+  setSuccessMessage('');
+
+  try {
+    const response = await fetch(`http://localhost:8000/unarchiveProduct/${productNameToArchive}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      setSuccessMessage(`Product "${productNameToArchive}" unarchived successfully.`);
+
+      // Update the productSearchResult state to reflect the new archived status
+      setProductSearchResult(prevProduct => ({
+        ...prevProduct,
+        archived: result.product.archived, // Ensure this matches the response structure
+      }));
+    } else {
+      const errorData = await response.json();
+      setErrorMessage(errorData.error || 'Failed to unarchive product.');
+    }
+  } catch (error) {
+    setErrorMessage('An error occurred while unarchiving the product.');
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
   const handleCurrentPasswordChange = (e) => setCurrentPassword(e.target.value);
   const handleNewPasswordChange = (e) => setNewPassword(e.target.value);
   return (
@@ -373,7 +490,36 @@ const handleUpdate = async () => {
   <button onClick={() => setAddingProduct(true)}>Add Product</button>
 )}
 
+<h2>Search Product by Name</h2>
+      <form onSubmit={getProductByName}>
+        <div>
+          <label>Product Name:</label>
+          <input
+            type="text"
+            value={productNameToSearch}
+            onChange={(e) => setProductNameToSearch(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit" disabled={loading}>Search Product</button>
+      </form>
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+      {productSearchResult && (
+        <div>
+          <h3>Product Details</h3>
+          <p>Name: {productSearchResult.productName}</p>
+          <p>Description: {productSearchResult.description}</p>
+          <p>Price: {productSearchResult.price}</p>
+          <p>Rating: {productSearchResult.rating}</p>
+          <p>Seller: {productSearchResult.seller}</p>
+          <p>Archived: {productSearchResult.archived !== undefined ? productSearchResult.archived.toString() : 'N/A'}</p>
+          <button onClick={archiveProduct} disabled={loading}>Archive Product</button>
+          <button onClick={unarchiveProduct} disabled={loading || !productSearchResult.archived}>Unarchive Product</button>
 
+          {/* Add more product details as needed */}
+        </div>
+      )}
 
 {/* Product Form */}
 {addingProduct && (

@@ -294,21 +294,20 @@ const getUniqueHistoricalPeriods = async (req, res) => {
  //need to add to other methods still
 const viewProductsTourist = async (req, res) => {
   try {
-    const products = await productModel.find(); 
+    const products = await productModel.find({ archived: false });
     res.json(products); 
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
-
 const filterProductsByPriceRange = async (req, res) => {
   const { minPrice, maxPrice } = req.query;
 
   try {
     // Set up filter criteria based on provided min and max prices
-    let filter = {};
-    
+    let filter = { archived: false }; // Include archived condition
+
     if (minPrice && maxPrice) {
       filter.price = { $gte: parseFloat(minPrice), $lte: parseFloat(maxPrice) }; // Price between min and max
     } else if (minPrice) {
@@ -330,6 +329,7 @@ const filterProductsByPriceRange = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 const viewAllUpcomingActivitiesTourist = async (req, res) => {
  try {

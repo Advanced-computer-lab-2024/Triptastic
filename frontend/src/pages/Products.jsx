@@ -35,7 +35,7 @@ const Products = () => {
     setError('');
 
     try {
-      let url = 'http://localhost:8000/viewProducts'; // Default URL to fetch all products
+      let url = 'http://localhost:8000/viewProductsTourist'; // Default URL to fetch all products
       
       // If price filters are applied, modify the URL
       if (minPrice || maxPrice) {

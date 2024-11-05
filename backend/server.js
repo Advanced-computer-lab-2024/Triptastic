@@ -39,7 +39,8 @@ const{replyToComplaint,rejectDeletionRequest,acceptDeletionRequest,getPendingDel
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
 ,createPrefTag,updatePreftag,deletePreftag,getPrefTag,
 viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,
-tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,flagActivity,getallActivities,getallTouristItineraries,getallItineraries,getComplaints}=require("./Routes/adminController");
+tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,
+flagActivity,getallActivities,getallTouristItineraries,getallItineraries,getComplaints,archiveProduct,unarchiveProduct}=require("./Routes/adminController");
 
 
 
@@ -143,6 +144,7 @@ app.post('/setPreferences',setPreferences);
 app.get('/getTransportation',getTransportation);
 app.get('/getCurrencyRates',getCurrencyRates)
 
+
 //TourGuide
 app.post("/addTourGuide",upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'Certificate', maxCount: 1 } ]),createTourGuide);
 app.patch("/addTourGuideInfo",createTourGuideInfo);
@@ -176,6 +178,7 @@ app.patch("/changePasswordAdvertiser",changePasswordAdvertiser);
 app.get('/getPendingAdvertisers',getPendingAdvertisers);
 app.post('/createTransportation',createTransportation);
 app.patch('/settleDocsAdvertiser',settleDocsAdvertiser);
+
 //Seller
 app.post('/createSeller', upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'TaxationRegistryCard', maxCount: 1 } ]), createSeller);
 app.patch('/updateSeller', upload.single('Logo'),updateSeller);
@@ -226,6 +229,8 @@ app.get("/getPendingDeletionRequests",getPendingDeletionRequests);
 app.post("/acceptDeletionRequest",acceptDeletionRequest);
 app.post("/rejectDeletionRequest",rejectDeletionRequest);
 app.post("/replyToComplaint/:id",replyToComplaint);
+app.patch("/archiveProduct/:productName",archiveProduct);
+app.patch("/unarchiveProduct/:productName",unarchiveProduct);
 
 
 

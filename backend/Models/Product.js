@@ -31,6 +31,11 @@ const productSchema = new Schema({
     required: false,
     default: 0
   },
+  archived: {
+    type: Boolean,
+    required: false,
+    default:false
+  },
   image: {  
     type: String,  
     required: false,

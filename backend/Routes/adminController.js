@@ -146,6 +146,48 @@ const getProduct = async (req, res) => {
       res.status(400).json({ error: error.message });
   }
 };
+const unarchiveProduct = async (req, res) => {
+  const { productName } = req.params;
+
+  try {
+    // Find the product by name and set its archived status to false
+    const updatedProduct = await productModel.findOneAndUpdate(
+      { productName: productName },
+      { archived: false },
+      { new: true }
+    );
+
+    if (updatedProduct) {
+      res.status(200).json({ message: 'Product unarchived successfully', product: updatedProduct });
+    } else {
+      res.status(404).json({ error: 'Product not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to unarchive product', details: error.message });
+  }
+};
+
+
+const archiveProduct = async (req, res) => {
+  const { productName } = req.params; // Assuming productName is sent in the request body
+
+  try {
+    // Find the product by name and set its archived status to true
+    const updatedProduct = await productModel.findOneAndUpdate(
+      { productName: productName },
+      { archived: true },
+      { new: true } // Return the updated document
+    );
+
+    if (updatedProduct) {
+      res.status(200).json({ message: 'Product archived successfully', product: updatedProduct });
+    } else {
+      res.status(404).json({ error: 'Product not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to archive product', details: error.message });
+  }
+};
 
 const deleteAdvertiser = async (req, res) => {
     const { Username } = req.query;  
@@ -304,12 +346,14 @@ const deletePreftag = async (req, res) => {
 
 const viewProducts = async (req, res) => {
   try {
+    // Find products where archived is false
     const products = await productModel.find(); 
-    res.json(products); 
+    res.json(products);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 const sortProductsByRatingAdmin = async (req, res) => {
     try {
@@ -616,4 +660,5 @@ const rejectDeletionRequest = async (req, res) => {
 
 
 module.exports = {replyToComplaint,getPendingDeletionRequests,acceptDeletionRequest,rejectDeletionRequest,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
-    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,flagActivity,getallItineraries,getallActivities,getallTouristItineraries,getComplaints};
+    ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin,viewAllPrefTag,deleteAdmin
+    ,flagItinerary,flagTouristItinerary,flagActivity,getallItineraries,getallActivities,getallTouristItineraries,getComplaints,archiveProduct,unarchiveProduct};

@@ -31,6 +31,8 @@ const AdminPage = () => {
   const [showingActivities,setShowingActivities]=useState(false);
   const [productNameToSearch, setProductNameToSearch] = useState('');
   const [productSearchResult, setProductSearchResult] = useState(null);
+  const [productNameToArchive, setProductNameToArchive] = useState(''); // New state variable
+
   const [changePasswordData, setChangePasswordData] = useState({
     Username: '',
     currentPassword: '',
@@ -402,7 +404,9 @@ const getProductByName = async (e) => {
 
     if (response.ok) {
       const product = await response.json();
+      console.log(productSearchResult);
       setProductSearchResult(product);
+      setProductNameToArchive(product.productName); // Store product name for archiving
       setSuccessMessage(`Product found successfully!: ${JSON.stringify(product.productName)}`);
     } else {
       const errorData = await response.json();
@@ -410,6 +414,82 @@ const getProductByName = async (e) => {
     }
   } catch (error) {
     setErrorMessage('An error occurred while searching for the product.');
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
+const archiveProduct = async () => {
+  if (!productNameToArchive) {
+    setErrorMessage('No product selected to archive.');
+    return;
+  }
+
+  setLoading(true);
+  setErrorMessage('');
+  setSuccessMessage('');
+
+  try {
+    const response = await fetch(`http://localhost:8000/archiveProduct/${productNameToArchive}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      setSuccessMessage(`Product "${productNameToArchive}" archived successfully.`);
+
+      // Update the productSearchResult state to reflect the new archived status
+      setProductSearchResult(prevProduct => ({
+        ...prevProduct,
+        archived: result.product.archived, // Ensure this matches the response structure
+      }));
+    } else {
+      const errorData = await response.json();
+      setErrorMessage(errorData.error || 'Failed to archive product.');
+    }
+  } catch (error) {
+    setErrorMessage('An error occurred while archiving the product.');
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
+const unarchiveProduct = async () => {
+  if (!productNameToArchive) {
+    setErrorMessage('No product selected to unarchive.');
+    return;
+  }
+
+  setLoading(true);
+  setErrorMessage('');
+  setSuccessMessage('');
+
+  try {
+    const response = await fetch(`http://localhost:8000/unarchiveProduct/${productNameToArchive}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      setSuccessMessage(`Product "${productNameToArchive}" unarchived successfully.`);
+
+      // Update the productSearchResult state to reflect the new archived status
+      setProductSearchResult(prevProduct => ({
+        ...prevProduct,
+        archived: result.product.archived, // Ensure this matches the response structure
+      }));
+    } else {
+      const errorData = await response.json();
+      setErrorMessage(errorData.error || 'Failed to unarchive product.');
+    }
+  } catch (error) {
+    setErrorMessage('An error occurred while unarchiving the product.');
     console.error(error);
   } finally {
     setLoading(false);
@@ -1158,6 +1238,10 @@ const getProductByName = async (e) => {
           <p>Price: {productSearchResult.price}</p>
           <p>Rating: {productSearchResult.rating}</p>
           <p>Seller: {productSearchResult.seller}</p>
+          <p>Archived: {productSearchResult.archived !== undefined ? productSearchResult.archived.toString() : 'N/A'}</p>
+          <button onClick={archiveProduct} disabled={loading}>Archive Product</button>
+          <button onClick={unarchiveProduct} disabled={loading || !productSearchResult.archived}>Unarchive Product</button>
+
           {/* Add more product details as needed */}
         </div>
       )}

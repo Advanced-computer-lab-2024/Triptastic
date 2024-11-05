@@ -288,11 +288,18 @@ const TouristProfile = () => {
           'Content-Type': 'application/json',
         },
       });
-
+  
       if (response.ok) {
         const product = await response.json();
-        setFetchedProduct(product); // Store the fetched product
-        setErrorMessage('');
+  
+        // Check if the product exists and if it is archived
+        if (!product || product.archived === true) {
+          setErrorMessage('Product not found');
+          setFetchedProduct(null); // Clear the fetched product state
+        } else {
+          setFetchedProduct(product); // Store the fetched product
+          setErrorMessage(''); // Clear any previous error messages
+        }
       } else {
         throw new Error('Failed to fetch product');
       }
@@ -302,7 +309,7 @@ const TouristProfile = () => {
     }
     setLoading(false);
   };
-
+  
   const handleFetchProduct = () => {
     const productName = formData.productName; // Assuming there's an input for productName
     fetchProductByName(productName);
