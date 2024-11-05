@@ -1305,10 +1305,36 @@ const getTransportation=async(req,res)=>{
   }
 };
 
+const getAttendedActivities = async (req, res) => {
+  const { Username } = req.query; // Retrieve username from query parameters
+
+  try {
+    // Find the tourist by their username
+    const tourist = await touristModel.findOne({ Username: Username }); 
+    if (!tourist) {
+      return res.status(404).json({ message: 'Tourist not found' });
+    }
+
+    // Extract the IDs and details of booked activities
+    const bookingNames = tourist.Bookings.map(booking => booking.name);
+
+    // Find activities that were booked and have already taken place (date has passed)
+    const attendedActivities = await activitiesModel.find({
+      name: { $in: bookingNames },
+      date: { $lt: new Date() } // Check if the date is in the past
+    });
+
+    // Return the attended activities
+    res.status(200).json(attendedActivities);
+  } catch (error) {
+    console.error('Error fetching attended activities:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
 
 
- module.exports = {getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+ module.exports = {getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
