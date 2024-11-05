@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom'; // Import Link for routing
+import { CurrencyContext } from '../pages/CurrencyContext';
+import axios from 'axios';
 const Activities = () => {
+  const { selectedCurrency, conversionRate ,fetchConversionRate} = useContext(CurrencyContext);
   const [activities, setActivities] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(true);
@@ -52,6 +55,9 @@ const Activities = () => {
     }
   };
 
+  const handleCurrencyChange = (event) => {
+    fetchConversionRate(event.target.value);
+  };
   // Fetch activities with filters
   const fetchFilteredActivities = async () => {
     try {
@@ -356,7 +362,8 @@ const bookActivity = async (activityName) => {
               {activities.map((activity) => (
                 <li key={activity._id}>
                   <strong>Name:</strong> {activity.name} <br />
-                  <strong>Price:</strong> ${activity.price} <br />
+                  <strong>Price:</strong> {(activity.price * conversionRate).toFixed(2)} {selectedCurrency} <br />
+
                   <strong>Rating:</strong> {activity.rating} <br />
                    {/* Book Activity Button */}
                    <button onClick={() => bookActivity(activity.name)}>Book Ticket</button>

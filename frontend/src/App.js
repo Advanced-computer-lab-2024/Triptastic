@@ -34,6 +34,8 @@ import Docs from './pages/docs';
 import ItineraryDetail from './pages/itineraryDetails';
 import HistoricalDetail from './pages/historicalDetails';
 import MuseumDetail from './pages/MuseumDetails';
+import { CurrencyProvider } from './pages/CurrencyContext'; // Import the provider from correct path
+
 function Home() {
   const navigate = useNavigate();
   
@@ -68,6 +70,8 @@ function Home() {
 
 function App() {
   return (
+    <CurrencyProvider>
+
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
@@ -110,6 +114,8 @@ function App() {
 
       </Routes>
     </Router>
+    </CurrencyProvider>
+
   );
 }
 

@@ -16,8 +16,8 @@ const axios = require('axios');
 
 const getCurrencyRates = async (req, res) => {
   try {
-    const baseCurrency = 'USD';
-    const selectedCurrency = (req.query.currency || 'USD').trim(); // Trim any extra whitespace
+    const baseCurrency = 'EGP'; // Set base currency to EGP
+    const selectedCurrency = (req.query.currency || 'EGP').trim(); // Default to EGP if no currency is selected
 
     // Fetch exchange rates from an external API
     const response = await axios.get(`https://api.exchangerate-api.com/v4/latest/${baseCurrency}`);
@@ -46,6 +46,7 @@ const getCurrencyRates = async (req, res) => {
     res.status(500).json({ error: 'Error fetching currency rates' });
   }
 };
+
 
 
 const createTourist = async(req,res) => {
