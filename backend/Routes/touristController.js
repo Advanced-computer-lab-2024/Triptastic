@@ -16,8 +16,8 @@ const axios = require('axios');
 
 const getCurrencyRates = async (req, res) => {
   try {
-    const baseCurrency = 'USD';
-    const selectedCurrency = (req.query.currency || 'USD').trim(); // Trim any extra whitespace
+    const baseCurrency = 'EGP'; // Set base currency to EGP
+    const selectedCurrency = (req.query.currency || 'EGP').trim(); // Default to EGP if no currency is selected
 
     // Fetch exchange rates from an external API
     const response = await axios.get(`https://api.exchangerate-api.com/v4/latest/${baseCurrency}`);
@@ -46,6 +46,7 @@ const getCurrencyRates = async (req, res) => {
     res.status(500).json({ error: 'Error fetching currency rates' });
   }
 };
+
 
 
 const createTourist = async(req,res) => {
@@ -394,7 +395,7 @@ const sortItinPDSC= async (req,res)=>{
  const sortActPASCRASC= async(req,res)=>{
   try{
    const currentDate= new Date();
-   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort({Price : 1, Rating : 1}); 
+   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort({Price : 1, rating : 1}); 
    res.status(200).json(data);
 
  }
@@ -405,7 +406,7 @@ const sortItinPDSC= async (req,res)=>{
 const sortActPASCRDSC= async(req,res)=>{
   try{
    const currentDate= new Date();
-   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort({Price : 1, Rating : -1}); 
+   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort({Price : 1, rating : -1}); 
    res.status(200).json(data);
 
  }
@@ -416,7 +417,7 @@ const sortActPASCRDSC= async(req,res)=>{
 const sortActPDSCRASC= async(req,res)=>{
   try{
    const currentDate= new Date();
-   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort({Price : -1, Rating : 1}); 
+   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort({Price : -1, rating : 1}); 
    res.status(200).json(data);
 
  }
@@ -427,7 +428,7 @@ const sortActPDSCRASC= async(req,res)=>{
 const sortActPDSCRDSC= async(req,res)=>{
   try{
    const currentDate= new Date();
-   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort({Price : -1, Rating : -1}); 
+   const data = await activitiesModel.find({ date: { $gte: currentDate } }).sort({Price : -1, rating : -1}); 
    res.status(200).json(data);
 
  }
