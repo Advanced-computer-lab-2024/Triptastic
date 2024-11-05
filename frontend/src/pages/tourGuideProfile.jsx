@@ -562,13 +562,7 @@ function TourGuideProfile() {
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                 {photo && <img src={photo} alt="photo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
                   <label>Username:</label>
-                  <input
-                    type="text"
-                    name="Username"
-                    value={formData.Username}
-                    onChange={handleChange}
-                    required
-                  />
+                  <p> {tourGuideInfo?.Username}</p> 
                 </div>
                 <div>
                   <label>Email:</label>
