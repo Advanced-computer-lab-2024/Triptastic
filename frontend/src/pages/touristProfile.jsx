@@ -21,6 +21,8 @@ const TouristProfile = () => {
   const [fetchedProduct, setFetchedProduct] = useState(null);//new
   const [ratings, setRatings] = useState({});
   const [comments, setComments] = useState({});
+  const [ratingsI, setRatingsI] = useState({});
+  const [commentsI, setCommentsI] = useState({});
   const [requestSent, setRequestSent] = useState(false); // Track if request was successfully sent
   const [waiting, setWaiting] = useState(false);
 
@@ -67,7 +69,20 @@ const TouristProfile = () => {
   const toggleViewBookedActivites = () => {
     setShowingBookedActivities((prev) => !prev);
   }
-  
+  const handleRatingChangeI = (itineraryId, value) => {
+    setRatingsI((prevRatings) => ({
+      ...prevRatings,
+      [itineraryId]: value,
+    }));
+  };
+
+  const handleCommentChangeI = (itineraryId, value) => {
+    setCommentsI((prevComments) => ({
+      ...prevComments,
+      [itineraryId]: value,
+    }));
+  };
+
   const handleViewBookedItineraries = () => {
     setShowingBookedItineraries(prev => !prev);
   };
@@ -412,7 +427,34 @@ const TouristProfile = () => {
       setLoading(false);
     }
   }; 
+  const submitFeedbackItinerary = async (Itinerary) => {
+    const username = localStorage.getItem('Username'); // Get the username from local storage
+  
+    console.log("Submitting feedback for itinerary:", Itinerary);
+  
+    try {
+      const response = await axios.post(`http://localhost:8000/submitFeedbackItinerary?username=${username}`, {
+        Itinerary: Itinerary, // Send the itinerary ID
+        rating: ratingsI[Itinerary], // Ensure you are using the correct ID to get the rating
+        comment: commentsI[Itinerary], // Ensure you are using the correct ID to get the comment
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`, // Include authorization if needed
+        },
+      });
+  
+      if (response.status === 200) {
+        setSuccessMessage('Feedback submitted successfully!');
+        setErrorMessage('');
+      }
+    } catch (err) {
+      console.log(Itinerary);
 
+      setErrorMessage(err.response?.data?.message || 'Failed to submit feedback');
+      setSuccessMessage('');
+    }
+  };
+  
   const submitFeedback = async (Itinerary) => {
     const tourGuideUsername = Itinerary.TourGuide;
     const username = localStorage.getItem('Username');
@@ -810,7 +852,23 @@ const TouristProfile = () => {
                 <p>Price: ${Itinerary.price}</p>
                 <p>TourGuide: {Itinerary.TourGuide}</p>
                 <p>Date:{Itinerary.DatesTimes}</p>
-                <p>Feedback on Tour Guide:</p>
+  <h4>Feedback on Itinerary</h4>
+  
+  <input 
+    type="number" 
+    placeholder="Rating" 
+    onChange={(e) => handleRatingChangeI(Itinerary, e.target.value)} // Update the rating state
+  />
+
+  <input 
+    type="text" 
+    placeholder="Comment" 
+    onChange={(e) => handleCommentChangeI(Itinerary, e.target.value)} // Update the comment state
+  />
+
+  <button onClick={() => submitFeedbackItinerary(Itinerary)}>Submit Feedback</button>
+  <h4>Feedback on Tour Guide:</h4>
+
                  <input 
                   type="number" 
                   placeholder="Rating" 
@@ -824,6 +882,7 @@ const TouristProfile = () => {
                 <button onClick={() => submitFeedback(Itinerary)}>Submit Feedback</button>
                 <button onClick={()=>handleCancelItineraryBooking(Itinerary._id)}>Cancel Booking( 2 days before )</button>
               </div>
+              
             ))
           ) : (
             <p>No booked itineraries found.</p>

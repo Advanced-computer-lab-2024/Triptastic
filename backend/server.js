@@ -24,7 +24,7 @@ const {getAttendedActivities,getCurrencyRates,changepasswordTourist,createTouris
   ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,
   sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,
   getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity,
-  fileComplaint,getComplaintsByTourist,shareActivity,shareHistorical,shareMuseum,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,getBookedActivities,getActivityToShare,setPreferences,getTransportation} = require("./Routes/touristController");
+  fileComplaint,getComplaintsByTourist,shareActivity,shareHistorical,shareMuseum,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,getBookedActivities,getActivityToShare,setPreferences,getTransportation,submitFeedbackItinerary} = require("./Routes/touristController");
 
 //Advertiser
 const{changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser}=require("./Routes/advertiserController");
@@ -135,6 +135,7 @@ app.patch("/addReviewToProduct",addReviewToProduct);
 app.post("/bookItinerary",bookItinerary);
 app.get("/getBookedItineraries", getBookedItineraries);
 app.post("/submitFeedback",submitFeedback);
+app.post("/submitFeedbackItinerary",submitFeedbackItinerary);
 app.patch('/cancelBookedItinerary/:itineraryId',cancelBookedItinerary);
 app.post("/requestAccountDeletionTourist",requestAccountDeletionTourist);
 app.delete('/cancelBookedActivity/:activityId', cancelActivity);
