@@ -54,13 +54,14 @@ function TourGuideProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [waiting, setWaiting] = useState(false);
   const [requestSent, setRequestSent] = useState(false); // Track if request was successfully sent
+  const [photo, setPhoto] = useState(null);
   const [formData, setFormData] = useState({
     Username: '',
     Email: '',
     mobileNumber: '',
     yearsOfExperience: '',
     previousWork: '',
-    photo:null
+    photo:''
   });
   const [touristItineraryData, setTouristItineraryData] = useState({
     Activities: '',
@@ -83,7 +84,7 @@ function TourGuideProfile() {
     Accesibility: '',
     pickUpDropOff: '',
   });
-  const [photo, setPhoto] = useState(null);
+  
   const [isCreatingItinerary, setIsCreatingItinerary] = useState(false);
   const [isEditingItinerary, setIsEditingItinerary] = useState(false); // New state for editing itinerary
   const [isCreatingTouristItinerary, setIsCreatingTouristItinerary] = useState(false);
@@ -546,7 +547,7 @@ function TourGuideProfile() {
             {isVisible && (
               <div>
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                {photo && <img src={photo} alt="Tour Guide Photo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
+                {photo && <img src={`http://localhost:8000/${photo.replace(/\\/g, '/')}`} alt="Tour Guide Photo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
                 <p><strong>Username:</strong> {tourGuideInfo?.Username}</p> </div>
                 <div>
                 <p><strong>Email:</strong> {tourGuideInfo?.Email}</p> 
