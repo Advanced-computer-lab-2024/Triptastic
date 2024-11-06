@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { CurrencyContext } from '../pages/CurrencyContext';
 const Itineraries = () => {
   const [itineraries, setItineraries] = useState([]);
+  const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [shareableLink, setShareableLink] = useState('');
@@ -16,6 +18,9 @@ const Itineraries = () => {
   // State to track the visibility of itinerary details
   const [expandedItineraries, setExpandedItineraries] = useState({});
 
+  const handleCurrencyChange = (event) => {
+    fetchConversionRate(event.target.value);
+  };
   const fetchASCItineraries = async () => {
     try {
       const response = await fetch(`http://localhost:8000/sortItinPASC`, {
@@ -267,7 +272,7 @@ const Itineraries = () => {
               {itineraries.map((itinerary) => (
                 <li key={itinerary._id}>
                   <strong>Activities:</strong> {itinerary.Activities.join(', ')} <br />
-                  <strong>Price:</strong> {itinerary.Price} <br />
+                  <strong>Price:</strong> {selectedCurrency} {(itinerary.Price * conversionRate).toFixed(2)} <br />
                   <strong>Dates:</strong> {itinerary.DatesTimes} <br />
                   <button onClick={() => toggleItineraryDetails(itinerary._id)}>
                     {expandedItineraries[itinerary._id] ? 'Hide Itinerary Details' : 'View Itinerary Details'}
