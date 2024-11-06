@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import { CurrencyContext } from '../pages/CurrencyContext';
 
 const BookTransportation = () => {
+  const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
+
   const [transportations, setTransportations] = useState([]);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
@@ -28,6 +32,9 @@ const BookTransportation = () => {
   const handleBook = () => {
     setSuccessMessage('Transportation has been booked successfully!');
   };
+  const handleCurrencyChange = (event) => {
+    fetchConversionRate(event.target.value);
+  };
 
   return (
     <div>
@@ -42,7 +49,9 @@ const BookTransportation = () => {
             <p>Destination: {transportation.destination}</p>
             <p>Departure Time: {new Date(transportation.departureTime).toLocaleString()}</p>
             <p>Arrival Time: {new Date(transportation.arrivalTime).toLocaleString()}</p>
-            <p>Price: ${transportation.price}</p>
+            <p>
+    <strong>Price:</strong> {selectedCurrency} {(transportation.price * conversionRate).toFixed(2)}
+  </p>
             <button onClick={handleBook}>Book</button>
           </div>
         ))}

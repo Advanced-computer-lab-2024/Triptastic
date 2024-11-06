@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import { CurrencyContext } from '../pages/CurrencyContext';
 
 const BookFlights = () => {
   const [flightDetails, setFlightDetails] = useState({
@@ -60,7 +62,10 @@ const BookFlights = () => {
       return null;
     }
   };
-
+  const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
+  const handleCurrencyChange = (event) => {
+    fetchConversionRate(event.target.value);
+  };
   // Fetch flight offers from Amadeus API using the access token
   const searchFlights = async (token) => {
     const API_URL = 'https://test.api.amadeus.com/v2/shopping/flight-offers';
@@ -173,8 +178,9 @@ const BookFlights = () => {
             {flights.map((flight, index) => (
               <div key={index} style={{ border: '1px solid #ccc', padding: '16px', borderRadius: '8px', position: 'relative' }}>
                 <p><strong>Flight ID:</strong> {flight.id}</p>
-                <p><strong>Price:</strong> {flight.price.total} {flight.price.currency}</p>
-                <p><strong>Departure:</strong> {flight.itineraries[0].segments[0].departure.iataCode}</p>
+                <p>
+    <strong>Price:</strong> {selectedCurrency} {(flight.price.total * conversionRate).toFixed(2)}
+  </p>                <p><strong>Departure:</strong> {flight.itineraries[0].segments[0].departure.iataCode}</p>
                 <p><strong>Arrival:</strong> {flight.itineraries[0].segments[0].arrival.iataCode}</p>
 
                 {/* Show 'Booked' status if the flight is booked */}
