@@ -20,7 +20,7 @@ const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActi
 
 
 //Tourist
-const {getAttendedActivities,getCurrencyRates,changepasswordTourist,createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
+const {getCart,addProductToCart,getAttendedActivities,getCurrencyRates,changepasswordTourist,createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
   ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,
   sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,
   getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity,
@@ -65,6 +65,8 @@ const categories=require("./Models/Activitiescategory");
 const activities=require("./Models/Activities");
 const museums=require("./Models/Museums");
 const request=require("./Models/Request");
+const cart=require("./Models/Cart");
+
 
 // Set up session middleware
 app.use(session({
@@ -145,7 +147,8 @@ app.post('/setPreferences',setPreferences);
 app.get('/getTransportation',getTransportation);
 app.get('/getCurrencyRates',getCurrencyRates);
 app.get('/getAttendedActivities',getAttendedActivities);
-
+app.post("/addProductToCart",addProductToCart);
+app.get('/getCart',getCart);
 
 //TourGuide
 app.post("/addTourGuide",upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'Certificate', maxCount: 1 } ]),createTourGuide);
@@ -193,6 +196,7 @@ app.post("/requestAccountDeletionSeller",requestAccountDeletionSeller);
 app.patch("/changePasswordSeller",changePasswordSeller);
 app.get("/getPendingSellers",getPendingSellers);
 app.patch("/settleDocsSeller",settleDocsSeller);
+
 //Admin
 app.post("/tourismGovLogin",tourismGovLogin);
 app.delete("/deleteTourGuide",deleteTourGuide);
