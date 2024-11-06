@@ -10,7 +10,7 @@ const { default: mongoose } = require('mongoose');
 const complaintModel = require('../Models/Complaint.js'); // Adjust the path based on your project structure
 const TourGuideModel = require('../Models/tourGuide.js'); // Adjust path as needed
 const requestModel = require('../Models/Request.js'); // Adjust path as needed
-
+const nodemailer = require('nodemailer');
 const axios = require('axios');
 
 
@@ -695,9 +695,35 @@ const sortProductsByRatingTourist = async (req, res) => {
     }
 };
 
+// Create a reusable transporter object using the default SMTP transport
+const transporter = nodemailer.createTransport({
+  service: 'Gmail', // or another email service (e.g., Outlook, Yahoo)
+  auth: {
+    user: 'farhoudaly000@gmail.com', // Replace with your email
+    pass: 'aly20088' // Replace with your password or app-specific password
+  }
+});
+const sendEmail = async (recipient, subject, text) => {
+  const mailOptions = {
+    from:'farhoudaly000@gmail.com', // Replace with your email
+    to: recipient,
+    subject: subject,
+    text: text
+  };
 
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully');
+  } catch (error) {
+    console.error('Error sending email:', error.message); // Log error message
+    console.error('Error details:', error.stack); // Log error details
+    throw new Error('Failed to send email');
+  }
+};
 const shareActivity = async (req, res) => {
   const { name } = req.params; // Get the activity name from the request
+  const { email } = req.body; // Get the recipient email from the request body
+
 
   try {
     // Find the activity by name
@@ -709,9 +735,18 @@ const shareActivity = async (req, res) => {
     // Generate the shareable link using the activity ID (or another unique identifier)
     const shareableLink =`http://localhost:3000/activities/${encodeURIComponent(activity.name)}`; // Add any other details you want
 
-
+    if (email) {
+      await sendEmail(
+        email,
+        'Check out this activity!',
+        `Here's a link to an activity you might be interested in: ${shareableLink}`
+      );
+      res.status(200).json({ message: 'Link generated and email sent successfully', link: shareableLink });
+    } else {
+      res.status(200).json({ link: shareableLink });
+    }
     // Return the link for sharing
-    res.status(200).json({ link: shareableLink });
+    
   } catch (error) {
     console.error('Error generating shareable link:', error);
     res.status(500).json({ error: 'Server error' });
@@ -719,6 +754,8 @@ const shareActivity = async (req, res) => {
 };
 const shareItinerary = async (req, res) => {
   const { id } = req.params; // Get the itinerary ID from the request
+  const { email } = req.body; // Get the recipient email from the query parameters
+
 
   try {
     // Find the itinerary by ID
@@ -729,9 +766,17 @@ const shareItinerary = async (req, res) => {
 
     // Generate the shareable link using the itinerary ID (or other details)
     const shareableLink = `http://localhost:3000/itineraries/${encodeURIComponent(itinerary._id)}`;
-
+    if (email) {
+      await sendEmail(
+        email,
+        'Check out this itinerary!',
+        `Here's a link to an itinerary you might be interested in: ${shareableLink}`
+      );
+      res.status(200).json({ message: 'Link generated and email sent successfully', link: shareableLink });
+    } else {
+      res.status(200).json({ link: shareableLink });
+    }
     // Return the link for sharing
-    res.status(200).json({ link: shareableLink });
   } catch (error) {
     console.error('Error generating shareable link:', error);
     res.status(500).json({ error: 'Server error' });
@@ -741,6 +786,8 @@ const shareItinerary = async (req, res) => {
 
 const shareHistorical = async (req, res) => {
   const { Name } = req.params; 
+  const { email } = req.body; // Get the recipient email from the query parameters
+
 
   try {
       // Find the activity by ID
@@ -751,9 +798,17 @@ const shareHistorical = async (req, res) => {
 
       // Generate the shareable link
       const shareableLink =`http://localhost:3000/Historical/${encodeURIComponent(historical.Name)}`;
-
+      if (email) {
+        await sendEmail(
+          email,
+          'Check out this historical location!',
+          `Here's a link to a historical location you might be interested in: ${shareableLink}`
+        );
+        res.status(200).json({ message: 'Link generated and email sent successfully', link: shareableLink });
+      } else {
+        res.status(200).json({ link: shareableLink });
+      }
       // Return the link for sharing
-      res.status(200).json({ link: shareableLink });
   } catch (error) {
       console.error('Error generating shareable link:', error);
       res.status(500).json({ error: 'Server error' });
@@ -761,6 +816,8 @@ const shareHistorical = async (req, res) => {
 };
 const shareMuseum = async (req, res) => {
   const { Name } = req.params; 
+  const { email } = req.body; // Get the recipient email from the query parameters
+
 
   try {
       // Find the activity by ID
@@ -771,9 +828,17 @@ const shareMuseum = async (req, res) => {
 
       // Generate the shareable link
       const shareableLink =`http://localhost:3000/Museum/${encodeURIComponent(Museum.Name)}`;
-
+      if (email) {
+        await sendEmail(
+          email,
+          'Check out this museum!',
+          `Here's a link to a museum you might be interested in: ${shareableLink}`
+        );
+        res.status(200).json({ message: 'Link generated and email sent successfully', link: shareableLink });
+      } else {
+        res.status(200).json({ link: shareableLink });
+      }
       // Return the link for sharing
-      res.status(200).json({ link: shareableLink });
   } catch (error) {
       console.error('Error generating shareable link:', error);
       res.status(500).json({ error: 'Server error' });

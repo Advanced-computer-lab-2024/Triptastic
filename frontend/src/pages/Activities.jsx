@@ -12,8 +12,10 @@ const Activities = () => {
   const [ratingData, setRatingData] = useState({ rating: '' }); // New state for rating
   const [responseMsg, setResponseMsg] = useState('');
   const [shareableLink, setShareableLink] = useState('');
- 
+  const [email, setEmail] = useState('');
+  const [isEmailMode, setIsEmailMode] = useState(false);
   const [copySuccess, setCopySuccess] = useState({});
+  const [activityToShare, setActivityToShare] = useState(null);
 
   // Sorting states
   const [priceSort, setPriceSort] = useState('PASC'); // 'PASC' or 'PDSC'
@@ -200,24 +202,37 @@ const Activities = () => {
   useEffect(() => {
     fetchSortedActivities('PASC', 'RASC'); // Default sort: Price Asc, Rating Asc
   }, []);
-  const handleShare = async (activity) => {
-     
+ 
+  const handleShare = async (activity, shareMethod) => {
     try {
-      const response = await fetch(`http://localhost:8000/shareActivity/${activity.name}`);
-        const data = await response.json();
+      const response = await fetch(`http://localhost:8000/shareActivity/${activity.name}?email=${shareMethod === 'email' ? email : ''}`);
+      const data = await response.json();
 
-        if (response.ok) {
-          setShareableLink(data.link); // Set the link to state
-          await navigator.clipboard.writeText(data.link); // Copy link to clipboard
- // Set success message for the specific activity
- setCopySuccess((prev) => ({ ...prev, [activity._id]: 'Link copied to clipboard!' }));           
-        } else {
-            console.error("Failed to generate shareable link");
+      if (response.ok) {
+        setShareableLink(data.link);
+
+        if (shareMethod === 'copy') {
+          await navigator.clipboard.writeText(data.link);
+          setCopySuccess((prev) => ({ ...prev, [activity._id]: 'Link copied to clipboard!' }));
+        } else if (shareMethod === 'email') {
+          alert('Link sent to the specified email!');
         }
+      } else {
+        console.error('Failed to generate shareable link');
+      }
     } catch (error) {
-        console.error("Error generating shareable link:", error);
+      console.error('Error generating shareable link:', error);
     }
-};
+  };
+
+  const handleEmailInputChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handleShareMode = (activity) => {
+    setActivityToShare(activity);
+    setIsEmailMode(!isEmailMode);
+  };
 
 const bookActivity = async (activityName) => {
   const username = localStorage.getItem('Username');
@@ -367,10 +382,26 @@ const bookActivity = async (activityName) => {
                   <strong>Rating:</strong> {activity.rating} <br />
                    {/* Book Activity Button */}
                    <button onClick={() => bookActivity(activity.name)}>Book Ticket</button>
-                  {/* Share Button */}
-                  <button onClick={() => handleShare(activity)}>Share Activity</button>
-        {/* Display success message after copying, specific to this activity */}
-        {copySuccess[activity._id] && <p style={{ color: 'green' }}>{copySuccess[activity._id]}</p>}
+          
+          <button onClick={() => handleShare(activity, 'copy')}>Copy Link</button>
+          <button onClick={() => handleShareMode(activity)}>Share via Email</button>
+
+          {isEmailMode && activityToShare && activityToShare._id === activity._id && (
+            <div>
+              <input
+                type="email"
+                placeholder="Enter recipient's email"
+                value={email}
+                onChange={handleEmailInputChange}
+              />
+              <button onClick={() => handleShare(activity, 'email')}>Send Email</button>
+            </div>
+          )}
+
+          {copySuccess[activity._id] && <p>{copySuccess[activity._id]}</p>}
+     
+    
+    
                   {/* Button to toggle activity details */}
                   <button onClick={() => toggleActivityDetails(activity._id)}>
                     {expandedActivities[activity._id] ? 'Hide Activity Details' : 'View Activity Details'}
