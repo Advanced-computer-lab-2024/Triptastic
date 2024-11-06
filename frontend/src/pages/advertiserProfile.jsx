@@ -84,8 +84,8 @@ const AdvertiserProfile = () => {
             });
 
             // Set logo URL if available and save it to local storage
-            if (data.Logo) {
-            const logoURL = data.Logo;
+            if (data.logo) {
+            const logoURL = data.logo;
             setLogo(logoURL);
             localStorage.setItem('logo', logoURL); // Store logo URL in local storage
             }
@@ -114,7 +114,7 @@ const AdvertiserProfile = () => {
     form.append('Password', formData.Password);
     form.append('Hotline', formData.Hotline);
     form.append('Company_Profile', formData.Company_Profile);
-    form.append('website_Link', formData.Website_Link);
+    form.append('Website_Link', formData.Website_Link);
   
     if (formData.Logo) {
       form.append('Logo', formData.Logo);
