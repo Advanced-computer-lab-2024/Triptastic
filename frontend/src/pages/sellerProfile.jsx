@@ -19,6 +19,7 @@ const SellerProfile = () => {
   const [productSearchResult, setProductSearchResult] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
   const [productNameToArchive, setProductNameToArchive] = useState(''); // New state variable
+  const [logo, setLogo] = useState(null);
   const [productFormData, setProductFormData] = useState({
     productName: '',
     description: '',
@@ -37,9 +38,9 @@ const SellerProfile = () => {
     Password: '',
     Name: '',
     Description: '',
-    Logo:null
+    Logo:''
   });
-  const [logo, setLogo] = useState(null);
+ 
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -94,11 +95,12 @@ const fetchSellerInfo = async () => {
           setErrorMessage('');
 
           // Set and persist the logo URL
-          if (data.logo) {
-            const logoURL = data.logo;
+          if (data.Logo) {
+            const logoURL = data.Logo; // or data.logo, depending on what the backend returns
             setLogo(logoURL);
             localStorage.setItem('logo', logoURL); // Persist logo in local storage
           }
+          
         } else {
           setErrorMessage('No seller information found.');
         }
@@ -426,7 +428,7 @@ const unarchiveProduct = async () => {
           sellerInfo && (
             <div>
               <div style={{ display: 'flex', alignItems: 'center' }}>
-              {logo && <img src={logo} alt="Logo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
+              {logo && <img src={`http://localhost:8000/${logo.replace(/\\/g, '/')}`} alt="Logo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
                 <label><strong>Username:</strong></label>
                 <p> {sellerInfo.Username}</p> {/* Display Username with logo */}
               </div>

@@ -30,9 +30,7 @@ const createSeller = async(req,res) => {
   try{
      const seller=await sellerModel.findOneAndUpdate(
       {Username },
-      {$set:{Email,Password,Name,Description,...(Logo && { Logo })
-    } 
-  },{ new: true });
+      {$set:{Email,Password,Name,Description,...(Logo && { Logo }) }  },{ new: true });
      res.status(200).json(seller);
   }
   catch{

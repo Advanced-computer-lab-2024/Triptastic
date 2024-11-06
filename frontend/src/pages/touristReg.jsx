@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
-
+import { useNavigate } from 'react-router-dom';
+import './touristReg.css'; // Import the CSS file
 
 function TouristReg() {
   const [formData, setFormData] = useState({
@@ -14,7 +14,6 @@ function TouristReg() {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
-
 
   // Handle input changes
   const handleChange = (e) => {
@@ -31,7 +30,7 @@ function TouristReg() {
 
     try {
       const response = await fetch('http://localhost:8000/addTourist', {
-        method: 'POST', 
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
@@ -47,12 +46,8 @@ function TouristReg() {
         localStorage.setItem('DOB', formData.DOB);
         localStorage.setItem('Occupation', formData.Occupation);
 
-
-
-
         setSuccessMessage('Tourist registered successfully!');
         setErrorMessage('');
-        // Optionally, reset form data
         setFormData({
           Username: '',
           Email: '',
@@ -62,7 +57,6 @@ function TouristReg() {
           Occupation: ''
         });
         navigate('/tourist-profile');
-
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.error || 'Registration failed');
@@ -74,10 +68,10 @@ function TouristReg() {
   };
 
   return (
-    <div>
+    <div className="container">
       <h2>Tourist Registration</h2>
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
+      {successMessage && <p className="success-message">{successMessage}</p>}
       <form onSubmit={handleSubmit}>
         <div>
           <label>Username:</label>
