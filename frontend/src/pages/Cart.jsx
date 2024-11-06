@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import { CurrencyContext } from '../pages/CurrencyContext';
 
 const Cart = ({ username }) => {
+  const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
+
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -21,6 +25,9 @@ const Cart = ({ username }) => {
     } finally {
       setLoading(false);
     }
+  };
+  const handleCurrencyChange = (event) => {
+    fetchConversionRate(event.target.value);
   };
 
   useEffect(() => {
@@ -45,7 +52,9 @@ const Cart = ({ username }) => {
           {cartItems.map((item, index) => (
             <li key={index} style={{ marginBottom: '20px', border: '1px solid #ccc', padding: '10px' }}>
               <h2>{item.productName}</h2>
-              <p><strong>Price:</strong> ${item.price}</p>
+              <p>
+    <strong>Price:</strong> {selectedCurrency} {(item.price * conversionRate).toFixed(2)}
+  </p>
               <p><strong>Quantity:</strong> {item.quantity}</p> {/* Display actual quantity from cart */}
               <p><strong>Description:</strong> {item.description}</p>
             </li>

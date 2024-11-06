@@ -101,6 +101,22 @@ const handleShowAll = () => {
                 />
                 <button onClick={() => handleReplySubmit(complaint._id)}>Submit Reply</button>
               </div>
+              
+            )}
+            {/* Display replies */}
+            {complaint.replies && complaint.replies.length > 0 && (
+              <div className="replies-section">
+                <h4>Replies:</h4>
+                <ul>
+                  {complaint.replies.map((reply, index) => (
+                    <li key={index}>
+                      <p><strong>Reply:</strong> {reply.content}</p>
+                      <p><strong>Date:</strong> {new Date(reply.date).toLocaleDateString()}</p>
+                      {reply.replier && <p><strong>Replier:</strong> {reply.replier}</p>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
           </div>
         ))}

@@ -1,11 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-
+import { CurrencyContext } from '../pages/CurrencyContext';
 const TouristOrders = () => {
+  const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
+
   const [product, setProduct] = useState(null);
   const [review, setReview] = useState('');
   const [rating, setRating] = useState(0);
   const [productName, setProductName] = useState(''); // Product name to fetch
+  const handleCurrencyChange = (event) => {
+    fetchConversionRate(event.target.value);
+  };
 
   // Fetch product data by name
   const fetchProduct = async () => {
@@ -54,7 +59,9 @@ const TouristOrders = () => {
         <div>
           <h3>{product.productName}</h3>
           <p>{product.description}</p>
-          <p>Price: ${product.price}</p>
+          <p>
+    Price: {selectedCurrency} {(product.price * conversionRate).toFixed(2)}
+  </p>
           <p>Average Rating: {product.rating}</p>
           <p>Stock: {product.stock}</p>
           <img src={product.image} alt={product.productName} />
