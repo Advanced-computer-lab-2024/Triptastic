@@ -16,7 +16,7 @@ const AttendedActivitiesPage = () => {
   const fetchAttendedActivities = async () => {
     const username = localStorage.getItem('Username');
     try {
-      const response = await fetch(`http://localhost:8000/getAttendedActivities?username=${username}`);
+      const response = await fetch(`http://localhost:8000/getAttendedActivities?Username=${username}`);
       const data = await response.json();
       if (response.ok) {
         setAttendedActivities(data);
@@ -52,7 +52,7 @@ const AttendedActivitiesPage = () => {
       setErrorMessage('Failed to submit rating');
     }
   };
- 
+
   const handleCommentOnActivity = async (activityName) => {
     try {
       const response = await fetch(`http://localhost:8000/commentOnActivity`, {
@@ -76,8 +76,6 @@ const AttendedActivitiesPage = () => {
       setErrorMessage('Failed to submit comment');
     }
   };
- 
-
 
   return (
     <div>
@@ -93,6 +91,9 @@ const AttendedActivitiesPage = () => {
             <p><strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}</p>
             <p><strong>Location:</strong> {activity.location}</p>
             <p><strong>Category:</strong> {activity.Category}</p>
+            <p><strong>Average Rating:</strong> {activity.ratings && activity.ratings.length > 0 ? 
+              (activity.ratings.reduce((sum, r) => sum + r.rating, 0) / activity.ratings.length).toFixed(1) 
+              : 'No ratings yet'}</p>
             <div>
               <label>
                 <strong>Rate this activity (1-5):</strong>

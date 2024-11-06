@@ -643,7 +643,12 @@ const sortProductsByRatingTourist = async (req, res) => {
   
       // Add the user's comment
       activity.comments.push({ Username, comment });
-  
+   // Calculate the new average rating
+   const totalRatings = activity.ratings.reduce((sum, r) => sum + r.rating, 0);
+   const averageRating = totalRatings / activity.ratings.length;
+
+   // Update the average rating in the activity document
+   activity.rating = averageRating;
       // Save the updated activity with the new comment
       await activity.save();
   
@@ -689,6 +694,7 @@ const sortProductsByRatingTourist = async (req, res) => {
         res.status(500).json({ error: 'Failed to submit rating' });
     }
 };
+
 
 const shareActivity = async (req, res) => {
   const { name } = req.params; // Get the activity name from the request
