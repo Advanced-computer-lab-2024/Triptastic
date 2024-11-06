@@ -12,7 +12,7 @@ const AdvertiserProfile = () => {
   const [requestSent, setRequestSent] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
-
+  const [logo, setLogo] = useState(null);
   const [formData, setFormData] = useState({
     Username: '',
     Email: '',
@@ -20,9 +20,9 @@ const AdvertiserProfile = () => {
     Website_Link: '',
     Hotline: '',
     Company_Profile: '',
-    Logo:null
+    Logo:''
   });
-  const [logo, setLogo] = useState(null); // State for the logo file
+   // State for the logo file
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -80,11 +80,12 @@ const AdvertiserProfile = () => {
               Website_Link: data.Website_Link,
               Hotline: data.Hotline,
               Company_Profile: data.Company_Profile,
+              Logo: data.Logo,
             });
 
             // Set logo URL if available and save it to local storage
-            if (data.logo) {
-            const logoURL = data.logo;
+            if (data.Logo) {
+            const logoURL = data.Logo;
             setLogo(logoURL);
             localStorage.setItem('logo', logoURL); // Store logo URL in local storage
             }
@@ -108,10 +109,16 @@ const AdvertiserProfile = () => {
     setUpdating(true);
     const form = new FormData();
     
-    // Append form data
-    Object.keys(formData).forEach(key => {
-      form.append(key, formData[key]);
-    });
+    form.append('Username', formData.Username);
+    form.append('Email', formData.Email);
+    form.append('Password', formData.Password);
+    form.append('Hotline', formData.Hotline);
+    form.append('Company_Profile', formData.Company_Profile);
+    form.append('website_Link', formData.Website_Link);
+  
+    if (formData.Logo) {
+      form.append('Logo', formData.Logo);
+    }
 
     try {
       const response = await fetch(`http://localhost:8000/updateAdvertiser`, {
@@ -126,8 +133,8 @@ const AdvertiserProfile = () => {
         alert('Information updated successfully!');
         
         // Update logo in local storage if it has changed
-        if (formData.Logo) {
-          const logoURL = URL.createObjectURL(formData.Logo);
+        if (updatedData.logo) {
+          const logoURL = URL.createObjectURL(updatedData.logo);
           setLogo(logoURL);
           localStorage.setItem('logo', logoURL); // Update logo URL in local storage
         }
@@ -252,7 +259,7 @@ const AdvertiserProfile = () => {
         advertiserInfo && (
           <div>
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              {logo && <img src={logo} alt="Advertiser Logo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
+              {logo && <img src={`http://localhost:8000/${logo.replace(/\\/g, '/')}`} alt="Advertiser Logo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
               <label><strong>Username:</strong></label>
               <p>{advertiserInfo.Username}</p>
             </div>
