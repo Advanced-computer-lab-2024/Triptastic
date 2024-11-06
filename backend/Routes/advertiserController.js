@@ -52,9 +52,7 @@ const updateAdvertiser = async (req, res) => {
             Website_Link, 
             Hotline, 
             Company_Profile,
-            ...(Logo && { Logo }) // Only update logo if it's provided
-          } 
-        },
+            ...(Logo && { Logo })  } },
         { new: true }
       );
   
