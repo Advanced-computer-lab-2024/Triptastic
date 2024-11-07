@@ -45,6 +45,10 @@ const itinerarySchema = new Schema({
         type: Boolean,
         default: false
     },
+    active:{
+        type: Boolean,
+        default: true
+    },
     feedback: [
         {
           touristUsername: { // Add this field to store the tourist's name who submitted the feedback

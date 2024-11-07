@@ -493,6 +493,44 @@ function TourGuideProfile() {
       console.error('Error occurred while updating the itinerary:', error);
     }
   };
+  const deactivateItinerary = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8000/deactivateItinrary/${id}`, {
+        method: 'PATCH',
+      });
+      
+      if (response.ok) {
+        await fetchItineraries();
+        setSelectedItinerary(null);
+       
+        
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(`Error: ${response.status} - ${errorData.message || 'Unknown error occurred'}`);
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while deactivating the itinerary');
+      console.error('Error occurred while deactivating the itinerary:', error);
+    }
+  };
+  const activateItinerary = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8000/activateItinrary/${id}`, {
+        method: 'PATCH',
+      });
+      
+      if (response.ok) {
+        await fetchItineraries();
+        setSelectedItinerary(null);
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(`Error: ${response.status} - ${errorData.message || 'Unknown error occurred'}`);
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while activating the itinerary');
+      console.error('Error occurred while activating the itinerary:', error);
+    }
+  };
   const handleDeleteRequest = async () => {
     const Username = localStorage.getItem('Username');
     setWaiting(true);
@@ -521,9 +559,8 @@ function TourGuideProfile() {
     }
     finally {
       setWaiting(false); // Stop waiting regardless of outcome
-  }
+  };
 
-  
 };
   return (
   
@@ -722,6 +759,11 @@ function TourGuideProfile() {
                   <button onClick={() => handleViewItinerary(itinerary)}>View Details</button>
                   <button onClick={() => handleEditItinerary(itinerary)}>Edit Itinerary</button>
                   <button onClick={() => handleDeleteItinerary(itinerary._id)}>Delete Itinerary</button>
+                  {itinerary.active ? (
+              <button onClick={() => deactivateItinerary(itinerary._id)}>Deactivate Itinerary</button>
+            ) : (
+              <button onClick={() => activateItinerary(itinerary._id)}>Activate Itinerary</button>
+            )}
                 </div>
               ))
             ) : (
@@ -737,6 +779,7 @@ function TourGuideProfile() {
               <p><strong>Pick Up/Drop Off:</strong> {selectedItinerary.pickUpDropOff}</p>
               <p><strong>Booked:</strong> {selectedItinerary.Booked ? 'Yes' : 'No'}</p>
               <p><strong>Tour Guide:</strong> {selectedItinerary.TourGuide}</p>
+              <p><strong>Active:</strong> {selectedItinerary.active ? "Yes" : "No"}</p>
             </div>
             )}
             {selectedItinerary && isEditingItinerary && (

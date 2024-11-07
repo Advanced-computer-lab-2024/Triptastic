@@ -13,7 +13,7 @@ const {createTourGuideInfo,createTourGuide}=require("./Routes/tourGuideControlle
 const {updateTourGuide}=require("./Routes/tourGuideController");
 const {getTourGuide}=require("./Routes/tourGuideController");
 const {createItinerary,getItinerary,updateItinerary,deleteItinerary,getTouristItinerary,createTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG}=require("./Routes/tourGuideController");
-const {changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide}=require("./Routes/tourGuideController");
+const {changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide,deactivateItinrary,activateItinrary}=require("./Routes/tourGuideController");
 
 //Guest
 const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActivitiesGuest,filterActivitiesGuest,filterHistoricalLocationsByTagsGuest,filterMuseumsByTagsGuest,viewAllMuseumsGuest}=require("./Routes/guestController");
@@ -169,6 +169,8 @@ app.post("/requestAccountDeletionTourG",requestAccountDeletionTourG);
 app.patch("/changePasswordTourGuide",changePasswordTourGuide);
 app.get("/getPendingTourGuides",getPendingTourGuides);
 app.patch("/settleDocsTourGuide",settleDocsTourGuide);
+app.patch("/deactivateItinrary/:id",deactivateItinrary);
+app.patch("/activateItinrary/:id",activateItinrary);
 //Advertiser
 app.post("/addAdvertiser",upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'TaxationRegistryCard', maxCount: 1 } ]),createAdvertiser);
 app.patch("/updateAdvertiser",upload.single('Logo'),updateAdvertiser);
