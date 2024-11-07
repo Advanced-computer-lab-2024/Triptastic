@@ -696,16 +696,20 @@ const sortProductsByRatingTourist = async (req, res) => {
 };
 
 // Create a reusable transporter object using the default SMTP transport
-const transporter = nodemailer.createTransport({
-  service: 'Gmail', // or another email service (e.g., Outlook, Yahoo)
-  auth: {
-    user: 'farhoudaly000@gmail.com', // Replace with your email
-    pass: 'aly20088' // Replace with your password or app-specific password
-  }
-});
+
 const sendEmail = async (recipient, subject, text) => {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'malook25062003@gmail.com', 
+      pass: 'sxvo feuu woie gpfn' // Use app-specific password or secure it in environment variables
+    },
+    debug: true, // Enable debug output
+    logger: true // Log information to console
+  });
+
   const mailOptions = {
-    from:'farhoudaly000@gmail.com', // Replace with your email
+    from: 'malook25062003@gmail.com',
     to: recipient,
     subject: subject,
     text: text
@@ -715,27 +719,27 @@ const sendEmail = async (recipient, subject, text) => {
     await transporter.sendMail(mailOptions);
     console.log('Email sent successfully');
   } catch (error) {
-    console.error('Error sending email:', error.message); // Log error message
-    console.error('Error details:', error.stack); // Log error details
+    console.error('Error sending email:', error.message);
     throw new Error('Failed to send email');
   }
 };
-const shareActivity = async (req, res) => {
-  const { name } = req.params; // Get the activity name from the request
-  const { email } = req.body; // Get the recipient email from the request body
 
+const shareActivity = async (req, res) => {
+  const { name } = req.params; // Activity name from request params
+  const { email } = req.body; // Recipient email from request body
 
   try {
-    // Find the activity by name
-    const activity = await activitiesModel.findOne({ name: name });
+    // Look up the activity by name
+    const activity = await activitiesModel.findOne({ name });
     if (!activity) {
       return res.status(404).json({ error: 'Activity not found' });
     }
 
-    // Generate the shareable link using the activity ID (or another unique identifier)
-    const shareableLink =`http://localhost:3000/activities/${encodeURIComponent(activity.name)}`; // Add any other details you want
+    // Create a shareable link using the activity's unique name
+    const shareableLink = `http://localhost:3000/activities/${encodeURIComponent(activity.name)}`;
 
     if (email) {
+      // Send an email if an address is provided
       await sendEmail(
         email,
         'Check out this activity!',
@@ -743,15 +747,16 @@ const shareActivity = async (req, res) => {
       );
       res.status(200).json({ message: 'Link generated and email sent successfully', link: shareableLink });
     } else {
+      // Only return the link for sharing
       res.status(200).json({ link: shareableLink });
     }
-    // Return the link for sharing
     
   } catch (error) {
     console.error('Error generating shareable link:', error);
     res.status(500).json({ error: 'Server error' });
   }
 };
+
 const shareItinerary = async (req, res) => {
   const { id } = req.params; // Get the itinerary ID from the request
   const { email } = req.body; // Get the recipient email from the query parameters
