@@ -180,8 +180,15 @@ const Itineraries = () => {
   const handleShare = async (itineraryId,shareMethod) => {
     try {
       // Make a request to the backend with the itinerary ID
-
-      const response = await fetch(`http://localhost:8000/shareItinerary/${itineraryId}?email=${shareMethod === 'email' ? email : ''}`);
+      const response = await fetch(`http://localhost:8000/shareItinerary/${encodeURIComponent(itineraryId)}`, {
+        method: 'POST', // Use POST to match the backend's expectations
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: shareMethod === 'email' ? email : '' // Only include email if method is 'email'
+        })
+      });
       const data = await response.json();
   
       if (response.ok) {

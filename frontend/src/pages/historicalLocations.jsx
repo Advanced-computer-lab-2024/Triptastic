@@ -129,15 +129,16 @@ const HistoricalLocations = () => {
   const handleShare = async (historicallocation, shareMethod) => {
     try {
       // Format the request URL to match the backend route
-      const url = `http://localhost:8000/shareHistorical/${encodeURIComponent(historicallocation.Name)}?email=${shareMethod === 'email' ? email : ''}`;
-      
-      const response = await fetch(url, {
-        method: 'GET', // Use GET since you're passing parameters in the URL
+     
+      const response = await fetch(`http://localhost:8000/shareHistorical/${encodeURIComponent(historicallocation.Name)}`, {
+        method: 'POST', // Use POST to match the backend's expectations
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
+        body: JSON.stringify({
+          email: shareMethod === 'email' ? email : '' // Only include email if method is 'email'
+        })
       });
-  
       const data = await response.json();
   
       if (response.ok) {

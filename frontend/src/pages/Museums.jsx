@@ -99,7 +99,15 @@ const Museums = () => {
   }, []);
   const handleShare = async (museumName, shareMethod) => {
     try {
-      const response = await fetch(`http://localhost:8000/shareMuseum/${museumName}?email=${shareMethod === 'email' ? email : ''}`);
+      const response = await fetch(`http://localhost:8000/shareMuseum/${encodeURIComponent(museumName)}`, {
+        method: 'POST', // Use POST to match the backend's expectations
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: shareMethod === 'email' ? email : '' // Only include email if method is 'email'
+        })
+      });
       const data = await response.json();
   
       if (response.ok) {
