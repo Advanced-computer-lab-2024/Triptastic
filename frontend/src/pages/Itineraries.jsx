@@ -35,7 +35,7 @@ const Itineraries = () => {
 
       if (response.ok) {
         const data = await response.json();
-        const filteredItineraries = data.filter(itinerary => !itinerary.FlagInappropriate);
+        const filteredItineraries = data.filter(itinerary => !itinerary.FlagInappropriate && itinerary.active);
         setItineraries(filteredItineraries);
         setErrorMessage('');
       } else {
@@ -64,7 +64,7 @@ const Itineraries = () => {
 
       if (response.ok) {
         const data = await response.json();
-        const filteredItineraries = data.filter(itinerary => !itinerary.FlagInappropriate);
+        const filteredItineraries = data.filter(itinerary => !itinerary.FlagInappropriate && itinerary.active);
         setItineraries(filteredItineraries);
         setErrorMessage('');
       } else {
@@ -98,7 +98,7 @@ const Itineraries = () => {
 
       if (response.ok) {
         const data = await response.json();
-        const filteredItineraries = data.filter(itinerary => !itinerary.FlagInappropriate);
+        const filteredItineraries = data.filter(itinerary => !itinerary.FlagInappropriate && itinerary.active);
         setItineraries(filteredItineraries);
         setErrorMessage('');
       } else {
