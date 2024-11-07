@@ -91,10 +91,6 @@ function TourGuideProfile() {
   const [isEditingTouristItinerary, setIsEditingTouristItinerary] = useState(false);
 
   useEffect(() => {
-    const savedPhoto = localStorage.getItem('photo');
-    if (savedPhoto) {
-      setPhoto(savedPhoto);
-    }
     fetchTourGuideData();
     fetchItineraries();
     setLoading(false);
@@ -562,7 +558,7 @@ function TourGuideProfile() {
             {isEditing && (
               <form onSubmit={handleSubmit}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                {photo && <img src={photo} alt="photo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
+                {photo && <img src={`http://localhost:8000/${photo.replace(/\\/g, '/')}`} alt="photo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
                   <label>Username:</label>
                   <p> {tourGuideInfo?.Username}</p> 
                 </div>

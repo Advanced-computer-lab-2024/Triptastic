@@ -46,11 +46,7 @@ const AdvertiserProfile = () => {
   };
 
   useEffect(() => {
-    // Check local storage for logo URL on mount
-    const savedLogo = localStorage.getItem('logo');
-    if (savedLogo) {
-      setLogo(savedLogo);
-    }
+  
     fetchAdvertiserInfo();
     fetchActivities();
   }, []);
@@ -84,8 +80,8 @@ const AdvertiserProfile = () => {
             });
 
             // Set logo URL if available and save it to local storage
-            if (data.logo) {
-            const logoURL = data.logo;
+            if (data.Logo) {
+            const logoURL = data.Logo;
             setLogo(logoURL);
             localStorage.setItem('logo', logoURL); // Store logo URL in local storage
             }
@@ -133,8 +129,8 @@ const AdvertiserProfile = () => {
         alert('Information updated successfully!');
         
         // Update logo in local storage if it has changed
-        if (updatedData.logo) {
-          const logoURL = URL.createObjectURL(updatedData.logo);
+        if (updatedData.Logo) {
+          const logoURL = URL.createObjectURL(updatedData.Logo);
           setLogo(logoURL);
           localStorage.setItem('logo', logoURL); // Update logo URL in local storage
         }
