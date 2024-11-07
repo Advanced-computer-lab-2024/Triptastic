@@ -205,12 +205,21 @@ const Activities = () => {
  
   const handleShare = async (activity, shareMethod) => {
     try {
-      const response = await fetch(`http://localhost:8000/shareActivity/${activity.name}?email=${shareMethod === 'email' ? email : ''}`);
+      const response = await fetch(`http://localhost:8000/shareActivity/${encodeURIComponent(activity.name)}`, {
+        method: 'POST', // Use POST to match the backend's expectations
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: shareMethod === 'email' ? email : '' // Only include email if method is 'email'
+        })
+      });
+  
       const data = await response.json();
-
+  
       if (response.ok) {
         setShareableLink(data.link);
-
+  
         if (shareMethod === 'copy') {
           await navigator.clipboard.writeText(data.link);
           setCopySuccess((prev) => ({ ...prev, [activity._id]: 'Link copied to clipboard!' }));
@@ -224,7 +233,7 @@ const Activities = () => {
       console.error('Error generating shareable link:', error);
     }
   };
-
+  
   const handleEmailInputChange = (e) => {
     setEmail(e.target.value);
   };
