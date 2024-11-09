@@ -6,17 +6,29 @@
 }
 
 /* Sidebar Styling */
+/* Sidebar Styling */
 .sidebar {
   width: 150px; /* Smaller width for the sidebar */
   background-color: #f1f1f1;
   padding: 15px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  position: fixed; /* Fixed position to keep it on the left side */
+  position: fixed; /* Fixed position to keep it on the right side */
   top: 20px;
-  left: 20px;
+  right: 20px; /* Move sidebar to the right */
   height: calc(100vh - 40px); /* Sidebar height fills the viewport minus top margin */
   overflow-y: auto; /* Allows scrolling if the content is too long */
+}
+
+/* Main Profile Content */
+.profile-content {
+  flex-grow: 1;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-right: 190px; /* Space to the left of the fixed sidebar */
+  max-width: calc(100% - 220px); /* Adjusted width to avoid overflow */
 }
 
 /* Sidebar Content */
@@ -48,16 +60,6 @@
   background-color: #e0e0e0;
 }
 
-/* Main Profile Content */
-.profile-content {
-  flex-grow: 1;
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin-left: 190px; /* Space to the right of the fixed sidebar */
-  max-width: calc(100% - 220px); /* Adjusted width to avoid overflow */
-}
 
 /* Header Styling */
 .profile-content h2 {

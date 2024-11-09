@@ -91,9 +91,6 @@ const TouristProfile = () => {
     setShowingBookedItineraries(prev => !prev);
   };
 
-
-//nothing
-
   const handleRatingChange = (itineraryId, value) => {
     setRatings((prevRatings) => ({
       ...prevRatings,
@@ -564,51 +561,33 @@ const TouristProfile = () => {
 
 };
 return (
-  <div className="tourist-profile-layout">
-              {/* Sidebar */}
-              <div className="sidebar">
-      <h3>Explore</h3>
-      <ul>
-        <li onClick={() => navigate('/historical-locations')}>Historical Locations</li>
-        <li onClick={() => navigate('/museums')}>Museums</li>
-        <li onClick={() => navigate('/products')}>Products</li>
-        <li onClick={() => navigate('/itineraries')}>Itineraries</li>
-        <li onClick={() => navigate('/activities')}>Activities</li>
-        <li onClick={() => navigate('/book-flights')}>Book Flights</li>
-        <li onClick={() => navigate('/book-hotels')}>Book a Hotel</li>
-        <li onClick={() => navigate('/book-transportation')}>Book Transportation</li>
-        <li onClick={() => navigate('/tourist-orders')}>Past Orders</li>
-        <li onClick={() => navigate('/AttendedActivitiesPage')}>Review Activities</li>
-        <li onClick={() => navigate('/Cart')}>My Cart</li>
-      </ul>
-    </div>
-    {/* Main Profile Content */}
+  <div className="tourist-profile-container">
     <div className="profile-content">
       <h2>Tourist Profile</h2>
       <button onClick={handleDeleteRequest} disabled={waiting || requestSent}>
-        {waiting ? 'Waiting to be deleted...' : requestSent ? 'Request Sent' : 'Delete Account'}
-      </button>
-      {errorMessage && <p className="error-message">{errorMessage}</p>}
+            {waiting ? 'Waiting to be deleted...' : requestSent ? 'Request Sent' : 'Delete Account'}
+          </button>
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
       {loading ? (
         <p>Loading tourist information...</p>
       ) : (
         touristInfo && (
-          <div className="info-section">
+          <div>
             <div>
               <label><strong>Username:</strong></label>
               <p>{touristInfo.Username}</p>
             </div>
             <div>
               <label><strong>Points:</strong></label>
-              <p>{touristInfo.points}</p>
+              <p>{touristInfo.points}</p> 
             </div>
             <div>
               <label><strong>Badge:</strong></label>
-              <p>{touristInfo.badge}</p>
+              <p>{touristInfo.badge}</p> 
             </div>
             <div>
               <label><strong>Wallet Balance:</strong></label>
-              <p>{touristInfo.Wallet} {selectedCurrency}</p>
+              <p>{touristInfo.Wallet} {selectedCurrency}</p> 
             </div>
             <div>
               <label><strong>Email:</strong></label>
@@ -619,10 +598,11 @@ return (
                 onChange={handleInputChange}
               />
             </div>
+
             <div>
               <label><strong>Password:</strong></label>
               <input
-                type="text"
+                type="text" // Visible password
                 name="Password"
                 value={formData.Password}
                 onChange={handleInputChange}
@@ -640,7 +620,7 @@ return (
             <div>
               <label><strong>Date of Birth:</strong></label>
               <input
-                type="text"
+                type="text" // Display DOB as a string
                 name="DOB"
                 value={formData.DOB}
                 onChange={handleInputChange}
@@ -655,16 +635,18 @@ return (
                 onChange={handleInputChange}
               />
             </div>
-            <div className="currency-section">
-              <label><strong>Select Currency:</strong></label>
-              <select value={selectedCurrency} onChange={handleCurrencyChange}>
-                <option value="EGP">Egyptian Pound (EGP)</option>
-                <option value="USD">US Dollar (USD)</option>
-                <option value="EUR">Euro (EUR)</option>
-                <option value="GBP">British Pound (GBP)</option>
-              </select>
-            </div>
-            <p>Price: {(touristInfo.Wallet * conversionRate).toFixed(2)} {selectedCurrency}</p>
+            
+      <div>
+<label><strong>Select Currency:</strong></label>
+<select value={selectedCurrency} onChange={handleCurrencyChange}>
+  <option value="EGP">Egyptian Pound (EGP)</option>
+  <option value="USD">US Dollar (USD)</option>
+  <option value="EUR">Euro (EUR)</option>
+  <option value="GBP">British Pound (GBP)</option>
+  {/* Add more currency options as needed */}
+</select>
+</div>
+<p>Price: {(touristInfo.Wallet * conversionRate).toFixed(2)} {selectedCurrency}</p>
             <button onClick={handleUpdate} disabled={updating}>
               {updating ? 'Updating...' : 'Update Information'}
             </button>
@@ -672,265 +654,313 @@ return (
         )
       )}
       <button onClick={fetchTouristInfo}>Refresh My Information</button>
+    </div>
+    <div className="change-password-section">
+<h3>Change Password</h3>
+<form onSubmit={handlePasswordChange}>
+  <div>
+    <label>Current Password:</label>
+    <input
+      type="password"
+      value={currentPassword}
+      onChange={(e) => setCurrentPassword(e.target.value)}
+      required
+    />
+  </div>
+  <div>
+    <label>New Password:</label>
+    <input
+      type="password"
+      value={newPassword}
+      onChange={(e) => setNewPassword(e.target.value)}
+      required
+    />
+  </div>
+  <div>
+    <label>Confirm New Password:</label>
+    <input
+      type="password"
+      value={confirmNewPassword}
+      onChange={(e) => setConfirmNewPassword(e.target.value)}
+      required
+    />
+  </div>
+  <button type="submit" disabled={changingPassword}>
+    {changingPassword ? 'Changing Password...' : 'Change Password'}
+  </button>
+</form>
+{passwordChangeMessage && <p style={{ color: 'green' }}>{passwordChangeMessage}</p>}
+{passwordChangeError && <p style={{ color: 'red' }}>{passwordChangeError}</p>}
+</div>
 
-      {/* Change Password Section */}
-      <div className="change-password-section">
-        <h3>Change Password</h3>
-        <form onSubmit={handlePasswordChange}>
-          <div>
-            <label>Current Password:</label>
-            <input
-              type="password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label>New Password:</label>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label>Confirm New Password:</label>
-            <input
-              type="password"
-              value={confirmNewPassword}
-              onChange={(e) => setConfirmNewPassword(e.target.value)}
-              required
-            />
-          </div>
-          <button type="submit" disabled={changingPassword}>
-            {changingPassword ? 'Changing Password...' : 'Change Password'}
-          </button>
-        </form>
-        {passwordChangeMessage && <p className="success-message">{passwordChangeMessage}</p>}
-        {passwordChangeError && <p className="error-message">{passwordChangeError}</p>}
+    {/* Preferences Section */}
+    <div className="preferences-section">
+      <h3>Select Your Vacation Preferences</h3>
+      <div className="preferences-form">
+        <label>
+          <input
+            type="checkbox"
+            name="historicAreas"
+            checked={preferences.historicAreas}
+            onChange={handlePreferenceChange}
+          />
+          Historic Areas
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            name="beaches"
+            checked={preferences.beaches}
+            onChange={handlePreferenceChange}
+          />
+          Beaches
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            name="familyFriendly"
+            checked={preferences.familyFriendly}
+            onChange={handlePreferenceChange}
+          />
+          Family-Friendly
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            name="shopping"
+            checked={preferences.shopping}
+            onChange={handlePreferenceChange}
+          />
+          Shopping
+        </label>
+        <label>
+          Budget:
+          <select name="budget" value={preferences.budget} onChange={handlePreferenceChange}>
+            <option value="">Select</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </label>
+        <button onClick={submitPreferences}>Save Preferences</button>
       </div>
-
-      {/* Preferences Section */}
-      <div className="preferences-section">
-        <h3>Select Your Vacation Preferences</h3>
-        <div className="preferences-form">
-          <label>
-            <input
-              type="checkbox"
-              name="historicAreas"
-              checked={preferences.historicAreas}
-              onChange={handlePreferenceChange}
-            />
-            Historic Areas
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              name="beaches"
-              checked={preferences.beaches}
-              onChange={handlePreferenceChange}
-            />
-            Beaches
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              name="familyFriendly"
-              checked={preferences.familyFriendly}
-              onChange={handlePreferenceChange}
-            />
-            Family-Friendly
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              name="shopping"
-              checked={preferences.shopping}
-              onChange={handlePreferenceChange}
-            />
-            Shopping
-          </label>
-          <label>
-            Budget:
-            <select name="budget" value={preferences.budget} onChange={handlePreferenceChange}>
-              <option value="">Select</option>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-            </select>
-          </label>
-          <button onClick={submitPreferences}>Save Preferences</button>
-        </div>
-      </div>
-
-      {/* Fetch Product by Name Section */}
-      <div>
-        <h3>Fetch Product by Name</h3>
-        <input
-          type="text"
-          name="productName"
-          value={formData.productName}
-          onChange={handleInputChange}
-        />
-        <button onClick={handleFetchProduct}>Fetch Product</button>
-        {fetchedProduct && (
-          <div>
-            <h4>Product Details</h4>
-            <p><strong>Name:</strong> {fetchedProduct.productName}</p>
-            <p><strong>Description:</strong> {fetchedProduct.description}</p>
-            <p>
-              <strong>Price:</strong> {(fetchedProduct.price * conversionRate).toFixed(2)} {selectedCurrency}
-            </p>
-            <p><strong>Stock:</strong> {fetchedProduct.stock}</p>
-          </div>
-        )}
-      </div>
-
-      {/* Itineraries Section */}
-      <div>
-        <button onClick={handleViewItineraries}>
-          {showingItineraries ? 'Hide itineraries' : 'Show itineraries'}
-        </button>
-        {showingItineraries && (
-          <div>
-            {Itineraries.length > 0 ? (
-              Itineraries.map((itinerary) => (
-                <div key={itinerary._id}>
-                  <h4>Activities: {itinerary.Activities.join(', ')}</h4>
-                  <p>Locations: {itinerary.Locations.join(', ')}</p>
-                </div>
-              ))
-            ) : (
-              <p>No itineraries found.</p>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* File Complaint Form */}
-      <div>
-        <h3>File a Complaint</h3>
-        <form onSubmit={handleSubmitComplaint}>
-          <div>
-            <label><strong>Title:</strong></label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div>
-            <label><strong>Body:</strong></label>
-            <textarea
-              name="body"
-              value={formData.body}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <div>
-            <label><strong>Date:</strong></label>
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-          <button type="submit">File Complaint</button>
-        </form>
-      </div>
-
-      {/* Display Complaints */}
-      <div>
-        <h3>Your Complaints</h3>
-        {complaints.length === 0 ? (
-          <p>No complaints filed yet.</p>
-        ) : (
-          <ul>
-            {complaints.map((complaint) => (
-              <li key={complaint._id}>
-                <p><strong>Title:</strong> {complaint.title}</p>
-                <p><strong>Status:</strong> {complaint.status}</p>
-                <p><strong>Date:</strong> {new Date(complaint.date).toLocaleDateString()}</p>
-                {complaint.replies && complaint.replies.length > 0 && (
-                  <div className="replies-section">
-                    <h4>Replies:</h4>
-                    <ul>
-                      {complaint.replies.map((reply, index) => (
-                        <li key={index}>
-                          <p><strong>Reply:</strong> {reply.content}</p>
-                          <p><strong>Date:</strong> {new Date(reply.date).toLocaleDateString()}</p>
-                          {reply.replier && <p><strong>Replier:</strong> {reply.replier}</p>}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      {/* Booked Itineraries Section */}
-      <div>
-        <button onClick={handleViewBookedItineraries}>
-          {showingBookedItineraries ? 'Hide booked itineraries' : 'Show booked itineraries'}
-        </button>
-        {showingBookedItineraries && (
-          <div>
-            {bookedItineraries.length > 0 ? (
-              bookedItineraries.map((Itinerary) => (
-                <div key={Itinerary._id}>
-                  <h4>Booked Activities: {Itinerary.Activities.join(', ')}</h4>
-                  <p>Locations: {Itinerary.Locations.join(', ')}</p>
-                  <p>Price: {(Itinerary.price * conversionRate).toFixed(2)} {selectedCurrency}</p>
-                  <p>TourGuide: {Itinerary.TourGuide}</p>
-                  <p>Date: {Itinerary.DatesTimes}</p>
-                </div>
-              ))
-            ) : (
-              <p>No booked itineraries found.</p>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Booked Activities Section */}
-      <div>
-        <button onClick={toggleViewBookedActivites}>
-          {showingBookedActivities ? 'Hide booked activities' : 'Show booked activities'}
-        </button>
-        {showingBookedActivities && (
-          <div>
-            {bookedActivities.length > 0 ? (
-              bookedActivities.map((Activity) => (
-                <div key={Activity._id}>
-                  <h4>Name: {Activity.name}</h4>
-                  <p>Category: {Activity.Category}</p>
-                  <p>Price: {(Activity.price * conversionRate).toFixed(2)} {selectedCurrency}</p>
-                  <p>Date: {Activity.date}</p>
-                  <p>Location: {Activity.Location}</p>
-                </div>
-              ))
-            ) : (
-              <p>No booked activities found.</p>
-            )}
-          </div>
-        )}
-      </div>
-
     </div>
 
+    {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+    
+    
+{/* Fetch Product by Name */}
+<div>
+<h3>Fetch Product by Name</h3>
+<input
+  type="text"
+  name="productName"
+  value={formData.productName}
+  onChange={handleInputChange}
+/>
+<button onClick={handleFetchProduct}>Fetch Product</button>
 
+{fetchedProduct && (
+  <div>
+    <h4>Product Details</h4>
+    <p><strong>Name:</strong> {fetchedProduct.productName}</p>
+    <p><strong>Description:</strong> {fetchedProduct.description}</p>
+    <p>
+      <strong>Price:</strong> {(fetchedProduct.price * conversionRate).toFixed(2)} {selectedCurrency}
+    </p>
+    <p><strong>Stock:</strong> {fetchedProduct.stock}</p>
   </div>
+)}
+</div>
+
+    <div>
+      <button onClick={handleViewItineraries}> {showingItineraries ? 'Hide itineraries' : 'Show itineraries'}</button>
+      { showingItineraries && (
+          <div>
+          {Itineraries.length > 0 ? ( // Use 'itineraries' state variable for mapping
+            Itineraries.map((itinerary) => (
+              <div key={itinerary._id}>
+                <h4>Activities: {itinerary.Activities.join(', ')}</h4>
+                <p>Locations: {itinerary.Locations.join(', ')}</p>
+              </div>
+            ))
+          ) : (
+            <p>No itineraries found.</p>
+          )}
+        </div>
+      )}
+    </div>
+    {/* Sidebar */}
+    
+
+    {/* File Complaint Form */}
+    <div>
+      <h3>File a Complaint</h3>
+      <form onSubmit={handleSubmitComplaint}>
+        <div>
+          <label><strong>Title:</strong></label>
+          <input
+            type="text"
+            name="title"
+            value={formData.title}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        <div>
+          <label><strong>Body:</strong></label>
+          <textarea
+            name="body"
+            value={formData.body}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        <div>
+          <label><strong>Date:</strong></label>
+          <input
+            type="date"
+            name="date"
+            value={formData.date}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        <button type="submit">File Complaint</button>
+      </form>
+    </div>
+
+  {/* Display Complaints */}
+<div>
+<h3>Your Complaints</h3>
+{complaints.length === 0 ? (
+  <p>No complaints filed yet.</p>
+) : (
+  <ul>
+    {complaints.map((complaint) => (
+      <li key={complaint._id}>
+        <p><strong>Title:</strong> {complaint.title}</p>
+        <p><strong>Status:</strong> {complaint.status}</p>
+        <p><strong>Date:</strong> {new Date(complaint.date).toLocaleDateString()}</p>
+
+        {/* Display replies if they exist */}
+        {complaint.replies && complaint.replies.length > 0 ? (
+          <div className="replies-section">
+            <h4>Replies:</h4>
+            <ul>
+              {complaint.replies.map((reply, index) => (
+                <li key={index}>
+                  <p><strong>Reply:</strong> {reply.content}</p>
+                  <p><strong>Date:</strong> {new Date(reply.date).toLocaleDateString()}</p>
+                  {reply.replier && <p><strong>Replier:</strong> {reply.replier}</p>}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <p><em>No replies yet.</em></p>
+        )}
+      </li>
+    ))}
+  </ul>
+)}
+</div>
+
+    <div>
+    <button onClick={handleViewBookedItineraries}> {showingBookedItineraries ? 'Hide booked itineraries' : 'Show booked itineraries'}</button>
+    {showingBookedItineraries && (
+      <div>
+        {bookedItineraries.length > 0 ? (
+          bookedItineraries.map((Itinerary) => (
+            <div key={Itinerary._id}>
+              <h4>Booked Activities: {Itinerary.Activities.join(', ')}</h4>
+              <p>Locations: {Itinerary.Locations.join(', ')}</p>
+              <p>Price: {(Itinerary.price * conversionRate).toFixed(2)} {selectedCurrency}</p> 
+              <p>TourGuide: {Itinerary.TourGuide}</p>
+              <p>Date:{Itinerary.DatesTimes}</p>
+<h4>Feedback on Itinerary</h4>
+
+<input 
+  type="number" 
+  placeholder="Rating" 
+  onChange={(e) => handleRatingChangeI(Itinerary, e.target.value)} // Update the rating state
+/>
+
+<input 
+  type="text" 
+  placeholder="Comment" 
+  onChange={(e) => handleCommentChangeI(Itinerary, e.target.value)} // Update the comment state
+/>
+
+<button onClick={() => submitFeedbackItinerary(Itinerary)}>Submit Feedback</button>
+<h4>Feedback on Tour Guide:</h4>
+
+               <input 
+                type="number" 
+                placeholder="Rating" 
+                onChange={(e) => handleRatingChange(Itinerary, e.target.value)}
+                />
+              <input 
+                type="text" 
+                placeholder="Comment" 
+                onChange={(e) => handleCommentChange(Itinerary, e.target.value)}
+                />
+              <button onClick={() => submitFeedback(Itinerary)}>Submit Feedback</button>
+              <button onClick={()=>handleCancelItineraryBooking(Itinerary._id)}>Cancel Booking( 2 days before )</button>
+            </div>
+            
+          ))
+        ) : (
+          <p>No booked itineraries found.</p>
+        )}
+      </div>
+    )}
+    </div>
+    <div>
+      <button onClick={toggleViewBookedActivites}>{showingBookedActivities ? 'Hide booked activites' : 'Show booked activites'}</button>
+      {showingBookedActivities && (
+      <div>
+        {bookedActivities.length > 0 ? (
+          bookedActivities.map((Activity) => (
+            <div key={Activity._id}>
+              <h4>Name: {Activity.name}</h4>
+              <p>Cateogry: {Activity.Category}</p>
+              <p>Price: {(Activity.price * conversionRate).toFixed(2)} {selectedCurrency}</p> {/* Convert price here */}
+              <p>Date: {Activity.date}</p>
+              <p>Location:{Activity.Location}</p>                 
+              <button onClick={()=>handleCancelActivityBooking(Activity._id)}>Cancel Booking( 2 days before )</button>
+            </div>
+          ))
+        ) : (
+          <p>No booked activites found.</p>
+        )}
+      </div>
+    )}
+    </div>
+    {errorMessage && <div className="error">{errorMessage}</div>}
+    {successMessage && <div className="success">{successMessage}</div>}
+    <div className="sidebar">
+      <h3>Explore</h3>
+      <ul>
+        <li onClick={() => navigate('/historical-locations')}>Historical Locations</li>
+        <li onClick={() => navigate('/museums')}>Museums</li>
+        <li onClick={() => navigate('/products')}>Products</li>
+        <li onClick={() => navigate('/itineraries')}>Itineraries</li>
+        <li onClick={() => navigate('/activities')}>Activities</li>
+        <li onClick={() => navigate('/book-flights')}>Book Flights</li>
+        <li onClick={() => navigate('/book-hotels')}>Book a Hotel</li>
+        <li onClick={() => navigate('/book-transportation')}>Book Transportation</li>
+        <li onClick={() => navigate('/tourist-orders')}>Past Orders</li>
+        <li onClick={() => navigate('/AttendedActivitiesPage')}>Review Activities</li>
+        <li onClick={() => navigate('/Cart')}>My Cart</li>
+
+      </ul>
+    </div>
+
+    
+  </div>
+  
 );
 };
 
-export default TouristProfile;
+export default TouristProfile;
