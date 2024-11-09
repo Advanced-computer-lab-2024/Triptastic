@@ -91,6 +91,9 @@ const TouristProfile = () => {
     setShowingBookedItineraries(prev => !prev);
   };
 
+
+//nothing
+
   const handleRatingChange = (itineraryId, value) => {
     setRatings((prevRatings) => ({
       ...prevRatings,

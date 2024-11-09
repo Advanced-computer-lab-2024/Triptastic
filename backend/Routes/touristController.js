@@ -164,7 +164,6 @@ const fileComplaint = async (req, res) => {
 
 // Export this function and set up an endpoint for it
 
-
  const getProductTourist = async (req, res) => {
   const { productName } = req.query;
 
