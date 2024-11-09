@@ -316,231 +316,106 @@ const AdvertiserProfile = () => {
   };
 
   return (
-    <div>
-      <h2>Advertiser Profile</h2>
-      <div>
-        <h3>Change Password</h3>
-        <div>
-          <label>Current Password:</label>
-          <input
-            type="password"
-            value={currentPassword}
-            onChange={(e) => setCurrentPassword(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>New Password:</label>
-          <input
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-        </div>
-        <button onClick={handlePasswordChange}>Change Password</button>
-      </div>
-  
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+    <div className="advertiser-profile">
+      <h2 className="profile-title">Advertiser Profile</h2>
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
+
+      {/* Advertiser Information */}
       {loading ? (
-        <p>Loading advertiser information...</p>
+        <p className="loading">Loading advertiser information...</p>
       ) : (
         advertiserInfo && (
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              {Logo && (
-                <img
-                  src={`http://localhost:8000/${Logo.replace(/\\/g, '/')}`}
-
-                  alt="Advertiser Logo"
-                  style={{
-                    width: '50px',
-                    height: '50px',
-                    borderRadius: '50%',
-                    marginRight: '10px',
-                  }}
-                />
-              )}
-              <label><strong>Username:</strong></label>
-              <p>{advertiserInfo.Username}</p>
+          <div className="info-section">
+            <div className="info-header">
+              {Logo && <img src={`http://localhost:8000/${Logo.replace(/\\/g, '/')}`} alt="Advertiser Logo" className="logo" />}
+              <h3>{advertiserInfo.Username}</h3>
             </div>
-            <div>
-              <label><strong>Website Link:</strong></label>
-              <input
-                type="text"
-                name="Website_Link"
-                value={formData.Website_Link}
-                onChange={handleInputChange}
-              />
+            <div className="info-content">
+              <label>Website Link:</label>
+              <input type="text" name="Website_Link" value={formData.Website_Link} onChange={handleInputChange} />
+              <label>Password:</label>
+              <input type="password" name="Password" value={formData.Password} onChange={handleInputChange} />
+              <label>Hotline:</label>
+              <input type="text" name="Hotline" value={formData.Hotline} onChange={handleInputChange} />
+              <label>Company Profile:</label>
+              <input type="text" name="Company_Profile" value={formData.Company_Profile} onChange={handleInputChange} />
+              <label>Logo:</label>
+              <input type="file" accept="image/*" onChange={handleLogoChange} />
             </div>
-            <div>
-              <label><strong>Password:</strong></label>
-              <input
-                type="password"
-                name="Password"
-                value={formData.Password}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <label><strong>Hotline:</strong></label>
-              <input
-                type="text"
-                name="Hotline"
-                value={formData.Hotline}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <label><strong>Company Profile:</strong></label>
-              <input
-                type="text"
-                name="Company_Profile"
-                value={formData.Company_Profile}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <label><strong>Logo:</strong></label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleLogoChange}
-              />
-            </div>
-            <button onClick={handleUpdate} disabled={updating}>
+            <button onClick={handleUpdate} disabled={updating} className="update-button">
               {updating ? 'Updating...' : 'Update Information'}
             </button>
-            <button onClick={handleDeleteRequest} disabled={waiting || requestSent}>
-              {waiting ? 'Waiting to be deleted...' : requestSent ? 'Request Sent' : 'Delete Account'}
+            <button onClick={handleDeleteRequest} disabled={waiting || requestSent} className="delete-button">
+              {waiting ? 'Waiting...' : requestSent ? 'Request Sent' : 'Delete Account'}
             </button>
           </div>
         )
       )}
-      <button onClick={fetchAdvertiserInfo}>Refresh My Information</button>
-  
-      {/* Section for Activities */}
-      <h3>Your Activities</h3>
+      
+      {/* Password Change Section */}
+      <div className="password-section">
+        <h3>Change Password</h3>
+        <label>Current Password:</label>
+        <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
+        <label>New Password:</label>
+        <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+        <button onClick={handlePasswordChange} className="password-button">Change Password</button>
+      </div>
+
+      {/* Activities Section */}
+      <h3 className="activities-title">Your Activities</h3>
       {activities.length > 0 ? (
-        <div style={styles.activitiesContainer}>
+        <div className="activities-container">
           {activities.map((activity) => (
-            <div key={activity._id} style={styles.activityCard}>
-              <div style={styles.activityRow}>
-                <p><strong>Name:</strong> {activity.name}</p>
-                <p><strong>Category:</strong> {activity.Category}</p>
-              </div>
-              <div style={styles.activityRow}>
-                <p><strong>Date:</strong> {activity.date}</p>
-                <p><strong>Budget:</strong> {activity.budget}</p>
-              </div>
-              <div>
-                <strong>More Info:</strong>
-                <ul>
-                  <li><a href="/some-link">Link 1</a></li>
-                  <li><a href="/some-link">Link 2</a></li>
-                  <li><a href="/some-link">Link 3</a></li>
-                </ul>
-              </div>
+            <div key={activity._id} className="activity-card">
+              <p><strong>Name:</strong> {activity.name}</p>
+              <p><strong>Category:</strong> {activity.Category}</p>
+              <p><strong>Date:</strong> {activity.date}</p>
+              <p><strong>Budget:</strong> {activity.budget}</p>
             </div>
           ))}
         </div>
       ) : (
         <p>No activities found.</p>
       )}
-      
-      {/* Sidebar Navigation */}
+
+      {/* Sidebar */}
       <div className="sidebar">
         <h3>Explore</h3>
         <ul>
           <li onClick={() => navigate('/advertiser-Activities')}>MY Activities</li>
         </ul>
       </div>
-  
-      {/* Transportation Creation Form */}
+
+      {/* Transportation Creation */}
       <h3>Create Transportation</h3>
-      <div>
-      <label>Type:</label>
-        <select
-          name="type"
-          value={transportFormData.type}
-          onChange={handleTransportInputChange}
-        >
+      <div className="transportation-form">
+        <label>Type:</label>
+        <select name="type" value={transportFormData.type} onChange={handleTransportInputChange}>
           <option value="Bus">Bus</option>
           <option value="Taxi">Taxi</option>
           <option value="Train">Train</option>
           <option value="Boat">Boat</option>
         </select>
-  
         <label>Company Name:</label>
-        <input
-          type="text"
-          name="company.name"
-          value={transportFormData.company.name}
-          onChange={handleTransportInputChange}
-        />
-
+        <input type="text" name="company.name" value={transportFormData.company.name} onChange={handleTransportInputChange} />
         <label>Company Contact Phone:</label>
-        <input
-          type="text"
-          name="company.contact.phone"
-          value={transportFormData.company.contact.phone}
-          onChange={handleTransportInputChange}
-        />
+        <input type="text" name="company.contact.phone" value={transportFormData.company.contact.phone} onChange={handleTransportInputChange} />
         <label>Company Contact Email:</label>
-        <input
-          type="email"
-          name="company.contact.email"
-          value={transportFormData.company.contact.email}
-          onChange={handleTransportInputChange}
-        />
-  
+        <input type="email" name="company.contact.email" value={transportFormData.company.contact.email} onChange={handleTransportInputChange} />
         <label>Origin:</label>
-        <input
-          type="text"
-          name="origin"
-          value={transportFormData.origin}
-          onChange={handleTransportInputChange}
-        />
-  
+        <input type="text" name="origin" value={transportFormData.origin} onChange={handleTransportInputChange} />
         <label>Destination:</label>
-        <input
-          type="text"
-          name="destination"
-          value={transportFormData.destination}
-          onChange={handleTransportInputChange}
-        />
-  
+        <input type="text" name="destination" value={transportFormData.destination} onChange={handleTransportInputChange} />
         <label>Departure Time:</label>
-        <input
-          type="datetime-local"
-          name="departureTime"
-          value={transportFormData.departureTime}
-          onChange={handleTransportInputChange}
-        />
-  
+        <input type="datetime-local" name="departureTime" value={transportFormData.departureTime} onChange={handleTransportInputChange} />
         <label>Arrival Time:</label>
-        <input
-          type="datetime-local"
-          name="arrivalTime"
-          value={transportFormData.arrivalTime}
-          onChange={handleTransportInputChange}
-        />
-  
+        <input type="datetime-local" name="arrivalTime" value={transportFormData.arrivalTime} onChange={handleTransportInputChange} />
         <label>Price:</label>
-        <input
-          type="number"
-          name="price"
-          value={transportFormData.price}
-          onChange={handleTransportInputChange}
-        />
-  
+        <input type="number" name="price" value={transportFormData.price} onChange={handleTransportInputChange} />
         <label>Seats Available:</label>
-        <input
-          type="number"
-          name="seatsAvailable"
-          value={transportFormData.seatsAvailable}
-          onChange={handleTransportInputChange}
-        />
-  
-        <button onClick={handleCreateTransportation}>Create Transportation</button>
+        <input type="number" name="seatsAvailable" value={transportFormData.seatsAvailable} onChange={handleTransportInputChange} />
+        <button onClick={handleCreateTransportation} className="create-transport-button">Create Transportation</button>
       </div>
     </div>
   );
