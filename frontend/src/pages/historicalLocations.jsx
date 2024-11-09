@@ -10,6 +10,9 @@ const HistoricalLocations = () => {
   const [searchQuery, setSearchQuery] = useState(''); // State for search query
   const [copySuccess, setCopySuccess] = useState({});
   const [shareableLink, setShareableLink] = useState('');
+  const [email, setEmail] = useState('');
+  const [HistToShare, setHistToShare] = useState(null);
+  const [isEmailMode, setIsEmailMode] = useState(false);
   // Fetch historical places without filter
   const handleViewAllHistoricalPlaces = async () => {
     setLoading(true);
@@ -123,21 +126,44 @@ const HistoricalLocations = () => {
       <li>No historical places found.</li>
     );
   };
-  const handleShare = async (historicallocation) => {
+  const handleShare = async (historicallocation, shareMethod) => {
     try {
-      const response = await fetch(`http://localhost:8000/shareHistorical/${historicallocation}`);
+      // Format the request URL to match the backend route
+     
+      const response = await fetch(`http://localhost:8000/shareHistorical/${encodeURIComponent(historicallocation.Name)}`, {
+        method: 'POST', // Use POST to match the backend's expectations
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: shareMethod === 'email' ? email : '' // Only include email if method is 'email'
+        })
+      });
       const data = await response.json();
-
+  
       if (response.ok) {
-        setShareableLink(data.link); // Set the link to state
-        await navigator.clipboard.writeText(data.link); // Copy link to clipboard
-        setCopySuccess((prev) => ({ ...prev, [historicallocation]: 'Link copied to clipboard!' })); // Set success message for the specific museum
+        setShareableLink(data.link);  // Set the link to state
+        if (shareMethod === 'copy') {
+          await navigator.clipboard.writeText(data.link);  // Copy link to clipboard
+          setCopySuccess((prev) => ({ ...prev, [historicallocation._id]: 'Link copied to clipboard!' }));
+        } else if (shareMethod === 'email') {
+          alert('Link sent to the specified email!');
+        }
       } else {
-        console.error("Failed to generate shareable link");
+        console.error('Failed to generate shareable link');
       }
     } catch (error) {
-      console.error("Error generating shareable link:", error);
+      console.error('Error generating shareable link:', error);
     }
+  };
+  
+  const handleEmailInputChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handleShareMode = (historicallocation) => {
+    setHistToShare(historicallocation);
+    setIsEmailMode(!isEmailMode);
   };
   return (
     <div>
@@ -181,13 +207,24 @@ const HistoricalLocations = () => {
                 {historicalPlaces.map((historicallocation) => (
                   <li key={historicallocation._id}>
                     {historicallocation.Name}
-                    <button onClick={() => handleShare(historicallocation.Name)}>Share</button>
-                    {/* Display success message for this specific historicallocation */}
-                    {copySuccess[historicallocation.Name] && (
-                      <span style={{ color: 'green', marginLeft: '10px' }}>
-                        {copySuccess[historicallocation.Name]}
-                      </span>
-                    )}
+                    <button onClick={() => handleShare(historicallocation, 'copy')}>Copy Link</button>
+          <button onClick={() => handleShareMode(historicallocation)}>Share via Email</button>
+
+          {isEmailMode && HistToShare && HistToShare._id === historicallocation._id && (
+            <div>
+              <input
+                type="email"
+                placeholder="Enter recipient's email"
+                value={email}
+                onChange={handleEmailInputChange}
+              />
+              <button onClick={() => handleShare(historicallocation, 'email')}>Send Email</button>
+            </div>
+          )}
+
+          {copySuccess[historicallocation._id] && <p>{copySuccess[historicallocation._id]}</p>}
+     
+                    
                   </li>
                 ))}
               </ul>

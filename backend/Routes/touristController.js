@@ -10,7 +10,7 @@ const { default: mongoose } = require('mongoose');
 const complaintModel = require('../Models/Complaint.js'); // Adjust the path based on your project structure
 const TourGuideModel = require('../Models/tourGuide.js'); // Adjust path as needed
 const requestModel = require('../Models/Request.js'); // Adjust path as needed
-
+const nodemailer = require('nodemailer');
 const axios = require('axios');
 
 
@@ -694,30 +694,72 @@ const sortProductsByRatingTourist = async (req, res) => {
     }
 };
 
+// Create a reusable transporter object using the default SMTP transport
 
-const shareActivity = async (req, res) => {
-  const { name } = req.params; // Get the activity name from the request
+const sendEmail = async (recipient, subject, text) => {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'malook25062003@gmail.com', 
+      pass: 'sxvo feuu woie gpfn' // Use app-specific password or secure it in environment variables
+    },
+    debug: true, // Enable debug output
+    logger: true // Log information to console
+  });
+
+  const mailOptions = {
+    from: 'malook25062003@gmail.com',
+    to: recipient,
+    subject: subject,
+    text: text
+  };
 
   try {
-    // Find the activity by name
-    const activity = await activitiesModel.findOne({ name: name });
+    await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully');
+  } catch (error) {
+    console.error('Error sending email:', error.message);
+    throw new Error('Failed to send email');
+  }
+};
+
+const shareActivity = async (req, res) => {
+  const { name } = req.params; // Activity name from request params
+  const { email } = req.body; // Recipient email from request body
+
+  try {
+    // Look up the activity by name
+    const activity = await activitiesModel.findOne({ name });
     if (!activity) {
       return res.status(404).json({ error: 'Activity not found' });
     }
 
-    // Generate the shareable link using the activity ID (or another unique identifier)
-    const shareableLink =`http://localhost:3000/activities/${encodeURIComponent(activity.name)}`; // Add any other details you want
+    // Create a shareable link using the activity's unique name
+    const shareableLink = `http://localhost:3000/activities/${encodeURIComponent(activity.name)}`;
 
-
-    // Return the link for sharing
-    res.status(200).json({ link: shareableLink });
+    if (email) {
+      // Send an email if an address is provided
+      await sendEmail(
+        email,
+        'Check out this activity!',
+        `Here's a link to an activity you might be interested in: ${shareableLink}`
+      );
+      res.status(200).json({ message: 'Link generated and email sent successfully', link: shareableLink });
+    } else {
+      // Only return the link for sharing
+      res.status(200).json({ link: shareableLink });
+    }
+    
   } catch (error) {
     console.error('Error generating shareable link:', error);
     res.status(500).json({ error: 'Server error' });
   }
 };
+
 const shareItinerary = async (req, res) => {
   const { id } = req.params; // Get the itinerary ID from the request
+  const { email } = req.body; // Get the recipient email from the query parameters
+
 
   try {
     // Find the itinerary by ID
@@ -728,9 +770,17 @@ const shareItinerary = async (req, res) => {
 
     // Generate the shareable link using the itinerary ID (or other details)
     const shareableLink = `http://localhost:3000/itineraries/${encodeURIComponent(itinerary._id)}`;
-
+    if (email) {
+      await sendEmail(
+        email,
+        'Check out this itinerary!',
+        `Here's a link to an itinerary you might be interested in: ${shareableLink}`
+      );
+      res.status(200).json({ message: 'Link generated and email sent successfully', link: shareableLink });
+    } else {
+      res.status(200).json({ link: shareableLink });
+    }
     // Return the link for sharing
-    res.status(200).json({ link: shareableLink });
   } catch (error) {
     console.error('Error generating shareable link:', error);
     res.status(500).json({ error: 'Server error' });
@@ -740,6 +790,8 @@ const shareItinerary = async (req, res) => {
 
 const shareHistorical = async (req, res) => {
   const { Name } = req.params; 
+  const { email } = req.body; // Get the recipient email from the query parameters
+
 
   try {
       // Find the activity by ID
@@ -750,9 +802,17 @@ const shareHistorical = async (req, res) => {
 
       // Generate the shareable link
       const shareableLink =`http://localhost:3000/Historical/${encodeURIComponent(historical.Name)}`;
-
+      if (email) {
+        await sendEmail(
+          email,
+          'Check out this historical location!',
+          `Here's a link to a historical location you might be interested in: ${shareableLink}`
+        );
+        res.status(200).json({ message: 'Link generated and email sent successfully', link: shareableLink });
+      } else {
+        res.status(200).json({ link: shareableLink });
+      }
       // Return the link for sharing
-      res.status(200).json({ link: shareableLink });
   } catch (error) {
       console.error('Error generating shareable link:', error);
       res.status(500).json({ error: 'Server error' });
@@ -760,6 +820,8 @@ const shareHistorical = async (req, res) => {
 };
 const shareMuseum = async (req, res) => {
   const { Name } = req.params; 
+  const { email } = req.body; // Get the recipient email from the query parameters
+
 
   try {
       // Find the activity by ID
@@ -770,9 +832,17 @@ const shareMuseum = async (req, res) => {
 
       // Generate the shareable link
       const shareableLink =`http://localhost:3000/Museum/${encodeURIComponent(Museum.Name)}`;
-
+      if (email) {
+        await sendEmail(
+          email,
+          'Check out this museum!',
+          `Here's a link to a museum you might be interested in: ${shareableLink}`
+        );
+        res.status(200).json({ message: 'Link generated and email sent successfully', link: shareableLink });
+      } else {
+        res.status(200).json({ link: shareableLink });
+      }
       // Return the link for sharing
-      res.status(200).json({ link: shareableLink });
   } catch (error) {
       console.error('Error generating shareable link:', error);
       res.status(500).json({ error: 'Server error' });
@@ -947,112 +1017,94 @@ if (tourist.points >= 10000) {
     res.status(500).json({ error: 'Error booking itinerary' });
   }
  };
-const submitFeedbackItinerary = async (req, res) => {
-  const { username } = req.query; // Get the username from the query parameters
-  const { Itinerary, rating, comment } = req.body; // Use itineraryId passed in the body
+ const submitFeedbackItinerary = async (req, res) => {
+  const { username } = req.query;
+  const { Itinerary, rating, comment } = req.body;
 
-  // Validate input
   if (!Itinerary || !rating || !comment) {
-    return res.status(400).json({ message: 'Itinerary ID, rating, and comment are required' });
+    return res.status(400).json({ message: ' rating and comment are required' });
   }
 
-  // Retrieve the tourist's username from the request or session (logged-in user)
   const touristUsername = await touristModel.findOne({ Username: username });
-
-  // Check if the tourist is authenticated
   if (!touristUsername) {
     return res.status(403).json({ message: 'User is not authenticated' });
   }
 
   try {
-    // Fetch the itinerary
-    const itinerary = await itineraryModel.findById(Itinerary); // Ensure you have the correct model here
-    console.log(Itinerary);
-
+    const itinerary = await itineraryModel.findById(Itinerary);
     if (!itinerary) {
       return res.status(404).json({ message: 'Itinerary not found' });
+    }
+
+    // Check if itinerary date is in the future
+    if (new Date(itinerary.DatesTimes) > new Date()) {
+      return res.status(400).json({ message: 'This itinerary has not yet been used.' });
     }
 
     if (rating < 1 || rating > 5) {
       return res.status(400).json({ message: 'Rating must be between 1 and 5.' });
     }
 
-    // Create the feedback object
     const feedbackEntry = {
-      touristUsername: touristUsername.Username, // Add the tourist's username
-      itineraryId: Itinerary, // Use the ID from the itinerary object directly
+      touristUsername: touristUsername.Username,
+      itineraryId: Itinerary,
       rating,
       comment,
-      date: Date.now(), // Automatically set to current date
+      date: Date.now(),
     };
 
-    // Add the feedback to the itinerary's feedback array
     itinerary.feedback.push(feedbackEntry);
-
-    // Save the updated itinerary document
     await itinerary.save();
 
     res.status(200).json({ message: 'Feedback submitted successfully!' });
   } catch (error) {
-    console.log(comment);
-    console.log(rating);
-
     console.error(error);
     res.status(500).json({ message: 'Server error while submitting feedback' });
   }
 };
 
-
 const submitFeedback = async (req, res) => {
-  const { username } = req.query; // Get the username from the query parameters
-  const { Itinerary, rating, comment} = req.body; // Use itineraryId passed in the body
+  const { username } = req.query;
+  const { Itinerary, rating, comment } = req.body;
 
-  // Validate input
   if (!Itinerary || !rating || !comment) {
-   
-    return res.status(400).json({ message: 'Itinerary ID, rating, and comment are required' });
+    return res.status(400).json({ message: ' rating, and comment are required' });
   }
 
-  // Retrieve the tourist's username from the request or session (logged-in user)
   const touristUsername = await touristModel.findOne({ Username: username });
-
-  // Check if the tourist is authenticated
   if (!touristUsername) {
     return res.status(403).json({ message: 'User is not authenticated' });
   }
 
   try {
-    // Fetch the itinerary to find the associated tour guide's username
-    const itinerary = await itineraryModel.findById(Itinerary).populate('TourGuide'); // Ensure you have the correct model here
-
+    const itinerary = await itineraryModel.findById(Itinerary).populate('TourGuide');
     if (!itinerary) {
       return res.status(404).json({ message: 'Itinerary not found' });
     }
-    if (rating < 0 || rating > 5) {
-      return res.status(400).json({ message: 'Rating must be between 0 and 5.' });
-    }
-    const tourGuideUsername = itinerary.TourGuide; // Get the tour guide's username from the itinerary
 
-    // Create the feedback object
+    // Check if itinerary date is in the future
+    if (new Date(itinerary.DatesTimes) > new Date()) {
+      return res.status(400).json({ message: 'This itinerary has not yet been used.' });
+    }
+
+    if (rating < 1 || rating > 5) {
+      return res.status(400).json({ message: 'Rating must be between 1 and 5.' });
+    }
+
     const feedbackEntry = {
-      touristUsername: touristUsername.Username, // Add the tourist's username
-      itineraryId:Itinerary, // Use the ID from the itinerary object directly
+      touristUsername: touristUsername.Username,
+      itineraryId: Itinerary,
       rating,
       comment,
-      date: Date.now(), // Automatically set to current date
+      date: Date.now(),
     };
-    
-    // Find the tour guide and add the feedback
-    const foundTourGuide = await TourGuideModel.findOne({ Username: tourGuideUsername });
 
+    const foundTourGuide = await TourGuideModel.findOne({ Username: itinerary.TourGuide });
     if (!foundTourGuide) {
-      return res.status(404).json({ message: `Tour guide '${tourGuideUsername}' not found` });
+      return res.status(404).json({ message: `Tour guide '${itinerary.TourGuide}' not found` });
     }
 
-    // Add the feedback to the tour guide's feedback array
     foundTourGuide.feedback.push(feedbackEntry);
-
-    // Save the updated tour guide document
     await foundTourGuide.save();
 
     res.status(200).json({ message: 'Feedback submitted successfully!' });

@@ -14,6 +14,9 @@ const Itineraries = () => {
     preferences: '',
     language: '',
   });
+  const [email, setEmail] = useState('');
+  const [isEmailMode, setIsEmailMode] = useState(false);
+  const [itineraryToShare, setItineraryToShare] = useState(null);
   const [copySuccess, setCopySuccess] = useState({});
   // State to track the visibility of itinerary details
   const [expandedItineraries, setExpandedItineraries] = useState({});
@@ -32,7 +35,7 @@ const Itineraries = () => {
 
       if (response.ok) {
         const data = await response.json();
-        const filteredItineraries = data.filter(itinerary => !itinerary.FlagInappropriate);
+        const filteredItineraries = data.filter(itinerary => !itinerary.FlagInappropriate && itinerary.active);
         setItineraries(filteredItineraries);
         setErrorMessage('');
       } else {
@@ -61,7 +64,7 @@ const Itineraries = () => {
 
       if (response.ok) {
         const data = await response.json();
-        const filteredItineraries = data.filter(itinerary => !itinerary.FlagInappropriate);
+        const filteredItineraries = data.filter(itinerary => !itinerary.FlagInappropriate && itinerary.active);
         setItineraries(filteredItineraries);
         setErrorMessage('');
       } else {
@@ -95,7 +98,7 @@ const Itineraries = () => {
 
       if (response.ok) {
         const data = await response.json();
-        const filteredItineraries = data.filter(itinerary => !itinerary.FlagInappropriate);
+        const filteredItineraries = data.filter(itinerary => !itinerary.FlagInappropriate && itinerary.active);
         setItineraries(filteredItineraries);
         setErrorMessage('');
       } else {
@@ -174,25 +177,44 @@ const Itineraries = () => {
   useEffect(() => {
     fetchASCItineraries(); // Default to ascending sort
   }, []);
-  const handleShare = async (itineraryId) => {
+  const handleShare = async (itineraryId,shareMethod) => {
     try {
       // Make a request to the backend with the itinerary ID
-      const response = await fetch(`http://localhost:8000/shareItinerary/${itineraryId}`);
+      const response = await fetch(`http://localhost:8000/shareItinerary/${encodeURIComponent(itineraryId)}`, {
+        method: 'POST', // Use POST to match the backend's expectations
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: shareMethod === 'email' ? email : '' // Only include email if method is 'email'
+        })
+      });
       const data = await response.json();
   
       if (response.ok) {
         setShareableLink(data.link); // Set the link to state
-        // Copy the generated link to the clipboard
-        await navigator.clipboard.writeText(data.link);
-        // Set the success message for the specific itinerary
-        setCopySuccess((prev) => ({ ...prev, [itineraryId]: 'Link copied to clipboard!' }));
+    
+        if (shareMethod === 'copy') {
+          await navigator.clipboard.writeText(data.link); // Copy link to clipboard
+          setCopySuccess((prev) => ({ ...prev, [itineraryId]: 'Link copied to clipboard!' }));
+        } else if (shareMethod === 'email') {
+          alert('Link sent to the specified email!');
+        }
       } else {
-        console.error("Failed to generate shareable link");
+        console.error('Failed to generate shareable link');
       }
     } catch (error) {
       console.error("Error generating shareable link:", error);
     }
-  };
+    };
+    const handleEmailInputChange = (e) => {
+      setEmail(e.target.value);
+    };
+  
+    const handleShareMode = (itinerary) => {
+      setItineraryToShare(itinerary);
+      setIsEmailMode(!isEmailMode);
+    };
   
   return (
     <div>
@@ -293,10 +315,22 @@ const Itineraries = () => {
                     </div>
                   )}
                    {/* Share button and success message */}
-        <button onClick={() => handleShare(itinerary._id)}>Share</button>
-        {copySuccess[itinerary._id] && (
-          <span style={{ color: 'green', marginLeft: '10px' }}>{copySuccess[itinerary._id]}</span>
-        )}
+                   <button onClick={() => handleShare(itinerary._id, 'copy')}>Copy Link</button>
+          <button onClick={() => handleShareMode(itinerary)}>Share via Email</button>
+
+          {isEmailMode && itineraryToShare && itineraryToShare._id ===itinerary._id&& (
+            <div>
+              <input
+                type="email"
+                placeholder="Enter recipient's email"
+                value={email}
+                onChange={handleEmailInputChange}
+              />
+              <button onClick={() => handleShare(itinerary._id, 'email')}>Send Email</button>
+            </div>
+          )}
+
+          {copySuccess[itinerary._id] && <p>{copySuccess[itinerary._id]}</p>}
                 </li>
               ))}
             </ul>

@@ -54,13 +54,14 @@ function TourGuideProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [waiting, setWaiting] = useState(false);
   const [requestSent, setRequestSent] = useState(false); // Track if request was successfully sent
+  const [photo, setPhoto] = useState(null);
   const [formData, setFormData] = useState({
     Username: '',
     Email: '',
     mobileNumber: '',
     yearsOfExperience: '',
     previousWork: '',
-    photo:null
+    photo:''
   });
   const [touristItineraryData, setTouristItineraryData] = useState({
     Activities: '',
@@ -83,17 +84,13 @@ function TourGuideProfile() {
     Accesibility: '',
     pickUpDropOff: '',
   });
-  const [photo, setPhoto] = useState(null);
+  
   const [isCreatingItinerary, setIsCreatingItinerary] = useState(false);
   const [isEditingItinerary, setIsEditingItinerary] = useState(false); // New state for editing itinerary
   const [isCreatingTouristItinerary, setIsCreatingTouristItinerary] = useState(false);
   const [isEditingTouristItinerary, setIsEditingTouristItinerary] = useState(false);
 
   useEffect(() => {
-    const savedPhoto = localStorage.getItem('photo');
-    if (savedPhoto) {
-      setPhoto(savedPhoto);
-    }
     fetchTourGuideData();
     fetchItineraries();
     setLoading(false);
@@ -496,6 +493,44 @@ function TourGuideProfile() {
       console.error('Error occurred while updating the itinerary:', error);
     }
   };
+  const deactivateItinerary = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8000/deactivateItinrary/${id}`, {
+        method: 'PATCH',
+      });
+      
+      if (response.ok) {
+        await fetchItineraries();
+        setSelectedItinerary(null);
+       
+        
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(`Error: ${response.status} - ${errorData.message || 'Unknown error occurred'}`);
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while deactivating the itinerary');
+      console.error('Error occurred while deactivating the itinerary:', error);
+    }
+  };
+  const activateItinerary = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8000/activateItinrary/${id}`, {
+        method: 'PATCH',
+      });
+      
+      if (response.ok) {
+        await fetchItineraries();
+        setSelectedItinerary(null);
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(`Error: ${response.status} - ${errorData.message || 'Unknown error occurred'}`);
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while activating the itinerary');
+      console.error('Error occurred while activating the itinerary:', error);
+    }
+  };
   const handleDeleteRequest = async () => {
     const Username = localStorage.getItem('Username');
     setWaiting(true);
@@ -524,9 +559,8 @@ function TourGuideProfile() {
     }
     finally {
       setWaiting(false); // Stop waiting regardless of outcome
-  }
+  };
 
-  
 };
   return (
   
@@ -546,7 +580,7 @@ function TourGuideProfile() {
             {isVisible && (
               <div>
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                {photo && <img src={photo} alt="Tour Guide Photo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
+                {photo && <img src={`http://localhost:8000/${photo.replace(/\\/g, '/')}`} alt="Tour Guide Photo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
                 <p><strong>Username:</strong> {tourGuideInfo?.Username}</p> </div>
                 <div>
                 <p><strong>Email:</strong> {tourGuideInfo?.Email}</p> 
@@ -561,7 +595,7 @@ function TourGuideProfile() {
             {isEditing && (
               <form onSubmit={handleSubmit}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                {photo && <img src={photo} alt="photo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
+                {photo && <img src={`http://localhost:8000/${photo.replace(/\\/g, '/')}`} alt="photo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
                   <label>Username:</label>
                   <p> {tourGuideInfo?.Username}</p> 
                 </div>
@@ -725,6 +759,11 @@ function TourGuideProfile() {
                   <button onClick={() => handleViewItinerary(itinerary)}>View Details</button>
                   <button onClick={() => handleEditItinerary(itinerary)}>Edit Itinerary</button>
                   <button onClick={() => handleDeleteItinerary(itinerary._id)}>Delete Itinerary</button>
+                  {itinerary.active ? (
+              <button onClick={() => deactivateItinerary(itinerary._id)}>Deactivate Itinerary</button>
+            ) : (
+              <button onClick={() => activateItinerary(itinerary._id)}>Activate Itinerary</button>
+            )}
                 </div>
               ))
             ) : (
@@ -740,6 +779,7 @@ function TourGuideProfile() {
               <p><strong>Pick Up/Drop Off:</strong> {selectedItinerary.pickUpDropOff}</p>
               <p><strong>Booked:</strong> {selectedItinerary.Booked ? 'Yes' : 'No'}</p>
               <p><strong>Tour Guide:</strong> {selectedItinerary.TourGuide}</p>
+              <p><strong>Active:</strong> {selectedItinerary.active ? "Yes" : "No"}</p>
             </div>
             )}
             {selectedItinerary && isEditingItinerary && (

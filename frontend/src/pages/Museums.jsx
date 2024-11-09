@@ -10,6 +10,9 @@ const Museums = () => {
   const [searchTerm, setSearchTerm] = useState(''); // New state for search term
   const [shareableLink, setShareableLink] = useState('');
   const [copySuccess, setCopySuccess] = useState({});
+  const [email, setEmail] = useState('');
+  const [isEmailMode, setIsEmailMode] = useState(false);
+  const [museumToShare, setMuseumToShare] = useState(null);
   
 
   // Fetch museums from the backend
@@ -94,21 +97,42 @@ const Museums = () => {
   useEffect(() => {
     fetchHistoricalPeriods();
   }, []);
-  const handleShare = async (museumName) => {
+  const handleShare = async (museumName, shareMethod) => {
     try {
-      const response = await fetch(`http://localhost:8000/shareMuseum/${museumName}`);
+      const response = await fetch(`http://localhost:8000/shareMuseum/${encodeURIComponent(museumName)}`, {
+        method: 'POST', // Use POST to match the backend's expectations
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: shareMethod === 'email' ? email : '' // Only include email if method is 'email'
+        })
+      });
       const data = await response.json();
-
+  
       if (response.ok) {
         setShareableLink(data.link); // Set the link to state
-        await navigator.clipboard.writeText(data.link); // Copy link to clipboard
-        setCopySuccess((prev) => ({ ...prev, [museumName]: 'Link copied to clipboard!' })); // Set success message for the specific museum
+  
+        if (shareMethod === 'copy') {
+          await navigator.clipboard.writeText(data.link); // Copy link to clipboard
+          setCopySuccess((prev) => ({ ...prev, [museumName]: 'Link copied to clipboard!' })); // Set success message for the specific museum
+        } else if (shareMethod === 'email') {
+          alert('Link sent to the specified email!');
+        }
       } else {
-        console.error("Failed to generate shareable link");
+        console.error('Failed to generate shareable link');
       }
     } catch (error) {
       console.error("Error generating shareable link:", error);
     }
+  };
+  const handleEmailInputChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handleShareMode = (museum) => {
+    setMuseumToShare(museum);
+    setIsEmailMode(!isEmailMode);
   };
   return (
     <div>
@@ -151,9 +175,22 @@ const Museums = () => {
             {museums.map((museum) => (
               <li key={museum._id}>
                 {museum.Name}
-                <button onClick={() => handleShare(museum.Name)}>Share</button>
-                {/* Display success message for this specific museum */}
-                {copySuccess[museum.Name] && <span style={{ color: 'green', marginLeft: '10px' }}>{copySuccess[museum.Name]}</span>}
+                <button onClick={() => handleShare(museum.Name, 'copy')}>Copy Link</button>
+          <button onClick={() => handleShareMode(museum)}>Share via Email</button>
+
+          {isEmailMode && museumToShare && museumToShare._id === museum._id && (
+            <div>
+              <input
+                type="email"
+                placeholder="Enter recipient's email"
+                value={email}
+                onChange={handleEmailInputChange}
+              />
+              <button onClick={() => handleShare(museum.Name, 'email')}>Send Email</button>
+            </div>
+          )}
+
+          {copySuccess[museum.Name] && <p>{copySuccess[museum.Name]}</p>}
               </li>
             ))}
           </ul>

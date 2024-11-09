@@ -300,5 +300,23 @@ const settleDocsTourGuide = async (req, res) => {
        res.status(400).json({ error: error.message });
    }
  };
- module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG,changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide};
+ const deactivateItinrary=async(req,res)=>{
+   const {id}=req.params;
+   try{
+      await itineraryModel.findByIdAndUpdate(id,{$set: {active: false}});
+      res.status(200).json({msg:" Itinerary is deactivated"});
+   } catch (error){
+      res.status(400).json({error: error.message});
+   }
+ };
+ const activateItinrary=async(req,res)=>{
+   const {id}=req.params;
+   try{
+      await itineraryModel.findByIdAndUpdate(id,{$set: {active: true}});
+      res.status(200).json({msg:" Itinerary is activated"});
+   } catch (error){
+      res.status(400).json({error: error.message});
+   }
+ };
+ module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG,changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide,deactivateItinrary,activateItinrary};
  

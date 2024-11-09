@@ -12,7 +12,7 @@ const AdvertiserProfile = () => {
   const [requestSent, setRequestSent] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [logo, setLogo] = useState(null);
+  const [Logo, setLogo] = useState(null);
   const [formData, setFormData] = useState({
     Username: '',
     Email: '',
@@ -21,6 +21,23 @@ const AdvertiserProfile = () => {
     Hotline: '',
     Company_Profile: '',
     Logo:''
+  });
+  const [transportFormData, setTransportFormData] = useState({
+    type: 'Bus', // Default value from enum options
+    company: {
+      name: '',
+      contact: {
+        phone: '',
+        email: '',
+      },
+    },
+    origin: '',
+    destination: '',
+    departureTime: '',
+    arrivalTime: '',
+    price: '',
+    availability: true,
+    seatsAvailable: '',
   });
    // State for the logo file
   const navigate = useNavigate();
@@ -46,11 +63,7 @@ const AdvertiserProfile = () => {
   };
 
   useEffect(() => {
-    // Check local storage for logo URL on mount
-    const savedLogo = localStorage.getItem('logo');
-    if (savedLogo) {
-      setLogo(savedLogo);
-    }
+  
     fetchAdvertiserInfo();
     fetchActivities();
   }, []);
@@ -109,34 +122,38 @@ const AdvertiserProfile = () => {
     setUpdating(true);
     const form = new FormData();
     
-    form.append('Username', formData.Username);
-    form.append('Email', formData.Email);
-    form.append('Password', formData.Password);
-    form.append('Hotline', formData.Hotline);
-    form.append('Company_Profile', formData.Company_Profile);
-    form.append('website_Link', formData.Website_Link);
-  
+    if (formData.Username) form.append('Username', formData.Username);
+    if (formData.Email) form.append('Email', formData.Email);
+    if (formData.Password) form.append('Password', formData.Password);
+    if (formData.Hotline) form.append('Hotline', formData.Hotline);
+    if (formData.Company_Profile) form.append('Company_Profile', formData.Company_Profile);
+    if (formData.Website_Link) form.append('Website_Link', formData.Website_Link);
+    
     if (formData.Logo) {
-      form.append('Logo', formData.Logo);
+      form.append('Logo', formData.Logo); // Only add Logo if it’s present
     }
-
+  
     try {
       const response = await fetch(`http://localhost:8000/updateAdvertiser`, {
         method: 'PATCH',
         body: form, // Send FormData
       });
-
+  
       if (response.ok) {
         const updatedData = await response.json();
         setAdvertiserInfo(updatedData);
         setErrorMessage('');
         alert('Information updated successfully!');
         
-        // Update logo in local storage if it has changed
-        if (updatedData.logo) {
-          const logoURL = URL.createObjectURL(updatedData.logo);
+        // Set Logo directly if it's already a URL
+        if (typeof updatedData.Logo === 'string') {
+          setLogo(updatedData.Logo);
+          localStorage.setItem('logo', updatedData.Logo);
+        } else {
+          // Use URL.createObjectURL if Logo is a File or Blob
+          const logoURL = URL.createObjectURL(updatedData.Logo);
           setLogo(logoURL);
-          localStorage.setItem('logo', logoURL); // Update logo URL in local storage
+          localStorage.setItem('logo', logoURL);
         }
       } else {
         throw new Error('Failed to update advertiser profile');
@@ -145,9 +162,10 @@ const AdvertiserProfile = () => {
       setErrorMessage('An error occurred while updating your profile.');
       console.error(error);
     }
-
+  
     setUpdating(false);
   };
+  
 
   const fetchActivities = async () => {
     const Username = localStorage.getItem('Username');
@@ -227,31 +245,100 @@ const AdvertiserProfile = () => {
       setWaiting(false);
     }
   };
+  const handleTransportInputChange = (e) => {
+    const { name, value } = e.target;
+    
+    if (name.startsWith("company.contact.")) {
+      // Handle nested company contact fields
+      const contactField = name.split(".")[2];
+      setTransportFormData((prevData) => ({
+        ...prevData,
+        company: {
+          ...prevData.company,
+          contact: {
+            ...prevData.company.contact,
+            [contactField]: value,
+          },
+        },
+      }));
+    } else if (name.startsWith("company.")) {
+      // Handle company name field
+      const companyField = name.split(".")[1];
+      setTransportFormData((prevData) => ({
+        ...prevData,
+        company: {
+          ...prevData.company,
+          [companyField]: value,
+        },
+      }));
+    } else {
+      // Handle other fields
+      setTransportFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
+  };
+
+  const handleCreateTransportation = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/createTransportation`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(transportFormData),
+      });
+
+      if (response.ok) {
+        alert('Transportation created successfully!');
+        setTransportFormData({
+          type: 'Bus',
+          company: {
+            name: '',
+            contact: {
+              phone: '',
+              email: '',
+            },
+          },
+          origin: '',
+          destination: '',
+          departureTime: '',
+          arrivalTime: '',
+          price: '',
+          availability: true,
+          seatsAvailable: '',
+        });
+      } else {
+        throw new Error('Failed to create transportation');
+      }
+    } catch (error) {
+      console.error('An error occurred while creating transportation:', error);
+    }
+  };
 
   return (
     <div>
       <h2>Advertiser Profile</h2>
       <div>
-  <h3>Change Password</h3>
-  <div>
-    <label>Current Password:</label>
-    <input
-      type="password"
-      value={currentPassword}
-      onChange={(e) => setCurrentPassword(e.target.value)}
-    />
-  </div>
-  <div>
-    <label>New Password:</label>
-    <input
-      type="password"
-      value={newPassword}
-      onChange={(e) => setNewPassword(e.target.value)}
-    />
-  </div>
-  <button onClick={handlePasswordChange}>Change Password</button>
-</div>
-
+        <h3>Change Password</h3>
+        <div>
+          <label>Current Password:</label>
+          <input
+            type="password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+          />
+        </div>
+        <div>
+          <label>New Password:</label>
+          <input
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+        </div>
+        <button onClick={handlePasswordChange}>Change Password</button>
+      </div>
+  
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
       {loading ? (
         <p>Loading advertiser information...</p>
@@ -259,7 +346,19 @@ const AdvertiserProfile = () => {
         advertiserInfo && (
           <div>
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              {logo && <img src={`http://localhost:8000/${logo.replace(/\\/g, '/')}`} alt="Advertiser Logo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
+              {Logo && (
+                <img
+                  src={`http://localhost:8000/${Logo.replace(/\\/g, '/')}`}
+
+                  alt="Advertiser Logo"
+                  style={{
+                    width: '50px',
+                    height: '50px',
+                    borderRadius: '50%',
+                    marginRight: '10px',
+                  }}
+                />
+              )}
               <label><strong>Username:</strong></label>
               <p>{advertiserInfo.Username}</p>
             </div>
@@ -267,7 +366,7 @@ const AdvertiserProfile = () => {
               <label><strong>Website Link:</strong></label>
               <input
                 type="text"
-                name="Website_Link" // Corrected name to match formData keys
+                name="Website_Link"
                 value={formData.Website_Link}
                 onChange={handleInputChange}
               />
@@ -275,7 +374,7 @@ const AdvertiserProfile = () => {
             <div>
               <label><strong>Password:</strong></label>
               <input
-                type="password" // Use type="password" for better security
+                type="password"
                 name="Password"
                 value={formData.Password}
                 onChange={handleInputChange}
@@ -303,7 +402,7 @@ const AdvertiserProfile = () => {
               <label><strong>Logo:</strong></label>
               <input
                 type="file"
-                accept="image/*" // Accept any image type
+                accept="image/*"
                 onChange={handleLogoChange}
               />
             </div>
@@ -317,7 +416,7 @@ const AdvertiserProfile = () => {
         )
       )}
       <button onClick={fetchAdvertiserInfo}>Refresh My Information</button>
-
+  
       {/* Section for Activities */}
       <h3>Your Activities</h3>
       {activities.length > 0 ? (
@@ -346,17 +445,106 @@ const AdvertiserProfile = () => {
       ) : (
         <p>No activities found.</p>
       )}
+      
+      {/* Sidebar Navigation */}
       <div className="sidebar">
         <h3>Explore</h3>
         <ul>
           <li onClick={() => navigate('/advertiser-Activities')}>MY Activities</li>
-          
-
         </ul>
       </div>
+  
+      {/* Transportation Creation Form */}
+      <h3>Create Transportation</h3>
+      <div>
+      <label>Type:</label>
+        <select
+          name="type"
+          value={transportFormData.type}
+          onChange={handleTransportInputChange}
+        >
+          <option value="Bus">Bus</option>
+          <option value="Taxi">Taxi</option>
+          <option value="Train">Train</option>
+          <option value="Boat">Boat</option>
+        </select>
+  
+        <label>Company Name:</label>
+        <input
+          type="text"
+          name="company.name"
+          value={transportFormData.company.name}
+          onChange={handleTransportInputChange}
+        />
+
+        <label>Company Contact Phone:</label>
+        <input
+          type="text"
+          name="company.contact.phone"
+          value={transportFormData.company.contact.phone}
+          onChange={handleTransportInputChange}
+        />
+        <label>Company Contact Email:</label>
+        <input
+          type="email"
+          name="company.contact.email"
+          value={transportFormData.company.contact.email}
+          onChange={handleTransportInputChange}
+        />
+  
+        <label>Origin:</label>
+        <input
+          type="text"
+          name="origin"
+          value={transportFormData.origin}
+          onChange={handleTransportInputChange}
+        />
+  
+        <label>Destination:</label>
+        <input
+          type="text"
+          name="destination"
+          value={transportFormData.destination}
+          onChange={handleTransportInputChange}
+        />
+  
+        <label>Departure Time:</label>
+        <input
+          type="datetime-local"
+          name="departureTime"
+          value={transportFormData.departureTime}
+          onChange={handleTransportInputChange}
+        />
+  
+        <label>Arrival Time:</label>
+        <input
+          type="datetime-local"
+          name="arrivalTime"
+          value={transportFormData.arrivalTime}
+          onChange={handleTransportInputChange}
+        />
+  
+        <label>Price:</label>
+        <input
+          type="number"
+          name="price"
+          value={transportFormData.price}
+          onChange={handleTransportInputChange}
+        />
+  
+        <label>Seats Available:</label>
+        <input
+          type="number"
+          name="seatsAvailable"
+          value={transportFormData.seatsAvailable}
+          onChange={handleTransportInputChange}
+        />
+  
+        <button onClick={handleCreateTransportation}>Create Transportation</button>
+      </div>
     </div>
-    
   );
+  
 };
 
 const styles = {
