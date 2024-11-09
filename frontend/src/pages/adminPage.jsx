@@ -835,7 +835,12 @@ const unarchiveProduct = async () => {
     <div>
 
       <h1>Admin Page</h1>
-
+      <div className="sidebar">
+        <h3>Explore</h3>
+        <ul>
+          <li onClick={() => navigate('/products')}>Products</li>
+        </ul>
+      </div>
       <h2>Create Admin</h2>
       <form onSubmit={createAdmin}>
         <div>
@@ -1336,13 +1341,7 @@ const unarchiveProduct = async () => {
       <div>
       <button onClick={() => navigate('/docs')}>See unsettled docs</button>
       </div>
-      {/* Sidebar */}
-      <div className="sidebar">
-        <h3>Explore</h3>
-        <ul>
-          <li onClick={() => navigate('/products')}>Products</li>
-        </ul>
-      </div>
+     
     </div>
   );
 };

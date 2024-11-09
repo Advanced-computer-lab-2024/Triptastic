@@ -1,34 +1,24 @@
 /* Layout Structure */
 .tourist-profile-layout {
   display: flex;
+  flex-direction: column;
   max-width: 1200px;
   margin: 20px auto;
 }
 
-/* Sidebar Styling */
-/* Sidebar Styling */
+/* Top Bar Styling */
 .sidebar {
-  width: 150px; /* Smaller width for the sidebar */
+  width: 100%; /* Full width to act as a top bar */
   background-color: #f1f1f1;
-  padding: 15px;
+  padding: 10px 20px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  position: fixed; /* Fixed position to keep it on the right side */
-  top: 20px;
-  right: 20px; /* Move sidebar to the right */
-  height: calc(100vh - 40px); /* Sidebar height fills the viewport minus top margin */
-  overflow-y: auto; /* Allows scrolling if the content is too long */
-}
-
-/* Main Profile Content */
-.profile-content {
-  flex-grow: 1;
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin-right: 190px; /* Space to the left of the fixed sidebar */
-  max-width: calc(100% - 220px); /* Adjusted width to avoid overflow */
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  position: relative; /* Removed fixed positioning */
+  top: 0; /* Ensures it stays at the top */
 }
 
 /* Sidebar Content */
@@ -36,12 +26,16 @@
   color: #333;
   font-size: 1rem;
   text-align: center;
+  margin: 0;
 }
 
 .sidebar ul {
+  display: flex;
   list-style-type: none;
   padding: 0;
   margin: 0;
+  width: 100%;
+  justify-content: space-around;
 }
 
 .sidebar li {
@@ -53,13 +47,21 @@
   text-align: center;
   border-radius: 4px;
   transition: background-color 0.3s ease;
-  margin-bottom: 10px;
 }
 
 .sidebar li:hover {
   background-color: #e0e0e0;
 }
 
+/* Main Profile Content */
+.profile-content {
+  flex-grow: 1;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+}
 
 /* Header Styling */
 .profile-content h2 {
@@ -68,6 +70,7 @@
   font-size: 1.5rem;
   margin-bottom: 20px;
 }
+
 
 /* Info Section Styling */
 .info-section {

@@ -564,6 +564,23 @@ return (
   <div className="tourist-profile-container">
     <div className="profile-content">
       <h2>Tourist Profile</h2>
+      <div className="sidebar">
+      <h3>Explore</h3>
+      <ul>
+        <li onClick={() => navigate('/historical-locations')}>Historical Locations</li>
+        <li onClick={() => navigate('/museums')}>Museums</li>
+        <li onClick={() => navigate('/products')}>Products</li>
+        <li onClick={() => navigate('/itineraries')}>Itineraries</li>
+        <li onClick={() => navigate('/activities')}>Activities</li>
+        <li onClick={() => navigate('/book-flights')}>Book Flights</li>
+        <li onClick={() => navigate('/book-hotels')}>Book a Hotel</li>
+        <li onClick={() => navigate('/book-transportation')}>Book Transportation</li>
+        <li onClick={() => navigate('/tourist-orders')}>Past Orders</li>
+        <li onClick={() => navigate('/AttendedActivitiesPage')}>Review Activities</li>
+        <li onClick={() => navigate('/Cart')}>My Cart</li>
+
+      </ul>
+    </div>
       <button onClick={handleDeleteRequest} disabled={waiting || requestSent}>
             {waiting ? 'Waiting to be deleted...' : requestSent ? 'Request Sent' : 'Delete Account'}
           </button>
@@ -939,23 +956,7 @@ return (
     </div>
     {errorMessage && <div className="error">{errorMessage}</div>}
     {successMessage && <div className="success">{successMessage}</div>}
-    <div className="sidebar">
-      <h3>Explore</h3>
-      <ul>
-        <li onClick={() => navigate('/historical-locations')}>Historical Locations</li>
-        <li onClick={() => navigate('/museums')}>Museums</li>
-        <li onClick={() => navigate('/products')}>Products</li>
-        <li onClick={() => navigate('/itineraries')}>Itineraries</li>
-        <li onClick={() => navigate('/activities')}>Activities</li>
-        <li onClick={() => navigate('/book-flights')}>Book Flights</li>
-        <li onClick={() => navigate('/book-hotels')}>Book a Hotel</li>
-        <li onClick={() => navigate('/book-transportation')}>Book Transportation</li>
-        <li onClick={() => navigate('/tourist-orders')}>Past Orders</li>
-        <li onClick={() => navigate('/AttendedActivitiesPage')}>Review Activities</li>
-        <li onClick={() => navigate('/Cart')}>My Cart</li>
-
-      </ul>
-    </div>
+ 
 
     
   </div>
