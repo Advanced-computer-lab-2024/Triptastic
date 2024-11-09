@@ -12,7 +12,7 @@ const AdvertiserProfile = () => {
   const [requestSent, setRequestSent] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [logo, setLogo] = useState(null);
+  const [Logo, setLogo] = useState(null);
   const [formData, setFormData] = useState({
     Username: '',
     Email: '',
@@ -122,34 +122,38 @@ const AdvertiserProfile = () => {
     setUpdating(true);
     const form = new FormData();
     
-    form.append('Username', formData.Username);
-    form.append('Email', formData.Email);
-    form.append('Password', formData.Password);
-    form.append('Hotline', formData.Hotline);
-    form.append('Company_Profile', formData.Company_Profile);
-    form.append('Website_Link', formData.Website_Link);
-  
+    if (formData.Username) form.append('Username', formData.Username);
+    if (formData.Email) form.append('Email', formData.Email);
+    if (formData.Password) form.append('Password', formData.Password);
+    if (formData.Hotline) form.append('Hotline', formData.Hotline);
+    if (formData.Company_Profile) form.append('Company_Profile', formData.Company_Profile);
+    if (formData.Website_Link) form.append('Website_Link', formData.Website_Link);
+    
     if (formData.Logo) {
-      form.append('Logo', formData.Logo);
+      form.append('Logo', formData.Logo); // Only add Logo if it’s present
     }
-
+  
     try {
       const response = await fetch(`http://localhost:8000/updateAdvertiser`, {
         method: 'PATCH',
         body: form, // Send FormData
       });
-
+  
       if (response.ok) {
         const updatedData = await response.json();
         setAdvertiserInfo(updatedData);
         setErrorMessage('');
         alert('Information updated successfully!');
         
-        // Update logo in local storage if it has changed
-        if (updatedData.Logo) {
+        // Set Logo directly if it's already a URL
+        if (typeof updatedData.Logo === 'string') {
+          setLogo(updatedData.Logo);
+          localStorage.setItem('logo', updatedData.Logo);
+        } else {
+          // Use URL.createObjectURL if Logo is a File or Blob
           const logoURL = URL.createObjectURL(updatedData.Logo);
           setLogo(logoURL);
-          localStorage.setItem('logo', logoURL); // Update logo URL in local storage
+          localStorage.setItem('logo', logoURL);
         }
       } else {
         throw new Error('Failed to update advertiser profile');
@@ -158,9 +162,10 @@ const AdvertiserProfile = () => {
       setErrorMessage('An error occurred while updating your profile.');
       console.error(error);
     }
-
+  
     setUpdating(false);
   };
+  
 
   const fetchActivities = async () => {
     const Username = localStorage.getItem('Username');
@@ -341,9 +346,10 @@ const AdvertiserProfile = () => {
         advertiserInfo && (
           <div>
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              {logo && (
+              {Logo && (
                 <img
-                  src={`http://localhost:8000/${logo.replace(/\\/g, '/')}`}
+                  src={`http://localhost:8000/${Logo.replace(/\\/g, '/')}`}
+
                   alt="Advertiser Logo"
                   style={{
                     width: '50px',
