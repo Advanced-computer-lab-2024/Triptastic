@@ -1,37 +1,243 @@
-.tourist-profile-container {
-    display: flex;
-    justify-content: space-between;
-    padding: 20px;
-  }
-  
-  .profile-content {
-    flex: 3; /* Main profile content takes more space */
-    padding-right: 20px;
-  }
-  
-  .sidebar {
-    flex: 1; /* Sidebar takes less space */
-    background-color: #f8f8f8;
-    padding: 20px;
-    border-left: 1px solid #ddd;
-  }
-  
-  .sidebar h3 {
-    margin-bottom: 10px;
-  }
-  
-  .sidebar ul {
-    list-style-type: none;
-    padding-left: 0;
-  }
-  
-  .sidebar ul li {
-    margin: 10px 0;
-    cursor: pointer;
-    color: #007bff;
-  }
-  
-  .sidebar ul li:hover {
-    text-decoration: underline;
-  }
-  
+/* Layout Structure */
+.tourist-profile-layout {
+  display: flex;
+  max-width: 1200px;
+  margin: 20px auto;
+}
+
+/* Sidebar Styling */
+.sidebar {
+  width: 150px; /* Smaller width for the sidebar */
+  background-color: #f1f1f1;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: fixed; /* Fixed position to keep it on the left side */
+  top: 20px;
+  left: 20px;
+  height: calc(100vh - 40px); /* Sidebar height fills the viewport minus top margin */
+  overflow-y: auto; /* Allows scrolling if the content is too long */
+}
+
+/* Sidebar Content */
+.sidebar h3 {
+  color: #333;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar li {
+  padding: 10px;
+  cursor: pointer;
+  color: #4CAF50;
+  font-weight: bold;
+  font-size: 0.9rem;
+  text-align: center;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  margin-bottom: 10px;
+}
+
+.sidebar li:hover {
+  background-color: #e0e0e0;
+}
+
+/* Main Profile Content */
+.profile-content {
+  flex-grow: 1;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-left: 190px; /* Space to the right of the fixed sidebar */
+  max-width: calc(100% - 220px); /* Adjusted width to avoid overflow */
+}
+
+/* Header Styling */
+.profile-content h2 {
+  text-align: center;
+  color: #4CAF50;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+/* Info Section Styling */
+.info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 10px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.info-section label {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.info-section input,
+.currency-section select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+}
+
+/* Button Styling */
+button {
+  background-color: #4CAF50;
+  color: #fff;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Error and Success Messages */
+.error-message, .success-message {
+  text-align: center;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.error-message {
+  color: red;
+}
+
+.success-message {
+  color: green;
+}
+
+/* Change Password Section */
+.change-password-section {
+  margin-top: 20px;
+  background-color: #f1f1f1;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.change-password-section h3 {
+  color: #333;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+/* Preferences Section */
+.preferences-section {
+  margin-top: 20px;
+  background-color: #f1f1f1;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.preferences-section h3 {
+  color: #333;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.preferences-form label {
+  display: block;
+  margin: 8px 0;
+  font-size: 1rem;
+}
+
+.preferences-form input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.preferences-form select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+/* Complaints Section */
+.complaints-section {
+  margin-top: 20px;
+  background-color: #f1f1f1;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.complaints-section h3 {
+  color: #333;
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.complaints-section ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.complaints-section li {
+  background-color: #fafafa;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Replies Section */
+.replies-section {
+  margin-top: 10px;
+  padding-left: 15px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  padding: 10px;
+}
+
+/* Currency Section */
+.currency-section {
+  margin-top: 10px;
+}
+
+.currency-section select {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+/* Additional Styling for General Content */
+p {
+  margin: 0;
+  color: #555;
+}
+
+h4 {
+  font-size: 1.1rem;
+  color: #333;
+  margin: 10px 0;
+}
