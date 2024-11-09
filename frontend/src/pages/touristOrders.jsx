@@ -22,7 +22,7 @@ const TouristOrders = () => {
     }
   };
 
-  // Submit review and rating
+  // Submit review and ratting
   const submitReview = async () => {
     try {
       const response = await axios.patch
