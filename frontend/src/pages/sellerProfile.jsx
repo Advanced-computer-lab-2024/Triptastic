@@ -64,10 +64,7 @@ const SellerProfile = () => {
   };
 
  useEffect(() => {
-  const savedLogo = localStorage.getItem('logo');
-  if (savedLogo) {
-    setLogo(savedLogo);
-  }
+  
   fetchSellerInfo();
 }, []);
 
