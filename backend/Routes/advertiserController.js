@@ -4,6 +4,7 @@ const activitiesModel = require('../Models/Activities.js');
 const PreferenceTagsModel = require('../Models/PreferenceTags.js');
 const RequestModel = require('../Models/Request.js');
 const TransportationModel = require('../Models/Transportation.js');
+const touristModel = require('../Models/Tourist.js');
 
 const { default: mongoose } = require('mongoose');
 const createAdvertiser = async(req,res) => {
@@ -322,7 +323,60 @@ const settleDocsAdvertiser = async (req, res) => {
     }
   }
 
+  const getTouristReportForActivity = async (req, res) => {
+    try {
+      const { activityId } = req.params; // Get activity ID from URL
+      const { advertiserUsername } = req.query; // Get advertiser username from query
+  
+      if (!advertiserUsername) {
+        return res.status(400).json({ message: "Advertiser username is required" });
+      }
+  
+      // Convert activityId to ObjectId if it's stored as an ObjectId
+      let activityObjectId;
+      try {
+        activityObjectId = new mongoose.Types.ObjectId(activityId);
+      } catch (error) {
+        return res.status(400).json({ message: "Invalid activity ID format" });
+      }
+  
+      // Step 1: Find tourists whose bookings match the activity and advertiser
+      const tourists = await touristModel.find({
+        Bookings: {
+          $elemMatch: {
+            _id: activityObjectId, // Match the activity ID
+            Advertiser: advertiserUsername, // Match the advertiser username
+          },
+        },
+      }).select("Username Email Bookings");
+  
+      if (tourists.length === 0) {
+        return res.status(404).json({ message: "No tourists found for the specified activity" });
+      }
+  
+      // Step 2: Prepare the report
+      const report = {
+        activityId,
+        advertiser: advertiserUsername,
+        totalTourists: tourists.length,
+        tourists: tourists.map((tourist) => ({
+          Username: tourist.Username,
+          Email: tourist.Email,
+        })),
+      };
+  
+      // Step 3: Send the response
+      return res.status(200).json({
+        message: "Report generated successfully",
+        report,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "An error occurred", error });
+    }
+  };
+
  module.exports = {changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,
    getActivity,
    updateActivity,
-   deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser};
+   deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser,getTouristReportForActivity};
