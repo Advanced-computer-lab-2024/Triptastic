@@ -9,7 +9,7 @@ require("dotenv").config();
 const MongoURI = process.env.MONGO_URI ;
 const upload = require("./Middleware/uploadMiddleware"); 
 //Tour Guide
-const {createTourGuideInfo,createTourGuide}=require("./Routes/tourGuideController");
+const {createTourGuideInfo,createTourGuide,getTouristReportForItinerary}=require("./Routes/tourGuideController");
 const {updateTourGuide}=require("./Routes/tourGuideController");
 const {getTourGuide}=require("./Routes/tourGuideController");
 const {createItinerary,getItinerary,updateItinerary,deleteItinerary,getTouristItinerary,createTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG}=require("./Routes/tourGuideController");
@@ -151,6 +151,7 @@ app.post("/addProductToCart",addProductToCart);
 app.get('/getCart',getCart);
 
 //TourGuide
+app.get("/getTouristReportForItinerary/:itineraryId",getTouristReportForItinerary);
 app.post("/addTourGuide",upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'Certificate', maxCount: 1 } ]),createTourGuide);
 app.patch("/addTourGuideInfo",createTourGuideInfo);
 app.get("/getTourGuide/",getTourGuide);

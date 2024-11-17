@@ -1,6 +1,7 @@
 const tourGuideModel = require('../Models/tourGuide.js');
 const itineraryModel = require('../Models/Itinerary.js');
 const touristItineraryModel= require('../Models/touristItinerary.js');
+const touristModel=require('../Models/Tourist.js');
 const requestModel= require('../Models/Request.js');
 const { default: mongoose } = require('mongoose');
 const createTourGuide = async(req,res) => {
@@ -318,5 +319,52 @@ const settleDocsTourGuide = async (req, res) => {
       res.status(400).json({error: error.message});
    }
  };
- module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG,changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide,deactivateItinrary,activateItinrary};
+
+ const getTouristReportForItinerary = async (req, res) => {
+   try {
+     const { itineraryId } = req.params;
+     const { tourGuideUsername } = req.query;
+ 
+     if (!tourGuideUsername) {
+       return res.status(400).json({ message: "TourGuide username is required" });
+     }
+ 
+     console.log(`Searching for itineraryId: ${itineraryId} under TourGuide: ${tourGuideUsername}`);
+ 
+     // Query tourists who booked this itinerary under this TourGuide
+     const tourists = await touristModel.find({
+       Bookings: {
+         $elemMatch: {
+           _id: itineraryId, // Ensure the correct itinerary ID is used
+           TourGuide: tourGuideUsername, // Ensure TourGuide matches
+         },
+       },
+     }).select("Username Email Bookings");
+ 
+     console.log(`Found ${tourists.length} tourists for itineraryId: ${itineraryId}`);
+ 
+     // Prepare report
+     const report = {
+       itineraryId,
+       tourGuide: tourGuideUsername,
+       totalTourists: tourists.length,
+       tourists: tourists.map(tourist => ({
+         Username: tourist.Username,
+         Email: tourist.Email,
+       })),
+     };
+ 
+     // Return the report
+     return res.status(200).json({
+       message: "Report generated successfully",
+       report,
+     });
+   } catch (error) {
+     console.error(error);
+     return res.status(500).json({ message: "An error occurred", error });
+   }
+ };
+ 
+ module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG
+   ,changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide,deactivateItinrary,activateItinrary,getTouristReportForItinerary};
  
