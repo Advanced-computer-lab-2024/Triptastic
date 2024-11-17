@@ -357,7 +357,6 @@ const settleDocsAdvertiser = async (req, res) => {
       // Step 2: Prepare the report
       const report = {
         activityId,
-        advertiser: advertiserUsername,
         totalTourists: tourists.length,
         tourists: tourists.map((tourist) => ({
           Username: tourist.Username,

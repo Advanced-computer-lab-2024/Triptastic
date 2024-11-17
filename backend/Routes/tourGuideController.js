@@ -354,7 +354,6 @@ const settleDocsTourGuide = async (req, res) => {
      // Step 2: Prepare the report
      const report = {
        itineraryId,
-       tourGuide: tourGuideUsername,
        totalTourists: tourists.length,
        tourists: tourists.map((tourist) => ({
          Username: tourist.Username,
