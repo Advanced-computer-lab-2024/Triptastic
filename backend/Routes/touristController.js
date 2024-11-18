@@ -10,7 +10,8 @@ const { default: mongoose } = require('mongoose');
 const complaintModel = require('../Models/Complaint.js'); // Adjust the path based on your project structure
 const TourGuideModel = require('../Models/tourGuide.js'); // Adjust path as needed
 const requestModel = require('../Models/Request.js'); // Adjust path as needed
-
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const axios = require('axios');
 
 
@@ -49,18 +50,79 @@ const getCurrencyRates = async (req, res) => {
 
 
 
-const createTourist = async(req,res) => {
+const createTourist = async (req, res) => {
+  const { Username, Email, Password, Nationality, DOB, Occupation } = req.body;
 
-    const{Username,Email,Password,Nationality,DOB,Occupation}=req.body;
-    try{
-       const tourist=await touristModel.create({Username,Email,Password,Nationality,DOB,Occupation});
-       res.status(200).json(tourist);
+  try {
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(Password, 10);
+
+    // Create a new tourist with the hashed password
+    const tourist = await touristModel.create({
+      Username,
+      Email,
+      Password: hashedPassword,
+      Nationality,
+      DOB,
+      Occupation,
+    });
+
+    res.status(200).json({
+      message: 'Tourist registered successfully',
+      tourist,
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+
+
+const loginTourist = async (req, res) => {
+  const { Email, Password } = req.body;
+
+  try {
+    // Check if the user exists
+    const tourist = await touristModel.findOne({ Email });
+    if (!tourist) {
+      return res.status(404).json({ error: 'User not found' });
     }
-    catch{
-       res.status(400).json({error:error.message})
- 
+
+    // Validate the password
+    const isPasswordValid = await bcrypt.compare(Password, tourist.Password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
- }
+
+    // Generate a JWT token
+    const token = jwt.sign(
+      { id: tourist._id, Email: tourist.Email },
+      'mydevsecretkey',
+     
+      { expiresIn: '1h' } // Token expiration time
+    );
+
+    // Respond with token and user details
+    res.status(200).json({
+      message: 'Login successful',
+      token,
+      user: {
+        id: tourist._id,
+        Username: tourist.Username,
+        Email: tourist.Email,
+        Nationality: tourist.Nationality,
+        DOB: tourist.DOB,
+        Occupation: tourist.Occupation,
+        Wallet: tourist.Wallet,
+        points: tourist.points,
+        badge: tourist.badge,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Something went wrong. Please try again later.' });
+  }
+};
+
 
  const getTourist= async(req,res) =>{
   const {Username}= req.query;
@@ -1402,4 +1464,4 @@ const getCart = async (req, res) => {
   shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary
   
   ,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,
-  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary};
+  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist};
