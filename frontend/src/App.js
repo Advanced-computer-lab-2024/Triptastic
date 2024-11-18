@@ -37,6 +37,7 @@ import MuseumDetail from './pages/MuseumDetails';
 import { CurrencyProvider } from './pages/CurrencyContext'; // Import the provider from correct path
 import Cart from './pages/Cart';
 
+
 import AttendedActivitiesPage from './pages/AttendedActivities';
 function Home() {
   const navigate = useNavigate();

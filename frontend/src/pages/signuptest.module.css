@@ -1,0 +1,366 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+/* General Reset */
+:local(*),
+:local(*::before),
+:local(*::after) {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* AuthPage Container */
+:local(.authPage) {
+    background-color: #c9d6ff;
+    background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    transition: background-color 0.3s ease;
+}
+
+/* Main Container */
+:local(.container) {
+    background-color: #fff;
+    border-radius: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+    position: relative;
+    overflow: hidden;
+    width: 100%; /* Full width */
+    height: 100vh; /* Full height */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Text Elements */
+:local(.container p) {
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.3px;
+    margin: 20px 0;
+    color: #555;
+}
+
+:local(.container span) {
+    font-size: 12px;
+    color: #888;
+}
+
+:local(.container a) {
+    color: #333;
+    font-size: 13px;
+    text-decoration: none;
+    margin: 15px 0 10px;
+}
+
+/* Buttons */
+:local(.container button) {
+    background-color: orange;
+    color: #fff;
+    font-size: 14px;
+    padding: 10px 45px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+:local(.container button:hover) {
+    background-color: #e69500;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.container form {
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 40px;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+}
+
+:local(.container input ){
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    margin: 8px 0;
+    padding: 10px 15px;
+    font-size: 14px;
+    border-radius: 8px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+:local(.container input:focus) {
+    border-color: orange;
+    background-color: #fff;
+}
+/* Forms */
+:local(.formContainer) {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 50%;
+    transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+    z-index: 2;
+    opacity: 0;
+    display: none; /* Default state: hidden */
+}
+
+:local(.formContainer.active) {
+    display: flex; /* Show the active form */
+    opacity: 1;
+    z-index: 3;
+}
+
+:local(.signIn) {
+    left: 0;
+  
+}
+
+
+
+
+
+:local(.container .signIn) {
+    left: 0; /* Keep Sign-In on the left */
+    position: absolute; /* Ensure it's positioned relative to the container */
+    transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+}
+
+:local(.container.active .signIn) {
+    transform: translateX(-100%); /* Move Sign-In out of view to the left */
+    opacity: 0; /* Hide it */
+}
+/* Sign-Up Form */
+:local(.signUp) {
+    position: absolute;
+    right: 0;
+    opacity: 0;
+    transform: translateX(100%); /* Move off the screen initially */
+    height: 90%;
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+    z-index: 1;
+}
+
+/* When container is active, make Sign-Up form visible */
+:local(.container.active .signUp) {
+    transform: translateX(0);
+    opacity: 1;
+    z-index: 2;
+}
+
+
+
+
+
+
+
+
+
+
+:local(.sign-up form ){
+    width: 30%; /* Reduced form width */
+    max-width: 150px; /* Smaller maximum width */
+    padding: 0px; /* Reduced padding inside the form */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+:local(.sign-up form div) {
+    margin-bottom: 1px; /* Reduced spacing between form fields */
+    width: 70%;
+}
+
+:local(.sign-up form label) {
+    display: block;
+    font-size: 5px; /* Smaller font size */
+    font-weight: 300; /* Slightly lighter weight */
+    margin-bottom: 0px; /* Less space between label and input */
+    text-align: left;
+}
+
+:local(.sign-up form input ){
+    width: 100%;
+    padding: 2px; /* Reduced padding for inputs */
+    font-size: 5px; /* Smaller font size */
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    outline: none;
+    background-color: #f8f8f8;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+:local(.sign-up form input:focus) {
+    border-color: orange;
+    background-color: #fff;
+}
+
+:local(.sign-up h1) {
+    margin-bottom: 10px; /* Reduced spacing below heading */
+    font-size: 7px; /* Smaller heading font size */
+    font-weight: bold;
+    text-align: center;
+}
+
+:local(.sign-up button) {
+    width: 100%; /* Button spans full width */
+    padding: 8px; /* Reduced padding for buttons */
+    font-size: 12px; /* Smaller font size for buttons */
+    border-radius: 5px;
+    background-color: orange;
+    color: white;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+:local(.sign-up button:hover) {
+    background-color: #e69500;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Adjust scrollbar for smaller form */
+:local(.sign-up::-webkit-scrollbar ){
+    width: 6px; /* Thinner scrollbar */
+}
+
+:local(.sign-up::-webkit-scrollbar-thumb ){
+    background: orange;
+    border-radius: 3px;
+}
+
+:local(.sign-up::-webkit-scrollbar-thumb:hover) {
+    background: #e69500;
+}
+
+:local(.sign-up::-webkit-scrollbar-track ){
+    background: #f0f0f0;
+}
+
+/* Responsive Design for Smaller Screens */
+@media (max-width: 768px) {
+    :local(.sign-up form) {
+        max-width: 70%; /* Reduce form width further on smaller screens */
+    }
+
+   :local( .sign-up h1) {
+        font-size: 8px; /* Adjust heading size */
+    }
+
+    :local(.sign-up button) {
+        font-size: 10px; /* Smaller buttons */
+    }
+}
+
+/* Social Icons */
+:local(.socialIcons) {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+}
+
+:local(.socialIcons a) {
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 5px;
+    width: 40px;
+    height: 40px;
+    color: #666;
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+:local(.socialIcons a:hover) {
+    background-color: orange;
+    color: #fff;
+    border-color: orange;
+}
+
+/* Toggle Panels */
+:local(.toggleContainer) {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    transition: all 0.6s ease-in-out;
+    z-index: 3;
+    border-radius: 150px 0 0 100px;
+    background: linear-gradient(to right, #f8a25c, #e1ec3c);
+}
+
+:local(.container.active .toggleContainer) {
+    transform: translateX(-100%);
+    border-radius: 0 150px 100px 0;
+}
+
+:local(.togglePanel) {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0 30px;
+    text-align: center;
+    top: 0;
+    transition: all 0.6s ease-in-out;
+    color: white;
+}
+
+:local(.toggleLeft) {
+    transform: translateX(-200%);
+}
+
+:local(.container.active .toggleLeft) {
+    transform: translateX(0);
+}
+
+:local(.toggleRight) {
+    right: 0;
+    transform: translateX(0);
+}
+
+:local(.container.active .toggleRight) {
+    transform: translateX(200%);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+   :local(.container) {
+        width: 100%;
+        border-radius: 0;
+    }
+
+    :local(.toggle-container) {
+        display: none; /* Hide toggle on small screens */
+    }
+
+    :local(.form-container ){
+        width: 100%;
+        position: static;
+    }
+}
