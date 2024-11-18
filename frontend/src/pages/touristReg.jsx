@@ -1,60 +1,78 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './touristReg.css'; // Import the CSS file
+import styles from './signuptest.module.css'; // Import CSS module
 
-function TouristReg() {
-  const [formData, setFormData] = useState({
+function AuthPage() {
+  const [isSignUp, setIsSignUp] = useState(false); // State to toggle forms
+  const navigate = useNavigate();
+
+  // Separate state for Sign-Up form
+  const [signUpFormData, setSignUpFormData] = useState({
     Username: '',
     Email: '',
     Password: '',
     Nationality: '',
     DOB: '',
-    Occupation: ''
+    Occupation: '',
   });
+
+  const [signInFormData, setSignInFormData] = useState({
+    Email: '',
+    Password: '',
+  });
+
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const navigate = useNavigate();
 
-  // Handle input changes
-  const handleChange = (e) => {
+  // Handle input changes for Sign-Up form
+  const handleSignUpChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
+    setSignUpFormData((prevData) => ({
       ...prevData,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  // Handle form submission
-  const handleSubmit = async (e) => {
+  // Handle input changes for Sign-In form
+  const handleSignInChange = (e) => {
+    const { name, value } = e.target;
+    setSignInFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  // Handle Sign-Up form submission
+  const handleSignUpSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const response = await fetch('http://localhost:8000/addTourist', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(signUpFormData),
       });
 
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem('Username', formData.Username);
-        localStorage.setItem('Email', formData.Email);
-        localStorage.setItem('Password', formData.Password);
-        localStorage.setItem('Nationality', formData.Nationality);
-        localStorage.setItem('DOB', formData.DOB);
-        localStorage.setItem('Occupation', formData.Occupation);
+        localStorage.setItem('Username', signUpFormData.Username);
+        localStorage.setItem('Email', signUpFormData.Email);
+        localStorage.setItem('Password', signUpFormData.Password);
+        localStorage.setItem('Nationality', signUpFormData.Nationality);
+        localStorage.setItem('DOB', signUpFormData.DOB);
+        localStorage.setItem('Occupation', signUpFormData.Occupation);
 
         setSuccessMessage('Tourist registered successfully!');
         setErrorMessage('');
-        setFormData({
+        setSignUpFormData({
           Username: '',
           Email: '',
           Password: '',
           Nationality: '',
           DOB: '',
-          Occupation: ''
+          Occupation: '',
         });
         navigate('/tourist-profile');
       } else {
@@ -67,76 +85,135 @@ function TouristReg() {
     }
   };
 
+  // Handle Sign-In form submission
+  const handleSignInSubmit = (e) => {
+    e.preventDefault();
+    // Handle sign-in logic
+    console.log('Sign-In Data:', signInFormData);
+  };
+
   return (
-    <div className="container">
-      <h2>Tourist Registration</h2>
-      {errorMessage && <p className="error-message">{errorMessage}</p>}
-      {successMessage && <p className="success-message">{successMessage}</p>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username:</label>
-          <input
-            type="text"
-            name="Username"
-            value={formData.Username}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Email:</label>
+    <div className={`${styles.container} ${isSignUp ? styles.active : ''}`}>
+      {/* Half-Sliding Circle */}
+      <div className={styles.halfCircle}></div>
+
+  {/* Sign-Up Form */}
+  <div className={`${styles.formContainer} ${styles.signUp} ${isSignUp ? styles.active : ''}`}>
+    <h1>Create Account</h1>
+        {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
+        {successMessage && <p className={styles.successMessage}>{successMessage}</p>}
+        <form onSubmit={handleSignUpSubmit}>
+          <div>
+            <label htmlFor="signUpUsername">Username:</label>
+            <input
+              type="text"
+              id="signUpUsername"
+              name="Username"
+              value={signUpFormData.Username}
+              onChange={handleSignUpChange}
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="signUpEmail">Email:</label>
+            <input
+              type="email"
+              id="signUpEmail"
+              name="Email"
+              value={signUpFormData.Email}
+              onChange={handleSignUpChange}
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="signUpPassword">Password:</label>
+            <input
+              type="password"
+              id="signUpPassword"
+              name="Password"
+              value={signUpFormData.Password}
+              onChange={handleSignUpChange}
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="signUpNationality">Nationality:</label>
+            <input
+              type="text"
+              id="signUpNationality"
+              name="Nationality"
+              value={signUpFormData.Nationality}
+              onChange={handleSignUpChange}
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="signUpDOB">Date of Birth:</label>
+            <input
+              type="date"
+              id="signUpDOB"
+              name="DOB"
+              value={signUpFormData.DOB}
+              onChange={handleSignUpChange}
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="signUpOccupation">Occupation:</label>
+            <input
+              type="text"
+              id="signUpOccupation"
+              name="Occupation"
+              value={signUpFormData.Occupation}
+              onChange={handleSignUpChange}
+              required
+            />
+          </div>
+          <button type="submit">Register as Tourist</button>
+        </form>
+      </div>
+
+      {/* Sign-In Form */}
+      <div className={`${styles.formContainer} ${styles.signIn} ${!isSignUp ? styles.active : ''}`}>
+        <form onSubmit={handleSignInSubmit}>
+          <h1>Sign In</h1>
           <input
             type="email"
             name="Email"
-            value={formData.Email}
-            onChange={handleChange}
+            placeholder="Email"
+            value={signInFormData.Email}
+            onChange={handleSignInChange}
             required
           />
-        </div>
-        <div>
-          <label>Password:</label>
           <input
             type="password"
             name="Password"
-            value={formData.Password}
-            onChange={handleChange}
+            placeholder="Password"
+            value={signInFormData.Password}
+            onChange={handleSignInChange}
             required
           />
-        </div>
-        <div>
-          <label>Nationality:</label>
-          <input
-            type="text"
-            name="Nationality"
-            value={formData.Nationality}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Date of Birth:</label>
-          <input
-            type="date"
-            name="DOB"
-            value={formData.DOB}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Occupation:</label>
-          <input
-            type="text"
-            name="Occupation"
-            value={formData.Occupation}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <button type="submit">Register as Tourist</button>
-      </form>
+          <button type="submit">Sign In</button>
+        </form>
+      </div>
+
+      {/* Toggle Panels */}
+      <div className={styles.toggleContainer}>
+  {!isSignUp ? (
+    <div className={`${styles.togglePanel} ${styles.toggleRight}`}>
+      <h1>Hello Friend!</h1>
+      <button onClick={() => setIsSignUp(true)}>Sign Up</button>
+    </div>
+  ) : (
+    <div className={`${styles.togglePanel} ${styles.toggleLeft}`}>
+      <h1>Welcome Back!</h1>
+      <button onClick={() => setIsSignUp(false)}>Sign In</button>
+    </div>
+  )}
+</div>
+
     </div>
   );
 }
 
-export default TouristReg;
+export default AuthPage;
