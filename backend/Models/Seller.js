@@ -39,6 +39,8 @@ const sellerSchema = new Schema({
     enum: ['pending', 'accepted', 'rejected'], 
     default: 'pending' 
   },
+  createdAt: { type: Date, default: Date.now }, // Automatically add creation date
+
 }, { timestamps: true });
 
 const Seller =mongoose.models.Seller || mongoose.model('Seller', sellerSchema);

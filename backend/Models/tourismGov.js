@@ -11,7 +11,9 @@ const tourismGovSchema = new Schema({
   Password: {
     type: String,
     required: true,
-  }
+  },
+  createdAt: { type: Date, default: Date.now }, // Automatically add creation date
+
   
 }, { timestamps: true });
 

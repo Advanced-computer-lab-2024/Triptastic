@@ -54,7 +54,8 @@ const touristSchema = new Schema({
     familyFriendly: { type: Boolean, default: false },
     shopping: { type: Boolean, default: false },
     budget: { type: String, enum: ['low', 'medium', 'high'], default: 'medium' }
-  }
+  },
+  createdAt: { type: Date, default: Date.now }, // Automatically add creation date
 }, { timestamps: true });
 
 const Tourist = mongoose.models.Tourist || mongoose.model('Tourist', touristSchema);

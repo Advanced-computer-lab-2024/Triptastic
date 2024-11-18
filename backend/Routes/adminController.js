@@ -658,7 +658,38 @@ const rejectDeletionRequest = async (req, res) => {
   }
 };
 
+const getUserStatistics = async (req, res) => {
+  try {
+    const allModels = [touristModel,sellerModel, advertiserModel, tourGuideModel,tourismGovModel];
+    const currentYear = new Date().getFullYear();
 
-module.exports = {replyToComplaint,getPendingDeletionRequests,acceptDeletionRequest,rejectDeletionRequest,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
+    const statistics = { totalUsers: 0, monthlyUsers: {} };
+
+    for (const model of allModels) {
+      const users = await model.find({});
+      statistics.totalUsers += users.length;
+
+      users.forEach(user => {
+        const createdAt = new Date(user.createdAt);
+        if (createdAt.getFullYear() === currentYear) {
+          const month = createdAt.toLocaleString('default', { month: 'long' });
+
+          if (!statistics.monthlyUsers[month]) {
+            statistics.monthlyUsers[month] = 0;
+          }
+          statistics.monthlyUsers[month] += 1;
+        }
+      });
+    }
+
+    res.status(200).json(statistics);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error fetching user statistics' });
+  }
+};
+
+
+module.exports = {getUserStatistics,replyToComplaint,getPendingDeletionRequests,acceptDeletionRequest,rejectDeletionRequest,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
     ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin,viewAllPrefTag,deleteAdmin
     ,flagItinerary,flagTouristItinerary,flagActivity,getallItineraries,getallActivities,getallTouristItineraries,getComplaints,archiveProduct,unarchiveProduct};

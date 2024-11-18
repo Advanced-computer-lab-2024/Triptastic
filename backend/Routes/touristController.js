@@ -1391,6 +1391,7 @@ const getCart = async (req, res) => {
   }
 };
 
+
  module.exports = {getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
