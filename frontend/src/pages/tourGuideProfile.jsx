@@ -43,7 +43,8 @@ function TourGuideProfile() {
       setIsChangingPassword(false);
     }
   };
-
+  
+  const [itineraryReports, setItineraryReports] = useState({});
   const [tourGuideInfo, setTourGuideInfo] = useState(null);
   const [itineraries, setItineraries] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -562,6 +563,47 @@ function TourGuideProfile() {
   };
 
 };
+const handleViewReport = async (itineraryId) => {
+  const tourGuideUsername = localStorage.getItem('Username');
+
+  // If the report is already visible, toggle it off
+  if (itineraryReports[itineraryId]?.visible) {
+    setItineraryReports((prevReports) => ({
+      ...prevReports,
+      [itineraryId]: {
+        ...prevReports[itineraryId],
+        visible: false,
+      },
+    }));
+    return;
+  }
+
+  // Otherwise, fetch the report or toggle it on
+  try {
+    const response = await fetch(
+      `http://localhost:8000/getTouristReportForItinerary/${itineraryId}?tourGuideUsername=${tourGuideUsername}`
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      setItineraryReports((prevReports) => ({
+        ...prevReports,
+        [itineraryId]: {
+          ...data.report, // Add the report data
+          visible: true,  // Set visibility to true
+        },
+      }));
+    } else {
+      const errorData = await response.json();
+      setErrorMessage(errorData.message || 'Failed to fetch report');
+    }
+  } catch (error) {
+    console.error('An error occurred while fetching the report:', error);
+    setErrorMessage('An error occurred while fetching the report');
+  }
+};
+
+
   return (
   
     
@@ -751,24 +793,42 @@ function TourGuideProfile() {
               </form>
             )}
     
-            {itineraries.length > 0 ? (
-              itineraries.map((itinerary) => (
-                <div key={itinerary._id}>
-                  <h4>Locations: {itinerary.Locations.join(', ')}</h4>
-                  <p>Dates: {itinerary.DatesTimes}</p>
-                  <button onClick={() => handleViewItinerary(itinerary)}>View Details</button>
-                  <button onClick={() => handleEditItinerary(itinerary)}>Edit Itinerary</button>
-                  <button onClick={() => handleDeleteItinerary(itinerary._id)}>Delete Itinerary</button>
-                  {itinerary.active ? (
-              <button onClick={() => deactivateItinerary(itinerary._id)}>Deactivate Itinerary</button>
-            ) : (
-              <button onClick={() => activateItinerary(itinerary._id)}>Activate Itinerary</button>
-            )}
-                </div>
-              ))
-            ) : (
-              <p>No itineraries found.</p>
-            )}
+    {itineraries.length > 0 ? (
+  itineraries.map((itinerary) => (
+    <div key={itinerary._id}>
+      <h4>Locations: {itinerary.Locations.join(', ')}</h4>
+      <p>Dates: {itinerary.DatesTimes}</p>
+      <button onClick={() => handleViewReport(itinerary._id)}>
+        {itineraryReports[itinerary._id]?.visible ? 'Hide Report' : 'View Report'}
+      </button>
+
+      {/* Display the report for this itinerary if visible */}
+      {itineraryReports[itinerary._id]?.visible && (
+        <div className="report-section">
+          <h4>Report</h4>
+          <p><strong>Total Tourists:</strong> {itineraryReports[itinerary._id].totalTourists}</p>
+          {itineraryReports[itinerary._id].tourists.length > 0 ? (
+            <div>
+              <h5>Tourists:</h5>
+              <ul>
+                {itineraryReports[itinerary._id].tourists.map((tourist, index) => (
+                  <li key={index}>
+                    {tourist.Username} - {tourist.Email}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p>No tourists booked this itinerary yet.</p>
+          )}
+        </div>
+      )}
+    </div>
+  ))
+) : (
+  <p>No itineraries found.</p>
+)}
+
             {selectedItinerary && !isEditingItinerary && isIVisible &&(
               <div>
               <p><strong>Locations:</strong> {selectedItinerary.Locations.join(', ')}</p>

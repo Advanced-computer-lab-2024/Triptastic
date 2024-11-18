@@ -1,6 +1,7 @@
 const tourGuideModel = require('../Models/tourGuide.js');
 const itineraryModel = require('../Models/Itinerary.js');
 const touristItineraryModel= require('../Models/touristItinerary.js');
+const touristModel=require('../Models/Tourist.js');
 const requestModel= require('../Models/Request.js');
 const { default: mongoose } = require('mongoose');
 const createTourGuide = async(req,res) => {
@@ -318,5 +319,60 @@ const settleDocsTourGuide = async (req, res) => {
       res.status(400).json({error: error.message});
    }
  };
- module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG,changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide,deactivateItinrary,activateItinrary};
+
+ const getTouristReportForItinerary = async (req, res) => {
+   try {
+     const { itineraryId } = req.params; // Get itinerary ID from URL
+     const { tourGuideUsername } = req.query; // Get tour guide username from query
+ 
+     if (!tourGuideUsername) {
+       return res.status(400).json({ message: "TourGuide username is required" });
+     }
+ 
+     // Convert itineraryId to ObjectId if it's stored as an ObjectId
+     let itineraryObjectId;
+     try {
+       itineraryObjectId = new mongoose.Types.ObjectId(itineraryId);
+     } catch (error) {
+       return res.status(400).json({ message: "Invalid itinerary ID format" });
+     }
+ 
+     // Step 1: Find tourists whose bookings match the itinerary and tour guide
+     const tourists = await touristModel.find({
+       Bookings: {
+         $elemMatch: {
+           _id: itineraryObjectId, // Match the itinerary ID
+           TourGuide: tourGuideUsername, // Match the tour guide username
+         },
+       },
+     }).select("Username Email Bookings");
+ 
+     if (tourists.length === 0) {
+       return res.status(404).json({ message: "No tourists found for the specified itinerary" });
+     }
+ 
+     // Step 2: Prepare the report
+     const report = {
+       itineraryId,
+       totalTourists: tourists.length,
+       tourists: tourists.map((tourist) => ({
+         Username: tourist.Username,
+         Email: tourist.Email,
+       })),
+     };
+ 
+     // Step 3: Send the response
+     return res.status(200).json({
+       message: "Report generated successfully",
+       report,
+     });
+   } catch (error) {
+     console.error(error);
+     return res.status(500).json({ message: "An error occurred", error });
+   }
+ };
+ 
+ 
+ module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG
+   ,changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide,deactivateItinrary,activateItinrary,getTouristReportForItinerary};
  

@@ -13,7 +13,8 @@ const AdvertiserProfile = () => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [Logo, setLogo] = useState(null);
-  const [formData, setFormData] = useState({
+  const [activityReports, setActivityReports] = useState({});
+    const [formData, setFormData] = useState({
     Username: '',
     Email: '',
     Password: '',
@@ -164,6 +165,46 @@ const AdvertiserProfile = () => {
     }
   
     setUpdating(false);
+  };
+  
+  const handleViewReport = async (activityId) => {
+    // If the report is already visible, toggle it off
+    if (activityReports[activityId]?.visible) {
+      setActivityReports((prevReports) => ({
+        ...prevReports,
+        [activityId]: {
+          ...prevReports[activityId],
+          visible: false,
+        },
+      }));
+      return;
+    }
+  
+    // Otherwise, fetch the report or toggle it on
+    const advertiserUsername = localStorage.getItem('Username');
+  
+    try {
+      const response = await fetch(
+        `http://localhost:8000/getTouristReportForActivity/${activityId}?advertiserUsername=${advertiserUsername}`
+      );
+  
+      if (response.ok) {
+        const data = await response.json();
+        setActivityReports((prevReports) => ({
+          ...prevReports,
+          [activityId]: {
+            ...data.report, // Add the report data
+            visible: true,  // Set visibility to true
+          },
+        }));
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.message || 'Failed to fetch report');
+      }
+    } catch (error) {
+      console.error('An error occurred while fetching the report:', error);
+      setErrorMessage('An error occurred while fetching the report');
+    }
   };
   
 
@@ -351,6 +392,7 @@ const AdvertiserProfile = () => {
           </div>
         )
       )}
+
       
       {/* Password Change Section */}
       <div className="password-section">
@@ -364,20 +406,50 @@ const AdvertiserProfile = () => {
 
       {/* Activities Section */}
       <h3 className="activities-title">Your Activities</h3>
-      {activities.length > 0 ? (
-        <div className="activities-container">
-          {activities.map((activity) => (
-            <div key={activity._id} className="activity-card">
-              <p><strong>Name:</strong> {activity.name}</p>
-              <p><strong>Category:</strong> {activity.Category}</p>
-              <p><strong>Date:</strong> {activity.date}</p>
-              <p><strong>Budget:</strong> {activity.budget}</p>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p>No activities found.</p>
-      )}
+{activities.length > 0 ? (
+  <div className="activities-container">
+    {activities.map((activity) => (
+      <div key={activity._id} className="activity-card">
+        <p><strong>Name:</strong> {activity.name}</p>
+        <p><strong>Category:</strong> {activity.Category}</p>
+        <p><strong>Date:</strong> {activity.date}</p>
+        <p><strong>Budget:</strong> {activity.budget}</p>
+        <button
+          className="view-report-button"
+          onClick={() => handleViewReport(activity._id)}
+        >
+          {activityReports[activity._id]?.visible ? 'Hide Report' : 'View Report'}
+        </button>
+
+        {/* Display the report for this activity if visible */}
+        {activityReports[activity._id]?.visible && (
+          <div className="report-section">
+            <h4>Report</h4>
+            <p><strong>Total Tourists:</strong> {activityReports[activity._id].totalTourists}</p>
+            {activityReports[activity._id].tourists.length > 0 ? (
+              <div>
+                <h5>Tourists:</h5>
+                <ul>
+                  {activityReports[activity._id].tourists.map((tourist, index) => (
+                    <li key={index}>
+                      {tourist.Username} - {tourist.Email}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p>No tourists booked this activity yet.</p>
+            )}
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+) : (
+  <p>No activities found.</p>
+)}
+
+
 
       {/* Sidebar */}
       <div className="sidebar">
