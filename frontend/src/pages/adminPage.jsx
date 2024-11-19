@@ -33,6 +33,11 @@ const AdminPage = () => {
   const [productSearchResult, setProductSearchResult] = useState(null);
   const [productNameToArchive, setProductNameToArchive] = useState(''); // New state variable
 
+  const [statistics, setStatistics] = useState(null);
+  const [statsLoading, setStatsLoading] = useState(false);
+  const [statsError, setStatsError] = useState("");
+  const [showStats, setShowStats] = useState(false); // State to toggle visibility
+
   const [changePasswordData, setChangePasswordData] = useState({
     Username: '',
     currentPassword: '',
@@ -786,6 +791,30 @@ const unarchiveProduct = async () => {
   };
  
     
+  const fetchStatistics = async () => {
+    setStatsLoading(true);
+    setStatsError("");
+    setStatistics(null); // Clear previous data
+
+    try {
+      const response = await fetch("http://localhost:8000/getUserStatistics");
+      if (!response.ok) {
+        throw new Error("Failed to fetch statistics");
+      }
+      const data = await response.json();
+      setStatistics(data); // Set statistics data
+      setShowStats(true); // Show statistics after fetching
+    } catch (error) {
+      setStatsError("An error occurred while fetching statistics.");
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+
+  const handleHideStatistics = () => {
+    setShowStats(false); // Hide statistics
+    setStatistics(null); // Clear statistics data
+  };
   
     useEffect(() => {
       const fetchRequests = async () => {
@@ -867,6 +896,44 @@ const unarchiveProduct = async () => {
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
       </form>
+
+      <h2>Users Statistics</h2>
+      {!showStats ? (
+        <button onClick={fetchStatistics} disabled={statsLoading}>
+          {statsLoading ? "Loading..." : "View Users Statistics"}
+        </button>
+      ) : (
+        <button onClick={handleHideStatistics}>
+          Hide Users Statistics
+        </button>
+      )}
+      {statsError && <p style={{ color: "red" }}>{statsError}</p>}
+      {showStats && statistics && (
+        <div style={{ marginTop: "20px" }}>
+          <p><strong>Total Users:</strong> {statistics.totalUsers}</p>
+          <h3>New Users per Month:</h3>
+          {statistics.monthlyUsers && Object.keys(statistics.monthlyUsers).length > 0 ? (
+            <table border="1" style={{ width: "50%", margin: "auto" }}>
+              <thead>
+                <tr>
+                  <th>Month</th>
+                  <th>New Users</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(statistics.monthlyUsers).map(([month, count]) => (
+                  <tr key={month}>
+                    <td>{month}</td>
+                    <td>{count}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No new users recorded this month.</p>
+          )}
+        </div>
+      )}
 
       <h2>Change Admin Password</h2>
 <form onSubmit={handleChangePassword}>

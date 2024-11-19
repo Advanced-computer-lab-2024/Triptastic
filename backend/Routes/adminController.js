@@ -657,7 +657,7 @@ const rejectDeletionRequest = async (req, res) => {
     res.status(500).json({ error: "Failed to reject deletion request" });
   }
 };
-
+//DD 
 const getUserStatistics = async (req, res) => {
   try {
     const allModels = [touristModel,sellerModel, advertiserModel, tourGuideModel,tourismGovModel];
