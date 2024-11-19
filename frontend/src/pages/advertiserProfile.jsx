@@ -257,7 +257,7 @@ const [filteredActivities, setFilteredActivities] = useState([]);
       } else {
         const errorData = await response.json();
         setFilteredActivities([]); // Clear activities on error
-        setErrorMessage(errorData.error || "Failed to filter activities.");
+        setErrorMessage(errorData.error);
       }
     } catch (error) {
       console.error("Error filtering activities:", error);
