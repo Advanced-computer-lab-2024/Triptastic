@@ -9,7 +9,7 @@ require("dotenv").config();
 const MongoURI = process.env.MONGO_URI ;
 const upload = require("./Middleware/uploadMiddleware"); 
 //Tour Guide
-const {createTourGuideInfo,createTourGuide,getTouristReportForItinerary}=require("./Routes/tourGuideController");
+const {createTourGuideInfo,createTourGuide,getTouristReportForItinerary,filterItinerariesByMonth}=require("./Routes/tourGuideController");
 const {updateTourGuide}=require("./Routes/tourGuideController");
 const {getTourGuide}=require("./Routes/tourGuideController");
 const {createItinerary,getItinerary,updateItinerary,deleteItinerary,getTouristItinerary,createTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG}=require("./Routes/tourGuideController");
@@ -27,7 +27,7 @@ const {getCart,addProductToCart,getAttendedActivities,getCurrencyRates,changepas
   fileComplaint,getComplaintsByTourist,shareActivity,shareHistorical,shareMuseum,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,getBookedActivities,getActivityToShare,setPreferences,getTransportation,submitFeedbackItinerary} = require("./Routes/touristController");
 
 //Advertiser
-const{changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser,getTouristReportForActivity}=require("./Routes/advertiserController");
+const{changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser,getTouristReportForActivity,filterActivitiesByMonth}=require("./Routes/advertiserController");
 
 //Seller
 const{changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller}=require("./Routes/sellerController");
@@ -172,6 +172,8 @@ app.get("/getPendingTourGuides",getPendingTourGuides);
 app.patch("/settleDocsTourGuide",settleDocsTourGuide);
 app.patch("/deactivateItinrary/:id",deactivateItinrary);
 app.patch("/activateItinrary/:id",activateItinrary);
+app.get("/filterItinerariesByMonth", filterItinerariesByMonth);
+
 
 //Advertiser
 app.get("/getTouristReportForActivity/:activityId",getTouristReportForActivity);
@@ -188,7 +190,7 @@ app.patch("/changePasswordAdvertiser",changePasswordAdvertiser);
 app.get('/getPendingAdvertisers',getPendingAdvertisers);
 app.post('/createTransportation',createTransportation);
 app.patch('/settleDocsAdvertiser',settleDocsAdvertiser);
-
+app.get('/filterActivitiesByMonth', filterActivitiesByMonth);
 
 //Seller
 app.post('/createSeller', upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'TaxationRegistryCard', maxCount: 1 } ]), createSeller);
