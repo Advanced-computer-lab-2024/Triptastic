@@ -9,7 +9,7 @@ require("dotenv").config();
 const MongoURI = process.env.MONGO_URI ;
 const upload = require("./Middleware/uploadMiddleware"); 
 //Tour Guide
-const {createTourGuideInfo,createTourGuide,getTouristReportForItinerary}=require("./Routes/tourGuideController");
+const {createTourGuideInfo,createTourGuide,getTouristReportForItinerary,filterItinerariesByMonth}=require("./Routes/tourGuideController");
 const {updateTourGuide}=require("./Routes/tourGuideController");
 const {getTourGuide}=require("./Routes/tourGuideController");
 const {createItinerary,getItinerary,updateItinerary,deleteItinerary,getTouristItinerary,createTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG}=require("./Routes/tourGuideController");
@@ -24,16 +24,16 @@ const {getCart,addProductToCart,getAttendedActivities,getCurrencyRates,changepas
   ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,
   sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,
   getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity,
-  fileComplaint,getComplaintsByTourist,shareActivity,shareHistorical,shareMuseum,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,getBookedActivities,getActivityToShare,setPreferences,getTransportation,submitFeedbackItinerary} = require("./Routes/touristController");
+  fileComplaint,getComplaintsByTourist,shareActivity,shareHistorical,shareMuseum,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,getBookedActivities,getActivityToShare,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist} = require("./Routes/touristController");
 
 //Advertiser
-const{changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser,getTouristReportForActivity}=require("./Routes/advertiserController");
+const{changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser,getTouristReportForActivity,filterActivitiesByMonth}=require("./Routes/advertiserController");
 
 //Seller
 const{changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller}=require("./Routes/sellerController");
 
 //Admin
-const{replyToComplaint,rejectDeletionRequest,acceptDeletionRequest,getPendingDeletionRequests,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin,createCategory,
+const{getUserStatistics,replyToComplaint,rejectDeletionRequest,acceptDeletionRequest,getPendingDeletionRequests,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin,createCategory,
   getCategory,
   updateCategory,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
@@ -149,7 +149,7 @@ app.get('/getCurrencyRates',getCurrencyRates);
 app.get('/getAttendedActivities',getAttendedActivities);
 app.post("/addProductToCart",addProductToCart);
 app.get('/getCart',getCart);
-
+app.post('/loginTourist',loginTourist);
 //TourGuide
 app.get("/getTouristReportForItinerary/:itineraryId",getTouristReportForItinerary);
 app.post("/addTourGuide",upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'Certificate', maxCount: 1 } ]),createTourGuide);
@@ -172,6 +172,8 @@ app.get("/getPendingTourGuides",getPendingTourGuides);
 app.patch("/settleDocsTourGuide",settleDocsTourGuide);
 app.patch("/deactivateItinrary/:id",deactivateItinrary);
 app.patch("/activateItinrary/:id",activateItinrary);
+app.get("/filterItinerariesByMonth", filterItinerariesByMonth);
+
 
 //Advertiser
 app.get("/getTouristReportForActivity/:activityId",getTouristReportForActivity);
@@ -188,7 +190,7 @@ app.patch("/changePasswordAdvertiser",changePasswordAdvertiser);
 app.get('/getPendingAdvertisers',getPendingAdvertisers);
 app.post('/createTransportation',createTransportation);
 app.patch('/settleDocsAdvertiser',settleDocsAdvertiser);
-
+app.get('/filterActivitiesByMonth', filterActivitiesByMonth);
 
 //Seller
 app.post('/createSeller', upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'TaxationRegistryCard', maxCount: 1 } ]), createSeller);
@@ -243,6 +245,8 @@ app.post("/rejectDeletionRequest",rejectDeletionRequest);
 app.post("/replyToComplaint/:id",replyToComplaint);
 app.patch("/archiveProduct/:productName",archiveProduct);
 app.patch("/unarchiveProduct/:productName",unarchiveProduct);
+app.get("/getUserStatistics",getUserStatistics);
+
 
 
 

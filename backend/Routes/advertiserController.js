@@ -375,7 +375,44 @@ const settleDocsAdvertiser = async (req, res) => {
     }
   };
 
+  const filterActivitiesByMonth = async (req, res) => {
+    const { month, Username } = req.query; // Expect 'Username' from the query
+  
+    if (!month) {
+      return res.status(400).json({ error: "Month is required" });
+    }
+  
+    if (!Username) {
+      return res.status(400).json({ error: "Username is required" });
+    }
+  
+    try {
+      const monthInt = parseInt(month, 10);
+  
+      if (isNaN(monthInt) || monthInt < 1 || monthInt > 12) {
+        return res.status(400).json({ error: "Invalid month. Please provide a value between 1 and 12." });
+      }
+  
+      // Fetch activities for the specific Username
+      const activities = await activitiesModel.find({ Advertiser: Username }); // Match Advertiser field with Username
+      const filteredActivities = activities.filter((activity) => {
+        const activityDate = new Date(activity.date); // Assuming `date` is the date field
+        return activityDate.getMonth() + 1 === monthInt; // Match the month (1-based index)
+      });
+  
+      if (filteredActivities.length === 0) {
+        return res.status(404).json({ msg: "No activities found for the given month." });
+      }
+  
+      res.status(200).json(filteredActivities);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Error filtering activities by month" });
+    }
+  };
+  
+
  module.exports = {changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,
    getActivity,
    updateActivity,
-   deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser,getTouristReportForActivity};
+   deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser,getTouristReportForActivity,filterActivitiesByMonth};

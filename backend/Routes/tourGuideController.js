@@ -371,8 +371,45 @@ const settleDocsTourGuide = async (req, res) => {
      return res.status(500).json({ message: "An error occurred", error });
    }
  };
+
+ const filterItinerariesByMonth = async (req, res) => {
+   const { Username, month } = req.query;
+ 
+   if (!month) {
+     return res.status(400).json({ error: "Month is required" });
+   }
+ 
+   if (!Username) {
+     return res.status(400).json({ error: "Username is required" });
+   }
+ 
+   try {
+     const monthInt = parseInt(month, 10);
+     if (isNaN(monthInt) || monthInt < 1 || monthInt > 12) {
+       return res.status(400).json({ error: "Invalid month. Provide 1-12." });
+     }
+ 
+     const itineraries = await itineraryModel.find({ TourGuide: Username });
+     const filteredItineraries = itineraries.filter((itinerary) => {
+       const itineraryDate = new Date(itinerary.DatesTimes);
+       return itineraryDate.getMonth() + 1 === monthInt;
+     });
+ 
+     if (filteredItineraries.length === 0) {
+       return res.status(404).json({ msg: "No itineraries found for the given month." });
+     }
+ 
+     res.status(200).json(filteredItineraries);
+   } catch (error) {
+     console.error(error);
+     res.status(500).json({ error: "Error filtering itineraries by month" });
+   }
+ };
+ 
+ 
+ 
  
  
  module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG
-   ,changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide,deactivateItinrary,activateItinrary,getTouristReportForItinerary};
+   ,changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide,deactivateItinrary,activateItinrary,getTouristReportForItinerary,filterItinerariesByMonth};
  

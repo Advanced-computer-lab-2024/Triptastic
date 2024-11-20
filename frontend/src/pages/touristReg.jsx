@@ -86,11 +86,44 @@ function AuthPage() {
   };
 
   // Handle Sign-In form submission
-  const handleSignInSubmit = (e) => {
-    e.preventDefault();
-    // Handle sign-in logic
-    console.log('Sign-In Data:', signInFormData);
-  };
+// Handle Sign-In form submission
+const handleSignInSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const response = await fetch('http://localhost:8000/loginTourist', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(signInFormData),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+
+      // Store the token and user details in localStorage
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('Username', data.user.Username);
+      localStorage.setItem('Email', data.user.Email);
+      localStorage.setItem('Nationality', data.user.Nationality);
+      localStorage.setItem('DOB', data.user.DOB);
+      localStorage.setItem('Occupation', data.user.Occupation);
+
+      // Show success message and navigate to the profile page
+      setSuccessMessage('Login successful!');
+      setErrorMessage('');
+      navigate('/tourist-profile');
+    } else {
+      const errorData = await response.json();
+      setErrorMessage(errorData.error || 'Login failed. Please check your credentials.');
+      setSuccessMessage('');
+    }
+  } catch (error) {
+    setErrorMessage('Something went wrong. Please try again later.');
+  }
+};
+
 
   return (
     <div className={`${styles.container} ${isSignUp ? styles.active : ''}`}>

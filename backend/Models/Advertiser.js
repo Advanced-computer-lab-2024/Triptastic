@@ -47,6 +47,7 @@ const advertiserSchema = new Schema({
     default: 'pending' 
   },
 
+  createdAt: { type: Date, default: Date.now }, // Automatically add creation date
 
 
 }, { timestamps: true });

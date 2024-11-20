@@ -70,6 +70,8 @@ const tourGuideSchema = new Schema({
       },
     },
   ],
+  createdAt: { type: Date, default: Date.now }, // Automatically add creation date
+
 }, { timestamps: true });
 
 const TourGuide = mongoose.models.tourGuide || mongoose.model('tourGuide', tourGuideSchema);
