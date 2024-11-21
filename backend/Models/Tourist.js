@@ -34,6 +34,18 @@ const touristSchema = new Schema({
     required:false
 
   },
+  otp: {
+    type: String,
+    default: null,
+  },
+  otpExpiry: {
+    type: Date,
+    default: null,
+  },
+  createdAt: { 
+    type: Date, 
+    default: Date.now, // Automatically add creation date 
+  },
   Bookings: [{
     
     type: Object, 

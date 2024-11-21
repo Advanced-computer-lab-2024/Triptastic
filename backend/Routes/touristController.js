@@ -126,6 +126,8 @@ const loginTourist = async (req, res) => {
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
 
 
+
+
 const requestOTP = async (req, res) => {
   const { Email } = req.body;
 
@@ -144,15 +146,15 @@ const requestOTP = async (req, res) => {
 
     // Send OTP to email
     const transporter = nodemailer.createTransport({
-      service: 'Gmail',
+      service: 'gmail',
       auth: {
-        user: 'your-email@gmail.com',
-        pass: 'your-email-password',
+        user: 'malook25062003@gmail.com',
+        pass: 'sxvo feuu woie gpfn',
       },
     });
 
     const mailOptions = {
-      from: 'your-email@gmail.com',
+      from: 'malook25062003@gmail.com',
       to: Email,
       subject: 'Your OTP for Password Reset',
       text: `Your OTP is ${otp}. It is valid for 10 minutes.`,
@@ -166,6 +168,39 @@ const requestOTP = async (req, res) => {
     res.status(500).json({ error: 'Failed to send OTP' });
   }
 };
+
+const resetPassword = async (req, res) => {
+  const { Email, otp, newPassword } = req.body;
+
+  try {
+    const tourist = await touristModel.findOne({ Email });
+    if (!tourist) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (tourist.otp !== otp || Date.now() > tourist.otpExpiry) {
+      return res.status(400).json({ error: 'Invalid or expired OTP' });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the password and clear the OTP fields
+    tourist.Password = hashedPassword;
+    tourist.otp = null;
+    tourist.otpExpiry = null;
+    await tourist.save();
+
+    res.status(200).json({ message: 'Password reset successful' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to reset password' });
+  }
+};
+
+
+
+
 
  const getTourist= async(req,res) =>{
   const {Username}= req.query;
@@ -1570,7 +1605,7 @@ const getCart = async (req, res) => {
 };
 
 
- module.exports = {getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+ module.exports = {resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
