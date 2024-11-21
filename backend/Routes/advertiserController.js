@@ -5,25 +5,75 @@ const PreferenceTagsModel = require('../Models/PreferenceTags.js');
 const RequestModel = require('../Models/Request.js');
 const TransportationModel = require('../Models/Transportation.js');
 const touristModel = require('../Models/Tourist.js');
-
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const { default: mongoose } = require('mongoose');
-const createAdvertiser = async(req,res) => {
+const createAdvertiser = async (req, res) => {
+  const { Username, Email, Password } = req.body;
+  const idDocument = req.files?.Id?.[0]?.path || null;
+  const taxationRegistryCard = req.files?.TaxationRegistryCard?.[0]?.path || null;
 
-    const{Username,Email,Password}=req.body;
-    const idDocument = req.files?.Id?.[0]?.path || null;
-    const taxationRegistryCard = req.files?.TaxationRegistryCard?.[0]?.path || null;
+  try {
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(Password, 10);
 
-    try{
-       const advertiser=await advertiserModel.create({Username,Email,Password,Id:idDocument,
-        TaxationRegistryCard: taxationRegistryCard});
-       res.status(200).json(advertiser);
-    }
-    catch{
-       res.status(400).json({error:error.message})
- 
-    }
- }
+      // Create the advertiser
+      const advertiser = await advertiserModel.create({
+          Username,
+          Email,
+          Password: hashedPassword,
+          Id: idDocument,
+          TaxationRegistryCard: taxationRegistryCard,
+      });
 
+      res.status(201).json({
+          message: 'Advertiser registered successfully',
+          advertiser,
+      });
+  } catch (error) {
+      res.status(400).json({ error: error.message });
+  }
+};
+
+const loginAdvertiser = async (req, res) => {
+  const { Email, Password } = req.body;
+
+  try {
+      // Find the advertiser by email
+      const advertiser = await advertiserModel.findOne({ Email });
+      if (!advertiser) {
+          return res.status(404).json({ error: 'Advertiser not found' });
+      }
+
+      // Validate the password
+      const isPasswordValid = await bcrypt.compare(Password, advertiser.Password);
+      if (!isPasswordValid) {
+          return res.status(401).json({ error: 'Invalid credentials' });
+      }
+
+      // Generate a JWT token
+      const token = jwt.sign(
+          { id: advertiser._id, Email: advertiser.Email },
+          'mydevsecretkey', // Replace with a secure environment variable in production
+          { expiresIn: '1h' }
+      );
+
+      res.status(200).json({
+          message: 'Login successful',
+          token,
+          user: {
+              id: advertiser._id,
+              Username: advertiser.Username,
+              Email: advertiser.Email,
+              docsApproved: advertiser.docsApproved,
+              TaxationRegistryCard: advertiser.TaxationRegistryCard,
+              Id: advertiser.Id,
+          },
+      });
+  } catch (error) {
+      res.status(500).json({ error: 'Something went wrong. Please try again later.' });
+  }
+};
 
 
 const getAdvertiser= async(req,res) =>{
@@ -375,7 +425,44 @@ const settleDocsAdvertiser = async (req, res) => {
     }
   };
 
+  const filterActivitiesByMonth = async (req, res) => {
+    const { month, Username } = req.query; // Expect 'Username' from the query
+  
+    if (!month) {
+      return res.status(400).json({ error: "Month is required" });
+    }
+  
+    if (!Username) {
+      return res.status(400).json({ error: "Username is required" });
+    }
+  
+    try {
+      const monthInt = parseInt(month, 10);
+  
+      if (isNaN(monthInt) || monthInt < 1 || monthInt > 12) {
+        return res.status(400).json({ error: "Invalid month. Please provide a value between 1 and 12." });
+      }
+  
+      // Fetch activities for the specific Username
+      const activities = await activitiesModel.find({ Advertiser: Username }); // Match Advertiser field with Username
+      const filteredActivities = activities.filter((activity) => {
+        const activityDate = new Date(activity.date); // Assuming `date` is the date field
+        return activityDate.getMonth() + 1 === monthInt; // Match the month (1-based index)
+      });
+  
+      if (filteredActivities.length === 0) {
+        return res.status(404).json({ msg: "No activities found for the given month." });
+      }
+  
+      res.status(200).json(filteredActivities);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Error filtering activities by month" });
+    }
+  };
+  
+
  module.exports = {changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,
    getActivity,
    updateActivity,
-   deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser,getTouristReportForActivity};
+   deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser,getTouristReportForActivity,filterActivitiesByMonth,loginAdvertiser};

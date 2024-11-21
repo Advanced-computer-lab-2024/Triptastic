@@ -5,6 +5,8 @@ import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-route
 const AdvertiserProfile = () => {
   const [advertiserInfo, setAdvertiserInfo] = useState(null);
   const [activities, setActivities] = useState([]);
+  const [filterMonth, setFilterMonth] = useState('');
+const [filteredActivities, setFilteredActivities] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
@@ -219,6 +221,7 @@ const AdvertiserProfile = () => {
           setErrorMessage('No activities found for this advertiser.');
         } else {
           setActivities(data);
+          setFilteredActivities(data);
           setErrorMessage('');
         }
       } else {
@@ -229,6 +232,40 @@ const AdvertiserProfile = () => {
       console.error(error);
     }
   };
+
+  const handleFilterMonth = async (e) => {
+    const selectedMonth = e.target.value;
+    setFilterMonth(selectedMonth);
+  
+    const Username = localStorage.getItem("Username");
+  
+    if (!selectedMonth) {
+      // If no month is selected, fetch all activities
+      fetchActivities();
+      return;
+    }
+  
+    try {
+      const response = await fetch(
+        `http://localhost:8000/filterActivitiesByMonth?Username=${Username}&month=${selectedMonth}`
+      );
+  
+      if (response.ok) {
+        const data = await response.json();
+        setFilteredActivities(data); // Set the filtered activities
+        setErrorMessage("");
+      } else {
+        const errorData = await response.json();
+        setFilteredActivities([]); // Clear activities on error
+        setErrorMessage(errorData.error);
+      }
+    } catch (error) {
+      console.error("Error filtering activities:", error);
+      setFilteredActivities([]); // Clear activities on error
+      setErrorMessage("An error occurred while filtering activities.");
+    }
+  };
+  
 
 
   const handlePasswordChange = async () => {
@@ -403,12 +440,34 @@ const AdvertiserProfile = () => {
         <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
         <button onClick={handlePasswordChange} className="password-button">Change Password</button>
       </div>
-
+{/* Filter Activities by Month */}
+<div className="filter-section">
+  <label htmlFor="monthFilter">Filter by Month:</label>
+  <select
+    id="monthFilter"
+    value={filterMonth}
+    onChange={handleFilterMonth}
+  >
+    <option value="">All Months</option>
+    <option value="1">January</option>
+    <option value="2">February</option>
+    <option value="3">March</option>
+    <option value="4">April</option>
+    <option value="5">May</option>
+    <option value="6">June</option>
+    <option value="7">July</option>
+    <option value="8">August</option>
+    <option value="9">September</option>
+    <option value="10">October</option>
+    <option value="11">November</option>
+    <option value="12">December</option>
+  </select>
+</div>
       {/* Activities Section */}
       <h3 className="activities-title">Your Activities</h3>
-{activities.length > 0 ? (
+{filteredActivities.length > 0 ? (
   <div className="activities-container">
-    {activities.map((activity) => (
+    {filteredActivities.map((activity) => (
       <div key={activity._id} className="activity-card">
         <p><strong>Name:</strong> {activity.name}</p>
         <p><strong>Category:</strong> {activity.Category}</p>
@@ -448,7 +507,6 @@ const AdvertiserProfile = () => {
 ) : (
   <p>No activities found.</p>
 )}
-
 
 
       {/* Sidebar */}

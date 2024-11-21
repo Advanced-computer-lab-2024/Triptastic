@@ -13,8 +13,7 @@
 /* AuthPage Container */
 :local(.authPage) {
     background-color: #c9d6ff;
-    background: linear-gradient(to right, #e2e2e2, #c9d6ff);
-    display: flex;
+    background: linear-gradient(to right, #a8e063,   #4CAF50); /* Green tones */    display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
@@ -60,7 +59,7 @@
 
 /* Buttons */
 :local(.container button) {
-    background-color: orange;
+    background-color:   #4CAF50; /* Green */
     color: #fff;
     font-size: 14px;
     padding: 10px 45px;
@@ -73,7 +72,7 @@
 }
 
 :local(.container button:hover) {
-    background-color: #e69500;
+    background-color:   #4CAF50; /* Darker green */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
@@ -102,8 +101,8 @@
 }
 
 :local(.container input:focus) {
-    border-color: orange;
-    background-color: #fff;
+    border-color:   #4CAF50; /* Green */
+    background-color: #f0fff0; /* Light green background */
 }
 /* Forms */
 :local(.formContainer) {
@@ -292,9 +291,9 @@
 }
 
 :local(.socialIcons a:hover) {
-    background-color: orange;
+    background-color: #4CAF50; /* Green */
     color: #fff;
-    border-color: orange;
+    border-color:   #4CAF50;
 }
 
 /* Toggle Panels */
@@ -308,7 +307,7 @@
     transition: all 0.6s ease-in-out;
     z-index: 3;
     border-radius: 150px 0 0 100px;
-    background: linear-gradient(to right, #f8a25c, #e1ec3c);
+    background: linear-gradient(to right, #a8e063,  #4CAF50); /* Green tones */
 }
 
 :local(.container.active .toggleContainer) {

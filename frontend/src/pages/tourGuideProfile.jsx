@@ -47,6 +47,8 @@ function TourGuideProfile() {
   const [itineraryReports, setItineraryReports] = useState({});
   const [tourGuideInfo, setTourGuideInfo] = useState(null);
   const [itineraries, setItineraries] = useState([]);
+  const [filteredItineraries, setFilteredItineraries] = useState([]); // Filtered itineraries
+  const [selectedMonth, setSelectedMonth] = useState(""); // Selected month
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
@@ -203,6 +205,7 @@ function TourGuideProfile() {
         if (response.ok) {
           const data = await response.json();
           setItineraries(data);
+          setFilteredItineraries(data); 
         } else {
           throw new Error('Failed to fetch itineraries');
         }
@@ -228,6 +231,41 @@ function TourGuideProfile() {
       }
     }
   };
+
+  const handleMonthFilter = async (month) => {
+    setSelectedMonth(month);
+  
+    const Username = localStorage.getItem("Username");
+  
+    if (!Username) {
+      console.error("No logged-in username found.");
+      return;
+    }
+  
+    if (!month) {
+      // Reset to show all itineraries for this tour guide
+      setFilteredItineraries(itineraries);
+      return;
+    }
+  
+    try {
+      const response = await fetch(
+        `http://localhost:8000/filterItinerariesByMonth?Username=${Username}&month=${month}`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setFilteredItineraries(data); // Update with filtered itineraries
+      } else {
+        setFilteredItineraries([]); // Clear if no results or error
+        const errorData = await response.json();
+        console.error("Error fetching filtered itineraries:", errorData);
+      }
+    } catch (error) {
+      console.error("An error occurred while filtering itineraries:", error);
+      setFilteredItineraries([]);
+    }
+  };
+  
 
   const toggleProfileDetails = () => {
     setIsVisible((prevState) => !prevState);
@@ -792,14 +830,29 @@ const handleViewReport = async (itineraryId) => {
                 <button type="submit">Add Itinerary</button>
               </form>
             )}
+
+<div>
+  <h3>Filter Itineraries by Month</h3>
+  <select
+    onChange={(e) => handleMonthFilter(e.target.value)}
+    value={selectedMonth}
+  >
+    <option value="">All Months</option>
+    {Array.from({ length: 12 }, (_, i) => (
+      <option key={i + 1} value={i + 1}>
+        {new Date(0, i).toLocaleString("default", { month: "long" })}
+      </option>
+    ))}
+  </select>
+</div>
     
-    {itineraries.length > 0 ? (
-  itineraries.map((itinerary) => (
+{filteredItineraries.length > 0 ? (
+  filteredItineraries.map((itinerary) => (
     <div key={itinerary._id}>
-      <h4>Locations: {itinerary.Locations.join(', ')}</h4>
+      <h4>Locations: {itinerary.Locations.join(", ")}</h4>
       <p>Dates: {itinerary.DatesTimes}</p>
       <button onClick={() => handleViewReport(itinerary._id)}>
-        {itineraryReports[itinerary._id]?.visible ? 'Hide Report' : 'View Report'}
+        {itineraryReports[itinerary._id]?.visible ? "Hide Report" : "View Report"}
       </button>
 
       {/* Display the report for this itinerary if visible */}
@@ -808,16 +861,11 @@ const handleViewReport = async (itineraryId) => {
           <h4>Report</h4>
           <p><strong>Total Tourists:</strong> {itineraryReports[itinerary._id].totalTourists}</p>
           {itineraryReports[itinerary._id].tourists.length > 0 ? (
-            <div>
-              <h5>Tourists:</h5>
-              <ul>
-                {itineraryReports[itinerary._id].tourists.map((tourist, index) => (
-                  <li key={index}>
-                    {tourist.Username} - {tourist.Email}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <ul>
+              {itineraryReports[itinerary._id].tourists.map((tourist, index) => (
+                <li key={index}>{tourist.Username} - {tourist.Email}</li>
+              ))}
+            </ul>
           ) : (
             <p>No tourists booked this itinerary yet.</p>
           )}
