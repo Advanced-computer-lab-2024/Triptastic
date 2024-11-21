@@ -4,23 +4,76 @@ const requestModel= require('../Models/Request.js');
 const productModel= require('../Models/Product.js');
 const cartModel = require('../Models/Cart.js'); // Import the Cart model
 const { default: mongoose } = require('mongoose');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const createSeller = async (req, res) => {
+  const { Username, Email, Password } = req.body;
+  const idDocument = req.files?.Id?.[0]?.path || null;
+  const taxationRegistryCard = req.files?.TaxationRegistryCard?.[0]?.path || null;
 
-const createSeller = async(req,res) => {
+  try {
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(Password, 10);
 
-    const{Username,Email,Password}=req.body;
-    const idDocument = req.files?.Id?.[0]?.path || null;
-    const taxationRegistryCard = req.files?.TaxationRegistryCard?.[0]?.path || null;
+      // Create the seller
+      const seller = await sellerModel.create({
+          Username,
+          Email,
+          Password: hashedPassword,
+          Id: idDocument,
+          TaxationRegistryCard: taxationRegistryCard,
+      });
 
-    try{
-       const seller=await sellerModel.create({Username,Email,Password,Id: idDocument,
-        TaxationRegistryCard: taxationRegistryCard});
-       res.status(200).json(seller);
-    }
-    catch{
-       res.status(400).json({error:error.message})
- 
-    }
- }
+      res.status(201).json({
+          message: 'Seller registered successfully',
+          seller,
+      });
+  } catch (error) {
+      res.status(400).json({ error: error.message });
+  }
+};
+const loginSeller = async (req, res) => {
+  const { Email, Password } = req.body;
+
+  try {
+      // Find the seller by email
+      const seller = await sellerModel.findOne({ Email });
+      if (!seller) {
+          return res.status(404).json({ error: 'Seller not found' });
+      }
+
+      // Validate the password
+      const isPasswordValid = await bcrypt.compare(Password, seller.Password);
+      if (!isPasswordValid) {
+          return res.status(401).json({ error: 'Invalid credentials' });
+      }
+
+      // Generate a JWT token
+      const token = jwt.sign(
+          { id: seller._id, Email: seller.Email },
+          'mydevsecretkey', // Replace with a secure environment variable in production
+          { expiresIn: '1h' }
+      );
+
+      res.status(200).json({
+          message: 'Login successful',
+          token,
+          user: {
+              id: seller._id,
+              Username: seller.Username,
+              Email: seller.Email,
+              docsApproved: seller.docsApproved,
+              TaxationRegistryCard: seller.TaxationRegistryCard,
+              Id: seller.Id,
+              Name: seller.Name,
+              Description: seller.Description,
+          },
+      });
+  } catch (error) {
+      res.status(500).json({ error: 'Something went wrong. Please try again later.' });
+  }
+};
+
 
  const updateSeller = async(req,res) => {
 
@@ -233,4 +286,4 @@ const viewProductSales = async (req, res) => {
 
 
 
- module.exports = {incrementProductSales,viewProductSales ,changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller};
+ module.exports = {incrementProductSales,viewProductSales ,changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller};
