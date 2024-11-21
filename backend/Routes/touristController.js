@@ -1452,7 +1452,7 @@ const getCart = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch cart' });
   }
 };
-
+//mimi
 
  module.exports = {getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
