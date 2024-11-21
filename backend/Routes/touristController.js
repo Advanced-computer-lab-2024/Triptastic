@@ -1603,9 +1603,76 @@ const getCart = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch cart' });
   }
 };
-//mimi
 
- module.exports = {resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+const bookmarkEvent = async (req, res) => {
+  const { Username } = req.query; // Tourist username
+  const { eventId } = req.body; // Event ID to bookmark
+
+  try {
+    const tourist = await touristModel.findOne({ Username });
+    if (!tourist) {
+      return res.status(404).json({ error: 'Tourist not found' });
+    }
+
+    // Check if the event is already bookmarked
+    if (tourist.bookmarkedEvents.includes(eventId)) {
+      return res.status(400).json({ error: 'Event already bookmarked' });
+    }
+
+    // Add the event to bookmarkedEvents
+    tourist.bookmarkedEvents.push(eventId);
+    await tourist.save();
+
+    res.status(200).json({ message: 'Event bookmarked successfully!', tourist });
+  } catch (error) {
+    console.error('Error bookmarking event:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+const removeBookmark = async (req, res) => {
+  const { Username } = req.query; // Tourist username
+  const { eventId } = req.body; // Event ID to remove
+
+  try {
+    const tourist = await touristModel.findOne({ Username });
+    if (!tourist) {
+      return res.status(404).json({ error: 'Tourist not found' });
+    }
+
+    // Remove the event from bookmarkedEvents
+    tourist.bookmarkedEvents = tourist.bookmarkedEvents.filter(
+      (id) => id.toString() !== eventId
+    );
+    await tourist.save();
+
+    res.status(200).json({ message: 'Event removed from bookmarks', tourist });
+  } catch (error) {
+    console.error('Error removing bookmark:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const getBookmarkedEvents = async (req, res) => {
+  const { Username } = req.query;
+
+  try {
+    const tourist = await touristModel
+      .findOne({ Username })
+      .populate('bookmarkedEvents'); // Populate event details
+
+    if (!tourist) {
+      return res.status(404).json({ error: 'Tourist not found' });
+    }
+
+    res.status(200).json({ bookmarkedEvents: tourist.bookmarkedEvents });
+  } catch (error) {
+    console.error('Error fetching bookmarked events:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+
+ module.exports = {bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist

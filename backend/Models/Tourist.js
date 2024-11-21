@@ -67,8 +67,17 @@ const touristSchema = new Schema({
     shopping: { type: Boolean, default: false },
     budget: { type: String, enum: ['low', 'medium', 'high'], default: 'medium' }
   },
+  bookmarkedEvents: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Activities', // Reference to the Activities model
+    },
+  ],
   createdAt: { type: Date, default: Date.now }, // Automatically add creation date
-}, { timestamps: true });
+}, 
+{ timestamps: true });
+
+
 
 const Tourist = mongoose.models.Tourist || mongoose.model('Tourist', touristSchema);
 module.exports = Tourist;
