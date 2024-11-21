@@ -5,25 +5,75 @@ const PreferenceTagsModel = require('../Models/PreferenceTags.js');
 const RequestModel = require('../Models/Request.js');
 const TransportationModel = require('../Models/Transportation.js');
 const touristModel = require('../Models/Tourist.js');
-
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const { default: mongoose } = require('mongoose');
-const createAdvertiser = async(req,res) => {
+const createAdvertiser = async (req, res) => {
+  const { Username, Email, Password } = req.body;
+  const idDocument = req.files?.Id?.[0]?.path || null;
+  const taxationRegistryCard = req.files?.TaxationRegistryCard?.[0]?.path || null;
 
-    const{Username,Email,Password}=req.body;
-    const idDocument = req.files?.Id?.[0]?.path || null;
-    const taxationRegistryCard = req.files?.TaxationRegistryCard?.[0]?.path || null;
+  try {
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(Password, 10);
 
-    try{
-       const advertiser=await advertiserModel.create({Username,Email,Password,Id:idDocument,
-        TaxationRegistryCard: taxationRegistryCard});
-       res.status(200).json(advertiser);
-    }
-    catch{
-       res.status(400).json({error:error.message})
- 
-    }
- }
+      // Create the advertiser
+      const advertiser = await advertiserModel.create({
+          Username,
+          Email,
+          Password: hashedPassword,
+          Id: idDocument,
+          TaxationRegistryCard: taxationRegistryCard,
+      });
 
+      res.status(201).json({
+          message: 'Advertiser registered successfully',
+          advertiser,
+      });
+  } catch (error) {
+      res.status(400).json({ error: error.message });
+  }
+};
+
+const loginAdvertiser = async (req, res) => {
+  const { Email, Password } = req.body;
+
+  try {
+      // Find the advertiser by email
+      const advertiser = await advertiserModel.findOne({ Email });
+      if (!advertiser) {
+          return res.status(404).json({ error: 'Advertiser not found' });
+      }
+
+      // Validate the password
+      const isPasswordValid = await bcrypt.compare(Password, advertiser.Password);
+      if (!isPasswordValid) {
+          return res.status(401).json({ error: 'Invalid credentials' });
+      }
+
+      // Generate a JWT token
+      const token = jwt.sign(
+          { id: advertiser._id, Email: advertiser.Email },
+          'mydevsecretkey', // Replace with a secure environment variable in production
+          { expiresIn: '1h' }
+      );
+
+      res.status(200).json({
+          message: 'Login successful',
+          token,
+          user: {
+              id: advertiser._id,
+              Username: advertiser.Username,
+              Email: advertiser.Email,
+              docsApproved: advertiser.docsApproved,
+              TaxationRegistryCard: advertiser.TaxationRegistryCard,
+              Id: advertiser.Id,
+          },
+      });
+  } catch (error) {
+      res.status(500).json({ error: 'Something went wrong. Please try again later.' });
+  }
+};
 
 
 const getAdvertiser= async(req,res) =>{
@@ -415,4 +465,4 @@ const settleDocsAdvertiser = async (req, res) => {
  module.exports = {changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,
    getActivity,
    updateActivity,
-   deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser,getTouristReportForActivity,filterActivitiesByMonth};
+   deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser,getTouristReportForActivity,filterActivitiesByMonth,loginAdvertiser};

@@ -4,22 +4,77 @@ const touristItineraryModel= require('../Models/touristItinerary.js');
 const touristModel=require('../Models/Tourist.js');
 const requestModel= require('../Models/Request.js');
 const { default: mongoose } = require('mongoose');
-const createTourGuide = async(req,res) => {
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const createTourGuide = async (req, res) => {
+  const { Username, Email, Password } = req.body;
+  const idDocument = req.files?.Id?.[0]?.path || null;
+  const certificate = req.files?.Certificate?.[0]?.path || null;
 
-   const{Username,Email,Password}=req.body;
-   const idDocument = req.files?.Id?.[0]?.path || null;
-    const certificate = req.files?.Certificate?.[0]?.path || null;
+  try {
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(Password, 10);
 
-   try{
-      const tourGuide=await tourGuideModel.create({Username,Email,Password,Id: idDocument,
-         Certificate: certificate});
-      res.status(200).json(tourGuide);
-   }
-   catch{
-      res.status(400).json({error:error.message})
+      // Create the tour guide
+      const tourGuide = await tourGuideModel.create({
+          Username,
+          Email,
+          Password: hashedPassword,
+          Id: idDocument,
+          Certificate: certificate,
+      });
 
-   }
-}
+      res.status(201).json({
+          message: 'Tour Guide registered successfully',
+          tourGuide,
+      });
+  } catch (error) {
+      res.status(400).json({ error: error.message });
+  }
+};
+const loginTourGuide = async (req, res) => {
+  const { Email, Password } = req.body;
+
+  try {
+      // Find the tour guide by email
+      const tourGuide = await tourGuideModel.findOne({ Email });
+      if (!tourGuide) {
+          return res.status(404).json({ error: 'Tour Guide not found' });
+      }
+
+      // Validate the password
+      const isPasswordValid = await bcrypt.compare(Password, tourGuide.Password);
+      if (!isPasswordValid) {
+          return res.status(401).json({ error: 'Invalid credentials' });
+      }
+
+      // Generate a JWT token
+      const token = jwt.sign(
+          { id: tourGuide._id, Email: tourGuide.Email },
+          'mydevsecretkey', // Replace with a secure environment variable in production
+          { expiresIn: '1h' }
+      );
+
+      res.status(200).json({
+          message: 'Login successful',
+          token,
+          user: {
+              id: tourGuide._id,
+              Username: tourGuide.Username,
+              Email: tourGuide.Email,
+              mobileNumber: tourGuide.mobileNumber,
+              yearsOfExperience: tourGuide.yearsOfExperience,
+              previousWork: tourGuide.previousWork,
+              docsApproved: tourGuide.docsApproved,
+              photo: tourGuide.photo,
+              Certificate: tourGuide.Certificate,
+          },
+      });
+  } catch (error) {
+      res.status(500).json({ error: 'Something went wrong. Please try again later.' });
+  }
+};
+
 const createTourGuideInfo = async (req, res) => {
    const { Username, mobileNumber, yearsOfExperience, previousWork } = req.body;
    const photo = req.file ? req.file.path : null; 
@@ -411,5 +466,5 @@ const settleDocsTourGuide = async (req, res) => {
  
  
  module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG
-   ,changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide,deactivateItinrary,activateItinrary,getTouristReportForItinerary,filterItinerariesByMonth};
+   ,changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide,deactivateItinrary,activateItinrary,getTouristReportForItinerary,filterItinerariesByMonth,loginTourGuide};
  
