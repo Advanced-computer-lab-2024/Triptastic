@@ -251,6 +251,7 @@ app.get("/getUserStatistics",getUserStatistics);
 
 
 
+
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);
 app.patch("/updateHistoricalLocation",updatehistoricalLocation);
