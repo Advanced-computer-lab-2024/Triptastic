@@ -13,7 +13,7 @@ const requestModel = require('../Models/Request.js'); // Adjust path as needed
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
-
+const nodemailer = require('nodemailer');
 
 const getCurrencyRates = async (req, res) => {
   try {
@@ -123,6 +123,49 @@ const loginTourist = async (req, res) => {
   }
 };
 
+const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
+
+
+const requestOTP = async (req, res) => {
+  const { Email } = req.body;
+
+  try {
+    const tourist = await touristModel.findOne({ Email });
+    if (!tourist) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const otp = generateOTP();
+
+    // Save the OTP and expiration in the database
+    tourist.otp = otp;
+    tourist.otpExpiry = Date.now() + 10 * 60 * 1000; // Valid for 10 minutes
+    await tourist.save();
+
+    // Send OTP to email
+    const transporter = nodemailer.createTransport({
+      service: 'Gmail',
+      auth: {
+        user: 'your-email@gmail.com',
+        pass: 'your-email-password',
+      },
+    });
+
+    const mailOptions = {
+      from: 'your-email@gmail.com',
+      to: Email,
+      subject: 'Your OTP for Password Reset',
+      text: `Your OTP is ${otp}. It is valid for 10 minutes.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: 'OTP sent to email' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to send OTP' });
+  }
+};
 
  const getTourist= async(req,res) =>{
   const {Username}= req.query;
@@ -755,31 +798,70 @@ const sortProductsByRatingTourist = async (req, res) => {
         res.status(500).json({ error: 'Failed to submit rating' });
     }
 };
+const sendEmail = async (recipient, subject, text) => {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'malook25062003@gmail.com', 
+      pass: 'sxvo feuu woie gpfn' // Use app-specific password or secure it in environment variables
+    },
+    debug: true, // Enable debug output
+    logger: true // Log information to console
+  });
 
-
-const shareActivity = async (req, res) => {
-  const { name } = req.params; // Get the activity name from the request
+  const mailOptions = {
+    from: 'malook25062003@gmail.com',
+    to: recipient,
+    subject: subject,
+    text: text
+  };
 
   try {
-    // Find the activity by name
-    const activity = await activitiesModel.findOne({ name: name });
+    await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully');
+  } catch (error) {
+    console.error('Error sending email:', error.message);
+    throw new Error('Failed to send email');
+  }
+};
+
+const shareActivity = async (req, res) => {
+  const { name } = req.params; // Activity name from request params
+  const { email } = req.body; // Recipient email from request body
+
+  try {
+    // Look up the activity by name
+    const activity = await activitiesModel.findOne({ name });
     if (!activity) {
       return res.status(404).json({ error: 'Activity not found' });
     }
 
-    // Generate the shareable link using the activity ID (or another unique identifier)
-    const shareableLink =`http://localhost:3000/activities/${encodeURIComponent(activity.name)}`; // Add any other details you want
+    // Create a shareable link using the activity's unique name
+    const shareableLink = `http://localhost:3000/activities/${encodeURIComponent(activity.name)}`;
 
-
-    // Return the link for sharing
-    res.status(200).json({ link: shareableLink });
+    if (email) {
+      // Send an email if an address is provided
+      await sendEmail(
+        email,
+        'Check out this activity!',
+        `Here's a link to an activity you might be interested in: ${shareableLink}` // Wrap in backticks for template literals
+      );
+      res.status(200).json({ message: 'Link generated and email sent successfully', link: shareableLink });
+    } else {
+      // Only return the link for sharing
+      res.status(200).json({ link: shareableLink });
+    }
   } catch (error) {
     console.error('Error generating shareable link:', error);
     res.status(500).json({ error: 'Server error' });
   }
 };
+
+
+
 const shareItinerary = async (req, res) => {
   const { id } = req.params; // Get the itinerary ID from the request
+  const { email } = req.body; // Get the recipient email from the request body
 
   try {
     // Find the itinerary by ID
@@ -788,11 +870,21 @@ const shareItinerary = async (req, res) => {
       return res.status(404).json({ error: 'Itinerary not found' });
     }
 
-    // Generate the shareable link using the itinerary ID (or other details)
+    // Generate the shareable link using the itinerary ID
     const shareableLink = `http://localhost:3000/itineraries/${encodeURIComponent(itinerary._id)}`;
 
-    // Return the link for sharing
-    res.status(200).json({ link: shareableLink });
+    if (email) {
+      // Send an email if an address is provided
+      await sendEmail(
+        email,
+        'Check out this itinerary!',
+        `Here's a link to an itinerary you might be interested in: ${shareableLink}`
+      );
+      res.status(200).json({ message: 'Link generated and email sent successfully', link: shareableLink });
+    } else {
+      // Only return the link for sharing
+      res.status(200).json({ link: shareableLink });
+    }
   } catch (error) {
     console.error('Error generating shareable link:', error);
     res.status(500).json({ error: 'Server error' });
@@ -801,45 +893,69 @@ const shareItinerary = async (req, res) => {
 
 
 const shareHistorical = async (req, res) => {
-  const { Name } = req.params; 
+  const { Name } = req.params; // Historical location name from request params
+  const { email } = req.body; // Recipient email from request body
 
   try {
-      // Find the activity by ID
-      const historical = await historicalLocationModel.findOne({ Name: Name });
-      if (!historical) {
-          return res.status(404).json({ error: 'Historical not found' });
-      }
+    // Find the historical location by name
+    const historical = await historicalLocationModel.findOne({ Name });
+    if (!historical) {
+      return res.status(404).json({ error: 'Historical location not found' });
+    }
 
-      // Generate the shareable link
-      const shareableLink =`http://localhost:3000/Historical/${encodeURIComponent(historical.Name)}`;
+    // Generate the shareable link using the location's name
+    const shareableLink = `http://localhost:3000/Historical/${encodeURIComponent(historical.Name)}`;
 
-      // Return the link for sharing
+    if (email) {
+      // Send an email if an address is provided
+      await sendEmail(
+        email,
+        'Check out this historical location!',
+        `Here's a link to a historical location you might be interested in: ${shareableLink}`
+      );
+      res.status(200).json({ message: 'Link generated and email sent successfully', link: shareableLink });
+    } else {
+      // Only return the link for sharing
       res.status(200).json({ link: shareableLink });
+    }
   } catch (error) {
-      console.error('Error generating shareable link:', error);
-      res.status(500).json({ error: 'Server error' });
+    console.error('Error generating shareable link:', error);
+    res.status(500).json({ error: 'Server error' });
   }
 };
+
 const shareMuseum = async (req, res) => {
-  const { Name } = req.params; 
+  const { Name } = req.params; // Museum name from request params
+  const { email } = req.body; // Recipient email from request body
 
   try {
-      // Find the activity by ID
-      const Museum = await museumsModel.findOne({ Name: Name });
-      if (!Museum) {
-          return res.status(404).json({ error: 'Museum not found' });
-      }
+    // Find the museum by name
+    const Museum = await museumsModel.findOne({ Name });
+    if (!Museum) {
+      return res.status(404).json({ error: 'Museum not found' });
+    }
 
-      // Generate the shareable link
-      const shareableLink =`http://localhost:3000/Museum/${encodeURIComponent(Museum.Name)}`;
+    // Generate the shareable link using the museum's name
+    const shareableLink = `http://localhost:3000/Museum/${encodeURIComponent(Museum.Name)}`;
 
-      // Return the link for sharing
+    if (email) {
+      // Send an email if an address is provided
+      await sendEmail(
+        email,
+        'Check out this museum!',
+        `Here's a link to a museum you might be interested in: ${shareableLink}`
+      );
+      res.status(200).json({ message: 'Link generated and email sent successfully', link: shareableLink });
+    } else {
+      // Only return the link for sharing
       res.status(200).json({ link: shareableLink });
+    }
   } catch (error) {
-      console.error('Error generating shareable link:', error);
-      res.status(500).json({ error: 'Server error' });
+    console.error('Error generating shareable link:', error);
+    res.status(500).json({ error: 'Server error' });
   }
 };
+
 
  
 const getComplaintsByTourist = async (req, res) => {
