@@ -1,15 +1,21 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+
 import { CurrencyContext } from '../pages/CurrencyContext';
 
 const Products = () => {
   const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [minPrice, setMinPrice] = useState(''); // State for minimum price
   const [maxPrice, setMaxPrice] = useState(''); // State for maximum price
+  const navigate = useNavigate(); // Initialize useNavigate for navigation
+
+  const username = localStorage.getItem('Username'); // Retrieve username from local storage
 
   const fetchProductsByRating = async () => {
     setLoading(true);
@@ -28,14 +34,6 @@ const Products = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchProducts(); // Fetch all products on page load
-  }, []);
-
-  const handleCurrencyChange = (event) => {
-    fetchConversionRate(event.target.value);
   };
 
   const fetchProducts = async (minPrice = '', maxPrice = '') => {
@@ -64,25 +62,7 @@ const Products = () => {
     }
   };
 
-  // Call fetchProducts initially to load all products when the component mounts
-  useEffect(() => {
-    fetchProducts(); // Fetch all products on page load
-  }, []);
-
-  const handleFilterSubmit = (e) => {
-    e.preventDefault(); // Prevent form submission from reloading the page
-    fetchProducts(minPrice, maxPrice); // Fetch products based on the entered price range
-  };
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
   const handleAddToCart = async (product) => {
-    const username = localStorage.getItem('Username'); 
     try {
       const response = await fetch(`http://localhost:8000/addProductToCart?Username=${username}`, {
         method: 'POST',
@@ -107,10 +87,53 @@ const Products = () => {
       alert('Failed to add product to cart');
     }
   };
-  
+
+  const handleAddToWishlist = async (product) => {
+    try {
+      const response = await fetch(`http://localhost:8000/addProductToWishlist`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ Username: username, productId: product._id }),
+      });
+
+      if (response.ok) {
+        alert(`${product.productName} added to wishlist successfully!`);
+        setWishlist((prev) => [...prev, product._id]); // Update wishlist state
+      } else {
+        throw new Error('Failed to add product to wishlist');
+      }
+    } catch (error) {
+      console.error('Error adding product to wishlist:', error);
+      alert('Failed to add product to wishlist');
+    }
+  };
+  const handleViewWishlist = () => {
+    navigate('/Wishlist'); // Navigate to Wishlist page
+  };
+  const handleFilterSubmit = (e) => {
+    e.preventDefault(); // Prevent form submission from reloading the page
+    fetchProducts(minPrice, maxPrice); // Fetch products based on the entered price range
+  };
+
+  // Initial fetches on component mount
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <div>
       <h1>Products Page</h1>
+      <button onClick={handleViewWishlist} style={{ position: 'absolute', top: '10px', right: '10px' }}>View Wishlist</button>
 
       {/* Filter Form */}
       <form onSubmit={handleFilterSubmit}>
@@ -135,14 +158,15 @@ const Products = () => {
         <button type="submit">Filter</button>
       </form>
       <button onClick={fetchProductsByRating}>Sort by Rating</button>
-      {/* Display products */}
+
+      {/* Display Products */}
       {products.length === 0 ? (
         <p>No products available.</p>
       ) : (
         <ul style={{ listStyleType: 'none', padding: 0 }}>
           {products.map((product) => (
             <li key={product.productName} style={{ marginBottom: '20px', border: '1px solid #ccc', padding: '10px' }}>
-              <h2>{product.productName}</h2> {/* Display product name */}
+              <h2>{product.productName}</h2>
               <p><strong>Description:</strong> {product.description}</p>
               <p><strong>Price:</strong> {selectedCurrency} {(product.price * conversionRate).toFixed(2)}</p>
               <p><strong>Rating:</strong> {product.rating}</p>
@@ -150,11 +174,16 @@ const Products = () => {
               <p><strong>Review:</strong> {product.review}</p>
               <p><strong>Stock:</strong> {product.stock}</p>
               <p><strong>Sales:</strong> {product.sales}</p>
-       
-              {product.image && <img src={`http://localhost:8000/${product.image.replace(/\\/g, '/')}`} alt={product.productName} style={{ width: '400px', height: '300px' }}/>
 
-            } {/* Display product image */}
-             <button onClick={() => handleAddToCart(product)}>Add to Cart</button>
+              {product.image && (
+                <img
+                  src={`http://localhost:8000/${product.image.replace(/\\/g, '/')}`}
+                  alt={product.productName}
+                  style={{ width: '400px', height: '300px' }}
+                />
+              )}
+              <button onClick={() => handleAddToCart(product)}>Add to Cart</button>
+              <button onClick={() => handleAddToWishlist(product)}>Add to Wishlist</button>
             </li>
           ))}
         </ul>
