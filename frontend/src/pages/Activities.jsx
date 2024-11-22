@@ -444,6 +444,7 @@ const bookActivity = async (activityName) => {
                     >
                       Bookmark
                     </button>
+                 
                     {/* <button
                       onClick={() => handleRemoveBookmark(activity._id)}
                       style={{

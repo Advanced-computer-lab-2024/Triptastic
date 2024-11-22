@@ -35,13 +35,42 @@ const Cart = () => {
     }
   };
 
-  useEffect(() => {
-    fetchCart();
-  }, []);
-
   const handleCurrencyChange = (event) => {
     fetchConversionRate(event.target.value); // Update conversion rate for all products
   };
+
+  const removeFromCart = async (productName, quantity) => {
+    const username = localStorage.getItem('Username');
+
+    try {
+      const response = await fetch(`http://localhost:8000/removeProductFromCart`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productName,
+          quantity,
+          Username: username,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to remove item from cart');
+      }
+
+      const data = await response.json();
+      alert(data.message); // Notify user about the successful removal
+      fetchCart(); // Refresh the cart items
+    } catch (error) {
+      console.error(error.message);
+      alert('Error removing item from cart.');
+    }
+  };
+
+  useEffect(() => {
+    fetchCart();
+  }, []);
 
   return (
     <div style={styles.container}>
@@ -93,6 +122,12 @@ const Cart = () => {
                 <p>
                   <strong>Description:</strong> {item.description}
                 </p>
+                <button
+                  style={styles.removeButton}
+                  onClick={() => removeFromCart(item.productName, item.quantity)}
+                >
+                  Remove from Cart
+                </button>
               </li>
             ))}
           </ul>
@@ -189,6 +224,15 @@ const styles = {
     fontSize: '20px',
     color: '#4CAF50',
     marginBottom: '10px',
+  },
+  removeButton: {
+    backgroundColor: '#f44336',
+    color: 'white',
+    border: 'none',
+    padding: '10px 15px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    marginTop: '10px',
   },
   loading: {
     textAlign: 'center',
