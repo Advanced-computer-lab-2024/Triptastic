@@ -1672,6 +1672,83 @@ const getBookmarkedEvents = async (req, res) => {
   }
 };
 
+const addProductToWishlist = async (req, res) => {
+  const { Username, productId } = req.body; // Expecting Username and productId in the request body
+
+  try {
+    // Validate if both Username and productId are provided
+    if (!Username || !productId) {
+      return res.status(400).json({ error: 'Username and productId are required' });
+    }
+
+    // Find the tourist by Username
+    const tourist = await touristModel.findOne({ Username });
+    if (!tourist) {
+      return res.status(404).json({ error: 'Tourist not found' });
+    }
+
+    // Check if the product ID is already in the wishlist
+    if (tourist.wishlist.includes(productId)) {
+      return res.status(400).json({ error: 'Product already in the wishlist' });
+    }
+
+    // Add the product ID to the wishlist
+    tourist.wishlist.push(productId);
+    await tourist.save();
+
+    // Respond with the updated wishlist
+    res.status(200).json({
+      message: 'Product added to wishlist successfully',
+      wishlist: tourist.wishlist,
+    });
+  } catch (error) {
+    console.error('Error adding product to wishlist:', error.message || error);
+    res.status(500).json({ error: 'Failed to add product to wishlist' });
+  }
+};
+const getWishlist = async (req, res) => {
+  const { Username } = req.query; // Extract Username from query parameters
+
+  try {
+    // Find the tourist by Username
+    const tourist = await touristModel.findOne({ Username }).populate('wishlist'); // Populate wishlist with product details
+
+    if (!tourist) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json({ wishlist: tourist.wishlist }); // Return the wishlist
+  } catch (error) {
+    console.error('Error fetching wishlist:', error);
+    res.status(500).json({ error: 'Error fetching wishlist' });
+  }
+};
+const removeProductFromWishlist = async (req, res) => {
+  const { Username, productId } = req.body; // Extract Username and productId from request body
+
+  try {
+    // Find the tourist by Username
+    const tourist = await touristModel.findOne({ Username });
+
+    if (!tourist) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Check if the product exists in the wishlist
+    if (!tourist.wishlist.includes(productId)) {
+      return res.status(400).json({ error: 'Product not found in wishlist' });
+    }
+
+    // Remove the product from the wishlist
+    tourist.wishlist = tourist.wishlist.filter((id) => id.toString() !== productId);
+    await tourist.save();
+
+    res.status(200).json({ message: 'Product removed from wishlist', wishlist: tourist.wishlist });
+  } catch (error) {
+    console.error('Error removing product from wishlist:', error);
+    res.status(500).json({ error: 'Error removing product from wishlist' });
+  }
+};
 
 
  module.exports = {bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
@@ -1684,4 +1761,4 @@ const getBookmarkedEvents = async (req, res) => {
   shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary
   
   ,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,
-  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist};
+  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist};

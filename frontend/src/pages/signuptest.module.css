@@ -31,6 +31,7 @@
     overflow: hidden;
     width: 100%; /* Full width */
     height: 100vh; /* Full height */
+
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -122,15 +123,73 @@
     z-index: 3;
 }
 
+/* Sign-In Form */
 :local(.signIn) {
+    top: 50%; 
+    position: absolute;
     left: 0;
-  
+    transform: translateY(-50%); /* Offset by half the height of the element */
+    width: 50%;
+    display: flex;
+    max-width: 600px;
+    opacity: 1;
+    z-index: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content:center; /* Align items to the top */
+    transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+}
+
+/* Style for h1 */
+:local(.signIn h1) {
+    margin-bottom: 0px; /* Space between the heading and the form */
+    font-size: 3rem; /* Adjust the size of the heading */
+    text-align: center; /* Center align the heading text */
 }
 
 
+/* Sign-In form inputs and button */
+:local(.signIn form) {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Reduced space between form elements */
+}
+:local(.signIn form div) {
+    margin-bottom: 0px; /* Reduced spacing between form fields */
+    width: 50%;
+}
+/* Sign-In input fields */
+:local(.signIn input) {
+    padding: 10px;
+    margin: 0px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
 
+/* Sign-In button */
+:local(.signIn button) {
+    padding: 10px;
+    margin-top: 5px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
+/* Sign-In button hover */
+:local(.signIn button:hover) {
+    background-color:#4CAF50;
+}
 
+/* Adjust the margin for the Forgot Password button */
+:local(.signIn button:last-child) {
+    margin-top: 0px; /* Reduce space above the 'Forgot Password?' button */
+}
+
+/* For container management */
 :local(.container .signIn) {
     left: 0; /* Keep Sign-In on the left */
     position: absolute; /* Ensure it's positioned relative to the container */
@@ -138,9 +197,126 @@
 }
 
 :local(.container.active .signIn) {
-    transform: translateX(-100%); /* Move Sign-In out of view to the left */
+    transform: translateX(-50%); /* Move Sign-In out of view to the left */
     opacity: 0; /* Hide it */
 }
+
+:local(.signIn) {
+    left: 0;
+  
+}
+
+
+:local(.otpResetForm) {
+    width: 100%;
+    max-width: 500px; /* Smaller max-width for OTP form */
+    margin: 30px auto;
+    padding: 2px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+/* OTP form input fields */
+:local(.otpResetForm input) {
+    width: 100%;
+    margin: 10px 0;
+    padding: 5px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+}
+
+/* OTP Reset Form Submit Button */
+:local(.otpResetForm button) {
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 6px;
+}
+
+:local(.otpResetForm button:hover) {
+    background-color: #388e3c;
+}
+/* Add styles for the button container */
+:local(.buttonContainer ){
+    display: flex;
+    gap: 5px; /* Space between buttons */
+    justify-content: center; /* Center buttons horizontally */
+  }
+  
+  /* Optional: Style the buttons to make them look better */
+  :local(.buttonContainer button) {
+    padding: 10px 20px;
+    border: none;
+    background-color: #4CAF50; /* Green background */
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  :local(.buttonContainer button:hover) {
+    background-color: #45a049;
+  }
+  
+
+/* Button to toggle between forms */
+:local(.otpResetForm button, .formContainer button) {
+    width: 80%;
+    padding: 12px;
+    background-color: #f44336;
+    color: #fff;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    margin: 10px 0;
+}
+
+:local(.otpResetForm button:hover, .formContainer button:hover) {
+    background-color: #d32f2f;
+}
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+    :local(.formContainer) {
+        width: 90%;
+        padding: 15px;
+    }
+
+    :local(.formContainer input, .formContainer button) {
+        width: 90%; /* Full width on small screens */
+    }
+
+    :local(.otpResetForm) {
+        width: 90%;
+        padding: 15px;
+    }
+
+    :local(.otpResetForm input, .otpResetForm button) {
+        width: 90%; /* Full width OTP fields on small screens */
+    }
+}
+
+
+:local(.container .signIn) {
+    left: 0; /* Keep Sign-In on the left */
+    position: absolute; /* Ensure it's positioned relative to the container */
+    
+    transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+}
+
+:local(.container.active .signIn) {
+    transform: translateX(-50%); /* Move Sign-In out of view to the left */
+    opacity: 0; /* Hide it */
+}
+
 /* Sign-Up Form */
 :local(.signUp) {
     position: absolute;
