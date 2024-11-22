@@ -158,7 +158,8 @@ app.get('/getBookmarkedEvents',getBookmarkedEvents);
 app.patch('/addProductToWishlist',addProductToWishlist);
 app.patch('/removeProductFromWishlist',removeProductFromWishlist);
 app.get('/getWishlist',getWishlist);
-app.post('/addToCartAndRemoveFromWishlist', addToCartAndRemoveFromWishlist);app.post('/removeProductFromCart',removeProductFromCart);
+app.post('/addToCartAndRemoveFromWishlist', addToCartAndRemoveFromWishlist);
+app.post('/removeProductFromCart',removeProductFromCart);
 
 
 
