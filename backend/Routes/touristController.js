@@ -1604,6 +1604,7 @@ const getCart = async (req, res) => {
   }
 };
 
+//test
 const bookmarkEvent = async (req, res) => {
   const { Username } = req.query; // Tourist username
   const { eventId } = req.body; // Event ID to bookmark
@@ -1670,6 +1671,7 @@ const getBookmarkedEvents = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+
 
 
  module.exports = {bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
