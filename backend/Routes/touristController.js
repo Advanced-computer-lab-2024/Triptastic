@@ -1749,6 +1749,81 @@ const removeProductFromWishlist = async (req, res) => {
   }
 };
 
+const addToCartAndRemoveFromWishlist = async (req, res) => {
+  const { productName, quantity } = req.body;
+  const { Username } = req.query;
+
+  try {
+    // Find the product by name
+    const product = await productModel.findOne({ productName });
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    // Find the user's cart
+    let cart = await cartModel.findOne({ Username });
+    if (!cart) {
+      cart = new cartModel({ Username, products: [] });
+    }
+
+    // Check if the product is already in the cart
+    const existingProductIndex = cart.products.findIndex(
+      (item) => item.productName === productName
+    );
+
+    if (existingProductIndex > -1) {
+      // Product already in the cart, update the quantity
+      cart.products[existingProductIndex].quantity += quantity;
+    } else {
+      // Add new product to the cart
+      cart.products.push({
+        productId: product._id,
+        productName: product.productName,
+        price: product.price,
+        description: product.description,
+        quantity,
+      });
+    }
+
+    // Save the updated cart
+    await cart.save();
+
+    // Update the product stock and sales count
+    await productModel.findByIdAndUpdate(
+      product._id,
+      { $inc: { stock: -quantity, sales: quantity } },
+      { new: true }
+    );
+
+    // Remove the product from the user's wishlist
+    const tourist = await touristModel.findOne({ Username });
+    if (!tourist) {
+      return res.status(404).json({ error: 'Tourist not found' });
+    }
+
+    // Filter the wishlist to remove the product
+    const productIndexInWishlist = tourist.wishlist.indexOf(product._id.toString());
+    if (productIndexInWishlist !== -1) {
+      tourist.wishlist = tourist.wishlist.filter(
+        (id) => id.toString() !== product._id.toString()
+      );
+      await tourist.save(); // Save the updated wishlist
+    }
+
+    // Send a successful response
+    res.status(200).json({
+      message: 'Product added to cart and removed from wishlist successfully',
+      cart,
+      wishlist: tourist.wishlist, // Return the updated wishlist
+    });
+  } catch (error) {
+    console.error('Error adding product to cart and removing from wishlist:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+
+
  module.exports = {bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
@@ -1756,7 +1831,6 @@ const removeProductFromWishlist = async (req, res) => {
   ,getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange
   ,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities
   ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
-  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary
-  
-  ,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,
+  shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,addToCartAndRemoveFromWishlist,
+  getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,
   getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist};

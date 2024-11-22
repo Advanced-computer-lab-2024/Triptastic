@@ -20,7 +20,7 @@ const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActi
 
 
 //Tourist
-const {bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,changepasswordTourist,createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
+const {bookmarkEvent,addToCartAndRemoveFromWishlist,removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,changepasswordTourist,createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
   ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,
   sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,
   getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity,
@@ -158,7 +158,7 @@ app.get('/getBookmarkedEvents',getBookmarkedEvents);
 app.patch('/addProductToWishlist',addProductToWishlist);
 app.patch('/removeProductFromWishlist',removeProductFromWishlist);
 app.get('/getWishlist',getWishlist);
-
+app.post('/addToCartAndRemoveFromWishlist', addToCartAndRemoveFromWishlist);
 
 
 
