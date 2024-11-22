@@ -3,6 +3,7 @@ import './TouristProfile.css'; // Assuming you create a CSS file for styling
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { CurrencyContext } from '../pages/CurrencyContext';
+import logo from '../images/image_green_background.png'; // Adjust the path based on your folder structure
 
 const TouristProfile = () => {
 
@@ -565,6 +566,20 @@ return (
     <div className="profile-content">
       <h2>Tourist Profile</h2>
       <div className="sidebar">
+      <header style={{ display: 'flex',  padding: '5px', backgroundColor: '#f4f4f4' }}>
+  <img 
+    src={logo} 
+    alt="Logo" 
+    style={{ 
+      height: '70px', 
+      width: '70px', 
+      borderRadius: '10px', 
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)', 
+      objectFit: 'cover'
+      
+    }}
+  />
+</header>
       <h3>Explore</h3>
       <ul>
         <li onClick={() => navigate('/historical-locations')}>Historical Locations</li>

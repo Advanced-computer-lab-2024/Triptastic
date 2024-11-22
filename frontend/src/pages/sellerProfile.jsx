@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import image from '../images/image_green_background.png';
 
 const SellerProfile = () => {
   const [sellerInfo, setSellerInfo] = useState(null);
@@ -395,6 +396,27 @@ const unarchiveProduct = async () => {
       <div className="profile-content">
         <h2>Seller Profile</h2>
         <div>
+        <div className="sidebar">
+        <header style={{ display: 'flex',  padding: '5px', backgroundColor: '#f4f4f4' }}>
+  <img 
+    src={image} 
+    alt="Logo" 
+    style={{ 
+      height: '70px', 
+      width: '70px', 
+      borderRadius: '10px', 
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)', 
+      objectFit: 'cover',
+      marginRight:'10px'
+      
+    }}
+  />
+</header>
+        <h3>Explore</h3>
+        <ul>
+          <li onClick={() => navigate('/products')}>Products</li>
+        </ul>
+      </div>
   <h3>Change Password</h3>
   {passwordMessage && <p style={{ color: passwordMessage.includes('successfully') ? 'green' : 'red' }}>{passwordMessage}</p>}
   <div>
@@ -594,12 +616,6 @@ const unarchiveProduct = async () => {
         <button onClick={handleDeleteRequest} disabled={waiting}>
           Request Account Deletion
         </button>
-      </div>
-      <div className="sidebar">
-        <h3>Explore</h3>
-        <ul>
-          <li onClick={() => navigate('/products')}>Products</li>
-        </ul>
       </div>
     </div>
   );
