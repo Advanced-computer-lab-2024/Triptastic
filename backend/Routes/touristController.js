@@ -1586,6 +1586,41 @@ const addProductToCart = async (req, res) => {
   }
 };
 
+const removeProductFromCart = async (req, res) => {
+  const { Username, productName, quantity } = req.body;
+
+  try {
+    // Find the cart for the given user
+    const cart = await cartModel.findOne({ Username });
+    if (!cart) {
+      return res.status(404).json({ error: 'Cart not found for this user' });
+    }
+
+    // Find the product in the cart
+    const productIndex = cart.products.findIndex(
+      (item) => item.productName === productName
+    );
+    if (productIndex === -1) {
+      return res.status(404).json({ error: 'Product not found in cart' });
+    }
+
+    // Adjust the quantity or remove the product entirely
+    if (cart.products[productIndex].quantity > quantity) {
+      cart.products[productIndex].quantity -= quantity;
+    } else {
+      cart.products.splice(productIndex, 1);
+    }
+
+    // Save the updated cart
+    await cart.save();
+
+    res.status(200).json({ message: 'Product removed from cart', cart });
+  } catch (error) {
+    console.error('Error removing product from cart:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
 const getCart = async (req, res) => {
   const { Username } = req.query; // Username passed as a query parameter
 
@@ -1751,7 +1786,7 @@ const removeProductFromWishlist = async (req, res) => {
 };
 
 
- module.exports = {bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+ module.exports = {removeProductFromCart,bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
