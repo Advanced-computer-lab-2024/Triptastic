@@ -4,6 +4,20 @@ import styles from './signuptest.module.css'; // Import CSS module
 
 function AuthPage() {
   const [isSignUp, setIsSignUp] = useState(false); // State to toggle forms
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [otpSent, setOtpSent] = useState(false); // Track OTP sent status
+  const [signInEmail, setSignInEmail] = useState('');
+  const [signInPassword, setSignInPassword] = useState('');
+  const [showSignIn, setShowSignIn] = useState(true); // Toggle for Sign-In form visibility
+  const [emailForOTP, setEmailForOTP] = useState('');
+  const [showOTPForm, setShowOTPForm] = useState(false); // Whether to show OTP form
+  const [otp, setOTP] = useState(''); // OTP input value
+  const [otpFormData, setOtpFormData] = useState({
+    Email: '',
+    otp: '',
+    newPassword: '',
+  });
+  
   const navigate = useNavigate();
 
   // Separate state for Sign-Up form
@@ -41,7 +55,13 @@ function AuthPage() {
       [name]: value,
     }));
   };
-
+  const handleOTPChange = (e) => {
+    const { name, value } = e.target;
+    setOtpFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
   // Handle Sign-Up form submission
   const handleSignUpSubmit = async (e) => {
     e.preventDefault();
@@ -124,15 +144,73 @@ const handleSignInSubmit = async (e) => {
   }
 };
 
+const handleRequestOTP = async (e) => {
+  e.preventDefault();
+  try {
+    const response = await fetch('http://localhost:8000/requestOTP', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ Email: emailForOTP }),
+    });
 
-  return (
-    <div className={`${styles.container} ${isSignUp ? styles.active : ''}`}>
-      {/* Half-Sliding Circle */}
-      <div className={styles.halfCircle}></div>
+    if (response.ok) {
+      setOtpSent(true); // Mark OTP as sent
+      setErrorMessage('');
+      setSuccessMessage('OTP sent successfully!');
+    } else {
+      const errorData = await response.json();
+      setErrorMessage(errorData.error || 'Failed to send OTP');
+      setSuccessMessage('');
+    }
+  } catch (error) {
+    setErrorMessage('Something went wrong. Please try again later.');
+    setSuccessMessage('');
+  }
+};
 
-  {/* Sign-Up Form */}
-  <div className={`${styles.formContainer} ${styles.signUp} ${isSignUp ? styles.active : ''}`}>
-    <h1>Create Account</h1>
+// Reset Password
+const handleResetPassword = async (e) => {
+  e.preventDefault();
+
+  // Ensure that the email is included in the reset request
+  const resetData = { 
+    Email: otpFormData.emailForReset,  // Add emailForReset to the request data
+    otp: otpFormData.otp,
+    newPassword: otpFormData.newPassword,
+  };
+
+  try {
+    const response = await fetch('http://localhost:8000/resetPassword', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(resetData), // Send the email along with OTP and newPassword
+    });
+
+    if (response.ok) {
+      setSuccessMessage('Password reset successful!');
+      setErrorMessage('');
+      setOtpFormData({ Email: '', otp: '', newPassword: '', emailForReset: '' }); // Reset form data
+      setIsForgotPassword(false); // Optionally, you can redirect back to login or homepage
+    } else {
+      const errorData = await response.json();
+      setErrorMessage(errorData.error || 'Failed to reset password');
+      setSuccessMessage('');
+    }
+  } catch (error) {
+    setErrorMessage('Something went wrong. Please try again later.');
+  }
+};
+
+return (
+  <div className={`${styles.container} ${isSignUp ? styles.active : ''}`}>
+    {/* Half-Sliding Circle */}
+    <div className={styles.halfCircle}></div>
+
+    {/* Main Content */}
+    {/* Sign-Up Form */}
+    {isSignUp && (
+      <div className={`${styles.formContainer} ${styles.signUp} ${isSignUp ? styles.active : ''}`}>
+        <h1>Create Account</h1>
         {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
         {successMessage && <p className={styles.successMessage}>{successMessage}</p>}
         <form onSubmit={handleSignUpSubmit}>
@@ -205,48 +283,125 @@ const handleSignInSubmit = async (e) => {
           <button type="submit">Register as Tourist</button>
         </form>
       </div>
+    )}
 
+   
       {/* Sign-In Form */}
-      <div className={`${styles.formContainer} ${styles.signIn} ${!isSignUp ? styles.active : ''}`}>
-        <form onSubmit={handleSignInSubmit}>
+     
+      {/* Sign-In Form */}
+      {showSignIn && !isSignUp && (
+        <div className={`${styles.formContainer} ${styles.signIn}`}>
           <h1>Sign In</h1>
-          <input
-            type="email"
-            name="Email"
-            placeholder="Email"
-            value={signInFormData.Email}
-            onChange={handleSignInChange}
-            required
-          />
-          <input
-            type="password"
-            name="Password"
-            placeholder="Password"
-            value={signInFormData.Password}
-            onChange={handleSignInChange}
-            required
-          />
-          <button type="submit">Sign In</button>
-        </form>
-      </div>
+          <form onSubmit={handleSignInSubmit}>
+  <input
+    type="email"
+     name="Email"
+    placeholder="Email"
+    value={signInFormData.Email}
+    onChange={handleSignInChange}
+    required
+  />
+  <input
+  type="password"
+  name="Password"
+  placeholder="Password"
+  value={signInFormData.Password}
+  onChange={handleSignInChange}
+  required
 
-      {/* Toggle Panels */}
-      <div className={styles.toggleContainer}>
-  {!isSignUp ? (
-    <div className={`${styles.togglePanel} ${styles.toggleRight}`}>
-      <h1>Hello Friend!</h1>
-      <button onClick={() => setIsSignUp(true)}>Sign Up</button>
-    </div>
-  ) : (
-    <div className={`${styles.togglePanel} ${styles.toggleLeft}`}>
-      <h1>Welcome Back!</h1>
-      <button onClick={() => setIsSignUp(false)}>Sign In</button>
-    </div>
-  )}
-</div>
+  />
+  <button type="submit">Sign In</button>
+</form>
 
+
+          <button onClick={() => setShowOTPForm(true)}>Forgot Password?</button>
+
+          {/* OTP Form */}
+          {showOTPForm && (
+            <div className={`${styles.otpResetForm}`}>
+              <h1>{otpSent ? 'Reset Password' : 'Request OTP'}</h1>
+              {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
+              {successMessage && <p className={styles.successMessage}>{successMessage}</p>}
+
+              {/* OTP Request Form */}
+              {!otpSent && (
+                <form onSubmit={handleRequestOTP}>
+                  <div>
+                    <label htmlFor="emailForOTP">Enter Email:</label>
+                    <input
+                      type="email"
+                      id="emailForOTP"
+                      value={emailForOTP}
+                      onChange={(e) => setEmailForOTP(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <button type="submit">Request OTP</button>
+                </form>
+              )}
+
+              {/* Reset Password Form */}
+              {otpSent && (
+                <form onSubmit={handleResetPassword}>
+                  <div>
+      <label htmlFor="emailForReset">Email:</label>
+      <input
+        type="email"
+        id="emailForReset"
+        name="emailForReset"
+        value={otpFormData.emailForReset} // New state for email field
+        onChange={handleOTPChange}
+        required
+      />
     </div>
-  );
+                  <div>
+                    <label htmlFor="otpCode">OTP:</label>
+                    <input
+                      type="text"
+                      id="otpCode"
+                      name="otp"
+                      value={otpFormData.otp}
+                      onChange={handleOTPChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="newPassword">New Password:</label>
+                    <input
+                      type="password"
+                      id="newPassword"
+                      name="newPassword"
+                      value={otpFormData.newPassword}
+                      onChange={handleOTPChange}
+                      required
+                    />
+                  </div>
+                  <button type="submit">Reset Password</button>
+                </form>
+              )}
+              <button onClick={() => setShowOTPForm(false)}>Back to Sign In</button>
+            </div>
+          )}
+        </div>
+      )}
+
+
+    {/* Toggle Panels */}
+    <div className={styles.toggleContainer}>
+      {!isSignUp ? (
+        <div className={`${styles.togglePanel} ${styles.toggleRight}`}>
+          <h1>Hello Friend!</h1>
+          <button onClick={() => setIsSignUp(true)}>Sign Up</button>
+        </div>
+      ) : (
+        <div className={`${styles.togglePanel} ${styles.toggleLeft}`}>
+          <h1>Welcome Back!</h1>
+          <button onClick={() => setIsSignUp(false)}>Sign In</button>
+        </div>
+      )}
+    </div>
+  </div>
+);
 }
 
 export default AuthPage;
