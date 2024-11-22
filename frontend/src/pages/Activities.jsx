@@ -16,7 +16,8 @@ const Activities = () => {
   const [isEmailMode, setIsEmailMode] = useState(false);
   const [copySuccess, setCopySuccess] = useState({});
   const [activityToShare, setActivityToShare] = useState(null);
-
+  const [bookmarkedActivities, setBookmarkedActivities] = useState([]);
+  const [username, setUsername] = useState(localStorage.getItem('Username') || '');
   // Sorting states
   const [priceSort, setPriceSort] = useState('PASC'); // 'PASC' or 'PDSC'
   const [ratingSort, setRatingSort] = useState('RASC'); // 'RASC' or 'RDSC'
@@ -120,6 +121,46 @@ const Activities = () => {
   //     setLoading(false);
   //   }
   // };
+
+  const fetchBookmarkedActivities = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/getBookmarkedEvents', {
+        params: { Username: username },
+      });
+      setBookmarkedActivities(response.data.bookmarkedEvents);
+    } catch (error) {
+      console.error('Error fetching bookmarked activities:', error);
+    }
+  };
+
+  const handleBookmark = async (activityId) => {
+    try {
+      const response = await axios.post(
+        'http://localhost:8000/bookmarkEvent',
+        { eventId: activityId },
+        { params: { Username: username } }
+      );
+      alert('Activity bookmarked successfully!');
+      fetchBookmarkedActivities(); // Refresh the bookmarked activities
+    } catch (error) {
+      console.error('Error bookmarking activity:', error);
+    }
+  };
+
+  const handleRemoveBookmark = async (activityId) => {
+    try {
+      const response = await axios.post(
+        'http://localhost:8000/removeBookmark',
+        { eventId: activityId },
+        { params: { Username: username } }
+      );
+      alert('Bookmark removed successfully!');
+      fetchBookmarkedActivities(); // Refresh the bookmarked activities
+    } catch (error) {
+      console.error('Error removing bookmark:', error);
+    }
+  };
+
   const fetchSearchedActivities = async () => {
     setLoading(true); // Show loading indicator
     try {
@@ -201,6 +242,7 @@ const Activities = () => {
 
   useEffect(() => {
     fetchSortedActivities('PASC', 'RASC'); // Default sort: Price Asc, Rating Asc
+    fetchBookmarkedActivities();
   }, []);
  
   const handleShare = async (activity, shareMethod) => {
@@ -270,6 +312,7 @@ const bookActivity = async (activityName) => {
   return (
     <div>
       <h2>Activities</h2>
+      
 
       {loading ? (
         <p>Loading activities...</p>
@@ -389,6 +432,29 @@ const bookActivity = async (activityName) => {
                   <strong>Price:</strong> {(activity.price * conversionRate).toFixed(2)} {selectedCurrency} <br />
 
                   <strong>Rating:</strong> {activity.rating} <br />
+                  <button
+                      onClick={() => handleBookmark(activity._id)}
+                      style={{
+                        backgroundColor: '#4caf50',
+                        color: 'white',
+                        borderRadius: '5px',
+                        cursor: 'pointer',
+                        marginRight: '10px',
+                      }}
+                    >
+                      Bookmark
+                    </button>
+                    {/* <button
+                      onClick={() => handleRemoveBookmark(activity._id)}
+                      style={{
+                        backgroundColor: '#f44336',
+                        color: 'white',
+                        borderRadius: '5px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Remove Bookmark
+                    </button> */}
                    {/* Book Activity Button */}
                    <button onClick={() => bookActivity(activity.name)}>Book Ticket</button>
           
@@ -438,6 +504,29 @@ const bookActivity = async (activityName) => {
           ) : (
             <p>No activities found.</p>
           )}
+
+      <div>
+        <h3>Your Bookmarked Activities</h3>
+        {bookmarkedActivities.length > 0 ? (
+          <ul>
+            {bookmarkedActivities.map((activity) => (
+              <li key={activity._id}>
+                <strong>Name:</strong> {activity.name} <br />
+                <strong>Category:</strong> {activity.Category} <br />
+                <strong>Price:</strong> {activity.price} {selectedCurrency} <br />
+                <button
+                  onClick={() => handleRemoveBookmark(activity._id)}
+                  style={{ backgroundColor: '#f44336', color: 'white', borderRadius: '5px', cursor: 'pointer' }}
+                >
+                  Remove Bookmark
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No bookmarked activities yet.</p>
+        )}
+      </div>
         </>
       )}
     </div>

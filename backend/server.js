@@ -20,7 +20,7 @@ const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActi
 
 
 //Tourist
-const {resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,changepasswordTourist,createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
+const {bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,changepasswordTourist,createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
   ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,
   sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,
   getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity,
@@ -151,7 +151,10 @@ app.post("/addProductToCart",addProductToCart);
 app.get('/getCart',getCart);
 app.post('/loginTourist',loginTourist);
 app.post('/requestOTP',requestOTP);
-app.post('/resetPassword',resetPassword);
+app.post('/resetPassword',resetPassword); 
+app.post('/bookmarkEvent',bookmarkEvent);
+app.post('/removeBookmark',removeBookmark);
+app.get('/getBookmarkedEvents',getBookmarkedEvents);
 
 
 
