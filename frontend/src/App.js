@@ -36,6 +36,7 @@ import HistoricalDetail from './pages/historicalDetails';
 import MuseumDetail from './pages/MuseumDetails';
 import { CurrencyProvider } from './pages/CurrencyContext'; // Import the provider from correct path
 import Cart from './pages/Cart';
+import Wishlist from './pages/Wishlist';
 
 
 import AttendedActivitiesPage from './pages/AttendedActivities';
@@ -114,6 +115,9 @@ function App() {
         <Route path="/Museum/:Name" element={<MuseumDetail/>} />
         <Route path="/AttendedActivitiesPage" element={<AttendedActivitiesPage/>}/> 
         <Route path="/Cart" element={<Cart/>} />
+        <Route path="/Wishlist" element={<Wishlist/>} />
+
+
 
 
 
