@@ -1604,6 +1604,12 @@ const removeProductFromCart = async (req, res) => {
       return res.status(404).json({ error: 'Product not found in cart' });
     }
 
+    // Get the product details from the database
+    const product = await productModel.findOne({ productName });
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found in the database' });
+    }
+
     // Adjust the quantity or remove the product entirely
     if (cart.products[productIndex].quantity > quantity) {
       cart.products[productIndex].quantity -= quantity;
@@ -1614,12 +1620,20 @@ const removeProductFromCart = async (req, res) => {
     // Save the updated cart
     await cart.save();
 
-    res.status(200).json({ message: 'Product removed from cart', cart });
+    // Update the product stock and sales
+    await productModel.findByIdAndUpdate(
+      product._id,
+      { $inc: { stock: quantity, sales: -quantity } }, // Increase stock and decrease sales
+      { new: true }
+    );
+
+    res.status(200).json({ message: 'Product removed from cart and stock updated', cart });
   } catch (error) {
     console.error('Error removing product from cart:', error);
     res.status(500).json({ error: 'Server error' });
   }
 };
+
 
 const getCart = async (req, res) => {
   const { Username } = req.query; // Username passed as a query parameter
