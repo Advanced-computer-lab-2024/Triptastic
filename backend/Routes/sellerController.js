@@ -4,6 +4,7 @@ const requestModel= require('../Models/Request.js');
 const productModel= require('../Models/Product.js');
 const cartModel = require('../Models/Cart.js'); // Import the Cart model
 const { default: mongoose } = require('mongoose');
+const nodemailer = require('nodemailer'); 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const createSeller = async (req, res) => {
@@ -284,6 +285,92 @@ const viewProductSales = async (req, res) => {
 
 
 
+const checkAndNotifyOutOfStock = async (req, res) => {
+  try {
+    // Fetch all products with stock === 0
+    const outOfStockProducts = await productModel.find({ stock: 0 });
+
+    console.log('Out-of-stock products:', outOfStockProducts);  // Check if products are retrieved
+
+    if (outOfStockProducts.length === 0) {
+      console.log('No out-of-stock products found.');
+      return res.status(200).json({ message: 'No out-of-stock products found.' });
+    }
+
+    // Nodemailer transporter setup
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'malook25062003@gmail.com',  // Your email
+        pass: 'sxvo feuu woie gpfn',       // Your app-specific password
+      },
+    });
+
+    const notifications = []; // Array to track emails sent
+
+    // Loop through the products and notify each seller
+    for (const product of outOfStockProducts) {
+      console.log(`Processing product: ${product.productName}, seller: ${product.seller}`);
+
+      // Find the seller by username
+      const seller = await sellerModel.findOne({ Username: product.seller });
+      console.log(`Found seller: ${seller ? seller.email : 'Not found'}`);  // Log seller email
+
+      if (!seller) {
+        console.error(`No seller found for product: ${product.productName}, seller: ${product.seller}`);
+        continue;  // Skip to the next product if no seller is found
+      }
+
+      const sellerEmail = seller.email;
+      console.log(`Sending email to seller: ${sellerEmail}`);
+
+      // Email options for the seller
+      const sellerMailOptions = {
+        from: 'malook25062003@gmail.com',
+        to: sellerEmail,
+        subject: `Product Out of Stock: ${product.productName}`,
+        text: `Dear ${product.seller},\n\nYour product "${product.productName}" is out of stock.\n\nThank you!`,
+      };
+
+      try {
+        console.log('Mail options:', sellerMailOptions);  // Log mail options for debugging
+        // Send email to the seller
+        await transporter.sendMail(sellerMailOptions);
+        console.log(`Email sent to ${sellerEmail}`);
+
+        // Add the email notification to the notifications array
+        notifications.push({
+          productName: product.productName,
+          sellerEmail,
+        });
+        console.log(`Notification added for product: ${product.productName}`);
+      } catch (emailError) {
+        // Log any email sending errors
+        console.error(`Failed to send email to ${sellerEmail}:`, emailError);
+      }
+    }
+
+    // Respond with the status and notifications array
+    res.status(200).json({
+      message: 'Out-of-stock notifications sent successfully.',
+      notifications,  // List of notifications
+    });
+  } catch (error) {
+    console.error('Error in notifying out-of-stock products:', error);
+    res.status(500).json({ message: 'An error occurred while sending notifications.', error });
+  }
+};
 
 
- module.exports = {incrementProductSales,viewProductSales ,changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller};
+
+
+
+
+
+
+
+
+
+
+
+ module.exports = {checkAndNotifyOutOfStock,incrementProductSales,viewProductSales ,changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller};
