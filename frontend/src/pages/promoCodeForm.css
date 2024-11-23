@@ -1,0 +1,99 @@
+.promo-container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+  }
+  
+  .promo-title {
+    text-align: center;
+    font-size: 24px;
+    color: #343a40;
+    margin-bottom: 20px;
+  }
+  
+  .promo-section {
+    margin-bottom: 30px;
+  }
+  
+  .promo-subtitle {
+    font-size: 18px;
+    color: #495057;
+    margin-bottom: 15px;
+  }
+  
+  .promo-form .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .promo-form label {
+    display: block;
+    font-weight: bold;
+    color: #495057;
+    margin-bottom: 5px;
+  }
+  
+  .promo-form input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .btn-submit {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .btn-submit:hover {
+    background-color: #0056b3;
+  }
+  
+  .success-message {
+    color: #28a745;
+    font-weight: bold;
+  }
+  
+  .error-message {
+    color: #dc3545;
+    font-weight: bold;
+  }
+  
+  .loading-message {
+    color: #007bff;
+    font-style: italic;
+  }
+  
+  .promo-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .promo-table th, .promo-table td {
+    border: 1px solid #dee2e6;
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .promo-table th {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .promo-table tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+  }
+  
+  .no-data-message {
+    color: #6c757d;
+    text-align: center;
+  }
+  

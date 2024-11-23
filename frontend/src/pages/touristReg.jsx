@@ -77,13 +77,13 @@ function AuthPage() {
 
       if (response.ok) {
         const data = await response.json();
+        localStorage.setItem('context', 'tourist');
         localStorage.setItem('Username', signUpFormData.Username);
         localStorage.setItem('Email', signUpFormData.Email);
         localStorage.setItem('Password', signUpFormData.Password);
         localStorage.setItem('Nationality', signUpFormData.Nationality);
         localStorage.setItem('DOB', signUpFormData.DOB);
         localStorage.setItem('Occupation', signUpFormData.Occupation);
-
         setSuccessMessage('Tourist registered successfully!');
         setErrorMessage('');
         setSignUpFormData({
@@ -129,7 +129,7 @@ const handleSignInSubmit = async (e) => {
       localStorage.setItem('Nationality', data.user.Nationality);
       localStorage.setItem('DOB', data.user.DOB);
       localStorage.setItem('Occupation', data.user.Occupation);
-
+      localStorage.setItem('context', 'tourist');
       // Show success message and navigate to the profile page
       setSuccessMessage('Login successful!');
       setErrorMessage('');

@@ -37,7 +37,7 @@ import MuseumDetail from './pages/MuseumDetails';
 import { CurrencyProvider } from './pages/CurrencyContext'; // Import the provider from correct path
 import Cart from './pages/Cart';
 import Wishlist from './pages/Wishlist';
-
+import PromoCodeForm from './pages/PromoCodeForm';
 
 import AttendedActivitiesPage from './pages/AttendedActivities';
 function Home() {
@@ -116,6 +116,7 @@ function App() {
         <Route path="/AttendedActivitiesPage" element={<AttendedActivitiesPage/>}/> 
         <Route path="/Cart" element={<Cart/>} />
         <Route path="/Wishlist" element={<Wishlist/>} />
+        <Route path="/PromoCodeForm" element={<PromoCodeForm />} />
 
 
 

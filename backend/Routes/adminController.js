@@ -13,6 +13,7 @@ const touristItineraryModel=require('../Models/touristItinerary.js');
 const activityModel= require('../Models/Activities.js');
 const complaintsModel=require('../Models/Complaint.js');
 const requestModel=require('../Models/Request.js');
+const PromoCode = require('../Models/PromoCode'); // Adjust the path as necessary
 
 const AdminLogin = async (req, res) => {
   const { Username, Password } = req.body;
@@ -689,7 +690,41 @@ const getUserStatistics = async (req, res) => {
   }
 };
 
+const createPromoCode = async (req, res) => {
+  const { code, discount, isPercentage, expirationDate, maxUsage } = req.body;
 
-module.exports = {getUserStatistics,replyToComplaint,getPendingDeletionRequests,acceptDeletionRequest,rejectDeletionRequest,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
+  try {
+    // Check if the code already exists
+    const existingCode = await PromoCode.findOne({ code });
+    if (existingCode) {
+      return res.status(400).json({ error: 'Promo code already exists' });
+    }
+
+    // Create the promo code
+    const promoCode = await PromoCode.create({
+      code,
+      discount,
+      isPercentage,
+      expirationDate,
+      maxUsage,
+    });
+
+    res.status(201).json({ message: 'Promo code created successfully', promoCode });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const getPromoCodes = async (req, res) => {
+  try {
+    const promoCodes = await PromoCode.find();
+    res.status(200).json(promoCodes);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+module.exports = {getPromoCodes,createPromoCode,getUserStatistics,replyToComplaint,getPendingDeletionRequests,acceptDeletionRequest,rejectDeletionRequest,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
     ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin,viewAllPrefTag,deleteAdmin
     ,flagItinerary,flagTouristItinerary,flagActivity,getallItineraries,getallActivities,getallTouristItineraries,getComplaints,archiveProduct,unarchiveProduct};

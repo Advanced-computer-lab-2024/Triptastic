@@ -68,6 +68,21 @@ const Cart = () => {
     }
   };
 
+  const handleProfileRedirect = () => {
+    const context = localStorage.getItem('context');
+
+    if (context === 'tourist') {
+      navigate('/tourist-profile');
+    } else if (context === 'seller') {
+      navigate('/seller-profile');
+    } else if (context === 'admin') {
+      navigate('/adminPage');
+    } else {
+      console.error('Unknown context');
+      navigate('/'); // Fallback to home
+    }
+  };
+
   useEffect(() => {
     fetchCart();
   }, []);
@@ -79,7 +94,7 @@ const Cart = () => {
         <h1 style={styles.title}>My Cart</h1>
         <button
           style={styles.profileButton}
-          onClick={() => navigate('/tourist-profile')}
+          onClick={handleProfileRedirect}
         >
           <img src={profile} alt="Profile" style={styles.profileIcon} />
         </button>
