@@ -8,7 +8,10 @@ const AdminSchema = new Schema({
     required: true,
     unique: true,
   },
-
+Email:{
+  type: String,
+  required: true
+},
   Password: {
     type: String,
     required: true,

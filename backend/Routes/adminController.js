@@ -48,7 +48,7 @@ const tourismGovLogin = async (req, res) => {
 
 
 const createAdmin = async (req, res) => {
-    const { Username, Password } = req.body;
+    const { Username, Password ,Email} = req.body;
 
     try {
         const existingAdmin = await adminModel.findOne({ Username });
@@ -57,7 +57,7 @@ const createAdmin = async (req, res) => {
             return res.status(400).json({ error: "Username already exists" });
         }
 
-        const admin = await adminModel.create({ Username, Password });
+        const admin = await adminModel.create({ Username, Password ,Email});
         res.status(201).json(admin);
     } catch (error) {
         res.status(400).json({ error: error.message });
