@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
-
 import { CurrencyContext } from '../pages/CurrencyContext';
-
+import logo from '../images/image_green_background.png'; // Replace with your logo path
+import profile from '../images/profile.jpg'; // Replace with your profile icon path
+import cartIcon from '../images/cart.png';
 const Products = () => {
   const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
   const [products, setProducts] = useState([]);
@@ -59,6 +60,21 @@ const Products = () => {
       setError(error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleProfileRedirect = () => {
+    const context = localStorage.getItem('context');
+
+    if (context === 'tourist') {
+      navigate('/tourist-profile');
+    } else if (context === 'seller') {
+      navigate('/seller-profile');
+    } else if (context === 'admin') {
+      navigate('/adminPage');
+    } else {
+      console.error('Unknown context');
+      navigate('/'); // Fallback to home
     }
   };
 
@@ -131,18 +147,50 @@ const Products = () => {
   }
 
   return (
-    <div>
-      <h1>Products Page</h1>
-      <button onClick={handleViewWishlist} style={{ position: 'absolute', top: '10px', right: '10px' }}>View Wishlist</button>
+    <div style={styles.container}>
+      <header style={styles.header}>
+        <div style={styles.logoContainer}>
+          <img
+            src={logo}
+            alt="Logo"
+            style={{
+              height: '70px',
+              width: '70px',
+              borderRadius: '10px',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
+              objectFit: 'cover',
+              marginRight: '420px',
+            }}
+          />
+          <h1 style={styles.title}>Products Page</h1>
+        </div>
+        <img
+          src={profile}
+          alt="Profile Icon"
+          style={styles.profileIcon}
+          onClick={handleProfileRedirect}
+        />
+      </header>
 
-      {/* Filter Form */}
-      <form onSubmit={handleFilterSubmit}>
+      <div style={styles.actionButtons}>
+      <img
+          src={cartIcon}
+          alt="Cart Icon"
+          style={styles.cartIcon}
+          onClick={() => navigate('/Cart')}
+        />
+        <button onClick={handleViewWishlist} style={styles.wishlistButton}>
+          View My Wishlist
+        </button>
+      </div>
+
+      <form onSubmit={handleFilterSubmit} style={styles.filterForm}>
         <div>
           <label>Min Price: </label>
           <input
             type="number"
             value={minPrice}
-            onChange={(e) => setMinPrice(e.target.value)} // Update state when input changes
+            onChange={(e) => setMinPrice(e.target.value)}
             placeholder="Enter minimum price"
           />
         </div>
@@ -151,45 +199,156 @@ const Products = () => {
           <input
             type="number"
             value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)} // Update state when input changes
+            onChange={(e) => setMaxPrice(e.target.value)}
             placeholder="Enter maximum price"
           />
         </div>
-        <button type="submit">Filter</button>
+        <button type="submit" style={styles.filterButton}>
+          Filter
+        </button>
       </form>
-      <button onClick={fetchProductsByRating}>Sort by Rating</button>
 
-      {/* Display Products */}
       {products.length === 0 ? (
         <p>No products available.</p>
       ) : (
-        <ul style={{ listStyleType: 'none', padding: 0 }}>
+        <ul style={styles.productList}>
           {products.map((product) => (
-            <li key={product.productName} style={{ marginBottom: '20px', border: '1px solid #ccc', padding: '10px' }}>
-              <h2>{product.productName}</h2>
-              <p><strong>Description:</strong> {product.description}</p>
-              <p><strong>Price:</strong> {selectedCurrency} {(product.price * conversionRate).toFixed(2)}</p>
-              <p><strong>Rating:</strong> {product.rating}</p>
-              <p><strong>Seller:</strong> {product.seller}</p>
+            <li key={product.productName} style={styles.productItem}>
+              <h2 style={styles.productName}>{product.productName}</h2>
+              <p>
+                <strong>Description:</strong> {product.description}
+              </p>
+              <p>
+                <strong>Price:</strong> {selectedCurrency}{' '}
+                {(product.price * conversionRate).toFixed(2)}
+              </p>
+              <p>
+                <strong>Rating:</strong> {product.rating}
+              </p>
               <p><strong>Review:</strong> {product.review}</p>
               <p><strong>Stock:</strong> {product.stock}</p>
               <p><strong>Sales:</strong> {product.sales}</p>
-
               {product.image && (
                 <img
                   src={`http://localhost:8000/${product.image.replace(/\\/g, '/')}`}
                   alt={product.productName}
-                  style={{ width: '400px', height: '300px' }}
+                  style={styles.productImage}
                 />
               )}
-              <button onClick={() => handleAddToCart(product)}>Add to Cart</button>
-              <button onClick={() => handleAddToWishlist(product)}>Add to Wishlist</button>
+              <button onClick={() => handleAddToCart(product)} style={styles.addButton}>
+                Add to Cart
+              </button>
+              <button onClick={() => handleAddToWishlist(product)} style={styles.addButton}>
+                Add to Wishlist
+              </button>
             </li>
           ))}
         </ul>
       )}
     </div>
   );
+};
+
+const styles = {
+  container: {
+    maxWidth: '1200px',
+    margin: '20px auto',
+    padding: '20px',
+    backgroundColor: '#f9f9f9',
+    borderRadius: '10px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  },
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '20px',
+    backgroundColor: '#fff',
+    padding: '10px',
+    borderRadius: '10px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  },
+  logoContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: '#4CAF50',
+  },
+  profileIcon: {
+    height: '50px',
+    width: '50px',
+    borderRadius: '50%',
+    cursor: 'pointer',
+    borderRadius: '30px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
+  },
+  actionButtons: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    marginTop: '10px',
+  },
+  wishlistButton: {
+    backgroundColor: '#4CAF50',
+    color: '#fff',
+    padding: '10px 20px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    marginBottom: '10px',
+  },
+  cartIcon: {
+    width: '50px',
+    height: '50px',
+    cursor: 'pointer',
+    
+  },
+  filterForm: {
+    margin: '20px 0',
+  },
+  filterButton: {
+    marginTop: '10px',
+    padding: '10px 20px',
+    backgroundColor: '#4CAF50',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+  productList: {
+    listStyleType: 'none',
+    padding: 0,
+  },
+  productItem: {
+    backgroundColor: '#fff',
+    padding: '20px',
+    marginBottom: '10px',
+    borderRadius: '10px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  },
+  productName: {
+    fontSize: '20px',
+    color: '#4CAF50',
+  },
+  productImage: {
+    width: '100%',
+    maxWidth: '400px',
+    height: '300px',
+    objectFit: 'cover',
+    borderRadius: '10px',
+  },
+  addButton: {
+    marginTop: '10px',
+    padding: '10px 20px',
+    backgroundColor: '#4CAF50',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
 };
 
 export default Products;

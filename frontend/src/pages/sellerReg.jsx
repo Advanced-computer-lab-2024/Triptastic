@@ -114,6 +114,7 @@ function SellerReg() {
         localStorage.setItem('Username', formData.Username);
         localStorage.setItem('Email', formData.Email);
         localStorage.setItem('Password', formData.Password);
+        localStorage.setItem('context', 'seller');
         setSuccessMessage('Seller registered successfully!');
         setErrorMessage('');
         // Optionally, reset form data
