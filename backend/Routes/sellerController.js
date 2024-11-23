@@ -2,6 +2,7 @@
 const sellerModel = require('../Models/Seller.js');
 const requestModel= require('../Models/Request.js');
 const productModel= require('../Models/Product.js');
+const adminModel = require('../Models/Admin.js');
 const cartModel = require('../Models/Cart.js'); // Import the Cart model
 const { default: mongoose } = require('mongoose');
 const nodemailer = require('nodemailer'); 
@@ -222,8 +223,8 @@ const getPendingSellers=async(req,res)=>{
   }
 };
 const settleDocsSeller = async (req, res) => {
-  const { Username } = req.query; 
-  const { docsApproved } = req.body; 
+  const { Username }= req.query; 
+  const { docsApproved }= req.body; 
 
   try {
       
@@ -284,47 +285,41 @@ const viewProductSales = async (req, res) => {
 
 
 
-
 const checkAndNotifyOutOfStock = async (req, res) => {
   try {
-    // Fetch all products with stock === 0
     const outOfStockProducts = await productModel.find({ stock: 0 });
 
-    console.log('Out-of-stock products:', outOfStockProducts);  // Check if products are retrieved
-
     if (outOfStockProducts.length === 0) {
-      console.log('No out-of-stock products found.');
       return res.status(200).json({ message: 'No out-of-stock products found.' });
     }
 
-    // Nodemailer transporter setup
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'malook25062003@gmail.com',  // Your email
-        pass: 'sxvo feuu woie gpfn',       // Your app-specific password
+        user: 'malook25062003@gmail.com',
+        pass: 'sxvo feuu woie gpfn',
       },
     });
 
-    const notifications = []; // Array to track emails sent
+    const notifications = [];
 
-    // Loop through the products and notify each seller
+    // Get all admin emails
+    const adminEmails = await adminModel.find({}, 'Email');
+    const adminEmailAddresses = adminEmails.map((admin) => admin.Email);
+
     for (const product of outOfStockProducts) {
-      console.log(`Processing product: ${product.productName}, seller: ${product.seller}`);
-
-      // Find the seller by username
+      console.log(`Querying seller with Username: ${product.seller}`);
       const seller = await sellerModel.findOne({ Username: product.seller });
-      console.log(`Found seller: ${seller ? seller.email : 'Not found'}`);  // Log seller email
+      console.log(`Result for ${product.seller}:`, seller);
 
       if (!seller) {
-        console.error(`No seller found for product: ${product.productName}, seller: ${product.seller}`);
-        continue;  // Skip to the next product if no seller is found
+        console.error(`Seller not found for product: ${product.productName}`);
+        continue;
       }
 
-      const sellerEmail = seller.email;
+      const sellerEmail = seller.Email;
       console.log(`Sending email to seller: ${sellerEmail}`);
 
-      // Email options for the seller
       const sellerMailOptions = {
         from: 'malook25062003@gmail.com',
         to: sellerEmail,
@@ -333,33 +328,43 @@ const checkAndNotifyOutOfStock = async (req, res) => {
       };
 
       try {
-        console.log('Mail options:', sellerMailOptions);  // Log mail options for debugging
-        // Send email to the seller
         await transporter.sendMail(sellerMailOptions);
         console.log(`Email sent to ${sellerEmail}`);
-
-        // Add the email notification to the notifications array
-        notifications.push({
-          productName: product.productName,
-          sellerEmail,
-        });
-        console.log(`Notification added for product: ${product.productName}`);
+        notifications.push({ productName: product.productName, sellerEmail });
       } catch (emailError) {
-        // Log any email sending errors
         console.error(`Failed to send email to ${sellerEmail}:`, emailError);
       }
     }
 
-    // Respond with the status and notifications array
+    // Send email to all admins about the out-of-stock products
+    const adminMailOptions = {
+      from: 'malook25062003@gmail.com',
+      to: adminEmailAddresses,
+      subject: `Out-of-Stock Products Notification`,
+      text: `Dear Admins,\n\nThe following products are out of stock:\n${outOfStockProducts
+        .map((product) => `- ${product.productName} by ${product.seller}`)
+        .join('\n')}\n\nThank you!`,
+    };
+
+    try {
+      await transporter.sendMail(adminMailOptions);
+      console.log(`Email sent to admins: ${adminEmailAddresses.join(', ')}`);
+      notifications.push({ adminNotification: `Emails sent to admins`, adminEmails: adminEmailAddresses });
+    } catch (emailError) {
+      console.error(`Failed to send email to admins:`, emailError);
+    }
+
     res.status(200).json({
       message: 'Out-of-stock notifications sent successfully.',
-      notifications,  // List of notifications
+      notifications,
     });
   } catch (error) {
     console.error('Error in notifying out-of-stock products:', error);
     res.status(500).json({ message: 'An error occurred while sending notifications.', error });
   }
 };
+
+
 
 
 

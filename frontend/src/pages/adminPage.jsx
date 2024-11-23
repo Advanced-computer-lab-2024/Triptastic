@@ -5,7 +5,8 @@ import { useNavigate } from 'react-router-dom';
 const AdminPage = () => {
   const [formData, setFormData] = useState({
     Username: '',
-    Password: ''
+    Password: '',
+    Email:''
   });
   const [requests, setRequests] = useState([]);
   const [createCategoryName, setCreateCategoryName] = useState('');
@@ -218,7 +219,7 @@ const getActivities= async ()=>{
 }
   const createAdmin = async (e) => {
     e.preventDefault();
-    const { Username, Password } = formData;
+    const { Username, Password ,Email} = formData;
     setLoading(true);
     setErrorMessage('');
 
@@ -228,12 +229,12 @@ const getActivities= async ()=>{
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ Username, Password })
+        body: JSON.stringify({ Username, Password ,Email})
       });
 
       if (response.ok) {
         alert('Admin created successfully!');
-        setFormData({ Username: '', Password: '' });
+        setFormData({ Username: '', Password: '' ,Email:''});
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.error || 'Failed to create admin.');
@@ -890,6 +891,16 @@ const unarchiveProduct = async () => {
             type="password"
             name="Password"
             value={formData.Password}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <label>Email:</label>
+          <input
+            type="text"
+            name="Email"
+            value={formData.Email}
             onChange={handleChange}
             required
           />

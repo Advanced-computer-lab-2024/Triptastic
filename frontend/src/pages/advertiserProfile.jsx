@@ -473,6 +473,7 @@ const [filteredActivities, setFilteredActivities] = useState([]);
         <p><strong>Category:</strong> {activity.Category}</p>
         <p><strong>Date:</strong> {activity.date}</p>
         <p><strong>Budget:</strong> {activity.budget}</p>
+        <p><strong>Flagged:</strong> {activity.FlagInappropriate? "yes": "no"}</p>
         <button
           className="view-report-button"
           onClick={() => handleViewReport(activity._id)}
