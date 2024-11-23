@@ -35,7 +35,7 @@ const TouristProfile = () => {
   const [passwordChangeError, setPasswordChangeError] = useState('');
   const [changingPassword, setChangingPassword] = useState(false);
 
-
+  localStorage.setItem('context', 'tourist');
   const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
 
   const [formData, setFormData] = useState({

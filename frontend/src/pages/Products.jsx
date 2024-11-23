@@ -63,6 +63,21 @@ const Products = () => {
     }
   };
 
+  const handleProfileRedirect = () => {
+    const context = localStorage.getItem('context');
+
+    if (context === 'tourist') {
+      navigate('/tourist-profile');
+    } else if (context === 'seller') {
+      navigate('/seller-profile');
+    } else if (context === 'admin') {
+      navigate('/adminPage');
+    } else {
+      console.error('Unknown context');
+      navigate('/'); // Fallback to home
+    }
+  };
+
   const handleAddToCart = async (product) => {
     try {
       const response = await fetch(`http://localhost:8000/addProductToCart?Username=${username}`, {
@@ -153,7 +168,7 @@ const Products = () => {
           src={profile}
           alt="Profile Icon"
           style={styles.profileIcon}
-          onClick={() => navigate('/tourist-profile')}
+          onClick={handleProfileRedirect}
         />
       </header>
 

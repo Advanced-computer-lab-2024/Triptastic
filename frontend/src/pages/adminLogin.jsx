@@ -35,6 +35,7 @@ function AdminLogin() {
         
       if (response.ok) {
         localStorage.setItem('Username', formData.Username);
+        localStorage.setItem('context', 'admin');
         const data = await response.json();
         setSuccessMessage('Admin logged in successfully!');
         setErrorMessage('');
