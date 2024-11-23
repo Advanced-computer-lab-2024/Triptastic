@@ -103,7 +103,7 @@ const createTourGuideInfo = async (req, res) => {
     const Username= req.query.Username;
     
     try {
-        const tourGuide = await tourGuideModel.findOne({ Username: Username }); 
+        const tourGuide = await tourGuideModel.findOne({ Username: Username }).populate('flaggedItineraries'); 
 
             res.status(200).json(tourGuide);
     } 

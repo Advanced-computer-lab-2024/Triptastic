@@ -80,7 +80,7 @@ const getAdvertiser= async(req,res) =>{
    const {Username}= req.query;
    
    try {
-       const advertiser = await advertiserModel.findOne({ Username: Username }); 
+       const advertiser = await advertiserModel.findOne({ Username: Username }).populate('flaggedActivities'); 
 
            res.status(200).json(advertiser);
    } 

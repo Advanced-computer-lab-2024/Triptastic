@@ -12,6 +12,11 @@ const advertiserSchema = new Schema({
     type: String,
     required: true
   },
+  flaggedActivities:{
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'Activities',
+    default: [],
+  },
   Password: {
     type: String,
     required: true,

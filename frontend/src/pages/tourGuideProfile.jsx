@@ -648,6 +648,21 @@ const handleViewReport = async (itineraryId) => {
       <div>
         <h2>Tour Guide Profile</h2>
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        {tourGuideInfo?.flaggedItineraries.length > 0 ? (
+          <div>
+                <h3>Flagged Itineraries</h3>
+                <ul>
+                  {tourGuideInfo.flaggedItineraries.map((itinerary) => (
+                    <li key={itinerary._id}>
+                      <p><strong>Locations:</strong> {itinerary.Locations.join(', ')}</p>
+                      <p><strong>Dates:</strong> {itinerary.DatesTimes}</p>
+                    </li>
+                  ))}
+                </ul>
+          </div>
+              ) : (
+                <p>No flagged itineraries.</p>
+              )}
         {loading ? (
           <p>Loading tour guide information...</p>
         ) : (

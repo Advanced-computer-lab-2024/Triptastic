@@ -387,7 +387,11 @@ const sortProductsByRatingAdmin = async (req, res) => {
     const flagItinerary= async(req,res)=>{
       const id=req.params.id;
       try{
+        const itinerary = await itineraryModel.findById(id);
         await itineraryModel.findByIdAndUpdate(id,{FlagInappropriate: true});
+        const tourGuide = await tourGuideModel.findOne({ Username: itinerary.TourGuide });
+        tourGuide.flaggedItineraries.push(itinerary._id);
+        await tourGuide.save();
       res.status(200).json({msg:" Itinerary is flagged"});
    }
    catch (error){
@@ -407,7 +411,12 @@ const sortProductsByRatingAdmin = async (req, res) => {
     const flagActivity= async(req,res)=>{
       const id=req.params.id;
       try{
+        const activity = await activityModel.findById(id);
+        const advertiser=await advertiserModel.findOne({Username :activity.Advertiser});
         await activityModel.findByIdAndUpdate(id,{FlagInappropriate: true});
+        advertiser.flaggedActivities.push(activity._id);
+        await advertiser.save();
+
       res.status(200).json({msg:" Activity is flagged"});
    }
    catch (error){
