@@ -1,6 +1,8 @@
 import React, { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import PromoCodeForm from './PromoCodeForm'; // Adjust path as needed
+
 const AdminPage = () => {
   const [formData, setFormData] = useState({
     Username: '',
@@ -867,6 +869,7 @@ const unarchiveProduct = async () => {
       <div className="sidebar">
         <h3>Explore</h3>
         <ul>
+        <li onClick={() => navigate('/PromoCodeForm')}>Promo Codes</li>
           <li onClick={() => navigate('/products')}>Products</li>
         </ul>
       </div>
@@ -896,7 +899,9 @@ const unarchiveProduct = async () => {
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
       </form>
+      
 
+      
       <h2>Users Statistics</h2>
       {!showStats ? (
         <button onClick={fetchStatistics} disabled={statsLoading}>
@@ -1408,6 +1413,7 @@ const unarchiveProduct = async () => {
       <div>
       <button onClick={() => navigate('/docs')}>See unsettled docs</button>
       </div>
+      
      
     </div>
   );

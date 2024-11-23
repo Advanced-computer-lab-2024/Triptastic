@@ -33,7 +33,7 @@ const{changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,c
 const{changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller}=require("./Routes/sellerController");
 
 //Admin
-const{getUserStatistics,replyToComplaint,rejectDeletionRequest,acceptDeletionRequest,getPendingDeletionRequests,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin,createCategory,
+const{getPromoCodes,createPromoCode,getUserStatistics,replyToComplaint,rejectDeletionRequest,acceptDeletionRequest,getPendingDeletionRequests,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin,createCategory,
   getCategory,
   updateCategory,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
@@ -261,8 +261,8 @@ app.post("/replyToComplaint/:id",replyToComplaint);
 app.patch("/archiveProduct/:productName",archiveProduct);
 app.patch("/unarchiveProduct/:productName",unarchiveProduct);
 app.get("/getUserStatistics",getUserStatistics);
-
-
+app.post("/createPromoCode",createPromoCode);
+app.get('/getPromoCodes',getPromoCodes);
 
 
 
