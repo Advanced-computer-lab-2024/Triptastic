@@ -64,10 +64,31 @@ const SellerProfile = () => {
     }
   };
 
- useEffect(() => {
-  
-  fetchSellerInfo();
-}, []);
+  useEffect(() => {
+    fetchSellerInfo();
+    checkoutOfStock(); // Automatically call checkoutOfStock when profile is opened
+  }, []);
+const checkoutOfStock = async () => {
+  try {
+    const response = await fetch('http://localhost:8000/checkAndNotifyOutOfStock', {
+      method: 'GET', // Use GET or any other appropriate method
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      // Handle the data response accordingly
+      console.log('Out of stock products checked:', data);
+    } else {
+      console.error('Failed to check out of stock products');
+    }
+  } catch (error) {
+    console.error('Error occurred while checking out of stock:', error);
+  }
+};
+
 
 const fetchSellerInfo = async () => {
   setLoading(true);
