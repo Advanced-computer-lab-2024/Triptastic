@@ -30,7 +30,7 @@ const {removeProductFromCart,bookmarkEvent,addToCartAndRemoveFromWishlist,remove
 const{changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser,getTouristReportForActivity,filterActivitiesByMonth,loginAdvertiser}=require("./Routes/advertiserController");
 
 //Seller
-const{changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller}=require("./Routes/sellerController");
+const{checkAndNotifyOutOfStock,changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller}=require("./Routes/sellerController");
 
 //Admin
 const{getUserStatistics,replyToComplaint,rejectDeletionRequest,acceptDeletionRequest,getPendingDeletionRequests,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin,createCategory,
@@ -219,6 +219,7 @@ app.patch("/changePasswordSeller",changePasswordSeller);
 app.get("/getPendingSellers",getPendingSellers);
 app.patch("/settleDocsSeller",settleDocsSeller);
 app.post('/loginSeller',loginSeller);
+app.get("/checkAndNotifyOutOfStock",checkAndNotifyOutOfStock);
 
 //Admin
 app.post("/tourismGovLogin",tourismGovLogin);
