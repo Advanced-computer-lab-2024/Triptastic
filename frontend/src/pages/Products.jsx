@@ -3,8 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import { CurrencyContext } from '../pages/CurrencyContext';
 import logo from '../images/image_green_background.png'; // Replace with your logo path
-import profile from '../images/profile.jpg'; // Replace with your profile icon path
-import cartIcon from '../images/cart.png';
+import { FaUserCircle,FaCartArrowDown} from 'react-icons/fa';
 const Products = () => {
   const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
   const [products, setProducts] = useState([]);
@@ -164,8 +163,7 @@ const Products = () => {
           />
           <h1 style={styles.title}>Products Page</h1>
         </div>
-        <img
-          src={profile}
+        <FaUserCircle
           alt="Profile Icon"
           style={styles.profileIcon}
           onClick={handleProfileRedirect}
@@ -173,8 +171,7 @@ const Products = () => {
       </header>
 
       <div style={styles.actionButtons}>
-      <img
-          src={cartIcon}
+      <FaCartArrowDown
           alt="Cart Icon"
           style={styles.cartIcon}
           onClick={() => navigate('/Cart')}
@@ -263,28 +260,43 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '20px',
-    backgroundColor: '#fff',
-    padding: '10px',
+    backgroundColor: '#4CAF50',
+    padding: '10px 20px',
     borderRadius: '10px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   },
   logoContainer: {
     display: 'flex',
     alignItems: 'center',
+    cursor: 'pointer',
+  },
+  logo: {
+    height: '70px',
+    width: '80px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+  },
+  profileIcon: {
+    fontSize: '40px',
+    color: 'white',
+    cursor: 'pointer',
+    borderRadius: '20px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  },
+  cartIcon: {
+    width: '50px',
+    height: '50px',
+    color:'#4CAF50',
+    cursor: 'pointer',
+    marginLeft:'700px'
   },
   title: {
     fontSize: '24px',
     fontWeight: 'bold',
-    color: '#4CAF50',
+    color: 'white',
+    margin: 0,
   },
-  profileIcon: {
-    height: '50px',
-    width: '50px',
-    borderRadius: '50%',
-    cursor: 'pointer',
-    borderRadius: '30px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
-  },
+
   actionButtons: {
     display: 'flex',
     flexDirection: 'column',
@@ -299,12 +311,6 @@ const styles = {
     borderRadius: '5px',
     cursor: 'pointer',
     marginBottom: '10px',
-  },
-  cartIcon: {
-    width: '50px',
-    height: '50px',
-    cursor: 'pointer',
-    
   },
   filterForm: {
     margin: '20px 0',
