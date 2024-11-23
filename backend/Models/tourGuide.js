@@ -43,6 +43,11 @@ const tourGuideSchema = new Schema({
     enum: ['pending', 'accepted', 'rejected'], 
     default: 'pending' 
   },
+  flaggedItineraries:{
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'Itinerary',
+    default: [],
+  },
   feedback: [
     {
       touristUsername: { // Add this field to store the tourist's name who submitted the feedback

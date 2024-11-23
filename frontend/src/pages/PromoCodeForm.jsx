@@ -106,17 +106,17 @@ const PromoCodeForm = () => {
             />
           </div>
           <div className="form-group">
-            <label>
-              <input
-                type="checkbox"
-                name="isPercentage"
-                checked={formData.isPercentage}
-                onChange={handleChange}
-              />
-              <FaPercentage /> Is Percentage?
-            </label>
-          </div>
-          <div className="form-group">
+  <label>
+    <FaPercentage /> Is Percentage?
+    <input
+      type="checkbox"
+      className="percentage-checkbox"
+      name="isPercentage"
+      checked={formData.isPercentage}
+      onChange={handleChange}
+    />
+  </label>
+</div>  <div className="form-group">
             <label><FaCalendarAlt /> Expiration Date:</label>
             <input
               type="date"
