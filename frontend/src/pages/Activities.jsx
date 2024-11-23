@@ -1,7 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom'; // Import Link for routing
 import { CurrencyContext } from '../pages/CurrencyContext';
+import { FaBell, FaUserCircle } from 'react-icons/fa'; // Import icons
+import logo from '../images/image_green_background.png'; // Add your logo file pathimport axios from 'axios';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 const Activities = () => {
   const { selectedCurrency, conversionRate ,fetchConversionRate} = useContext(CurrencyContext);
   const [activities, setActivities] = useState([]);
@@ -18,6 +22,10 @@ const Activities = () => {
   const [activityToShare, setActivityToShare] = useState(null);
   const [bookmarkedActivities, setBookmarkedActivities] = useState([]);
   const [username, setUsername] = useState(localStorage.getItem('Username') || '');
+  const navigate = useNavigate();
+
+
+  const [notificationRequested, setNotificationRequested] = useState({});
   // Sorting states
   const [priceSort, setPriceSort] = useState('PASC'); // 'PASC' or 'PDSC'
   const [ratingSort, setRatingSort] = useState('RASC'); // 'RASC' or 'RDSC'
@@ -309,9 +317,37 @@ const bookActivity = async (activityName) => {
     console.error(error);
   }
 };
-  return (
-    <div>
-      <h2>Activities</h2>
+const handleNotificationRequest = async (activityId) => {
+  try {
+    const response = await fetch('http://localhost:8000/requestNotification', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: localStorage.getItem('Username'),
+        activityId,
+      }),
+    });
+
+    if (response.ok) {
+      alert('You will be notified when bookings open!');
+      setNotificationRequested((prev) => ({ ...prev, [activityId]: true })); // Mark as requested
+    } else {
+      const errorData = await response.json();
+      alert(errorData.message || 'Failed to request notification.');
+    }
+  } catch (error) {
+    console.error('Error requesting notification:', error);
+    alert('An error occurred. Please try again.');
+  }
+};
+return (
+  <div style={styles.container}>
+    <header style={styles.header}>
+      <img src={logo} alt="Logo" style={styles.logo} />
+      <h2 style={styles.title}>Activities</h2>
+      <FaUserCircle style={styles.profileIcon} onClick={() => navigate('/tourist-profile')} />
+    </header>
+  
       
 
       {loading ? (
@@ -430,8 +466,13 @@ const bookActivity = async (activityName) => {
                 <li key={activity._id}>
                   <strong>Name:</strong> {activity.name} <br />
                   <strong>Price:</strong> {(activity.price * conversionRate).toFixed(2)} {selectedCurrency} <br />
-
-                  <strong>Rating:</strong> {activity.rating} <br />
+                  <strong>Booking Open:</strong> {activity.bookingOpen ? 'Yes' : 'No'}
+                {!activity.bookingOpen && (
+                  <FaBell
+                    style={styles.bellIcon}
+                    onClick={() => handleNotificationRequest(activity._id)}
+                  />
+                )} <br/>
                   <button
                       onClick={() => handleBookmark(activity._id)}
                       style={{
@@ -491,7 +532,6 @@ const bookActivity = async (activityName) => {
                       <p><strong>Location:</strong> {activity.location}</p>
                       <p><strong>Tags:</strong> {activity.tags.join(', ')}</p>
                       <p><strong>Special Discounts:</strong> {activity.specialDiscounts}</p>
-                      <p><strong>Booking Open:</strong> {activity.bookingOpen ? 'Yes' : 'No'}</p>
                       <p><strong>Advertiser:</strong> {activity.Advertiser}</p>
                       
 
@@ -534,4 +574,72 @@ const bookActivity = async (activityName) => {
   );
 };
 
+
+const styles = {
+container: {
+  maxWidth: '1200px',
+  margin: '0 auto',
+  padding: '20px',
+  backgroundColor: '#f4f4f4',
+  borderRadius: '10px',
+  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+},
+header: {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: '20px',
+  backgroundColor: '#4CAF50',
+  padding: '10px 20px',
+  borderRadius: '10px',
+  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+},
+logoContainer: {
+  display: 'flex',
+  alignItems: 'center',
+  cursor: 'pointer',
+},
+logo: {
+  height: '70px',
+  width: '80px',
+  borderRadius: '10px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+},
+profileIcon: {
+  fontSize: '40px',
+  color: 'white',
+  cursor: 'pointer',
+  borderRadius: '20px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+},
+title: {
+  fontSize: '24px',
+  color: 'white',
+},
+
+section: {
+  margin: '20px 0',
+},
+list: {
+  listStyleType: 'none',
+  padding: 0,
+},
+listItem: {
+  backgroundColor: '#fff',
+  padding: '15px',
+  borderRadius: '10px',
+  marginBottom: '10px',
+  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+},
+bellIcon: {
+  fontSize: '20px',
+  color: '#4CAF50',
+  cursor: 'pointer',
+  marginLeft: '10px',
+},
+details: {
+  marginTop: '10px',
+  paddingLeft: '20px',
+},
+};
 export default Activities;

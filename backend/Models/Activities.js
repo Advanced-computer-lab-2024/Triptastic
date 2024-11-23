@@ -94,6 +94,15 @@ ratings: [{
       default: Date.now
     }
   }],
+
+  notificationRequests: [
+    {
+      userId: {
+        type: String, 
+        required: true,
+      },
+    },
+  ],
   
 
 

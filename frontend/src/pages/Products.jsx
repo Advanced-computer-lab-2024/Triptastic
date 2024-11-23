@@ -1,11 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { FaHeart } from 'react-icons/fa';
-import { FaShoppingCart } from 'react-icons/fa';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import { CurrencyContext } from '../pages/CurrencyContext';
 import logo from '../images/image_green_background.png'; // Replace with your logo path
-import profile from '../images/profile.jpg'; // Replace with your profile icon path
-import cartIcon from '../images/cart.png';
+import { FaUserCircle,FaCartArrowDown} from 'react-icons/fa';
 const Products = () => {
   const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
   const [products, setProducts] = useState([]);
@@ -149,105 +147,100 @@ const Products = () => {
 
   return (
     <div style={styles.container}>
- <header style={styles.header}>
-  <div style={styles.logoContainer}>
-    <img
-      src={logo}
-      alt="Logo"
-      style={{
-        height: '70px',
-        width: '70px',
-        borderRadius: '10px',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
-        objectFit: 'cover',
-      }}
-    />
-  </div>
-  <h1 style={styles.title}>Products Page</h1>
-  <div style={styles.navIcons}>
-  <FaShoppingCart
-    style={styles.cartIcon}
-    onClick={() => navigate('/Cart')}
-    title="View Cart" // Tooltip for accessibility
-  />
-    <img
-      src={profile}
-      alt="Profile Icon"
-      style={styles.profileIcon}
-      onClick={handleProfileRedirect}
-    />
-  </div>
-</header>
-
+      <header style={styles.header}>
+        <div style={styles.logoContainer}>
+          <img
+            src={logo}
+            alt="Logo"
+            style={{
+              height: '70px',
+              width: '70px',
+              borderRadius: '10px',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
+              objectFit: 'cover',
+              marginRight: '420px',
+            }}
+          />
+          <h1 style={styles.title}>Products Page</h1>
+        </div>
+        <FaUserCircle
+          alt="Profile Icon"
+          style={styles.profileIcon}
+          onClick={handleProfileRedirect}
+        />
+      </header>
 
       <div style={styles.actionButtons}>
+      <FaCartArrowDown
+          alt="Cart Icon"
+          style={styles.cartIcon}
+          onClick={() => navigate('/Cart')}
+        />
         <button onClick={handleViewWishlist} style={styles.wishlistButton}>
           View My Wishlist
         </button>
       </div>
 
       <form onSubmit={handleFilterSubmit} style={styles.filterForm}>
-  <div style={styles.filterGroup}>
-    <input
-      type="number"
-      value={minPrice}
-      onChange={(e) => setMinPrice(e.target.value)}
-      placeholder="Min Price"
-      style={styles.filterInput}
-    />
-    <input
-      type="number"
-      value={maxPrice}
-      onChange={(e) => setMaxPrice(e.target.value)}
-      placeholder="Max Price"
-      style={styles.filterInput}
-    />
-    <button type="submit" style={styles.filterButton}>
-      Filter
-    </button>
-  </div>
-</form>
-
+        <div>
+          <label>Min Price: </label>
+          <input
+            type="number"
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value)}
+            placeholder="Enter minimum price"
+          />
+        </div>
+        <div>
+          <label>Max Price: </label>
+          <input
+            type="number"
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
+            placeholder="Enter maximum price"
+          />
+        </div>
+        <button type="submit" style={styles.filterButton}>
+          Filter
+        </button>
+      </form>
 
       {products.length === 0 ? (
         <p>No products available.</p>
       ) : (
         <ul style={styles.productList}>
-  {products.map((product) => (
-    <li key={product.productName} style={styles.productCard}>
-      {product.image && (
-        <img
-          src={`http://localhost:8000/${product.image.replace(/\\/g, '/')}`}
-          alt={product.productName}
-          style={styles.productImage}
-        />
-      )}
-      <div style={styles.productInfo}>
-        <h2 style={styles.productName}>{product.productName}</h2>
-        <p><strong>Description:</strong> {product.description}</p>
-        <p><strong>Price:</strong> {selectedCurrency}{' '}
-          {(product.price * conversionRate).toFixed(2)}
-        </p>
-        <p><strong>Rating:</strong> {product.rating}</p>
-        <p><strong>Review:</strong> {product.review}</p>
-        <p><strong>Stock:</strong> {product.stock}</p>
-        <p><strong>Sales:</strong> {product.sales}</p>
-        <div style={styles.productActions}>
-          <button onClick={() => handleAddToCart(product)} style={styles.actionButton}>
-            Add to Cart
-          </button>
-          <button
-            onClick={() => handleAddToWishlist(product)}
-            style={styles.iconButton}
-          >
-            <FaHeart style={styles.icon} />
-          </button>
-
-        </div>
-      </div>
-    </li>
-  ))}
-</ul>
+          {products.map((product) => (
+            <li key={product.productName} style={styles.productItem}>
+              <h2 style={styles.productName}>{product.productName}</h2>
+              <p>
+                <strong>Description:</strong> {product.description}
+              </p>
+              <p>
+                <strong>Price:</strong> {selectedCurrency}{' '}
+                {(product.price * conversionRate).toFixed(2)}
+              </p>
+              <p>
+                <strong>Rating:</strong> {product.rating}
+              </p>
+              <p><strong>Review:</strong> {product.review}</p>
+              <p><strong>Stock:</strong> {product.stock}</p>
+              <p><strong>Sales:</strong> {product.sales}</p>
+              {product.image && (
+                <img
+                  src={`http://localhost:8000/${product.image.replace(/\\/g, '/')}`}
+                  alt={product.productName}
+                  style={styles.productImage}
+                />
+              )}
+              <button onClick={() => handleAddToCart(product)} style={styles.addButton}>
+                Add to Cart
+              </button>
+              <button onClick={() => handleAddToWishlist(product)} style={styles.addButton}>
+                Add to Wishlist
+              </button>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );
@@ -267,28 +260,43 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '20px',
-    backgroundColor: '#fff',
-    padding: '10px',
+    backgroundColor: '#4CAF50',
+    padding: '10px 20px',
     borderRadius: '10px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   },
   logoContainer: {
     display: 'flex',
     alignItems: 'center',
+    cursor: 'pointer',
+  },
+  logo: {
+    height: '70px',
+    width: '80px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+  },
+  profileIcon: {
+    fontSize: '40px',
+    color: 'white',
+    cursor: 'pointer',
+    borderRadius: '20px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  },
+  cartIcon: {
+    width: '50px',
+    height: '50px',
+    color:'#4CAF50',
+    cursor: 'pointer',
+    marginLeft:'700px'
   },
   title: {
     fontSize: '24px',
     fontWeight: 'bold',
-    color: '#4CAF50',
+    color: 'white',
+    margin: 0,
   },
-  profileIcon: {
-    height: '50px',
-    width: '50px',
-    borderRadius: '50%',
-    cursor: 'pointer',
-    borderRadius: '30px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
-  },
+
   actionButtons: {
     display: 'flex',
     flexDirection: 'column',
@@ -304,12 +312,6 @@ const styles = {
     cursor: 'pointer',
     marginBottom: '10px',
   },
-  cartIcon: {
-    fontSize: '32px', // Adjust the size of the cart icon
-    color: '#4CAF50', // Adjust the color
-    cursor: 'pointer',
-  },
-  
   filterForm: {
     margin: '20px 0',
   },
@@ -353,66 +355,6 @@ const styles = {
     borderRadius: '5px',
     cursor: 'pointer',
   },
-  navIcons: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '15px', // Adds spacing between cart and profile icons
-  },
-  filterGroup: {
-    display: 'flex',
-    gap: '10px',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: '20px',
-  },
-  filterInput: {
-    padding: '10px',
-    border: '1px solid #ddd',
-    borderRadius: '5px',
-  },
-  productCard: {
-    display: 'flex',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: '10px',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    marginBottom: '20px',
-    padding: '15px',
-    gap: '15px',
-  },
-  productInfo: {
-    flex: '1',
-  },
-  productActions: {
-    display: 'flex',
-    gap: '10px',
-  },
-  actionButton: {
-    padding: '10px 15px',
-    backgroundColor: '#4CAF50',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-  },
-  
-  iconButton: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '5px',
-    padding: '10px 15px',
-    backgroundColor: '#f44336', // Red color for "Add to Wishlist"
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontSize: '16px',
-  },
-  icon: {
-    fontSize: '18px', // Size of the heart icon
-  },
-  
 };
 
 export default Products;
