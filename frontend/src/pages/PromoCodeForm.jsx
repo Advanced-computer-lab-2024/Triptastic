@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import './promoCodeForm.css';
+import { FaPercentage, FaCalendarAlt, FaTag } from 'react-icons/fa';
+import { MdDiscount } from 'react-icons/md';
 
 const PromoCodeForm = () => {
   const [formData, setFormData] = useState({
@@ -73,46 +76,48 @@ const PromoCodeForm = () => {
   }, []);
 
   return (
-    <div>
-      <h2>Promo Code Management</h2>
+    <div className="promo-container">
+      <h2 className="promo-title">Promo Code Management</h2>
 
       {/* Create Promo Code Section */}
-      <div>
-        <h3>Create Promo Code</h3>
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label>Promo Code:</label>
+      <div className="promo-section">
+        <h3 className="promo-subtitle">Create Promo Code</h3>
+        <form onSubmit={handleSubmit} className="promo-form">
+          <div className="form-group">
+            <label><FaTag /> Promo Code:</label>
             <input
               type="text"
               name="code"
               value={formData.code}
               onChange={handleChange}
               required
+              placeholder="Enter promo code"
             />
           </div>
-          <div>
-            <label>Discount:</label>
+          <div className="form-group">
+            <label><MdDiscount /> Discount:</label>
             <input
               type="number"
               name="discount"
               value={formData.discount}
               onChange={handleChange}
               required
+              placeholder="Enter discount amount"
             />
           </div>
-          <div>
-            <label>
-              <input
-                type="checkbox"
-                name="isPercentage"
-                checked={formData.isPercentage}
-                onChange={handleChange}
-              />
-              Is Percentage?
-            </label>
-          </div>
-          <div>
-            <label>Expiration Date:</label>
+          <div className="form-group">
+  <label>
+    <FaPercentage /> Is Percentage?
+    <input
+      type="checkbox"
+      className="percentage-checkbox"
+      name="isPercentage"
+      checked={formData.isPercentage}
+      onChange={handleChange}
+    />
+  </label>
+</div>  <div className="form-group">
+            <label><FaCalendarAlt /> Expiration Date:</label>
             <input
               type="date"
               name="expirationDate"
@@ -121,7 +126,7 @@ const PromoCodeForm = () => {
               required
             />
           </div>
-          <div>
+          <div className="form-group">
             <label>Maximum Usage:</label>
             <input
               type="number"
@@ -129,21 +134,24 @@ const PromoCodeForm = () => {
               value={formData.maxUsage}
               onChange={handleChange}
               required
+              placeholder="Enter max usage"
             />
           </div>
-          <button type="submit">Create Promo Code</button>
+          <button type="submit" className="btn-submit">
+            Create Promo Code
+          </button>
         </form>
-        {message && <p style={{ color: 'green' }}>{message}</p>}
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {message && <p className="success-message">{message}</p>}
+        {error && <p className="error-message">{error}</p>}
       </div>
 
       {/* View Promo Codes Section */}
-      <div>
-        <h3>Avaialble Promo Codes</h3>
+      <div className="promo-section">
+        <h3 className="promo-subtitle">Available Promo Codes</h3>
         {loading ? (
-          <p>Loading...</p>
+          <p className="loading-message">Loading...</p>
         ) : promoCodes.length > 0 ? (
-          <table border="1" style={{ width: '100%', marginTop: '10px' }}>
+          <table className="promo-table">
             <thead>
               <tr>
                 <th>Code</th>
@@ -166,7 +174,7 @@ const PromoCodeForm = () => {
             </tbody>
           </table>
         ) : (
-          <p>No promo codes available.</p>
+          <p className="no-data-message">No promo codes available.</p>
         )}
       </div>
     </div>

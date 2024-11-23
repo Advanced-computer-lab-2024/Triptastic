@@ -1,7 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import PromoCodeForm from './PromoCodeForm'; // Adjust path as needed
 
 const AdminPage = () => {
   const [formData, setFormData] = useState({

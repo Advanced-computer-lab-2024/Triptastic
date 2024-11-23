@@ -67,7 +67,42 @@ const Cart = () => {
       alert('Error removing item from cart.');
     }
   };
-
+  const updateCartQuantity = async (productName, newQuantity) => {
+    const username = localStorage.getItem('Username');
+  
+    try {
+      const response = await fetch(`http://localhost:8000/updateProductQuantityInCart`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productName,
+          newQuantity,
+          Username: username,
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to update cart quantity');
+      }
+  
+      // Refresh the cart items after updating
+      fetchCart();
+    } catch (error) {
+      console.error('Error updating cart quantity:', error.message);
+    }
+  };
+  
+  const handleQuantityChange = (productName, currentQuantity, change) => {
+    const newQuantity = currentQuantity + change;
+    if (newQuantity > 0) {
+      updateCartQuantity(productName, newQuantity);
+    } else {
+      alert('Quantity cannot be less than 1.');
+    }
+  };
+  
   const handleProfileRedirect = () => {
     const context = localStorage.getItem('context');
 
@@ -132,7 +167,19 @@ const Cart = () => {
                   {(item.price * conversionRate).toFixed(2)}
                 </p>
                 <p>
-                  <strong>Quantity:</strong> {item.quantity}
+                  <strong>Quantity:</strong> {item.quantity}{' '}
+                  <button
+                    style={styles.quantityButton}
+                    onClick={() => handleQuantityChange(item.productName, item.quantity, -1)}
+                  >
+                    -
+                  </button>
+                  <button
+                    style={styles.quantityButton}
+                    onClick={() => handleQuantityChange(item.productName, item.quantity, 1)}
+                  >
+                    +
+                  </button>
                 </p>
                 <p>
                   <strong>Description:</strong> {item.description}
@@ -170,6 +217,15 @@ const styles = {
     padding: '10px 20px',
     borderRadius: '10px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  },
+  quantityButton: {
+    margin: '0 5px',
+    backgroundColor: '#4CAF50',
+    color: 'white',
+    border: 'none',
+    padding: '5px 10px',
+    borderRadius: '5px',
+    cursor: 'pointer',
   },
   logo: {
     height: '70px',

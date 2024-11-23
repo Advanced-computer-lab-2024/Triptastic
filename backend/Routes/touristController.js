@@ -1872,9 +1872,84 @@ const addToCartAndRemoveFromWishlist = async (req, res) => {
   }
 };
 
+const updateProductQuantityInCart = async (req, res) => {
+  const { Username, productName, newQuantity } = req.body; // New quantity to be set
+
+  if (!productName || newQuantity < 0) {
+    return res.status(400).json({ error: 'Invalid product name or quantity' });
+  }
+
+  try {
+    // Fetch the product from the database to validate stock
+    const product = await productModel.findOne({ productName });
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    // Ensure the new quantity does not exceed the current stock
+    if (newQuantity > product.stock) {
+      return res.status(400).json({ error: 'Insufficient stock available' });
+    }
+
+    // Find the user's cart
+    const cart = await cartModel.findOne({ Username });
+    if (!cart) {
+      return res.status(404).json({ error: 'Cart not found for this user' });
+    }
+
+    // Locate the product in the cart
+    const productIndex = cart.products.findIndex(item => item.productName === productName);
+    if (productIndex === -1) {
+      return res.status(404).json({ error: 'Product not found in cart' });
+    }
+
+    const currentQuantity = cart.products[productIndex].quantity;
+
+    // Update the stock and sales accordingly
+    const quantityDifference = newQuantity - currentQuantity;
+
+    if (quantityDifference > 0) {
+      // Adding more to the cart, ensure stock can accommodate it
+      if (quantityDifference > product.stock) {
+        return res.status(400).json({ error: 'Not enough stock to increase quantity' });
+      }
+      cart.products[productIndex].quantity = newQuantity;
+      await productModel.findByIdAndUpdate(
+        product._id,
+        { $inc: { stock: -quantityDifference, sales: quantityDifference } },
+        { new: true }
+      );
+    } else if (quantityDifference < 0) {
+      // Decreasing the quantity
+      cart.products[productIndex].quantity = newQuantity;
+      await productModel.findByIdAndUpdate(
+        product._id,
+        { $inc: { stock: Math.abs(quantityDifference), sales: quantityDifference } },
+        { new: true }
+      );
+    }
+
+    // Remove the product if the new quantity is 0
+    if (newQuantity === 0) {
+      cart.products.splice(productIndex, 1);
+    }
+
+    // Save the updated cart
+    await cart.save();
+
+    res.status(200).json({ 
+      message: 'Product quantity updated successfully',
+      cart,
+      remainingStock: product.stock - quantityDifference,
+    });
+  } catch (error) {
+    console.error('Error updating product quantity in cart:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
 
 
- module.exports = {bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+ module.exports = {updateProductQuantityInCart,bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist

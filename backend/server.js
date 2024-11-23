@@ -20,7 +20,7 @@ const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActi
 
 
 //Tourist
-const {removeProductFromCart,bookmarkEvent,addToCartAndRemoveFromWishlist,removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,changepasswordTourist,createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
+const {updateProductQuantityInCart,removeProductFromCart,bookmarkEvent,addToCartAndRemoveFromWishlist,removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,changepasswordTourist,createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
   ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,
   sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,
   getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity,
@@ -30,7 +30,7 @@ const {removeProductFromCart,bookmarkEvent,addToCartAndRemoveFromWishlist,remove
 const{changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser,getTouristReportForActivity,filterActivitiesByMonth,loginAdvertiser}=require("./Routes/advertiserController");
 
 //Seller
-const{changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller}=require("./Routes/sellerController");
+const{checkAndNotifyOutOfStock,changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller}=require("./Routes/sellerController");
 
 //Admin
 const{getPromoCodes,createPromoCode,getUserStatistics,replyToComplaint,rejectDeletionRequest,acceptDeletionRequest,getPendingDeletionRequests,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin,createCategory,
@@ -116,7 +116,7 @@ app.get("/filterHistoricalLocationsByTagsTourist",filterHistoricalLocationsByTag
 app.get("/filterMuseumsByTagsTourist",filterMuseumsByTagsTourist);
 app.get("/getActivityByname",getActivityByname);
 app.get("/getTourist",getTourist);
-app.patch("/updateTourist",updateTourist);viewAllMuseumsTourist
+app.patch("/updateTourist",updateTourist);
 app.get("/viewAllMuseumsTourist",viewAllMuseumsTourist);
 app.get("/filterProductsByPriceRange",filterProductsByPriceRange);
 app.get('/getUniqueHistoricalPeriods', getUniqueHistoricalPeriods);
@@ -160,6 +160,7 @@ app.patch('/removeProductFromWishlist',removeProductFromWishlist);
 app.get('/getWishlist',getWishlist);
 app.post('/addToCartAndRemoveFromWishlist', addToCartAndRemoveFromWishlist);
 app.post('/removeProductFromCart',removeProductFromCart);
+app.patch('/updateProductQuantityInCart',updateProductQuantityInCart);
 
 
 
@@ -219,6 +220,7 @@ app.patch("/changePasswordSeller",changePasswordSeller);
 app.get("/getPendingSellers",getPendingSellers);
 app.patch("/settleDocsSeller",settleDocsSeller);
 app.post('/loginSeller',loginSeller);
+app.get("/checkAndNotifyOutOfStock",checkAndNotifyOutOfStock);
 
 //Admin
 app.post("/tourismGovLogin",tourismGovLogin);
