@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { CurrencyContext } from '../pages/CurrencyContext';
 import logo from '../images/image.png'; // Logo image
-import { FaUserCircle } from 'react-icons/fa';
+import { FaUserCircle ,FaMoneyBillWave,FaRegFileAlt, FaDollarSign,FaBoxes} from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -138,7 +138,7 @@ const Cart = () => {
 
       {/* Currency Dropdown for All Products */}
       <div style={styles.dropdownContainer}>
-        <label style={styles.dropdownLabel}>Select Currency:</label>
+        <label style={styles.dropdownLabel}><FaMoneyBillWave/>Select Currency:</label>
         <select
           value={selectedCurrency}
           onChange={handleCurrencyChange}
@@ -164,11 +164,11 @@ const Cart = () => {
               <li key={index} style={styles.cartItem}>
                 <h2 style={styles.productName}>{item.productName}</h2>
                 <p>
-                  <strong>Price:</strong> {selectedCurrency}{' '}
+                  <strong><FaDollarSign/>Price:</strong> {selectedCurrency}{' '}
                   {(item.price * conversionRate).toFixed(2)}
                 </p>
                 <p>
-                  <strong>Quantity:</strong> {item.quantity}{' '}
+                  <strong><FaBoxes/>Quantity:</strong> {item.quantity}{' '}
                   <button
                     style={styles.quantityButton}
                     onClick={() => handleQuantityChange(item.productName, item.quantity, -1)}
@@ -183,7 +183,7 @@ const Cart = () => {
                   </button>
                 </p>
                 <p>
-                  <strong>Description:</strong> {item.description}
+                  <strong><FaRegFileAlt/>Description:</strong> {item.description}
                 </p>
                 <button
                   style={styles.removeButton}
@@ -202,7 +202,7 @@ const Cart = () => {
 
 const styles = {
   container: {
-    maxWidth: '800px',
+    maxWidth: '1200px',
     margin: '20px auto',
     padding: '20px',
     backgroundColor: '#f4f4f4',
@@ -214,7 +214,7 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '20px',
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#0F5132',
     padding: '10px 20px',
     borderRadius: '10px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
@@ -240,13 +240,13 @@ const styles = {
   cartIcon: {
     width: '50px',
     height: '50px',
-    color:'#4CAF50',
+    color:'#0F5132',
     cursor: 'pointer',
     marginLeft:'700px'
   },
   quantityButton: {
     margin: '0 5px',
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#0F5132',
     color: 'white',
     border: 'none',
     padding: '5px 10px',
@@ -298,7 +298,7 @@ const styles = {
   },
   productName: {
     fontSize: '20px',
-    color: '#4CAF50',
+    color: '#0F5132',
     marginBottom: '10px',
   },
   removeButton: {
