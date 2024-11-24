@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import introJs from "intro.js";
 import "intro.js/introjs.css"; // Import Intro.js styles
 import museumImage from "../images/museum.jpg";
-import itineraryImage from "../images/itinerary.jpg";
+import itineraryImage from "../images/it.png";
 import historicalImage from "../images/historical.jpg";
 import activityImage from "../images/activity.jpg";
 import logo from "../images/image.png";
