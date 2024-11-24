@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom'; // Import Link for routing
 import { CurrencyContext } from '../pages/CurrencyContext';
-import { FaBell, FaUserCircle } from 'react-icons/fa'; // Import icons
+import { FaBell, FaUserCircle ,FaCalendar,FaDollarSign ,FaMapMarkerAlt,FaClock,FaTags,FaPercent} from 'react-icons/fa'; // Import icons
 import logo from '../images/image_green_background.png'; // Add your logo file pathimport axios from 'axios';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -465,7 +465,9 @@ return (
               {activities.map((activity) => (
                 <li key={activity._id}>
                   <strong>Name:</strong> {activity.name} <br />
-                  <strong>Price:</strong> {(activity.price * conversionRate).toFixed(2)} {selectedCurrency} <br />
+                  <strong><FaDollarSign/></strong> {(activity.price * conversionRate).toFixed(2)} {selectedCurrency} <br />
+                  <strong><FaCalendar/></strong> {new Date(activity.date).toLocaleDateString()}<br/>
+                  <strong><FaMapMarkerAlt/></strong> {activity.location}<br/>
                   <strong>Booking Open:</strong> {activity.bookingOpen ? 'Yes' : 'No'}
                 {!activity.bookingOpen && (
                   <FaBell
@@ -527,12 +529,10 @@ return (
                   {expandedActivities[activity._id] && (
                     <div style={{ marginTop: '10px', paddingLeft: '20px' }}>
                       <p><strong>Category:</strong> {activity.Category}</p>
-                      <p><strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}</p>
-                      <p><strong>Time:</strong> {activity.time}</p>
-                      <p><strong>Location:</strong> {activity.location}</p>
-                      <p><strong>Tags:</strong> {activity.tags.join(', ')}</p>
-                      <p><strong>Special Discounts:</strong> {activity.specialDiscounts}</p>
-                      <p><strong>Advertiser:</strong> {activity.Advertiser}</p>
+                      <p><strong><FaClock/>:</strong> {activity.time}</p>
+                      <p><strong><FaTags/>:</strong> {activity.tags.join(', ')}</p>
+                      <p><strong><FaPercent/>:</strong> {activity.specialDiscounts}</p>
+                      <p><strong><FaUserCircle/>:</strong> {activity.Advertiser}</p>
                       
 
                         
@@ -578,11 +578,11 @@ return (
 const styles = {
 container: {
   maxWidth: '1200px',
-  margin: '0 auto',
-  padding: '20px',
-  backgroundColor: '#f4f4f4',
-  borderRadius: '10px',
-  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      margin: '0 auto',
+      padding: '20px',
+      backgroundColor: '#f9f9f9',
+      borderRadius: '10px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
 },
 header: {
   display: 'flex',
