@@ -585,12 +585,14 @@ return (
     <div className="profile-content">
       <header style={styles.header}>
         <div style={styles.logoContainer}>
+        <div style={{ ...styles.logoContainer, marginLeft: '30px' }}>
           <img
             src={logo}
             alt="Logo"
             style={styles.logo}
 
           />
+           </div>
         </div>
         <h1 style={styles.title}>Tourist Profile</h1>
         <FaUserCircle
@@ -600,7 +602,11 @@ return (
         />
         
       </header>
-      <button className="menu-icon" onClick={toggleMenu}>
+      <button className="menu-icon" onClick={toggleMenu}  style={{ 
+          position: 'relative', 
+          top: '-100px',   // Adjust this value to move the menu down
+          left: '-2px'   // Adjust this value to move the menu to the left
+        }}>
   {isMenuOpen ? <FaTimes /> : <FaBars />}
 </button>
 
@@ -612,6 +618,11 @@ return (
     <li onClick={() => navigate('/itineraries')}>Itineraries</li>
     <li onClick={() => navigate('/activities')}>Activities</li>
     <li onClick={() => navigate('/book-flights')}>Book Flights</li>
+    <li onClick={() => navigate('/book-hotels')}>Book a Hotel</li>
+        <li onClick={() => navigate('/book-transportation')}>Book Transportation</li>
+        <li onClick={() => navigate('/tourist-orders')}>Past Orders</li>
+        <li onClick={() => navigate('/AttendedActivitiesPage')}>Review Activities</li>
+        <li onClick={() => navigate('/Cart')}>My Cart</li>
   </ul>
 </div>
       <div className="sidebar">
@@ -625,9 +636,7 @@ return (
         <li onClick={() => navigate('/book-flights')}>Book Flights</li>
         <li onClick={() => navigate('/book-hotels')}>Book a Hotel</li>
         <li onClick={() => navigate('/book-transportation')}>Book Transportation</li>
-        <li onClick={() => navigate('/tourist-orders')}>Past Orders</li>
-        <li onClick={() => navigate('/AttendedActivitiesPage')}>Review Activities</li>
-        <li onClick={() => navigate('/Cart')}>My Cart</li>
+       
 
       </ul>
     </div>
