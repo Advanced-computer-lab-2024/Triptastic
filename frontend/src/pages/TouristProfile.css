@@ -41,7 +41,7 @@
 .sidebar li {
   padding: 10px;
   cursor: pointer;
-  color: #4CAF50;
+  color: #0F5132;
   font-weight: bold;
   font-size: 0.9rem;
   text-align: center;
@@ -132,7 +132,7 @@
 /* Header Styling */
 .profile-content h2 {
   text-align: center;
-  color: #4CAF50;
+  color: #0F5132;
   font-size: 1.5rem;
   margin-bottom: 20px;
 }
@@ -166,7 +166,7 @@
 
 /* Button Styling */
 button {
-  background-color: #4CAF50;
+  background-color: #0F5132;
   color: #fff;
   padding: 8px 12px;
   font-size: 0.9rem;
@@ -178,7 +178,7 @@ button {
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #0F5132;
 }
 
 button:disabled {
