@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-route
 import axios from 'axios';
 import { CurrencyContext } from '../pages/CurrencyContext';
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
-import { FaBars, FaTimes } from "react-icons/fa"; // For menu icons
+import { FaBars, FaTimes,FaHome, FaUser, FaMapMarkerAlt, FaPlane, FaHotel } from "react-icons/fa"; // For menu icons
 
 import { FaPercentage, FaCalendarAlt, FaTag ,FaUserCircle} from 'react-icons/fa';
 
@@ -581,70 +581,64 @@ const TouristProfile = () => {
 
 };
 return (
+  
   <div className="tourist-profile-container">
     <div className="profile-content">
-      <header style={styles.header}>
-        <div style={styles.logoContainer}>
-        <div style={{ ...styles.logoContainer, marginLeft: '30px' }}>
-          <img
-            src={logo}
-            alt="Logo"
-            style={styles.logo}
-
-          />
-           </div>
-        </div>
-        <h1 style={styles.title}>Tourist Profile</h1>
-        <FaUserCircle
-          alt="Profile Icon"
-          style={styles.profileIcon}
-          onClick={() => navigate('/touristSettings')} // Navigate to profile
-        />
-        
-      </header>
-      <button className="menu-icon" onClick={toggleMenu}  style={{ 
-          position: 'relative', 
-          top: '-100px',   // Adjust this value to move the menu down
-          left: '-2px'   // Adjust this value to move the menu to the left
-        }}>
-  {isMenuOpen ? <FaTimes /> : <FaBars />}
-</button>
-
-<div className={`sidebar-menu ${isMenuOpen ? "open" : ""}`}>
-  <ul>
-    <li onClick={() => navigate('/historical-locations')}>Historical Locations</li>
-    <li onClick={() => navigate('/museums')}>Museums</li>
-    <li onClick={() => navigate('/products')}>Products</li>
-    <li onClick={() => navigate('/itineraries')}>Itineraries</li>
-    <li onClick={() => navigate('/activities')}>Activities</li>
-    <li onClick={() => navigate('/book-flights')}>Book Flights</li>
-    <li onClick={() => navigate('/book-hotels')}>Book a Hotel</li>
-        <li onClick={() => navigate('/book-transportation')}>Book Transportation</li>
-        <li onClick={() => navigate('/tourist-orders')}>Past Orders</li>
-        <li onClick={() => navigate('/AttendedActivitiesPage')}>Review Activities</li>
-        <li onClick={() => navigate('/Cart')}>My Cart</li>
-  </ul>
-</div>
-      <div className="sidebar">
-      <h3>Explore</h3>
-      <ul>
-        <li onClick={() => navigate('/historical-locations')}>Historical Locations</li>
-        <li onClick={() => navigate('/museums')}>Museums</li>
-        <li onClick={() => navigate('/products')}>Products</li>
-        <li onClick={() => navigate('/itineraries')}>Itineraries</li>
-        <li onClick={() => navigate('/activities')}>Activities</li>
-        <li onClick={() => navigate('/book-flights')}>Book Flights</li>
-        <li onClick={() => navigate('/book-hotels')}>Book a Hotel</li>
-        <li onClick={() => navigate('/book-transportation')}>Book Transportation</li>
-       
-
-      </ul>
+    <header style={{ ...styles.header, position: 'fixed', marginLeft: '-46px', top: 0, width: '100%', zIndex: 1000 }}>
+  <div style={styles.logoContainer}>
+    <div style={{ ...styles.logoContainer, marginLeft: '30px' }}>
+      <img
+        src={logo}
+        alt="Logo"
+        style={styles.logo}
+      />
     </div>
-   
-      
+  </div>
+  <h1 style={styles.title}>Tourist Profile</h1>
+  <FaUserCircle
+    alt="Profile Icon"
+    style={styles.profileIcon}
+    onClick={() => navigate('/touristSettings')} // Navigate to profile
+  />
+</header>
     </div>
     
- 
+    <div
+      style={styles.sidebar}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.width = '200px';
+        Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+          (label) => (label.style.opacity = '1')
+        );
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.width = '60px';
+        Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+          (label) => (label.style.opacity = '0')
+        );
+      }}
+    >
+      <div style={styles.iconContainer}>
+        <FaHome style={styles.icon} />
+        <span className="label" style={{ ...styles.label }}>Home</span>
+      </div>
+      <div style={styles.iconContainer}>
+        <FaUser style={styles.icon} />
+        <span className="label" style={{ ...styles.label }}>Profile</span>
+      </div>
+      <div style={styles.iconContainer}>
+        <FaMapMarkerAlt style={styles.icon} />
+        <span className="label" style={{ ...styles.label }}>Locations</span>
+      </div>
+      <div style={styles.iconContainer}>
+        <FaPlane style={styles.icon} />
+        <span className="label" style={{ ...styles.label }}>Flights</span>
+      </div>
+      <div style={styles.iconContainer}>
+        <FaHotel style={styles.icon} />
+        <span className="label" style={{ ...styles.label }}>Hotels</span>
+      </div>
+    </div>
   <div>
  
 </div>
@@ -746,7 +740,6 @@ return (
         </div>
       )}
     </div>
-    {/* Sidebar */}
     
 
     
@@ -831,6 +824,7 @@ return (
     
   </div>
   
+  
 );
 };
 const styles = {
@@ -849,7 +843,7 @@ const styles = {
     marginBottom: '20px',
     backgroundColor: '#0F5132',
     padding: '10px 20px',
-    borderRadius: '10px',
+   
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   },
   logoContainer: {
@@ -893,5 +887,50 @@ const styles = {
     borderRadius: '5px',
     cursor: 'pointer',
   },
+  
+    sidebar: {
+      position: 'fixed',
+      top: '90px',
+      left: 0,
+      height: '100vh',
+      width: '50px', // Default width when collapsed
+      backgroundColor: 'rgba(15, 81, 50, 0.85)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      padding: '10px 0',
+      overflowX: 'hidden',
+      transition: 'width 0.3s',
+      zIndex: 1000,
+    },
+    sidebarExpanded: {
+      width: '100px', // Width when expanded
+    },
+    iconContainer: {
+      display: 'flex',
+      alignItems: 'center',
+      padding: '10px 20px',
+      color: '#fff',
+      cursor: 'pointer',
+      transition: 'background-color 0.3s',
+    },
+    iconContainerHover: {
+      backgroundColor: '#084B24', // Background on hover
+    },
+    icon: {
+      fontSize: '24px',
+      marginLeft: '30px',
+    },
+    label: {
+      fontSize: '16px',
+      fontWeight: 'bold',
+      color: '#fff',
+      opacity: 0, // Initially hidden
+      transition: 'opacity 0.3s',
+    },
+    labelVisible: {
+      opacity: 1, // Visible when expanded
+    },
+  
 };
 export default TouristProfile;
