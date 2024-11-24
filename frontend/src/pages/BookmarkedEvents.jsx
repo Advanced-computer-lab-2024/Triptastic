@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { FaUserCircle } from 'react-icons/fa';
-import logo from '../images/image_green_background.png';
 
 const BookmarkedEvents = () => {
   const [bookmarkedEvents, setBookmarkedEvents] = useState([]);
@@ -59,7 +58,6 @@ const BookmarkedEvents = () => {
     <div style={styles.container}>
       {/* Header */}
       <header style={styles.header}>
-        <img src={logo} alt="Logo" style={styles.logo} />
         <h2 style={styles.title}>Bookmarked Events</h2>
         <FaUserCircle style={styles.profileIcon} onClick={handleProfileRedirect} />
       </header>
