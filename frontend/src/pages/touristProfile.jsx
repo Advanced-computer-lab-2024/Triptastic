@@ -4,8 +4,11 @@ import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-route
 import axios from 'axios';
 import { CurrencyContext } from '../pages/CurrencyContext';
 import logo from '../images/image_green_background.png'; // Adjust the path based on your folder structure
+import { FaBars, FaTimes } from "react-icons/fa"; // For menu icons
+
 
 const TouristProfile = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const [touristInfo, setTouristInfo] = useState(null);
   const [complaints, setComplaints] = useState([]); // New state for complaints
@@ -67,7 +70,14 @@ const TouristProfile = () => {
         fetchBookedItineraries();
         fetchBookedActivities(); // Fetch booked itineraries when the component mounts
       }, []); // Empty dependency array means this runs once after the first render
-    
+      
+      
+      
+      const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+      };
+
+
   const handleViewItineraries=()=>{
     setShowingItineraries( prev=>!prev);
   }
@@ -556,6 +566,14 @@ const TouristProfile = () => {
 
 
   
+  const SidebarMenu = () => {
+    const navigate = useNavigate();
+    
+  
+  
+  };
+
+
 
   
 
@@ -565,6 +583,21 @@ return (
   <div className="tourist-profile-container">
     <div className="profile-content">
       <h2>Tourist Profile</h2>
+      <button className="menu-icon" onClick={toggleMenu}>
+  {isMenuOpen ? <FaTimes /> : <FaBars />}
+</button>
+
+<div className={`sidebar-menu ${isMenuOpen ? "open" : ""}`}>
+  <ul>
+    <li onClick={() => navigate('/historical-locations')}>Historical Locations</li>
+    <li onClick={() => navigate('/museums')}>Museums</li>
+    <li onClick={() => navigate('/products')}>Products</li>
+    <li onClick={() => navigate('/itineraries')}>Itineraries</li>
+    <li onClick={() => navigate('/activities')}>Activities</li>
+    <li onClick={() => navigate('/book-flights')}>Book Flights</li>
+  </ul>
+</div>
+
       <div className="sidebar">
       <header style={{ display: 'flex',  padding: '5px', backgroundColor: '#f4f4f4' }}>
   <img 
