@@ -529,7 +529,7 @@ const TouristSettings = () => {
       justifyContent: 'space-between',
       alignItems: 'center',
       marginBottom: '20px',
-      backgroundColor: '#4CAF50',
+      backgroundColor: '#0F5132',
       padding: '10px 20px',
       borderRadius: '10px',
       boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
@@ -558,7 +558,7 @@ const TouristSettings = () => {
       marginTop: '10px',
     },
     wishlistButton: {
-      backgroundColor: '#4CAF50',
+      backgroundColor: '#0F5132',
       color: '#fff',
       padding: '10px 20px',
       border: 'none',
@@ -583,7 +583,7 @@ const TouristSettings = () => {
     filterButton: {
       marginTop: '10px',
       padding: '10px 20px',
-      backgroundColor: '#4CAF50',
+      backgroundColor: '#0F5132',
       color: '#fff',
       border: 'none',
       borderRadius: '5px',
@@ -602,7 +602,7 @@ const TouristSettings = () => {
     },
     productName: {
       fontSize: '20px',
-      color: '#4CAF50',
+      color: '#0F5132',
     },
     productImage: {
       width: '100%',
@@ -614,7 +614,7 @@ const TouristSettings = () => {
     addButton: {
       marginTop: '10px',
       padding: '10px 20px',
-      backgroundColor: '#4CAF50',
+      backgroundColor: '#0F5132',
       color: '#fff',
       border: 'none',
       borderRadius: '5px',
