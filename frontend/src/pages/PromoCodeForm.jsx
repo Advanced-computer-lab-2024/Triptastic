@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './promoCodeForm.css';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import profile from '../images/profile.jpg'; // Replace with your profile icon path
-import { FaPercentage, FaCalendarAlt, FaTag } from 'react-icons/fa';
+import { FaPercentage, FaCalendarAlt, FaTag ,FaUserCircle} from 'react-icons/fa';
 import { MdDiscount } from 'react-icons/md';
 import logo from '../images/image_green_background.png'; // Replace with your logo path
 
@@ -95,27 +95,22 @@ const PromoCodeForm = () => {
     <div className="promo-container">
       
       <header style={styles.header}>
-  <div style={styles.logoContainer}>
-    <img
-      src={logo}
-      alt="Logo"
-      style={{
-        height: '70px',
-        width: '70px',
-        borderRadius: '10px',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
-        objectFit: 'cover',
-      }}
-    />
-  </div>
-  <h1 style={styles.title}>Promo Codes</h1>
-  <img
-    src={profile}
-    alt="Profile Icon"
-    style={styles.profileIcon}
-    onClick={handleProfileRedirect}
-  />
-</header>
+        <div style={styles.logoContainer}>
+          <img
+            src={logo}
+            alt="Logo"
+            style={styles.logo}
+
+          />
+        </div>
+        <h1 style={styles.title}>Promo Code Creation</h1>
+        <FaUserCircle
+          alt="Profile Icon"
+          style={styles.profileIcon}
+          onClick={() => navigate('/adminPage')} // Navigate to profile
+        />
+        
+      </header>
 
 
       {/* Create Promo Code Section */}
@@ -221,10 +216,10 @@ const PromoCodeForm = () => {
 };
 const styles = {
   container: {
-    maxWidth: '1200px',
+    maxWidth: '800px',
     margin: '20px auto',
     padding: '20px',
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#f4f4f4',
     borderRadius: '10px',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
   },
@@ -233,8 +228,8 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '20px',
-    backgroundColor: '#fff',
-    padding: '10px',
+    backgroundColor: '#4CAF50',
+    padding: '10px 20px',
     borderRadius: '10px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   },
@@ -242,18 +237,18 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
   },
-  title: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    color: '#4CAF50',
+  logo: {
+    height: '70px',
+    width: '80px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
   },
   profileIcon: {
-    height: '50px',
-    width: '50px',
-    borderRadius: '50%',
+    fontSize: '40px',
+    color: 'white',
     cursor: 'pointer',
-    borderRadius: '30px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
+    borderRadius: '20px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
   },
   actionButtons: {
     display: 'flex',
@@ -269,6 +264,11 @@ const styles = {
     borderRadius: '5px',
     cursor: 'pointer',
     marginBottom: '10px',
+  },title: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: 'white',
+    margin: 0,
   },
   cartIcon: {
     width: '50px',

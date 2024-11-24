@@ -165,7 +165,6 @@ const styles = {
   logoContainer: {
     display: 'flex',
     alignItems: 'center',
-    cursor: 'pointer',
   },
   logo: {
     height: '70px',
