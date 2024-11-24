@@ -1948,6 +1948,44 @@ const updateProductQuantityInCart = async (req, res) => {
   }
 };
 
+const requestNotification = async (req, res) => {
+  const { userId, activityId } = req.body;
+
+  try {
+    // Find the activity
+    const activity = await activitiesModel.findById(activityId);
+
+    if (!activity) {
+      return res.status(404).json({ message: 'Activity not found.' });
+    }
+
+    if (activity.bookingOpen) {
+      return res.status(400).json({ message: 'Bookings are already open for this activity.' });
+    }
+
+    // Check if the user already requested notification
+    const existingRequest = activity.notificationRequests.find(
+      (request) => request.userId === userId
+    );
+
+    if (existingRequest) {
+      return res.status(400).json({ message: 'You have already requested a notification for this activity.' });
+    }
+
+    // Add notification request
+    activity.notificationRequests.push({ userId });
+    await activity.save();
+
+    res.status(200).json({ message: 'Notification request added successfully.' });
+  } catch (error) {
+    console.error('Error requesting notification:', error);
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+
+
+
 
  module.exports = {updateProductQuantityInCart,bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
@@ -1958,4 +1996,4 @@ const updateProductQuantityInCart = async (req, res) => {
   ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
   shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,addToCartAndRemoveFromWishlist,
   getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,
-  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist,removeProductFromCart};
+  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist,removeProductFromCart,requestNotification};

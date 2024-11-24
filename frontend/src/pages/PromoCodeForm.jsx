@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './promoCodeForm.css';
-import { FaPercentage, FaCalendarAlt, FaTag } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import profile from '../images/profile.jpg'; // Replace with your profile icon path
+import { FaPercentage, FaCalendarAlt, FaTag ,FaUserCircle} from 'react-icons/fa';
 import { MdDiscount } from 'react-icons/md';
+import logo from '../images/image_green_background.png'; // Replace with your logo path
+
 
 const PromoCodeForm = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +19,7 @@ const PromoCodeForm = () => {
   const [error, setError] = useState('');
   const [promoCodes, setPromoCodes] = useState([]); // State to store fetched promo codes
   const [loading, setLoading] = useState(false); // State to handle loading spinner
+  const navigate = useNavigate(); // Initialize useNavigate for navigation
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -23,7 +28,16 @@ const PromoCodeForm = () => {
       [name]: type === 'checkbox' ? checked : value,
     }));
   };
+  const handleProfileRedirect = () => {
+    const context = localStorage.getItem('context');
 
+    if (context === 'admin') {
+      navigate('/adminPage');
+    } else {
+      console.error('Unknown context');
+      navigate('/'); // Fallback to home
+    }
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -75,9 +89,29 @@ const PromoCodeForm = () => {
     fetchPromoCodes(); // Fetch promo codes on component mount
   }, []);
 
+
+
   return (
     <div className="promo-container">
-      <h2 className="promo-title">Promo Code Management</h2>
+      
+      <header style={styles.header}>
+        <div style={styles.logoContainer}>
+          <img
+            src={logo}
+            alt="Logo"
+            style={styles.logo}
+
+          />
+        </div>
+        <h1 style={styles.title}>Promo Code Creation</h1>
+        <FaUserCircle
+          alt="Profile Icon"
+          style={styles.profileIcon}
+          onClick={() => navigate('/adminPage')} // Navigate to profile
+        />
+        
+      </header>
+
 
       {/* Create Promo Code Section */}
       <div className="promo-section">
@@ -179,6 +213,112 @@ const PromoCodeForm = () => {
       </div>
     </div>
   );
+};
+const styles = {
+  container: {
+    maxWidth: '800px',
+    margin: '20px auto',
+    padding: '20px',
+    backgroundColor: '#f4f4f4',
+    borderRadius: '10px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  },
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '20px',
+    backgroundColor: '#4CAF50',
+    padding: '10px 20px',
+    borderRadius: '10px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  },
+  logoContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  logo: {
+    height: '70px',
+    width: '80px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+  },
+  profileIcon: {
+    fontSize: '40px',
+    color: 'white',
+    cursor: 'pointer',
+    borderRadius: '20px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  },
+  actionButtons: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    marginTop: '10px',
+  },
+  wishlistButton: {
+    backgroundColor: '#4CAF50',
+    color: '#fff',
+    padding: '10px 20px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    marginBottom: '10px',
+  },title: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: 'white',
+    margin: 0,
+  },
+  cartIcon: {
+    width: '50px',
+    height: '50px',
+    cursor: 'pointer',
+    
+  },
+  filterForm: {
+    margin: '20px 0',
+  },
+  filterButton: {
+    marginTop: '10px',
+    padding: '10px 20px',
+    backgroundColor: '#4CAF50',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+  productList: {
+    listStyleType: 'none',
+    padding: 0,
+  },
+  productItem: {
+    backgroundColor: '#fff',
+    padding: '20px',
+    marginBottom: '10px',
+    borderRadius: '10px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  },
+  productName: {
+    fontSize: '20px',
+    color: '#4CAF50',
+  },
+  productImage: {
+    width: '100%',
+    maxWidth: '400px',
+    height: '300px',
+    objectFit: 'cover',
+    borderRadius: '10px',
+  },
+  addButton: {
+    marginTop: '10px',
+    padding: '10px 20px',
+    backgroundColor: '#4CAF50',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
 };
 
 export default PromoCodeForm;

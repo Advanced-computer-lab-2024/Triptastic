@@ -100,7 +100,7 @@
   .percentage-checkbox {
     position: relative;
     margin-left: -400px; /* Adjust horizontal spacing */
-    transform: translateY(2px); /* Move it down slightly */
+    transform: translateY(3px); /* Move it down slightly */
   }
   
  

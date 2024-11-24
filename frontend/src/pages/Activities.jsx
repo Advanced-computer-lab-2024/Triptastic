@@ -1,7 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom'; // Import Link for routing
 import { CurrencyContext } from '../pages/CurrencyContext';
+import { FaBell, FaUserCircle ,FaCalendar,FaDollarSign ,FaMapMarkerAlt,FaClock,FaTags,FaPercent} from 'react-icons/fa'; // Import icons
+import logo from '../images/image_green_background.png'; // Add your logo file pathimport axios from 'axios';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 const Activities = () => {
   const { selectedCurrency, conversionRate ,fetchConversionRate} = useContext(CurrencyContext);
   const [activities, setActivities] = useState([]);
@@ -18,6 +22,10 @@ const Activities = () => {
   const [activityToShare, setActivityToShare] = useState(null);
   const [bookmarkedActivities, setBookmarkedActivities] = useState([]);
   const [username, setUsername] = useState(localStorage.getItem('Username') || '');
+  const navigate = useNavigate();
+
+
+  const [notificationRequested, setNotificationRequested] = useState({});
   // Sorting states
   const [priceSort, setPriceSort] = useState('PASC'); // 'PASC' or 'PDSC'
   const [ratingSort, setRatingSort] = useState('RASC'); // 'RASC' or 'RDSC'
@@ -309,229 +317,294 @@ const bookActivity = async (activityName) => {
     console.error(error);
   }
 };
-  return (
-    <div>
-      <h2>Activities</h2>
-      
+const handleNotificationRequest = async (activityId) => {
+  try {
+    const response = await fetch('http://localhost:8000/requestNotification', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: localStorage.getItem('Username'),
+        activityId,
+      }),
+    });
 
-      {loading ? (
-        <p>Loading activities...</p>
-      ) : (
-        <>
-          {/* Sorting Buttons */}
-          <div>
-            <h3>Sort Activities</h3>
+    if (response.ok) {
+      alert('You will be notified when bookings open!');
+      setNotificationRequested((prev) => ({ ...prev, [activityId]: true })); // Mark as requested
+    } else {
+      const errorData = await response.json();
+      alert(errorData.message || 'Failed to request notification.');
+    }
+  } catch (error) {
+    console.error('Error requesting notification:', error);
+    alert('An error occurred. Please try again.');
+  }
+};
+const handleProfileRedirect = () => {
+  const context = localStorage.getItem('context');
+
+  if (context === 'tourist') {
+    navigate('/tourist-profile');
+  } else if (context === 'guest') {
+    navigate('/Guest');
+  }  else {
+    console.error('Unknown context');
+    navigate('/'); // Fallback to home
+  }
+};
+return (
+  <div style={styles.container}>
+    <header style={styles.header}>
+      <img src={logo} alt="Logo" style={styles.logo} />
+      <h2 style={styles.title}>Activities</h2>
+      <FaUserCircle style={styles.profileIcon} onClick={handleProfileRedirect} />
+    </header>
+
+    {loading ? (
+      <p style={styles.loading}>Loading activities...</p>
+    ) : (
+      <>
+        {/* Sorting Buttons */}
+        <div style={styles.section}>
+          <h3>Sort Activities</h3>
+          <div style={styles.buttonGroup}>
             <button onClick={() => handleSort('PASC', 'RASC')}>Price Asc & Rating Asc</button>
             <button onClick={() => handleSort('PASC', 'RDSC')}>Price Asc & Rating Desc</button>
             <button onClick={() => handleSort('PDSC', 'RASC')}>Price Desc & Rating Asc</button>
             <button onClick={() => handleSort('PDSC', 'RDSC')}>Price Desc & Rating Desc</button>
           </div>
+        </div>
 
-          {/* Filter Form */}
-          <div>
-            <h3>Filter Activities</h3>
-            <form onSubmit={handleFilterSubmit}>
-              <div>
-                <label>
-                  Category:
-                  <input
-                    type="text"
-                    value={filterCategory}
-                    onChange={(e) => setFilterCategory(e.target.value)}
-                    placeholder="e.g., Adventure"
-                  />
-                </label>
-              </div>
-              <div>
-                <label>
-                  Date:
-                  <input
-                    type="date"
-                    value={filterDate}
-                    onChange={(e) => setFilterDate(e.target.value)}
-                  />
-                </label>
-              </div>
-              <div>
-                <label>
-                  Min Budget:
-                  <input
-                    type="number"
-                    value={minBudget}
-                    onChange={(e) => setMinBudget(e.target.value)}
-                    placeholder="Minimum Price"
-                  />
-                </label>
-              </div>
-              <div>
-                <label>
-                  Max Budget:
-                  <input
-                    type="number"
-                    value={maxBudget}
-                    onChange={(e) => setMaxBudget(e.target.value)}
-                    placeholder="Maximum Price"
-                  />
-                </label>
-              </div>
-              <div>
-                <label>
-                  Minimum Rating:
-                  <input
-                    type="number"
-                    value={filterRating}
-                    onChange={(e) => setFilterRating(e.target.value)}
-                    placeholder="Rating (e.g., 4)"
-                    min="1"
-                    max="5"
-                  />
-                </label>
-              </div>
-              <button type="submit">Apply Filters</button>
-            </form>
-          </div>
-
-          {/* Search Form */}
-          <div>
-            <h3>Search Activities</h3>
-            <form onSubmit={handleSearchSubmit}>
-              <div>
-                <label>
-                  Search Query:
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search by name, category, or tag"
-                  />
-                </label>
-              </div>
-              <div>
-                <label>
-                  Search By:
-                  <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
-                    <option value="name">Name</option>
-                    <option value="Category">Category</option>
-                    <option value="tags">Tag</option>
-                  </select>
-                </label>
-              </div>
-              <button type="submit">Search</button>
-            </form>
-          </div>
-
-          {/* Error Message */}
-          {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-
-          {/* Activities List */}
-          {activities.length > 0 ? (
-            <ul>
-              {activities.map((activity) => (
-                <li key={activity._id}>
-                  <strong>Name:</strong> {activity.name} <br />
-                  <strong>Price:</strong> {(activity.price * conversionRate).toFixed(2)} {selectedCurrency} <br />
-
-                  <strong>Rating:</strong> {activity.rating} <br />
-                  <button
-                      onClick={() => handleBookmark(activity._id)}
-                      style={{
-                        backgroundColor: '#4caf50',
-                        color: 'white',
-                        borderRadius: '5px',
-                        cursor: 'pointer',
-                        marginRight: '10px',
-                      }}
-                    >
-                      Bookmark
-                    </button>
-                 
-                    {/* <button
-                      onClick={() => handleRemoveBookmark(activity._id)}
-                      style={{
-                        backgroundColor: '#f44336',
-                        color: 'white',
-                        borderRadius: '5px',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Remove Bookmark
-                    </button> */}
-                   {/* Book Activity Button */}
-                   <button onClick={() => bookActivity(activity.name)}>Book Ticket</button>
-          
-          <button onClick={() => handleShare(activity, 'copy')}>Copy Link</button>
-          <button onClick={() => handleShareMode(activity)}>Share via Email</button>
-
-          {isEmailMode && activityToShare && activityToShare._id === activity._id && (
-            <div>
+        {/* Filter Form */}
+        <div style={styles.section}>
+          <h3>Filter Activities</h3>
+          <form onSubmit={handleFilterSubmit} style={styles.filterForm}>
+            <label>
+              Category:
               <input
-                type="email"
-                placeholder="Enter recipient's email"
-                value={email}
-                onChange={handleEmailInputChange}
+                type="text"
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
+                placeholder="e.g., Adventure"
               />
-              <button onClick={() => handleShare(activity, 'email')}>Send Email</button>
-            </div>
-          )}
+            </label>
+            <label>
+              Date:
+              <input
+                type="date"
+                value={filterDate}
+                onChange={(e) => setFilterDate(e.target.value)}
+              />
+            </label>
+            <label>
+              Min Budget:
+              <input
+                type="number"
+                value={minBudget}
+                onChange={(e) => setMinBudget(e.target.value)}
+                placeholder="Minimum Price"
+              />
+            </label>
+            <label>
+              Max Budget:
+              <input
+                type="number"
+                value={maxBudget}
+                onChange={(e) => setMaxBudget(e.target.value)}
+                placeholder="Maximum Price"
+              />
+            </label>
+            <label>
+              Minimum Rating:
+              <input
+                type="number"
+                value={filterRating}
+                onChange={(e) => setFilterRating(e.target.value)}
+                placeholder="Rating (e.g., 4)"
+                min="1"
+                max="5"
+              />
+            </label>
+            <button type="submit">Apply Filters</button>
+          </form>
+        </div>
 
-          {copySuccess[activity._id] && <p>{copySuccess[activity._id]}</p>}
-     
-    
-    
-                  {/* Button to toggle activity details */}
-                  <button onClick={() => toggleActivityDetails(activity._id)}>
-                    {expandedActivities[activity._id] ? 'Hide Activity Details' : 'View Activity Details'}
-                  </button>
-                  {/* Show details if expanded */}
-                  {expandedActivities[activity._id] && (
-                    <div style={{ marginTop: '10px', paddingLeft: '20px' }}>
-                      <p><strong>Category:</strong> {activity.Category}</p>
-                      <p><strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}</p>
-                      <p><strong>Time:</strong> {activity.time}</p>
-                      <p><strong>Location:</strong> {activity.location}</p>
-                      <p><strong>Tags:</strong> {activity.tags.join(', ')}</p>
-                      <p><strong>Special Discounts:</strong> {activity.specialDiscounts}</p>
-                      <p><strong>Booking Open:</strong> {activity.bookingOpen ? 'Yes' : 'No'}</p>
-                      <p><strong>Advertiser:</strong> {activity.Advertiser}</p>
-                      
+        {/* Search Form */}
+        <div style={styles.section}>
+          <h3>Search Activities</h3>
+          <form onSubmit={handleSearchSubmit} style={styles.searchForm}>
+            <label>
+              Search Query:
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by name, category, or tag"
+              />
+            </label>
+            <label>
+              Search By:
+              <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
+                <option value="name">Name</option>
+                <option value="Category">Category</option>
+                <option value="tags">Tag</option>
+              </select>
+            </label>
+            <button type="submit">Search</button>
+          </form>
+        </div>
 
-                        
-                      
-                    </div>
+        {/* Error Message */}
+        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+
+        {/* Activities List */}
+        {activities.length > 0 ? (
+          <div>
+            {activities.map((activity) => (
+              <div key={activity._id} style={styles.activityCard}>
+                <h4>{activity.name}</h4>
+                <p>
+                  <strong><FaDollarSign /> Price:</strong> {(activity.price * conversionRate).toFixed(2)}{' '}
+                  {selectedCurrency}
+                </p>
+                <p>
+                  <strong><FaCalendar /> Date:</strong>{' '}
+                  {new Date(activity.date).toLocaleDateString()}
+                </p>
+                <p>
+                  <strong><FaMapMarkerAlt /> Location:</strong> {activity.location}
+                </p>
+                <p>
+                  <strong>Booking Open:</strong> {activity.bookingOpen ? 'Yes' : 'No'}
+                  {!activity.bookingOpen && (
+                    <FaBell
+                      style={styles.bellIcon}
+                      onClick={() => handleNotificationRequest(activity._id)}
+                    />
                   )}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No activities found.</p>
-          )}
-
-      <div>
-        <h3>Your Bookmarked Activities</h3>
-        {bookmarkedActivities.length > 0 ? (
-          <ul>
-            {bookmarkedActivities.map((activity) => (
-              <li key={activity._id}>
-                <strong>Name:</strong> {activity.name} <br />
-                <strong>Category:</strong> {activity.Category} <br />
-                <strong>Price:</strong> {activity.price} {selectedCurrency} <br />
-                <button
-                  onClick={() => handleRemoveBookmark(activity._id)}
-                  style={{ backgroundColor: '#f44336', color: 'white', borderRadius: '5px', cursor: 'pointer' }}
-                >
-                  Remove Bookmark
+                </p>
+                <div style={styles.buttonGroup}>
+                  <button onClick={() => bookActivity(activity.name)}>Book Ticket</button>
+                  <button onClick={() => handleBookmark(activity._id)}>Bookmark</button>
+                  <button onClick={() => handleShare(activity, 'copy')}>Copy Link</button>
+                  <button onClick={() => handleShareMode(activity)}>Share via Email</button>
+                </div>
+                {isEmailMode && activityToShare && activityToShare._id === activity._id && (
+                  <div style={styles.emailForm}>
+                    <input
+                      type="email"
+                      placeholder="Enter recipient's email"
+                      value={email}
+                      onChange={handleEmailInputChange}
+                    />
+                    <button onClick={() => handleShare(activity, 'email')}>Send Email</button>
+                  </div>
+                )}
+                {copySuccess[activity._id] && <p>{copySuccess[activity._id]}</p>}
+                <button onClick={() => toggleActivityDetails(activity._id)}>
+                  {expandedActivities[activity._id] ? 'Hide Activity Details' : 'View Activity Details'}
                 </button>
-              </li>
+                {expandedActivities[activity._id] && (
+                  <div style={styles.details}>
+                    <p><strong>Category:</strong> {activity.Category}</p>
+                    <p><strong><FaClock /> Time:</strong> {activity.time}</p>
+                    <p><strong><FaTags /> Tags:</strong> {activity.tags.join(', ')}</p>
+                    <p><strong><FaPercent /> Discounts:</strong> {activity.specialDiscounts}</p>
+                    <p><strong><FaUserCircle /> Advertiser:</strong> {activity.Advertiser}</p>
+                  </div>
+                )}
+              </div>
             ))}
-          </ul>
+          </div>
         ) : (
-          <p>No bookmarked activities yet.</p>
+          <p>No activities found.</p>
         )}
-      </div>
-        </>
-      )}
-    </div>
-  );
-};
+      </>
+    )}
+  </div>
+);
+}
 
+const styles = {
+container: {
+  maxWidth: '1200px',
+      margin: '0 auto',
+      padding: '20px',
+      backgroundColor: '#f9f9f9',
+      borderRadius: '10px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+},
+header: {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: '20px',
+  backgroundColor: '#4CAF50',
+  padding: '10px 20px',
+  borderRadius: '10px',
+  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+},
+logoContainer: {
+  display: 'flex',
+  alignItems: 'center',
+  cursor: 'pointer',
+},
+logo: {
+  height: '70px',
+  width: '80px',
+  borderRadius: '10px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+},
+profileIcon: {
+  fontSize: '40px',
+  color: 'white',
+  cursor: 'pointer',
+  borderRadius: '20px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+},
+title: {
+  fontSize: '24px',
+  color: 'white',
+},
+
+section: {
+  margin: '20px 0',
+},
+list: {
+  listStyleType: 'none',
+  padding: 0,
+},
+listItem: {
+  backgroundColor: '#fff',
+  padding: '15px',
+  borderRadius: '10px',
+  marginBottom: '10px',
+  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+},
+bellIcon: {
+  fontSize: '20px',
+  color: '#4CAF50',
+  cursor: 'pointer',
+  marginLeft: '10px',
+},
+activityCard: {
+  backgroundColor: '#fff',
+  padding: '20px',
+  borderRadius: '10px',
+  marginBottom: '15px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+},
+buttonGroup: {
+  display: 'flex',
+  gap: '10px',
+  marginTop: '10px',
+},
+emailForm: {
+  marginTop: '10px',
+},
+details: {
+  marginTop: '10px',
+  paddingLeft: '20px',
+},
+};
 export default Activities;

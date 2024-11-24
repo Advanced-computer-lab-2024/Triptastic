@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../images/image_green_background.png'; // Replace with your logo path
-import profile from '../images/profile.jpg'; // Replace with your profile icon path
-import cartIcon from '../images/cart.png';
+import { FaUserCircle ,FaShoppingCart} from 'react-icons/fa';
 const Wishlist = () => {
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -95,16 +94,14 @@ const Wishlist = () => {
           />
         </div>
         <h1 style={styles.title}>My Wishlist</h1>
-        <img
-          src={profile}
+        <FaUserCircle
           alt="Profile Icon"
           style={styles.profileIcon}
           onClick={() => navigate('/tourist-profile')} // Navigate to profile
         />
         
       </header>
-      <img
-          src={cartIcon}
+      <FaShoppingCart
           alt="Profile Icon"
           style={styles.cartIcon}
           onClick={() => navigate('/Cart')} // Navigate to profile
@@ -160,7 +157,7 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '20px',
-    backgroundColor: 'white',
+    backgroundColor: '#4CAF50',
     padding: '10px 20px',
     borderRadius: '10px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
@@ -168,31 +165,31 @@ const styles = {
   logoContainer: {
     display: 'flex',
     alignItems: 'center',
-    cursor: 'pointer',
   },
   logo: {
     height: '70px',
     width: '80px',
     borderRadius: '10px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
   },
   profileIcon: {
-    height: '50px',
-    width: '50px',
-    borderRadius: '50%',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
+    fontSize: '40px',
+    color: 'white',
     cursor: 'pointer',
+    borderRadius: '20px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
   },
   cartIcon: {
     width: '50px',
     height: '50px',
+    color:'#4CAF50',
     cursor: 'pointer',
     marginLeft:'700px'
   },
   title: {
     fontSize: '24px',
     fontWeight: 'bold',
-    color: '#4CAF50',
+    color: 'white',
     margin: 0,
   },
   wishlistContent: {

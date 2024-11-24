@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 import { CurrencyContext } from '../pages/CurrencyContext';
+import { FaUserCircle,FaCalendar,FaDollarSign ,FaMapMarkerAlt,FaClock,FaLanguage,FaWheelchair,FaShuttleVan} from 'react-icons/fa';
+import logo from '../images/image_green_background.png';
+
 const Itineraries = () => {
   const [itineraries, setItineraries] = useState([]);
   const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
@@ -20,7 +25,7 @@ const Itineraries = () => {
   const [copySuccess, setCopySuccess] = useState({});
   // State to track the visibility of itinerary details
   const [expandedItineraries, setExpandedItineraries] = useState({});
-
+  const navigate = useNavigate();
   const handleCurrencyChange = (event) => {
     fetchConversionRate(event.target.value);
   };
@@ -215,132 +220,285 @@ const Itineraries = () => {
       setItineraryToShare(itinerary);
       setIsEmailMode(!isEmailMode);
     };
+    const handleProfileRedirect = () => {
+      const context = localStorage.getItem('context');
+    
+      if (context === 'tourist') {
+        navigate('/tourist-profile');
+      } else if (context === 'guest') {
+        navigate('/Guest');
+      }  else {
+        console.error('Unknown context');
+        navigate('/'); // Fallback to home
+      }
+    };
+    return (
+      <div style={styles.container}>
+        {/* Header */}
+        <header style={styles.header}>
+          <img src={logo} alt="Logo" style={styles.logo} />
+          <h2 style={styles.title}>Itineraries</h2>
+          <FaUserCircle style={styles.profileIcon} onClick={handleProfileRedirect} />
+        </header>
   
-  return (
-    <div>
-      <h2>Itineraries</h2>
-
-      {loading ? (
-        <p>Loading itineraries...</p>
-      ) : (
-        <>
-          <button onClick={handleSortAscending}>Sort by Price (Ascending)</button>
-          <button onClick={handleSortDescending}>Sort by Price (Descending)</button>
-
-          <h3>Filter Itineraries</h3>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              fetchFilteredItineraries();
-            }}
-          >
-            <label>
-              Min Budget:
-              <input
-                type="number"
-                name="minBudget"
-                value={filters.minBudget}
-                onChange={handleFilterChange}
-              />
-            </label>
-            <br />
-            <label>
-              Max Budget:
-              <input
-                type="number"
-                name="maxBudget"
-                value={filters.maxBudget}
-                onChange={handleFilterChange}
-              />
-            </label>
-            <br />
-            <label>
-              Date:
-              <input
-                type="date"
-                name="date"
-                value={filters.date}
-                onChange={handleFilterChange}
-              />
-            </label>
-            <br />
-            <label>
-              Preferences (e.g. beaches, shopping):
-              <input
-                type="text"
-                name="preferences"
-                value={filters.preferences}
-                onChange={handleFilterChange}
-              />
-            </label>
-            <br />
-            <label>
-              Language:
-              <input
-                type="text"
-                name="language"
-                value={filters.language}
-                onChange={handleFilterChange}
-              />
-            </label>
-            <br />
-            <button type="submit">Apply Filters</button>
-          </form>
-
-          {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-
-          {itineraries.length > 0 ? (
-            <ul>
-              {itineraries.map((itinerary) => (
-                <li key={itinerary._id}>
-                  <strong>Activities:</strong> {itinerary.Activities.join(', ')} <br />
-                  <strong>Price:</strong> {selectedCurrency} {(itinerary.Price * conversionRate).toFixed(2)} <br />
-                  <strong>Dates:</strong> {itinerary.DatesTimes} <br />
-                  <button onClick={() => toggleItineraryDetails(itinerary._id)}>
-                    {expandedItineraries[itinerary._id] ? 'Hide Itinerary Details' : 'View Itinerary Details'}
-                  </button>
-                  <button onClick={() => handleBooking(itinerary)} disabled={itinerary.Booked}>
-                    Book Ticket
-                  </button>
-                  {expandedItineraries[itinerary._id] && (
-                    <div>
-                      <p><strong>Locations:</strong> {itinerary.Locations.join(', ')}</p>
-                      <p><strong>Timeline:</strong> {itinerary.Timeline}</p>
-                      <p><strong>Duration of Activity:</strong> {itinerary.DurationOfActivity}</p>
-                      <p><strong>Language:</strong> {itinerary.Language}</p>
-                      <p><strong>Accessibility:</strong> {itinerary.Accesibility}</p>
-                      <p><strong>Pick Up/Drop Off:</strong> {itinerary.pickUpDropOff}</p>
-                      <p><strong>Booked:</strong> {itinerary.Booked ? 'Yes' : 'No'}</p>
-                      <p><strong>Tour Guide:</strong> {itinerary.TourGuide}</p>
-                    </div>
-                  )}
-                   {/* Share button and success message */}
-                   <button onClick={() => handleShare(itinerary._id, 'copy')}>Copy Link</button>
-          <button onClick={() => handleShareMode(itinerary)}>Share via Email</button>
-
-          {isEmailMode && itineraryToShare && itineraryToShare._id ===itinerary._id&& (
-            <div>
-              <input
-                type="email"
-                placeholder="Enter recipient's email"
-                value={email}
-                onChange={handleEmailInputChange}
-              />
-              <button onClick={() => handleShare(itinerary._id, 'email')}>Send Email</button>
+        {loading ? (
+          <p style={styles.loading}>Loading itineraries...</p>
+        ) : (
+          <>
+            {/* Sorting Section */}
+            <div style={styles.section}>
+              <h3>Sort Itineraries</h3>
+              <button style={styles.button} onClick={handleSortAscending}>
+                Sort by Price (Ascending)
+              </button>
+              <button style={styles.button} onClick={handleSortDescending}>
+                Sort by Price (Descending)
+              </button>
             </div>
-          )}
-
-          {copySuccess[itinerary._id] && <p>{copySuccess[itinerary._id]}</p>}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No itineraries found.</p>
-          )}
-        </>
-      )}
-    </div>
-  );
-};
+  
+            {/* Filter Section */}
+            <div style={styles.section}>
+              <h3>Filter Itineraries</h3>
+              <form
+                style={styles.form}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  fetchFilteredItineraries();
+                }}
+              >
+                <label style={styles.label}>
+                  Min Budget:
+                  <input
+                    type="number"
+                    name="minBudget"
+                    value={filters.minBudget}
+                    onChange={handleFilterChange}
+                    style={styles.input}
+                  />
+                </label>
+                <label style={styles.label}>
+                  Max Budget:
+                  <input
+                    type="number"
+                    name="maxBudget"
+                    value={filters.maxBudget}
+                    onChange={handleFilterChange}
+                    style={styles.input}
+                  />
+                </label>
+                <label style={styles.label}>
+                  Date:
+                  <input
+                    type="date"
+                    name="date"
+                    value={filters.date}
+                    onChange={handleFilterChange}
+                    style={styles.input}
+                  />
+                </label>
+                <label style={styles.label}>
+                  Preferences (e.g. beaches, shopping):
+                  <input
+                    type="text"
+                    name="preferences"
+                    value={filters.preferences}
+                    onChange={handleFilterChange}
+                    style={styles.input}
+                  />
+                </label>
+                <label style={styles.label}>
+                  Language:
+                  <input
+                    type="text"
+                    name="language"
+                    value={filters.language}
+                    onChange={handleFilterChange}
+                    style={styles.input}
+                  />
+                </label>
+                <button style={styles.button} type="submit">
+                  Apply Filters
+                </button>
+              </form>
+            </div>
+  
+            {errorMessage && <p style={styles.error}>{errorMessage}</p>}
+  
+            {/* Itineraries List */}
+            {itineraries.length > 0 ? (
+              <ul style={styles.list}>
+                {itineraries.map((itinerary) => (
+                  <li key={itinerary._id} style={styles.listItem}>
+                    <strong>Activities:</strong> {itinerary.Activities.join(', ')} <br />
+                    <strong><FaDollarSign /></strong> {selectedCurrency} {(itinerary.Price * conversionRate).toFixed(2)} <br />
+                    <strong><FaCalendar /></strong> {itinerary.DatesTimes} <br />
+                    <strong><FaMapMarkerAlt /></strong> {itinerary.Locations.join(', ')}<br />
+                    <strong><FaUserCircle/></strong> {itinerary.TourGuide}<br/>
+                    <button
+                      style={styles.button}
+                      onClick={() => toggleItineraryDetails(itinerary._id)}
+                    >
+                      {expandedItineraries[itinerary._id] ? 'Hide Itinerary Details' : 'View Itinerary Details'}
+                    </button>
+                    <button
+                      style={styles.button}
+                      onClick={() => handleBooking(itinerary)}
+                      disabled={itinerary.Booked}
+                    >
+                      Book Ticket
+                    </button>
+                    {expandedItineraries[itinerary._id] && (
+                      <div style={styles.details}>
+                        <p>
+                          <strong><FaClock/>: </strong> {itinerary.DurationOfActivity}
+                        </p>
+                        <p>
+                          <strong><FaLanguage/>:</strong> {itinerary.Language}
+                        </p>
+                        <p>
+                          <strong><FaWheelchair/>:</strong> {itinerary.Accesibility}
+                        </p>
+                        <p>
+                          <strong><FaShuttleVan/>:</strong> {itinerary.pickUpDropOff}
+                        </p>
+                        <p>
+                          <strong>Booked:</strong> {itinerary.Booked ? 'Yes' : 'No'}
+                        </p>
+                        
+                      </div>
+                    )}
+                    {/* Share button and success message */}
+                    <button style={styles.button} onClick={() => handleShare(itinerary._id, 'copy')}>
+                      Copy Link
+                    </button>
+                    <button style={styles.button} onClick={() => handleShareMode(itinerary)}>
+                      Share via Email
+                    </button>
+                    {isEmailMode && itineraryToShare && itineraryToShare._id === itinerary._id && (
+                      <div style={styles.emailInputContainer}>
+                        <input
+                          style={styles.input}
+                          type="email"
+                          placeholder="Enter recipient's email"
+                          value={email}
+                          onChange={handleEmailInputChange}
+                        />
+                        <button style={styles.button} onClick={() => handleShare(itinerary._id, 'email')}>
+                          Send Email
+                        </button>
+                      </div>
+                    )}
+                    {copySuccess[itinerary._id] && <p style={styles.success}>{copySuccess[itinerary._id]}</p>}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p style={styles.noData}>No itineraries found.</p>
+            )}
+          </>
+        )}
+      </div>
+    );
+  };
+  
+  const styles = {
+    container: {
+      maxWidth: '1200px',
+      margin: '0 auto',
+      padding: '20px',
+      backgroundColor: '#f9f9f9',
+      borderRadius: '10px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    },
+    header: {
+      display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '20px',
+    backgroundColor: '#4CAF50',
+    padding: '10px 20px',
+    borderRadius: '10px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+    },
+    logo: {
+      height: '70px',
+    width: '80px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+    },
+    title: {
+      fontSize: '24px',
+      color: 'white',
+      fontWeight: 'bold',
+    },
+    profileIcon: {
+      fontSize: '40px',
+      color: 'white',
+      cursor: 'pointer',
+    },
+    section: {
+      margin: '20px 0',
+    },
+    form: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '10px',
+    },
+    label: {
+      marginBottom: '10px',
+    },
+    input: {
+      padding: '10px',
+      borderRadius: '5px',
+      border: '1px solid #ccc',
+      width: '100%',
+    },
+    button: {
+      backgroundColor: '#4CAF50',
+      color: 'white',
+      padding: '10px',
+      borderRadius: '5px',
+      border: 'none',
+      cursor: 'pointer',
+      marginTop: '10px',
+    },
+    list: {
+      listStyleType: 'none',
+      padding: 0,
+    },
+    listItem: {
+      backgroundColor: 'white',
+      padding: '15px',
+      borderRadius: '10px',
+      marginBottom: '10px',
+      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+    },
+    details: {
+      marginTop: '10px',
+      paddingLeft: '20px',
+    },
+    emailInputContainer: {
+      display: 'flex',
+      gap: '10px',
+      marginTop: '10px',
+    },
+    loading: {
+      textAlign: 'center',
+      color: '#4CAF50',
+    },
+    noData: {
+      textAlign: 'center',
+      color: '#999',
+    },
+    success: {
+      color: '#4CAF50',
+      marginTop: '10px',
+    },
+    error: {
+      color: 'red',
+      textAlign: 'center',
+      marginTop: '10px',
+    },
+  };
 
 export default Itineraries;

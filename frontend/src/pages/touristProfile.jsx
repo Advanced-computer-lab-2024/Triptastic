@@ -4,8 +4,12 @@ import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-route
 import axios from 'axios';
 import { CurrencyContext } from '../pages/CurrencyContext';
 import logo from '../images/image_green_background.png'; // Adjust the path based on your folder structure
+import { FaBars, FaTimes } from "react-icons/fa"; // For menu icons
+
+import { FaPercentage, FaCalendarAlt, FaTag ,FaUserCircle} from 'react-icons/fa';
 
 const TouristProfile = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const [touristInfo, setTouristInfo] = useState(null);
   const [complaints, setComplaints] = useState([]); // New state for complaints
@@ -67,7 +71,14 @@ const TouristProfile = () => {
         fetchBookedItineraries();
         fetchBookedActivities(); // Fetch booked itineraries when the component mounts
       }, []); // Empty dependency array means this runs once after the first render
-    
+      
+      
+      
+      const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+      };
+
+
   const handleViewItineraries=()=>{
     setShowingItineraries( prev=>!prev);
   }
@@ -556,6 +567,14 @@ const TouristProfile = () => {
 
 
   
+  const SidebarMenu = () => {
+    const navigate = useNavigate();
+    
+  
+  
+  };
+
+
 
   
 
@@ -564,22 +583,49 @@ const TouristProfile = () => {
 return (
   <div className="tourist-profile-container">
     <div className="profile-content">
-      <h2>Tourist Profile</h2>
+      <header style={styles.header}>
+        <div style={styles.logoContainer}>
+        <div style={{ ...styles.logoContainer, marginLeft: '30px' }}>
+          <img
+            src={logo}
+            alt="Logo"
+            style={styles.logo}
+
+          />
+           </div>
+        </div>
+        <h1 style={styles.title}>Tourist Profile</h1>
+        <FaUserCircle
+          alt="Profile Icon"
+          style={styles.profileIcon}
+          onClick={() => navigate('/adminPage')} // Navigate to profile
+        />
+        
+      </header>
+      <button className="menu-icon" onClick={toggleMenu}  style={{ 
+          position: 'relative', 
+          top: '-100px',   // Adjust this value to move the menu down
+          left: '-2px'   // Adjust this value to move the menu to the left
+        }}>
+  {isMenuOpen ? <FaTimes /> : <FaBars />}
+</button>
+
+<div className={`sidebar-menu ${isMenuOpen ? "open" : ""}`}>
+  <ul>
+    <li onClick={() => navigate('/historical-locations')}>Historical Locations</li>
+    <li onClick={() => navigate('/museums')}>Museums</li>
+    <li onClick={() => navigate('/products')}>Products</li>
+    <li onClick={() => navigate('/itineraries')}>Itineraries</li>
+    <li onClick={() => navigate('/activities')}>Activities</li>
+    <li onClick={() => navigate('/book-flights')}>Book Flights</li>
+    <li onClick={() => navigate('/book-hotels')}>Book a Hotel</li>
+        <li onClick={() => navigate('/book-transportation')}>Book Transportation</li>
+        <li onClick={() => navigate('/tourist-orders')}>Past Orders</li>
+        <li onClick={() => navigate('/AttendedActivitiesPage')}>Review Activities</li>
+        <li onClick={() => navigate('/Cart')}>My Cart</li>
+  </ul>
+</div>
       <div className="sidebar">
-      <header style={{ display: 'flex',  padding: '5px', backgroundColor: '#f4f4f4' }}>
-  <img 
-    src={logo} 
-    alt="Logo" 
-    style={{ 
-      height: '70px', 
-      width: '70px', 
-      borderRadius: '10px', 
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)', 
-      objectFit: 'cover'
-      
-    }}
-  />
-</header>
       <h3>Explore</h3>
       <ul>
         <li onClick={() => navigate('/historical-locations')}>Historical Locations</li>
@@ -590,9 +636,7 @@ return (
         <li onClick={() => navigate('/book-flights')}>Book Flights</li>
         <li onClick={() => navigate('/book-hotels')}>Book a Hotel</li>
         <li onClick={() => navigate('/book-transportation')}>Book Transportation</li>
-        <li onClick={() => navigate('/tourist-orders')}>Past Orders</li>
-        <li onClick={() => navigate('/AttendedActivitiesPage')}>Review Activities</li>
-        <li onClick={() => navigate('/Cart')}>My Cart</li>
+       
 
       </ul>
     </div>
@@ -978,5 +1022,110 @@ return (
   
 );
 };
-
+const styles = {
+  container: {
+    maxWidth: '800px',
+    margin: '20px auto',
+    padding: '20px',
+    backgroundColor: '#f4f4f4',
+    borderRadius: '10px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  },
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '20px',
+    backgroundColor: '#4CAF50',
+    padding: '10px 20px',
+    borderRadius: '10px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  },
+  logoContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  logo: {
+    height: '70px',
+    width: '80px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+  },
+  profileIcon: {
+    fontSize: '40px',
+    color: 'white',
+    cursor: 'pointer',
+    borderRadius: '20px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  },
+  actionButtons: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    marginTop: '10px',
+  },
+  wishlistButton: {
+    backgroundColor: '#4CAF50',
+    color: '#fff',
+    padding: '10px 20px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    marginBottom: '10px',
+  },title: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: 'white',
+    margin: 0,
+  },
+  cartIcon: {
+    width: '50px',
+    height: '50px',
+    cursor: 'pointer',
+    
+  },
+  filterForm: {
+    margin: '20px 0',
+  },
+  filterButton: {
+    marginTop: '10px',
+    padding: '10px 20px',
+    backgroundColor: '#4CAF50',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+  productList: {
+    listStyleType: 'none',
+    padding: 0,
+  },
+  productItem: {
+    backgroundColor: '#fff',
+    padding: '20px',
+    marginBottom: '10px',
+    borderRadius: '10px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  },
+  productName: {
+    fontSize: '20px',
+    color: '#4CAF50',
+  },
+  productImage: {
+    width: '100%',
+    maxWidth: '400px',
+    height: '300px',
+    objectFit: 'cover',
+    borderRadius: '10px',
+  },
+  addButton: {
+    marginTop: '10px',
+    padding: '10px 20px',
+    backgroundColor: '#4CAF50',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+};
 export default TouristProfile;

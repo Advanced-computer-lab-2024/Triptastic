@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import image from '../images/image_green_background.png';
+import { FaBell,FaBox } from 'react-icons/fa'; // Importing bell icon
 
 const SellerProfile = () => {
   const [sellerInfo, setSellerInfo] = useState(null);
@@ -21,6 +22,8 @@ const SellerProfile = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [productNameToArchive, setProductNameToArchive] = useState(''); // New state variable
   const [logo, setLogo] = useState(null);
+  const [notifications, setNotifications] = useState([]); // State for notifications
+  const [showNotifications, setShowNotifications] = useState(false); // Toggle notification dropdown
   const [productFormData, setProductFormData] = useState({
     productName: '',
     description: '',
@@ -63,14 +66,68 @@ const SellerProfile = () => {
       }));
     }
   };
-
+  const addNotification = (message) => {
+    setNotifications((prevNotifications) => [
+      ...prevNotifications,
+      { id: Date.now(), message },
+    ]);
+  };
   useEffect(() => {
     fetchSellerInfo();
     checkoutOfStock(); // Automatically call checkoutOfStock when profile is opened
+    fetchNotifications();
   }, []);
+  const fetchNotifications = async () => {
+    const Username = localStorage.getItem('Username');
+
+    try {
+      const response = await fetch(`http://localhost:8000/getNotificationsForSeller?Username=${Username}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        setNotifications(data.notifications); // Assuming the response contains a "notifications" array
+      } else {
+        console.error('Failed to fetch notifications');
+      }
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    }
+  };
+
+  const handleNotificationClick = async () => {
+    const Username = localStorage.getItem('Username');
+
+    setShowNotifications((prev) => !prev);
+
+    if (!showNotifications) {
+      // Fetch notifications only if dropdown is about to be shown
+      try {
+        const response = await fetch(`http://localhost:8000/getNotificationsForSeller?Username=${Username}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setNotifications(data.notifications);
+        } else {
+          console.error('Failed to fetch notifications');
+        }
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    }
+  };
 const checkoutOfStock = async () => {
   try {
-    const response = await fetch('http://localhost:8000/checkAndNotifyOutOfStock', {
+    const response = await fetch('http://localhost:8000/checkAndNotifyOutOfStockSeller', {
       method: 'GET', // Use GET or any other appropriate method
       headers: {
         'Content-Type': 'application/json',
@@ -413,7 +470,72 @@ const unarchiveProduct = async () => {
   const handleCurrentPasswordChange = (e) => setCurrentPassword(e.target.value);
   const handleNewPasswordChange = (e) => setNewPassword(e.target.value);
   return (
-    <div className="seller-profile-container">
+    
+        <div className="seller-profile-container">
+      <div style={{ position: 'relative', textAlign: 'right', padding: '10px' }}>
+        <FaBell
+          size={24}
+          style={{ cursor: 'pointer' }}
+          onClick={handleNotificationClick}
+        />
+        {notifications.length > 0 && (
+          <span
+            style={{
+              position: 'absolute',
+              top: 0,
+              right: 10,
+              backgroundColor: 'red',
+              color: 'white',
+              borderRadius: '50%',
+              width: '18px',
+              height: '18px',
+              fontSize: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {notifications.length}
+          </span>
+        )}
+        {showNotifications && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '30px',
+              right: '10px',
+              backgroundColor: 'white',
+              border: '1px solid #ccc',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+              borderRadius: '4px',
+              width: '250px',
+              maxHeight: '300px',
+              overflowY: 'auto',
+              zIndex: 10,
+            }}
+          >
+            <ul style={{ listStyle: 'none', padding: '10px', margin: 0 }}>
+              {notifications.map((notification) => (
+                <li
+                  key={notification.id}
+                  style={{
+                    borderBottom: '1px solid #ddd',
+                    padding: '10px 0',
+                    fontSize: '14px',
+                  }}
+                >
+                  {notification.message}
+                </li>
+              ))}
+            </ul>
+            {notifications.length === 0 && (
+              <p style={{ padding: '10px', textAlign: 'center' }}>
+                No notifications
+              </p>
+            )}
+          </div>
+        )}
+      </div>
       <div className="profile-content">
         <h2>Seller Profile</h2>
         <div>
@@ -435,7 +557,7 @@ const unarchiveProduct = async () => {
 </header>
         <h3>Explore</h3>
         <ul>
-          <li onClick={() => navigate('/products')}>Products</li>
+          <li onClick={() => navigate('/products')}><FaBox/>Products</li>
         </ul>
       </div>
   <h3>Change Password</h3>
