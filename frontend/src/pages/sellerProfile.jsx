@@ -22,7 +22,7 @@ const SellerProfile = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [productNameToArchive, setProductNameToArchive] = useState(''); // New state variable
   const [logo, setLogo] = useState(null);
-  const [notifications, setNotifications] = useState([]); // State for notifications
+  const [notifications, setNotifications] = useState([]); // Initialize as an empty array
   const [showNotifications, setShowNotifications] = useState(false); // Toggle notification dropdown
   const [productFormData, setProductFormData] = useState({
     productName: '',
@@ -81,31 +81,27 @@ const SellerProfile = () => {
     const Username = localStorage.getItem('Username');
 
     try {
-      const response = await fetch(`http://localhost:8000/getNotificationsForSeller?Username=${Username}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-  
+      const response = await fetch(`http://localhost:8000/getNotificationsForSeller?Username=${Username}`);
       if (response.ok) {
         const data = await response.json();
-        setNotifications(data.notifications); // Assuming the response contains a "notifications" array
+        setNotifications(data.notifications || []); // Fallback to an empty array if undefined
       } else {
         console.error('Failed to fetch notifications');
+        setNotifications([]); // Set to an empty array on error
       }
     } catch (error) {
       console.error('Error fetching notifications:', error);
+      setNotifications([]); // Set to an empty array on error
     }
   };
+  
 
   const handleNotificationClick = async () => {
     const Username = localStorage.getItem('Username');
-
+  
     setShowNotifications((prev) => !prev);
-
+  
     if (!showNotifications) {
-      // Fetch notifications only if dropdown is about to be shown
       try {
         const response = await fetch(`http://localhost:8000/getNotificationsForSeller?Username=${Username}`, {
           method: 'GET',
@@ -113,10 +109,19 @@ const SellerProfile = () => {
             'Content-Type': 'application/json',
           },
         });
-
+  
         if (response.ok) {
           const data = await response.json();
-          setNotifications(data.notifications);
+  
+          // Filter and append unique notifications
+          const uniqueNotifications = data.notifications.filter(
+            (newNotification) =>
+              !notifications.some((existingNotification) =>
+                existingNotification.message === newNotification.message
+              )
+          );
+  
+          setNotifications((prev) => [...prev, ...uniqueNotifications]);
         } else {
           console.error('Failed to fetch notifications');
         }
@@ -125,26 +130,38 @@ const SellerProfile = () => {
       }
     }
   };
-const checkoutOfStock = async () => {
-  try {
-    const response = await fetch('http://localhost:8000/checkAndNotifyOutOfStockSeller', {
-      method: 'GET', // Use GET or any other appropriate method
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      // Handle the data response accordingly
-      console.log('Out of stock products checked:', data);
-    } else {
-      console.error('Failed to check out of stock products');
+  
+  const checkoutOfStock = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/checkAndNotifyOutOfStockSeller', {
+        method: 'GET', // Use GET or any other appropriate method
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+  
+        // Update notifications state with unique notifications
+        const newNotifications = data.notifications.filter(
+          (notification) => !notifications.some((n) => n.message === notification.message)
+        );
+  
+        if (newNotifications.length > 0) {
+          setNotifications((prev) => [...prev, ...newNotifications]);
+          console.log('New notifications added:', newNotifications);
+        } else {
+          console.log('No new notifications to add');
+        }
+      } else {
+        console.error('Failed to check out-of-stock products');
+      }
+    } catch (error) {
+      console.error('Error occurred while checking out-of-stock:', error);
     }
-  } catch (error) {
-    console.error('Error occurred while checking out of stock:', error);
-  }
-};
+  };
+  
 
 
 const fetchSellerInfo = async () => {
