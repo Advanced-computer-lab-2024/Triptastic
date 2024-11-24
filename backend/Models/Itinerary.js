@@ -49,6 +49,10 @@ const itinerarySchema = new Schema({
         type: Boolean,
         default: true
     },
+    sales: {// total amount of money made
+        type: Number,
+        default: 0,
+      },
     feedback: [
         {
           touristUsername: { // Add this field to store the tourist's name who submitted the feedback
