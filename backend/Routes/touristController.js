@@ -1111,7 +1111,8 @@ const bookActivity = async (req, res) => {
 
     // Save the updated tourist record
     await tourist.save();
-
+    activity.sales += activity.price;
+    await activity.save();
     res.status(200).json({ message: 'Activity booked successfully!', tourist });
   } catch (error) {
     res.status(500).json({ error: 'Error booking the activity' });
@@ -1152,7 +1153,8 @@ if (tourist.points >= 10000) {
 }
     tourist.Bookings.push(itinerary);
     await tourist.save();
-
+    itinerary.sales+=itinerary.Price;
+    await itinerary.save();
     res.status(200).json({
       message: 'Itinerary booked successfully!', tourist
     });
@@ -1311,6 +1313,7 @@ const cancelBookedItinerary = async (req, res) => {
   const { username } = req.query; // Get the username from the query parameters
 
   try {
+    const itinerary= await itineraryModel.findById(itineraryId);
     // Find the tourist by username
     const tourist = await touristModel.findOne({ Username: username });
     if (!tourist) {
@@ -1342,7 +1345,8 @@ const cancelBookedItinerary = async (req, res) => {
 
     // Save the updated tourist record
     await tourist.save();
-
+     itinerary.sales-=itinerary.Price;
+    await itinerary.save();
     res.status(200).json({ message: 'Itinerary booking cancelled successfully' });
   } catch (error) {
     console.error(error);
@@ -1397,6 +1401,7 @@ const cancelActivity = async (req, res) => {
   console.log('Received username:', username); // Log received username
 
   try {
+    const activity= await activitiesModel.findById(activityId);
     // Find the tourist by username
     const tourist = await touristModel.findOne({ Username: username });
     if (!tourist) {
@@ -1430,7 +1435,8 @@ const cancelActivity = async (req, res) => {
 
     // Save the updated tourist record
     await tourist.save();
-
+    activity.sales-=activity.price;
+    await activity.save();
     res.status(200).json({ message: 'Activity booking cancelled successfully' });
   } catch (error) {
     console.error(error);

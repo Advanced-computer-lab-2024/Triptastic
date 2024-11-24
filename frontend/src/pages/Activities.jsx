@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom'; // Import Link for routing
 import { CurrencyContext } from '../pages/CurrencyContext';
 import { FaBell, FaUserCircle ,FaCalendar,FaDollarSign ,FaMapMarkerAlt,FaClock,FaTags,FaPercent} from 'react-icons/fa'; // Import icons
-import logo from '../images/image_green_background.png'; // Add your logo file pathimport axios from 'axios';
+import logo from '../images/image.png'; // Add your logo file pathimport axios from 'axios';
 import axios from 'axios';
 import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
 

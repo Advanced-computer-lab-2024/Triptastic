@@ -2,8 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import { FaHeart } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import { CurrencyContext } from '../pages/CurrencyContext';
-import logo from '../images/image_green_background.png'; // Replace with your logo path
-import { FaUserCircle,FaShoppingCart} from 'react-icons/fa';
+import logo from '../images/image.png'; // Replace with your logo path
+import { FaUserCircle,FaShoppingCart,FaRegFileAlt, FaDollarSign, FaStar, FaComments, FaWarehouse, FaChartBar,FaBars} from 'react-icons/fa';
 const Products = () => {
   const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
   const [products, setProducts] = useState([]);
@@ -147,6 +147,7 @@ const Products = () => {
 
   return (
     <div style={styles.container}>
+      
       <header style={styles.header}>
         <div style={styles.logoContainer}>
           
@@ -221,14 +222,15 @@ const Products = () => {
       )}
       <div style={styles.productInfo}>
         <h2 style={styles.productName}>{product.productName}</h2>
-        <p><strong>Description:</strong> {product.description}</p>
-        <p><strong>Price:</strong> {selectedCurrency}{' '}
+        <p><strong><FaRegFileAlt /> Description
+     </strong> {product.description}</p>
+        <p><strong><FaDollarSign /> Price:</strong> {selectedCurrency}{' '}
           {(product.price * conversionRate).toFixed(2)}
         </p>
-        <p><strong>Rating:</strong> {product.rating}</p>
-        <p><strong>Review:</strong> {product.review}</p>
-        <p><strong>Stock:</strong> {product.stock}</p>
-        <p><strong>Sales:</strong> {product.sales}</p>
+        <p><strong><FaStar /> Rating:</strong> {product.rating}</p>
+        <p><strong><FaComments /> Review:</strong> {product.review}</p>
+        <p><strong><FaWarehouse /> Stock:</strong> {product.stock}</p>
+        <p><strong><FaChartBar /> Sales:</strong> {product.sales}</p>
         <div style={styles.productActions}>
           <button onClick={() => handleAddToCart(product)} style={styles.actionButton}>
             Add to Cart
@@ -293,7 +295,7 @@ const styles = {
   },
   actionButton: {
     padding: '10px 15px',
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#0F5132',
     color: '#fff',
     border: 'none',
     borderRadius: '5px',
@@ -325,12 +327,12 @@ const styles = {
   
   cartIcon: {
     fontSize: '30px', // Adjust size
-    color: '#4CAF50',
+    color: '#0F5132',
     cursor: 'pointer',
   },
   
   wishlistButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#0F5132',
     color: '#fff',
     padding: '10px 15px',
     border: 'none',
@@ -344,7 +346,7 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '20px',
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#0F5132',
     padding: '10px 20px',
     borderRadius: '10px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
@@ -370,7 +372,7 @@ const styles = {
   cartIcon: {
     width: '50px',
     height: '50px',
-    color:'#4CAF50',
+    color:'#0F5132',
     cursor: 'pointer',
     marginLeft:'700px'
   },
@@ -388,7 +390,7 @@ const styles = {
     marginTop: '10px',
   },
   wishlistButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#0F5132',
     color: '#fff',
     padding: '10px 20px',
     border: 'none',
@@ -402,7 +404,7 @@ const styles = {
   filterButton: {
     marginTop: '10px',
     padding: '10px 20px',
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#0F5132',
     color: '#fff',
     border: 'none',
     borderRadius: '5px',
@@ -420,8 +422,8 @@ const styles = {
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   },
   productName: {
-    fontSize: '20px',
-    color: '#4CAF50',
+    fontSize: '30px',
+    color: '#0F5132',
   },
   productImage: {
     width: '100%',
@@ -433,7 +435,7 @@ const styles = {
   addButton: {
     marginTop: '10px',
     padding: '10px 20px',
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#0F5132',
     color: '#fff',
     border: 'none',
     borderRadius: '5px',

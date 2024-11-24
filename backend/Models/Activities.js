@@ -31,6 +31,10 @@ location: {
     type: String,
     required: false
 },
+sales: {// total amount of money made
+    type: Number,
+    default: 0,
+  },
 price: {
     type: Number,
     required: true // Ensure at least the minimum price is set

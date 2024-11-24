@@ -43,7 +43,7 @@
 .sidebar li {
     padding: 12px 15px;
     cursor: pointer;
-    color: #4CAF50;
+    color: #0F5132;
     font-weight: bold;
     font-size: 1rem;
     border-radius: 6px;
@@ -147,12 +147,12 @@
 
 .info-section input:focus,
 .currency-section select:focus {
-    border-color: #4CAF50;
+    border-color: #0F5132;
 }
 
 /* Button Styling */
 button {
-    background-color: #4CAF50;
+    background-color: #0F5132;
     color: #fff;
     padding: 12px 20px;
     font-size: 1rem;
@@ -164,7 +164,7 @@ button {
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #0F5132;
     transform: translateY(-2px);
 }
 

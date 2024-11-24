@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import image from '../images/image_green_background.png';
+import image from '../images/image.png';
 import { FaBell,FaBox } from 'react-icons/fa'; // Importing bell icon
 
 const SellerProfile = () => {

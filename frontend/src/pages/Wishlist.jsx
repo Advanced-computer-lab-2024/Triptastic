@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../images/image_green_background.png'; // Replace with your logo path
+import logo from '../images/image.png'; // Replace with your logo path
 import { FaUserCircle ,FaShoppingCart} from 'react-icons/fa';
 const Wishlist = () => {
   const [wishlist, setWishlist] = useState([]);

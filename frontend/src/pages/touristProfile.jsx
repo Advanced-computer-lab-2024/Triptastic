@@ -3,7 +3,7 @@ import './TouristProfile.css'; // Assuming you create a CSS file for styling
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { CurrencyContext } from '../pages/CurrencyContext';
-import logo from '../images/image_green_background.png'; // Adjust the path based on your folder structure
+import logo from '../images/image.png'; // Adjust the path based on your folder structure
 import { FaBars, FaTimes } from "react-icons/fa"; // For menu icons
 
 import { FaPercentage, FaCalendarAlt, FaTag ,FaUserCircle} from 'react-icons/fa';
@@ -702,7 +702,7 @@ return (
       </div>
     </div>
 
-    {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+    {successMessage && <p style={{ color: '0F5132' }}>{successMessage}</p>}
     
     
 {/* Fetch Product by Name */}
@@ -847,7 +847,7 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '20px',
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#0F5132',
     padding: '10px 20px',
     borderRadius: '10px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
@@ -874,65 +874,20 @@ const styles = {
     flexDirection: 'column',
     alignItems: 'flex-end',
     marginTop: '10px',
+  
   },
-  wishlistButton: {
-    backgroundColor: '#4CAF50',
-    color: '#fff',
-    padding: '10px 20px',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    marginBottom: '10px',
-  },title: {
+ title: {
     fontSize: '24px',
     fontWeight: 'bold',
     color: 'white',
     margin: 0,
   },
-  cartIcon: {
-    width: '50px',
-    height: '50px',
-    cursor: 'pointer',
-    
-  },
-  filterForm: {
-    margin: '20px 0',
-  },
-  filterButton: {
-    marginTop: '10px',
-    padding: '10px 20px',
-    backgroundColor: '#4CAF50',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-  },
-  productList: {
-    listStyleType: 'none',
-    padding: 0,
-  },
-  productItem: {
-    backgroundColor: '#fff',
-    padding: '20px',
-    marginBottom: '10px',
-    borderRadius: '10px',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-  },
-  productName: {
-    fontSize: '20px',
-    color: '#4CAF50',
-  },
-  productImage: {
-    width: '100%',
-    maxWidth: '400px',
-    height: '300px',
-    objectFit: 'cover',
-    borderRadius: '10px',
-  },
+
+  
   addButton: {
     marginTop: '10px',
     padding: '10px 20px',
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#0F5132',
     color: '#fff',
     border: 'none',
     borderRadius: '5px',
