@@ -4,6 +4,8 @@ import { CurrencyContext } from '../pages/CurrencyContext';
 import { FaBell, FaUserCircle ,FaCalendar,FaDollarSign ,FaMapMarkerAlt,FaClock,FaTags,FaPercent} from 'react-icons/fa'; // Import icons
 import logo from '../images/image_green_background.png'; // Add your logo file pathimport axios from 'axios';
 import axios from 'axios';
+import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
+
 import { useNavigate } from 'react-router-dom';
 
 const Activities = () => {
@@ -143,17 +145,26 @@ const Activities = () => {
 
   const handleBookmark = async (activityId) => {
     try {
+      // Check if the activity is already bookmarked
+      if (bookmarkedActivities.some((activity) => activity._id === activityId)) {
+        alert('You have already bookmarked this activity!');
+        return; // Exit the function to prevent further execution
+      }
+  
+      // Call the API to bookmark the activity
       const response = await axios.post(
         'http://localhost:8000/bookmarkEvent',
         { eventId: activityId },
         { params: { Username: username } }
       );
+  
       alert('Activity bookmarked successfully!');
       fetchBookmarkedActivities(); // Refresh the bookmarked activities
     } catch (error) {
       console.error('Error bookmarking activity:', error);
     }
   };
+  
 
   const handleRemoveBookmark = async (activityId) => {
     try {
@@ -359,7 +370,12 @@ return (
       <h2 style={styles.title}>Activities</h2>
       <FaUserCircle style={styles.profileIcon} onClick={handleProfileRedirect} />
     </header>
-
+      {/* Button to navigate to Booked Events */}
+      <div style={styles.navigationButtonContainer}>
+        <button style={styles.navigationButton} onClick={() => navigate('/BookmarkedEvents')}>
+          View BookedMarked Events
+        </button>
+      </div>
     {loading ? (
       <p style={styles.loading}>Loading activities...</p>
     ) : (
@@ -484,11 +500,26 @@ return (
                   )}
                 </p>
                 <div style={styles.buttonGroup}>
-                  <button onClick={() => bookActivity(activity.name)}>Book Ticket</button>
-                  <button onClick={() => handleBookmark(activity._id)}>Bookmark</button>
-                  <button onClick={() => handleShare(activity, 'copy')}>Copy Link</button>
-                  <button onClick={() => handleShareMode(activity)}>Share via Email</button>
-                </div>
+  <button onClick={() => bookActivity(activity.name)}>Book Ticket</button>
+  <button onClick={() => handleShare(activity, 'copy')}>Copy Link</button>
+  <button onClick={() => handleShareMode(activity)}>Share via Email</button>
+  <button
+    onClick={() =>
+      bookmarkedActivities.includes(activity._id)
+        ? handleRemoveBookmark(activity._id)
+        : handleBookmark(activity._id)
+    }
+    style={styles.bookmarkButton} // Add style to align the button
+    title={bookmarkedActivities.includes(activity._id) ? 'Remove Bookmark' : 'Add Bookmark'}
+  >
+    {bookmarkedActivities.includes(activity._id) ? (
+      <FaBookmark style={styles.bookmarkIcon} />
+    ) : (
+      <FaRegBookmark style={styles.bookmarkIcon} />
+    )}
+  </button>
+</div>
+
                 {isEmailMode && activityToShare && activityToShare._id === activity._id && (
                   <div style={styles.emailForm}>
                     <input
@@ -562,6 +593,27 @@ profileIcon: {
   borderRadius: '20px',
   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
 },
+buttonGroup: {
+  display: 'flex',
+  gap: '10px',
+  marginTop: '10px',
+  alignItems: 'center', // Ensure alignment across buttons
+},
+bookmarkButton: {
+  backgroundColor: 'transparent', // Transparent background to match others
+  border: 'none', // Remove default button border
+  cursor: 'pointer', // Pointer cursor for interactivity
+  padding: '0', // Remove default padding
+  display: 'flex', // Flexbox for proper alignment
+  alignItems: 'center', // Vertically align the icon
+  justifyContent: 'center',
+},
+bookmarkIcon: {
+  fontSize: '20px', // Match the size of other icons or adjust as needed
+  color: '#FFD700', // Gold color for bookmark icon
+},
+
+
 title: {
   fontSize: '24px',
   color: 'white',

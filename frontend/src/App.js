@@ -39,6 +39,7 @@ import Cart from './pages/Cart';
 import Wishlist from './pages/Wishlist';
 import PromoCodeForm from './pages/PromoCodeForm';
 import TouristSettings from './pages/touristsettings';
+import BookmarkedEvents from './pages/BookmarkedEvents';
 
 
 import AttendedActivitiesPage from './pages/AttendedActivities';
@@ -120,8 +121,7 @@ function App() {
         <Route path="/Wishlist" element={<Wishlist/>} />
         <Route path="/PromoCodeForm" element={<PromoCodeForm />} />
         <Route path="/TouristSettings" element={<TouristSettings/>} />
-
-
+        <Route path="/BookmarkedEvents" element={<BookmarkedEvents />} />
 
 
 
