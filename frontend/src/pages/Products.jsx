@@ -252,6 +252,7 @@ const Products = () => {
   );
 };
 
+//styles
 const styles = {
   container: {
     maxWidth: '1200px',
