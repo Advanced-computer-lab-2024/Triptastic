@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { CurrencyContext } from '../pages/CurrencyContext';
 import logo from '../images/image_green_background.png'; // Logo image
-import profile from '../images/profile.jpg'; // Profile icon
+import { FaUserCircle } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+
 
 const Cart = () => {
   const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
@@ -131,7 +132,7 @@ const Cart = () => {
           style={styles.profileButton}
           onClick={handleProfileRedirect}
         >
-          <img src={profile} alt="Profile" style={styles.profileIcon} />
+          <FaUserCircle alt="Profile" style={styles.profileIcon} />
         </button>
       </header>
 
@@ -212,11 +213,36 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '10px',
-    backgroundColor: 'white',
+    marginBottom: '20px',
+    backgroundColor: '#4CAF50',
     padding: '10px 20px',
     borderRadius: '10px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  },
+  logoContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    cursor: 'pointer',
+  },
+  logo: {
+    height: '70px',
+    width: '80px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+  },
+  profileIcon: {
+    fontSize: '40px',
+    color: 'white',
+    cursor: 'pointer',
+    borderRadius: '20px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  },
+  cartIcon: {
+    width: '50px',
+    height: '50px',
+    color:'#4CAF50',
+    cursor: 'pointer',
+    marginLeft:'700px'
   },
   quantityButton: {
     margin: '0 5px',
@@ -227,32 +253,11 @@ const styles = {
     borderRadius: '5px',
     cursor: 'pointer',
   },
-  logo: {
-    height: '70px',
-    width: '80px',
-    borderRadius: '10px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)',
-  },
   title: {
     fontSize: '24px',
     fontWeight: 'bold',
-    color: '#4CAF50',
+    color: 'white',
     margin: 0,
-  },
-  profileButton: {
-    backgroundColor: 'white',
-    border: '1px solid #ccc',
-    borderRadius: '50%',
-    width: '50px',
-    height: '50px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-    cursor: 'pointer',
-    padding: 0,
-  },
-  profileIcon: {
-    width: '100%',
-    height: '100%',
-    borderRadius: '50%',
   },
   dropdownContainer: {
     display: 'flex',

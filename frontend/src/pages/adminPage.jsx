@@ -1,5 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaBell } from 'react-icons/fa'; // Importing bell icon
 
 
 const AdminPage = () => {
@@ -34,7 +35,8 @@ const AdminPage = () => {
   const [productNameToSearch, setProductNameToSearch] = useState('');
   const [productSearchResult, setProductSearchResult] = useState(null);
   const [productNameToArchive, setProductNameToArchive] = useState(''); // New state variable
-
+  const [notifications, setNotifications] = useState([]); // State for notifications
+  const [showNotifications, setShowNotifications] = useState(false); // Toggle notification dropdown
   const [statistics, setStatistics] = useState(null);
   const [statsLoading, setStatsLoading] = useState(false);
   const [statsError, setStatsError] = useState("");
@@ -102,7 +104,85 @@ const AdminPage = () => {
     getItineraries();
     getTouristItineraries();
     getActivities();
+    checkoutOfStock();
+    fetchNotifications();
+
   }, []);
+  const addNotification = (message) => {
+    setNotifications((prevNotifications) => [
+      ...prevNotifications,
+      { id: Date.now(), message },
+    ]);
+  };
+ 
+  const fetchNotifications = async () => {
+    const Username = localStorage.getItem('Username');
+
+    try {
+      const response = await fetch(`http://localhost:8000/getNotificationsForAdmin?Username=${Username}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        setNotifications(data.notifications); // Assuming the response contains a "notifications" array
+      } else {
+        console.error('Failed to fetch notifications');
+      }
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    }
+  };
+
+  const handleNotificationClick = async () => {
+    const Username = localStorage.getItem('Username');
+
+    setShowNotifications((prev) => !prev);
+
+    if (!showNotifications) {
+      // Fetch notifications only if dropdown is about to be shown
+      try {
+        const response = await fetch(`http://localhost:8000/getNotificationsForAdmin?Username=${Username}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setNotifications(data.notifications);
+        } else {
+          console.error('Failed to fetch notifications');
+        }
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    }
+  };
+  const checkoutOfStock = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/checkAndNotifyOutOfStockAdmin', {
+        method: 'GET', // Use GET or any other appropriate method
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        // Handle the data response accordingly
+        console.log('Out of stock products checked:', data);
+      } else {
+        console.error('Failed to check out of stock products');
+      }
+    } catch (error) {
+      console.error('Error occurred while checking out of stock:', error);
+    }
+  };
   const handleFlagActivity= async(id)=>{
     try{
       const response = await fetch(`http://localhost:8000/flagActivity/${id}`, {
@@ -863,10 +943,44 @@ const unarchiveProduct = async () => {
     };
   
   return (
+    
     <div>
+      <div style={{ position: 'relative' }}>
+      <button onClick={handleNotificationClick} style={{ background: 'none', border: 'none' }}>
+        <FaBell size={24} />
+      </button>
 
+      {showNotifications && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '40px',
+            right: '0px',
+            width: '300px',
+            background: 'white',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+            borderRadius: '8px',
+            zIndex: 1000,
+          }}
+        >
+          {notifications.length > 0 ? (
+            <ul style={{ listStyle: 'none', padding: '10px' }}>
+              {notifications.map((notification) => (
+                <li key={notification.id} style={{ marginBottom: '10px', borderBottom: '1px solid #ddd', padding: '5px 0' }}>
+                  {notification.message}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div style={{ padding: '10px', textAlign: 'center' }}>No notifications</div>
+          )}
+        </div>
+      )}
+    </div>
       <h1>Admin Page</h1>
+      
       <div className="sidebar">
+        
         <h3>Explore</h3>
         <ul>
         <li onClick={() => navigate('/PromoCodeForm')}>Promo Codes</li>
