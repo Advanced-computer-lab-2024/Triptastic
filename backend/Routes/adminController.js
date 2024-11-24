@@ -13,8 +13,17 @@ const touristItineraryModel=require('../Models/touristItinerary.js');
 const activityModel= require('../Models/Activities.js');
 const complaintsModel=require('../Models/Complaint.js');
 const requestModel=require('../Models/Request.js');
+const nodemailer = require('nodemailer');
 const PromoCode = require('../Models/PromoCode'); // Adjust the path as necessary
 
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: "malook25062003@gmail.com", 
+    pass: "sxvo feuu woie gpfn",   
+  },
+});
 const AdminLogin = async (req, res) => {
   const { Username, Password } = req.body;
 
@@ -392,6 +401,22 @@ const sortProductsByRatingAdmin = async (req, res) => {
         const tourGuide = await tourGuideModel.findOne({ Username: itinerary.TourGuide });
         tourGuide.flaggedItineraries.push(itinerary._id);
         await tourGuide.save();
+
+        const email= tourGuide.Email;
+        const mailOptions = {
+          from: "malook25062003@gmail.com",  
+          to: email,  
+          subject: 'Flagged itinerary',  // Subject line
+          text: 'Hello, one of your itineraries have been flagged',  // Plain text body
+        };
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            return console.log('Error sending email:', error);
+          }
+          console.log('Email sent:', info.response);
+        });
+        
+        
       res.status(200).json({msg:" Itinerary is flagged"});
    }
    catch (error){
@@ -416,6 +441,20 @@ const sortProductsByRatingAdmin = async (req, res) => {
         await activityModel.findByIdAndUpdate(id,{FlagInappropriate: true});
         advertiser.flaggedActivities.push(activity._id);
         await advertiser.save();
+        const email= advertiser.Email;
+        const mailOptions = {
+          from: "malook25062003@gmail.com",  
+          to: email,  
+          subject: 'Flagged activity',  // Subject line
+          text: 'Hello, one of your activities have been flagged',  // Plain text body
+        };
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            return console.log('Error sending email:', error);
+          }
+          console.log('Email sent:', info.response);
+        });
+        
 
       res.status(200).json({msg:" Activity is flagged"});
    }
