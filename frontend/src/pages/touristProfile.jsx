@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-route
 import axios from 'axios';
 import { CurrencyContext } from '../pages/CurrencyContext';
 import logo from '../images/image_green_background.png'; // Adjust the path based on your folder structure
+import { FaPercentage, FaCalendarAlt, FaTag ,FaUserCircle} from 'react-icons/fa';
 
 const TouristProfile = () => {
 
@@ -564,22 +565,24 @@ const TouristProfile = () => {
 return (
   <div className="tourist-profile-container">
     <div className="profile-content">
-      <h2>Tourist Profile</h2>
+      <header style={styles.header}>
+        <div style={styles.logoContainer}>
+          <img
+            src={logo}
+            alt="Logo"
+            style={styles.logo}
+
+          />
+        </div>
+        <h1 style={styles.title}>Tourist Profile</h1>
+        <FaUserCircle
+          alt="Profile Icon"
+          style={styles.profileIcon}
+          onClick={() => navigate('/adminPage')} // Navigate to profile
+        />
+        
+      </header>
       <div className="sidebar">
-      <header style={{ display: 'flex',  padding: '5px', backgroundColor: '#f4f4f4' }}>
-  <img 
-    src={logo} 
-    alt="Logo" 
-    style={{ 
-      height: '70px', 
-      width: '70px', 
-      borderRadius: '10px', 
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)', 
-      objectFit: 'cover'
-      
-    }}
-  />
-</header>
       <h3>Explore</h3>
       <ul>
         <li onClick={() => navigate('/historical-locations')}>Historical Locations</li>
@@ -978,5 +981,110 @@ return (
   
 );
 };
-
+const styles = {
+  container: {
+    maxWidth: '800px',
+    margin: '20px auto',
+    padding: '20px',
+    backgroundColor: '#f4f4f4',
+    borderRadius: '10px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  },
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '20px',
+    backgroundColor: '#4CAF50',
+    padding: '10px 20px',
+    borderRadius: '10px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  },
+  logoContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  logo: {
+    height: '70px',
+    width: '80px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+  },
+  profileIcon: {
+    fontSize: '40px',
+    color: 'white',
+    cursor: 'pointer',
+    borderRadius: '20px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  },
+  actionButtons: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    marginTop: '10px',
+  },
+  wishlistButton: {
+    backgroundColor: '#4CAF50',
+    color: '#fff',
+    padding: '10px 20px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    marginBottom: '10px',
+  },title: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: 'white',
+    margin: 0,
+  },
+  cartIcon: {
+    width: '50px',
+    height: '50px',
+    cursor: 'pointer',
+    
+  },
+  filterForm: {
+    margin: '20px 0',
+  },
+  filterButton: {
+    marginTop: '10px',
+    padding: '10px 20px',
+    backgroundColor: '#4CAF50',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+  productList: {
+    listStyleType: 'none',
+    padding: 0,
+  },
+  productItem: {
+    backgroundColor: '#fff',
+    padding: '20px',
+    marginBottom: '10px',
+    borderRadius: '10px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  },
+  productName: {
+    fontSize: '20px',
+    color: '#4CAF50',
+  },
+  productImage: {
+    width: '100%',
+    maxWidth: '400px',
+    height: '300px',
+    objectFit: 'cover',
+    borderRadius: '10px',
+  },
+  addButton: {
+    marginTop: '10px',
+    padding: '10px 20px',
+    backgroundColor: '#4CAF50',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+};
 export default TouristProfile;
