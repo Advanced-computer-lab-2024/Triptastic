@@ -3,7 +3,7 @@ import { FaHeart } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import { CurrencyContext } from '../pages/CurrencyContext';
 import logo from '../images/image_green_background.png'; // Replace with your logo path
-import { FaUserCircle,FaCartArrowDown} from 'react-icons/fa';
+import { FaUserCircle,FaShoppingCart} from 'react-icons/fa';
 const Products = () => {
   const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
   const [products, setProducts] = useState([]);
@@ -172,7 +172,7 @@ const Products = () => {
       </header>
 
       <div style={styles.actionButtons}>
-  <FaCartArrowDown
+  <FaShoppingCart
     style={styles.cartIcon}
     onClick={() => navigate('/Cart')}
   />

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import image from '../images/image_green_background.png';
-import { FaBell } from 'react-icons/fa'; // Importing bell icon
+import { FaBell,FaBox } from 'react-icons/fa'; // Importing bell icon
 
 const SellerProfile = () => {
   const [sellerInfo, setSellerInfo] = useState(null);
@@ -557,7 +557,7 @@ const unarchiveProduct = async () => {
 </header>
         <h3>Explore</h3>
         <ul>
-          <li onClick={() => navigate('/products')}>Products</li>
+          <li onClick={() => navigate('/products')}><FaBox/>Products</li>
         </ul>
       </div>
   <h3>Change Password</h3>

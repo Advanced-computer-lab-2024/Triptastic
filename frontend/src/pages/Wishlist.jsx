@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../images/image_green_background.png'; // Replace with your logo path
-import { FaUserCircle ,FaCartPlus} from 'react-icons/fa';
-import cartIcon from '../images/cart.png';
+import { FaUserCircle ,FaShoppingCart} from 'react-icons/fa';
 const Wishlist = () => {
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -102,7 +101,7 @@ const Wishlist = () => {
         />
         
       </header>
-      <FaCartPlus
+      <FaShoppingCart
           alt="Profile Icon"
           style={styles.cartIcon}
           onClick={() => navigate('/Cart')} // Navigate to profile
