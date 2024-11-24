@@ -598,7 +598,7 @@ return (
         <FaUserCircle
           alt="Profile Icon"
           style={styles.profileIcon}
-          onClick={() => navigate('/adminPage')} // Navigate to profile
+          onClick={() => navigate('/touristSettings')} // Navigate to profile
         />
         
       </header>
@@ -640,133 +640,13 @@ return (
 
       </ul>
     </div>
-      <button onClick={handleDeleteRequest} disabled={waiting || requestSent}>
-            {waiting ? 'Waiting to be deleted...' : requestSent ? 'Request Sent' : 'Delete Account'}
-          </button>
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      {loading ? (
-        <p>Loading tourist information...</p>
-      ) : (
-        touristInfo && (
-          <div>
-            <div>
-              <label><strong>Username:</strong></label>
-              <p>{touristInfo.Username}</p>
-            </div>
-            <div>
-              <label><strong>Points:</strong></label>
-              <p>{touristInfo.points}</p> 
-            </div>
-            <div>
-              <label><strong>Badge:</strong></label>
-              <p>{touristInfo.badge}</p> 
-            </div>
-            <div>
-              <label><strong>Wallet Balance:</strong></label>
-              <p>{touristInfo.Wallet} {selectedCurrency}</p> 
-            </div>
-            <div>
-              <label><strong>Email:</strong></label>
-              <input
-                type="email"
-                name="Email"
-                value={formData.Email}
-                onChange={handleInputChange}
-              />
-            </div>
-
-            <div>
-              <label><strong>Password:</strong></label>
-              <input
-                type="text" // Visible password
-                name="Password"
-                value={formData.Password}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <label><strong>Nationality:</strong></label>
-              <input
-                type="text"
-                name="Nationality"
-                value={formData.Nationality}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <label><strong>Date of Birth:</strong></label>
-              <input
-                type="text" // Display DOB as a string
-                name="DOB"
-                value={formData.DOB}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <label><strong>Occupation:</strong></label>
-              <input
-                type="text"
-                name="Occupation"
-                value={formData.Occupation}
-                onChange={handleInputChange}
-              />
-            </div>
-            
-      <div>
-<label><strong>Select Currency:</strong></label>
-<select value={selectedCurrency} onChange={handleCurrencyChange}>
-  <option value="EGP">Egyptian Pound (EGP)</option>
-  <option value="USD">US Dollar (USD)</option>
-  <option value="EUR">Euro (EUR)</option>
-  <option value="GBP">British Pound (GBP)</option>
-  {/* Add more currency options as needed */}
-</select>
-</div>
-<p>Price: {(touristInfo.Wallet * conversionRate).toFixed(2)} {selectedCurrency}</p>
-            <button onClick={handleUpdate} disabled={updating}>
-              {updating ? 'Updating...' : 'Update Information'}
-            </button>
-          </div>
-        )
-      )}
-      <button onClick={fetchTouristInfo}>Refresh My Information</button>
+   
+      
     </div>
-    <div className="change-password-section">
-<h3>Change Password</h3>
-<form onSubmit={handlePasswordChange}>
+    
+ 
   <div>
-    <label>Current Password:</label>
-    <input
-      type="password"
-      value={currentPassword}
-      onChange={(e) => setCurrentPassword(e.target.value)}
-      required
-    />
-  </div>
-  <div>
-    <label>New Password:</label>
-    <input
-      type="password"
-      value={newPassword}
-      onChange={(e) => setNewPassword(e.target.value)}
-      required
-    />
-  </div>
-  <div>
-    <label>Confirm New Password:</label>
-    <input
-      type="password"
-      value={confirmNewPassword}
-      onChange={(e) => setConfirmNewPassword(e.target.value)}
-      required
-    />
-  </div>
-  <button type="submit" disabled={changingPassword}>
-    {changingPassword ? 'Changing Password...' : 'Change Password'}
-  </button>
-</form>
-{passwordChangeMessage && <p style={{ color: 'green' }}>{passwordChangeMessage}</p>}
-{passwordChangeError && <p style={{ color: 'red' }}>{passwordChangeError}</p>}
+ 
 </div>
 
     {/* Preferences Section */}
@@ -869,78 +749,9 @@ return (
     {/* Sidebar */}
     
 
-    {/* File Complaint Form */}
-    <div>
-      <h3>File a Complaint</h3>
-      <form onSubmit={handleSubmitComplaint}>
-        <div>
-          <label><strong>Title:</strong></label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-        <div>
-          <label><strong>Body:</strong></label>
-          <textarea
-            name="body"
-            value={formData.body}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-        <div>
-          <label><strong>Date:</strong></label>
-          <input
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-        <button type="submit">File Complaint</button>
-      </form>
-    </div>
+    
 
-  {/* Display Complaints */}
-<div>
-<h3>Your Complaints</h3>
-{complaints.length === 0 ? (
-  <p>No complaints filed yet.</p>
-) : (
-  <ul>
-    {complaints.map((complaint) => (
-      <li key={complaint._id}>
-        <p><strong>Title:</strong> {complaint.title}</p>
-        <p><strong>Status:</strong> {complaint.status}</p>
-        <p><strong>Date:</strong> {new Date(complaint.date).toLocaleDateString()}</p>
-
-        {/* Display replies if they exist */}
-        {complaint.replies && complaint.replies.length > 0 ? (
-          <div className="replies-section">
-            <h4>Replies:</h4>
-            <ul>
-              {complaint.replies.map((reply, index) => (
-                <li key={index}>
-                  <p><strong>Reply:</strong> {reply.content}</p>
-                  <p><strong>Date:</strong> {new Date(reply.date).toLocaleDateString()}</p>
-                  {reply.replier && <p><strong>Replier:</strong> {reply.replier}</p>}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : (
-          <p><em>No replies yet.</em></p>
-        )}
-      </li>
-    ))}
-  </ul>
-)}
-</div>
+ 
 
     <div>
     <button onClick={handleViewBookedItineraries}> {showingBookedItineraries ? 'Hide booked itineraries' : 'Show booked itineraries'}</button>

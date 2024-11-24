@@ -38,6 +38,8 @@ import { CurrencyProvider } from './pages/CurrencyContext'; // Import the provid
 import Cart from './pages/Cart';
 import Wishlist from './pages/Wishlist';
 import PromoCodeForm from './pages/PromoCodeForm';
+import TouristSettings from './pages/touristsettings';
+
 
 import AttendedActivitiesPage from './pages/AttendedActivities';
 function Home() {
@@ -117,6 +119,8 @@ function App() {
         <Route path="/Cart" element={<Cart/>} />
         <Route path="/Wishlist" element={<Wishlist/>} />
         <Route path="/PromoCodeForm" element={<PromoCodeForm />} />
+        <Route path="/TouristSettings" element={<TouristSettings/>} />
+
 
 
 
