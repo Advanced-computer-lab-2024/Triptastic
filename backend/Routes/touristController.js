@@ -1111,7 +1111,8 @@ const bookActivity = async (req, res) => {
 
     // Save the updated tourist record
     await tourist.save();
-
+    activity.sales += activity.price;
+    await activity.save();
     res.status(200).json({ message: 'Activity booked successfully!', tourist });
   } catch (error) {
     res.status(500).json({ error: 'Error booking the activity' });
@@ -1152,7 +1153,8 @@ if (tourist.points >= 10000) {
 }
     tourist.Bookings.push(itinerary);
     await tourist.save();
-
+    itinerary.sales+=itinerary.Price;
+    await itinerary.save();
     res.status(200).json({
       message: 'Itinerary booked successfully!', tourist
     });
