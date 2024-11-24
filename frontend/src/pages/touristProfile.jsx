@@ -3,7 +3,7 @@ import './TouristProfile.css'; // Assuming you create a CSS file for styling
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { CurrencyContext } from '../pages/CurrencyContext';
-import logo from '../images/image_green_background.png'; // Adjust the path based on your folder structure
+import logo from '../images/image.png'; // Adjust the path based on your folder structure
 import { FaBars, FaTimes } from "react-icons/fa"; // For menu icons
 
 import { FaPercentage, FaCalendarAlt, FaTag ,FaUserCircle} from 'react-icons/fa';

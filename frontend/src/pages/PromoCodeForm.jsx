@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './promoCodeForm.css';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
-import profile from '../images/profile.jpg'; // Replace with your profile icon path
 import { FaPercentage, FaCalendarAlt, FaTag ,FaUserCircle} from 'react-icons/fa';
 import { MdDiscount } from 'react-icons/md';
-import logo from '../images/image_green_background.png'; // Replace with your logo path
+import logo from '../images/image.png'; // Replace with your logo path
 
 
 const PromoCodeForm = () => {

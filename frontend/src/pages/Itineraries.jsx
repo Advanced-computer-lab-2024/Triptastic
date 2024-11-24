@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { CurrencyContext } from '../pages/CurrencyContext';
 import { FaUserCircle,FaCalendar,FaDollarSign ,FaMapMarkerAlt,FaClock,FaLanguage,FaWheelchair,FaShuttleVan} from 'react-icons/fa';
-import logo from '../images/image_green_background.png';
+import logo from '../images/image.png';
 
 const Itineraries = () => {
   const [itineraries, setItineraries] = useState([]);

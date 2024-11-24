@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { CurrencyContext } from '../pages/CurrencyContext';
-import logo from '../images/image_green_background.png'; // Logo image
+import logo from '../images/image.png'; // Logo image
 import { FaUserCircle } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
