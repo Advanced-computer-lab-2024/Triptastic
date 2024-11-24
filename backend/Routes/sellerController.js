@@ -290,10 +290,22 @@ const viewProductSales = async (req, res) => {
 
 const storeNotification = async (notification) => {
   try {
-    // Implement logic to store notification in your system (e.g., in the database)
+    // Check if the notification already exists
+    const existingNotification = await notificationModel.findOne({
+      user: notification.user,
+      type: notification.type,
+      message: notification.message,
+    });
+
+    if (existingNotification) {
+      console.log(`Notification already exists for user: ${notification.user}`);
+      return; // Do not store a duplicate notification
+    }
+
+    // Store the new notification if it does not exist
     const newNotification = new notificationModel({
       user: notification.user,
-      type:notification.type,
+      type: notification.type,
       message: notification.message,
       date: new Date(),
     });
@@ -304,6 +316,7 @@ const storeNotification = async (notification) => {
     console.error('Error storing notification:', error);
   }
 };
+
 
 const getNotificationsForSeller = async (req, res) => {
   try {
@@ -350,10 +363,11 @@ const getNotificationsForAdmin = async (req, res) => {
 
 const checkAndNotifyOutOfStockSeller = async (req, res) => {
   try {
-    const outOfStockProducts = await productModel.find({ stock: 0 });
+    // Find out-of-stock products where notification has not been sent
+    const outOfStockProducts = await productModel.find({ stock: 0, notificationSent: { $ne: true } });
 
     if (outOfStockProducts.length === 0) {
-      return res.status(200).json({ message: 'No out-of-stock products found.' });
+      return res.status(200).json({ message: 'No out-of-stock products found or notifications already sent.' });
     }
 
     const transporter = nodemailer.createTransport({
@@ -365,8 +379,6 @@ const checkAndNotifyOutOfStockSeller = async (req, res) => {
     });
 
     const notifications = [];
-
-    
 
     for (const product of outOfStockProducts) {
       console.log(`Querying seller with Username: ${product.seller}`);
@@ -380,33 +392,37 @@ const checkAndNotifyOutOfStockSeller = async (req, res) => {
 
       const sellerEmail = seller.Email;
       console.log(`Sending email to seller: ${sellerEmail}`);
-          // Send notification to the seller
-          const sellerNotification = {
-            user: seller.Username,
-            type:'seller',
-            message: `Your product "${product.productName}" is out of stock.`,
-          };
-    
-          // System Notification for Seller (store in your database or in-memory store)
-          await storeNotification(sellerNotification); // Implement this to store the notification in your database
 
-      const sellerMailOptions = {
-        from: 'malook25062003@gmail.com',
-        to: sellerEmail,
-        subject: `Product Out of Stock: ${product.productName}`,
-        text: `Dear ${product.seller},\n\nYour product "${product.productName}" is out of stock.\n\nThank you!`,
+      // Prepare notification object
+      const sellerNotification = {
+        user: seller.Username,
+        type: 'seller',
+        message: `Your product "${product.productName}" is out of stock.`,
       };
 
       try {
+        // Store the notification (only if not already sent)
+        await storeNotification(sellerNotification);
+
+        // Send email to seller
+        const sellerMailOptions = {
+          from: 'malook25062003@gmail.com',
+          to: sellerEmail,
+          subject: `Product Out of Stock: ${product.productName}`,
+          text: `Dear ${product.seller},\n\nYour product "${product.productName}" is out of stock.\n\nThank you!`,
+        };
+
         await transporter.sendMail(sellerMailOptions);
         console.log(`Email sent to ${sellerEmail}`);
+
+        // Mark the product notification as sent
+        await productModel.updateOne({ _id: product._id }, { $set: { notificationSent: true } });
+
         notifications.push({ productName: product.productName, sellerEmail });
-      } catch (emailError) {
-        console.error(`Failed to send email to ${sellerEmail}:`, emailError);
+      } catch (error) {
+        console.error(`Error processing notification for product: ${product.productName}`, error);
       }
     }
-
-    
 
     res.status(200).json({
       message: 'Out-of-stock notifications sent successfully.',
@@ -417,80 +433,81 @@ const checkAndNotifyOutOfStockSeller = async (req, res) => {
     res.status(500).json({ message: 'An error occurred while sending notifications.', error });
   }
 };
-
 
 
 
 
 const checkAndNotifyOutOfStockAdmin = async (req, res) => {
   try {
-    const outOfStockProducts = await productModel.find({ stock: 0 });
+    // Query for out-of-stock products where notification hasn't been sent
+    const outOfStockProducts = await productModel.find({ stock: 0, notificationSent: { $ne: false } });
+
+    console.log('Out-of-stock products:', outOfStockProducts);
 
     if (outOfStockProducts.length === 0) {
       return res.status(200).json({ message: 'No out-of-stock products found.' });
     }
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'malook25062003@gmail.com',
-        pass: 'sxvo feuu woie gpfn',
-      },
-    });
-
-    const notifications = [];
-    // Get all admin emails
-    const admins = await adminModel.find({});
-
+    // Fetch admin emails
     const adminEmails = await adminModel.find({}, 'Email');
-    const adminEmailAddresses = adminEmails.map((admin) => admin.Email);
+    console.log('Admin emails:', adminEmails);
 
-    // Array to store the product details for email
+    const adminEmailAddresses = adminEmails.map((admin) => admin.Email);
+    if (adminEmailAddresses.length === 0) {
+      return res.status(200).json({ message: 'No admin emails found.' });
+    }
+
+    // Prepare notification messages
+    const notifications = [];
     const outOfStockProductsList = [];
 
-    // Loop over each out-of-stock product
     for (const product of outOfStockProducts) {
-      console.log(`Querying seller with Username: ${product.seller}`);
-      const seller = await sellerModel.findOne({ Username: product.seller });
-      console.log(`Result for ${product.seller}:`, seller);
-
-      if (!seller) {
-        console.error(`Seller not found for product: ${product.productName}`);
-        continue; // Skip to the next product if no seller is found
-      }
-
-      // Send notification to admin
       const adminNotification = {
-        user: 'admin', // Assuming admins are receiving notifications
+        user: 'admin',
         type: 'admin',
         message: `Product "${product.productName}" by ${product.seller} is out of stock.`,
       };
 
-      // Store the notification in the database
+      // Store notifications
       await storeNotification(adminNotification);
-
-      // Add this product to the list for the final email
       outOfStockProductsList.push(`- ${product.productName} by ${product.seller}`);
     }
 
-    // If we have out-of-stock products to notify about, send the email
+    // If there are products to notify about, send an email
     if (outOfStockProductsList.length > 0) {
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'malook25062003@gmail.com',
+          pass: 'sxvo feuu woie gpfn',
+        },
+      });
+
       const adminMailOptions = {
         from: 'malook25062003@gmail.com',
-        to: adminEmailAddresses.join(', '), // Send to all admins at once
-        subject: `Out-of-Stock Products Notification`,
-        text: `Dear Admins,\n\nThe following products are out of stock:\n${outOfStockProductsList.join('\n')}\n\nThank you!`,
+        to: adminEmailAddresses.join(', '),
+        subject: 'Out-of-Stock Products Notification',
+        text: `Dear Admins,\n\nThe following products are out of stock:\n${outOfStockProductsList.join(
+          '\n'
+        )}\n\nThank you!`,
       };
 
       try {
         await transporter.sendMail(adminMailOptions);
-        console.log(`Email sent to admins: ${adminEmailAddresses.join(', ')}`);
+        console.log('Email sent to admins:', adminEmailAddresses);
+
+        // Mark all products as notified
+        await productModel.updateMany(
+          { _id: { $in: outOfStockProducts.map((p) => p._id) } },
+          { $set: { notificationSent: true } }
+        );
+
         notifications.push({
-          message: 'Email sent to all admins with out-of-stock products',
+          message: 'Out-of-stock notifications sent to admins.',
           products: outOfStockProductsList,
         });
       } catch (emailError) {
-        console.error(`Failed to send email to admins:`, emailError);
+        console.error('Failed to send email to admins:', emailError);
       }
     }
 
@@ -507,9 +524,19 @@ const checkAndNotifyOutOfStockAdmin = async (req, res) => {
 
 
 
+const deleteAllNotifications = async () => {
+  try {
+    const result = await notificationModel.deleteMany({}); // Deletes all documents in the collection
+    console.log(`Deleted ${result.deletedCount} notifications successfully.`);
+    return { success: true, message: `Deleted ${result.deletedCount} notifications.` };
+  } catch (error) {
+    console.error('Error deleting notifications:', error);
+    return { success: false, message: 'Failed to delete notifications.', error };
+  }
+};
 
 
 
 
 
- module.exports = {getNotificationsForAdmin,checkAndNotifyOutOfStockAdmin,getNotificationsForSeller,checkAndNotifyOutOfStockSeller,incrementProductSales,viewProductSales ,changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller};
+ module.exports = {deleteAllNotifications,getNotificationsForAdmin,checkAndNotifyOutOfStockAdmin,getNotificationsForSeller,checkAndNotifyOutOfStockSeller,incrementProductSales,viewProductSales ,changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller};
