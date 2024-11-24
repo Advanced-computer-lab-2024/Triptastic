@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
+import { FaHeart } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import { CurrencyContext } from '../pages/CurrencyContext';
 import logo from '../images/image_green_background.png'; // Replace with your logo path
@@ -149,6 +149,7 @@ const Products = () => {
     <div style={styles.container}>
       <header style={styles.header}>
         <div style={styles.logoContainer}>
+          
           <img
             src={logo}
             alt="Logo"
@@ -171,76 +172,81 @@ const Products = () => {
       </header>
 
       <div style={styles.actionButtons}>
-      <FaCartArrowDown
-          alt="Cart Icon"
-          style={styles.cartIcon}
-          onClick={() => navigate('/Cart')}
-        />
-        <button onClick={handleViewWishlist} style={styles.wishlistButton}>
-          View My Wishlist
-        </button>
-      </div>
+  <FaCartArrowDown
+    style={styles.cartIcon}
+    onClick={() => navigate('/Cart')}
+  />
+  <button onClick={handleViewWishlist} style={styles.wishlistButton}>
+    View My Wishlist
+  </button>
+</div>
+
+
 
       <form onSubmit={handleFilterSubmit} style={styles.filterForm}>
-        <div>
-          <label>Min Price: </label>
-          <input
-            type="number"
-            value={minPrice}
-            onChange={(e) => setMinPrice(e.target.value)}
-            placeholder="Enter minimum price"
-          />
-        </div>
-        <div>
-          <label>Max Price: </label>
-          <input
-            type="number"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)}
-            placeholder="Enter maximum price"
-          />
-        </div>
-        <button type="submit" style={styles.filterButton}>
-          Filter
-        </button>
-      </form>
+  <div style={styles.filterGroup}>
+    <input
+      type="number"
+      value={minPrice}
+      onChange={(e) => setMinPrice(e.target.value)}
+      placeholder="Min Price"
+      style={styles.filterInput}
+    />
+    <input
+      type="number"
+      value={maxPrice}
+      onChange={(e) => setMaxPrice(e.target.value)}
+      placeholder="Max Price"
+      style={styles.filterInput}
+    />
+    <button type="submit" style={styles.filterButton}>
+      Filter
+    </button>
+  </div>
+</form>
+
 
       {products.length === 0 ? (
         <p>No products available.</p>
       ) : (
-        <ul style={styles.productList}>
-          {products.map((product) => (
-            <li key={product.productName} style={styles.productItem}>
-              <h2 style={styles.productName}>{product.productName}</h2>
-              <p>
-                <strong>Description:</strong> {product.description}
-              </p>
-              <p>
-                <strong>Price:</strong> {selectedCurrency}{' '}
-                {(product.price * conversionRate).toFixed(2)}
-              </p>
-              <p>
-                <strong>Rating:</strong> {product.rating}
-              </p>
-              <p><strong>Review:</strong> {product.review}</p>
-              <p><strong>Stock:</strong> {product.stock}</p>
-              <p><strong>Sales:</strong> {product.sales}</p>
-              {product.image && (
-                <img
-                  src={`http://localhost:8000/${product.image.replace(/\\/g, '/')}`}
-                  alt={product.productName}
-                  style={styles.productImage}
-                />
-              )}
-              <button onClick={() => handleAddToCart(product)} style={styles.addButton}>
-                Add to Cart
-              </button>
-              <button onClick={() => handleAddToWishlist(product)} style={styles.addButton}>
-                Add to Wishlist
-              </button>
-            </li>
-          ))}
-        </ul>
+<ul style={styles.productList}>
+  {products.map((product) => (
+    <li key={product.productName} style={styles.productCard}>
+      {product.image && (
+        <img
+          src={`http://localhost:8000/${product.image.replace(/\\/g, '/')}`}
+          alt={product.productName}
+          style={styles.productImage}
+        />
+      )}
+      <div style={styles.productInfo}>
+        <h2 style={styles.productName}>{product.productName}</h2>
+        <p><strong>Description:</strong> {product.description}</p>
+        <p><strong>Price:</strong> {selectedCurrency}{' '}
+          {(product.price * conversionRate).toFixed(2)}
+        </p>
+        <p><strong>Rating:</strong> {product.rating}</p>
+        <p><strong>Review:</strong> {product.review}</p>
+        <p><strong>Stock:</strong> {product.stock}</p>
+        <p><strong>Sales:</strong> {product.sales}</p>
+        <div style={styles.productActions}>
+          <button onClick={() => handleAddToCart(product)} style={styles.actionButton}>
+            Add to Cart
+          </button>
+          <button
+  onClick={() => handleAddToWishlist(product)}
+  style={styles.iconButton}
+>
+  <FaHeart style={styles.icon} />
+
+</button>
+
+        </div>
+      </div>
+    </li>
+  ))}
+</ul>
+
       )}
     </div>
   );
@@ -255,6 +261,83 @@ const styles = {
     borderRadius: '10px',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
   },
+  filterGroup: {
+    display: 'flex',
+    gap: '10px',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: '20px',
+  },
+  filterInput: {
+    padding: '10px',
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+  },
+  productCard: {
+    display: 'flex',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: '10px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    marginBottom: '20px',
+    padding: '15px',
+    gap: '15px',
+  },
+  productInfo: {
+    flex: '1',
+  },
+  productActions: {
+    display: 'flex',
+    gap: '10px',
+  },
+  actionButton: {
+    padding: '10px 15px',
+    backgroundColor: '#4CAF50',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+  iconButton: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '5px',
+    padding: '10px 15px',
+    backgroundColor: '#f44336', // Red color for "Add to Wishlist"
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '16px',
+  },
+  icon: {
+    fontSize: '18px', // Size of the heart icon
+  },
+  actionButtons: {
+    display: 'flex', // Ensures the items are laid out horizontally
+    alignItems: 'center', // Vertically aligns the items
+    justifyContent: 'flex-end', // Aligns the items to the right
+    gap: '10px', // Adds spacing between items
+    marginTop: '10px',
+  },
+  
+  cartIcon: {
+    fontSize: '30px', // Adjust size
+    color: '#4CAF50',
+    cursor: 'pointer',
+  },
+  
+  wishlistButton: {
+    backgroundColor: '#4CAF50',
+    color: '#fff',
+    padding: '10px 15px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+  
+  
   header: {
     display: 'flex',
     justifyContent: 'space-between',
