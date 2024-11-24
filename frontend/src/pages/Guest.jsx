@@ -5,7 +5,7 @@ import 'intro.js/introjs.css'; // Import Intro.js styles
 
 const Guest = () => {
   const navigate = useNavigate(); // Initialize useNavigate
-
+  localStorage.setItem('context', 'guest');
   // Start the intro tour automatically when the page loads
   useEffect(() => {
     introJs()

@@ -220,14 +220,25 @@ const Itineraries = () => {
       setItineraryToShare(itinerary);
       setIsEmailMode(!isEmailMode);
     };
-  
+    const handleProfileRedirect = () => {
+      const context = localStorage.getItem('context');
+    
+      if (context === 'tourist') {
+        navigate('/tourist-profile');
+      } else if (context === 'guest') {
+        navigate('/Guest');
+      }  else {
+        console.error('Unknown context');
+        navigate('/'); // Fallback to home
+      }
+    };
     return (
       <div style={styles.container}>
         {/* Header */}
         <header style={styles.header}>
           <img src={logo} alt="Logo" style={styles.logo} />
           <h2 style={styles.title}>Itineraries</h2>
-          <FaUserCircle style={styles.profileIcon} onClick={() => navigate('/tourist-profile')} />
+          <FaUserCircle style={styles.profileIcon} onClick={handleProfileRedirect} />
         </header>
   
         {loading ? (

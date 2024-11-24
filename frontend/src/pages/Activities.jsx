@@ -340,12 +340,24 @@ const handleNotificationRequest = async (activityId) => {
     alert('An error occurred. Please try again.');
   }
 };
+const handleProfileRedirect = () => {
+  const context = localStorage.getItem('context');
+
+  if (context === 'tourist') {
+    navigate('/tourist-profile');
+  } else if (context === 'guest') {
+    navigate('/Guest');
+  }  else {
+    console.error('Unknown context');
+    navigate('/'); // Fallback to home
+  }
+};
 return (
   <div style={styles.container}>
     <header style={styles.header}>
       <img src={logo} alt="Logo" style={styles.logo} />
       <h2 style={styles.title}>Activities</h2>
-      <FaUserCircle style={styles.profileIcon} onClick={() => navigate('/tourist-profile')} />
+      <FaUserCircle style={styles.profileIcon} onClick={handleProfileRedirect} />
     </header>
 
     {loading ? (
