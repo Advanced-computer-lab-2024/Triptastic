@@ -73,6 +73,8 @@ const Products = () => {
       navigate('/seller-profile');
     } else if (context === 'admin') {
       navigate('/adminPage');
+     } else if (context === 'guest') {
+        navigate('/Guest');
     } else {
       console.error('Unknown context');
       navigate('/'); // Fallback to home
@@ -158,7 +160,7 @@ const Products = () => {
   <FaUserCircle
     alt="Profile Icon"
     style={styles.profileIcon}
-    onClick={() => navigate('/tourist-profile')} // Navigate to profile
+    onClick={handleProfileRedirect} // Navigate to profile
   />
   <div style={styles.cartButton} onClick={() => navigate('/Cart')}>
     <FaShoppingCart style={styles.cartIcon} />
