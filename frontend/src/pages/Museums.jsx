@@ -366,6 +366,8 @@ const styles = {
   },
   profileIcon:{
     fontSize: '40px',
+    cursor: 'pointer',
+
   },
   title: {
     textAlign: 'center',
