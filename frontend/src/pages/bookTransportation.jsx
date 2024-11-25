@@ -41,6 +41,19 @@ const BookTransportation = () => {
   const handleCurrencyChange = (event) => {
     fetchConversionRate(event.target.value);
   };
+  const handleProfileRedirect = () => {
+    const context = localStorage.getItem('context');
+
+    if (context === 'tourist') {
+      navigate('/tourist-profile');
+    } 
+    else if (context === 'guest') {
+        navigate('/Guest');
+    } else {
+      console.error('Unknown context');
+      navigate('/'); // Fallback to home
+    }
+  };
 
   return (
     <div style={styles.container}>
@@ -48,7 +61,7 @@ const BookTransportation = () => {
       <header style={styles.header}>
         <FaArrowCircleLeft
           style={styles.backIcon}
-          onClick={() => navigate('/tourist-profile')}
+          onClick={handleProfileRedirect}
         />
         <img src={logo} alt="Logo" style={styles.logo} /> {/* Add your logo here */}
         <h1 style={styles.title}>Book Your Transportation</h1>
