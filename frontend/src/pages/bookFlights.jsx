@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { CurrencyContext } from '../pages/CurrencyContext';
-import './bookflights.css'; // Import the external CSS file
 
 const BookFlights = () => {
   const [flightDetails, setFlightDetails] = useState({
@@ -152,12 +151,129 @@ const BookFlights = () => {
     setBookedFlightId(flightId);
   };
 
+  const styles = {
+    container: {
+      maxWidth: '800px',
+      margin: '0 auto',
+      padding: '20px',
+      backgroundColor: '#f9f9f9',
+      borderRadius: '12px',
+      boxShadow: '0 6px 10px rgba(0, 0, 0, 0.1)',
+      fontFamily: 'Arial, sans-serif',
+      color: '#333',
+    },
+    header: {
+      textAlign: 'center',
+      marginBottom: '20px',
+      color: '#007bff',
+    },
+    form: {
+      display: 'grid',
+      gridTemplateColumns: '1fr',
+      gap: '20px',
+    },
+    formGroup: {
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    label: {
+      fontWeight: 'bold',
+      marginBottom: '5px',
+    },
+    input: {
+      padding: '10px',
+      border: '1px solid #ccc',
+      borderRadius: '6px',
+    },
+    button: {
+      backgroundColor: '#007bff',
+      color: 'white',
+      padding: '12px',
+      border: 'none',
+      borderRadius: '6px',
+      fontSize: '16px',
+      cursor: 'pointer',
+    },
+    buttonHover: {
+      backgroundColor: '#0056b3',
+    },
+    flightsContainer: {
+      marginTop: '20px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '20px',
+    },
+    flightCard: {
+      backgroundColor: '#fff',
+      borderRadius: '12px',
+      boxShadow: '0 6px 10px rgba(0, 0, 0, 0.1)',
+      padding: '20px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '10px',
+    },
+    flightHeader: {
+      fontSize: '18px',
+      fontWeight: 'bold',
+    },
+    flightRoute: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: '10px',
+    },
+    flightPoint: {
+      textAlign: 'center',
+    },
+    iataCode: {
+      fontSize: '16px',
+      fontWeight: 'bold',
+    },
+    flightTime: {
+      fontSize: '14px',
+      color: '#555',
+    },
+    routeIcon: {
+      fontSize: '24px',
+      color: '#007bff',
+    },
+    flightDuration: {
+      fontSize: '14px',
+      color: '#666',
+      marginTop: '5px',
+    },
+    flightPrice: {
+      fontSize: '14px',
+      color: '#666',
+      marginTop: '5px',
+    },
+    bookButton: {
+      backgroundColor: '#28a745',
+      color: 'white',
+      padding: '10px',
+      border: 'none',
+      borderRadius: '6px',
+      fontSize: '16px',
+      cursor: 'pointer',
+    },
+    bookedStatus: {
+      color: '#28a745',
+      fontWeight: 'bold',
+      fontSize: '16px',
+      textAlign: 'center',
+    },
+    errorMessage: {
+      color: 'red',
+      textAlign: 'center',
+    },
+  };
+
   return (
-    <div className="book-flights-container">
-      <h2>Book Your Flight</h2>
-      <form className="flight-form" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Origin (IATA Code):</label>
+    <div style={styles.container}>
+      <h2 style={styles.header}>Book Your Flight</h2>
+      <form style={styles.form} onSubmit={handleSubmit}>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Origin (IATA Code):</label>
           <input
             type="text"
             name="origin"
@@ -165,10 +281,11 @@ const BookFlights = () => {
             onChange={handleInputChange}
             required
             placeholder="e.g., JFK"
+            style={styles.input}
           />
         </div>
-        <div className="form-group">
-          <label>Destination (IATA Code):</label>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Destination (IATA Code):</label>
           <input
             type="text"
             name="destination"
@@ -176,20 +293,22 @@ const BookFlights = () => {
             onChange={handleInputChange}
             required
             placeholder="e.g., LAX"
+            style={styles.input}
           />
         </div>
-        <div className="form-group">
-          <label>Departure Date:</label>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Departure Date:</label>
           <input
             type="date"
             name="date"
             value={flightDetails.date}
             onChange={handleInputChange}
             required
+            style={styles.input}
           />
         </div>
-        <div className="form-group">
-          <label>Adults:</label>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Adults:</label>
           <input
             type="number"
             name="adults"
@@ -198,43 +317,40 @@ const BookFlights = () => {
             required
             min="1"
             max="10"
+            style={styles.input}
           />
         </div>
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading} style={styles.button}>
           {loading ? 'Searching...' : 'Search Flights'}
         </button>
       </form>
 
       {flights.length > 0 && (
-        <div className="flights-container">
+        <div style={styles.flightsContainer}>
           {flights.map((flight, index) => (
-            <div key={index} className="flight-card">
-              <div className="flight-info">
-                <div className="flight-header">
-                  <h3>Flight #{flight.id}</h3>
+            <div key={index} style={styles.flightCard}>
+              <div style={styles.flightHeader}>Flight #{flight.id}</div>
+              <div style={styles.flightRoute}>
+                <div style={styles.flightPoint}>
+                  <span style={styles.iataCode}>{flight.itineraries[0].segments[0].departure.iataCode}</span>
+                  <span style={styles.flightTime}>{flight.itineraries[0].segments[0].departure.time}</span>
                 </div>
-                <div className="flight-route">
-                  <div className="flight-point">
-                    <span className="iata-code">{flight.itineraries[0].segments[0].departure.iataCode}</span>
-                    <span className="flight-time">{flight.itineraries[0].segments[0].departure.time}</span>
-                  </div>
-                  <span className="route-icon">✈️</span>
-                  <div className="flight-point">
-                    <span className="iata-code">{flight.itineraries[0].segments[0].arrival.iataCode}</span>
-                    <span className="flight-time">{flight.itineraries[0].segments[0].arrival.time}</span>
-                  </div>
+                <span style={styles.routeIcon}>✈️</span>
+                <div style={styles.flightPoint}>
+                  <span style={styles.iataCode}>{flight.itineraries[0].segments[0].arrival.iataCode}</span>
+                  <span style={styles.flightTime}>{flight.itineraries[0].segments[0].arrival.time}</span>
                 </div>
-                <p className="flight-duration">
-                  Duration: {flight.itineraries[0].segments[0].duration}
-                </p>
-                <p className="flight-price">
-                  Price: {selectedCurrency} {(flight.price.total * conversionRate).toFixed(2)}
-                </p>
               </div>
+              <p style={styles.flightDuration}>
+                Duration: {flight.itineraries[0].segments[0].duration}
+              </p>
+              <p style={styles.flightPrice}>
+                Price: {selectedCurrency} {(flight.price.total * conversionRate).toFixed(2)}
+              </p>
               {bookedFlightId === flight.id ? (
-                <p className="booked-status">Booked!</p>
+                <p style={styles.bookedStatus}>Booked!</p>
               ) : (
-                <button onClick={() => handleBooking(flight.id)} className="book-button">
+                <button onClick={() => handleBooking(flight.id)} style={styles.bookButton}>
                   Book Now
                 </button>
               )}
@@ -243,9 +359,12 @@ const BookFlights = () => {
         </div>
       )}
 
-      {error && <p className="error-message">Error: {error}</p>}
+      {error && <p style={styles.errorMessage}>Error: {error}</p>}
     </div>
   );
 };
+
+
+
 
 export default BookFlights;
