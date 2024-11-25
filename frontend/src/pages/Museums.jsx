@@ -158,6 +158,18 @@ const Museums = () => {
     setIsEmailMode(!isEmailMode);
     setShowEmailInput(true);
   };
+  const handleProfileRedirect = () => {
+    const context = localStorage.getItem('context');
+  
+    if (context === 'tourist') {
+      navigate('/tourist-profile');
+    } else if (context === 'guest') {
+      navigate('/Guest');
+    }  else {
+      console.error('Unknown context');
+      navigate('/'); // Fallback to home
+    }
+  };
   return (
     <div style={styles.container}>
       {/* Header Section */}
@@ -168,7 +180,7 @@ const Museums = () => {
   <h1 style={styles.title}>Museums</h1>  <FaUserCircle
     alt="Profile Icon"
     style={styles.profileIcon}
-    // Navigate to profile
+    onClick={handleProfileRedirect} // Navigate to profile
   />
 
 </header>
