@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { CurrencyContext } from '../pages/CurrencyContext';
+import { FaPlaneDeparture, FaPlaneArrival } from 'react-icons/fa';
 
 const BookFlights = () => {
   const [flightDetails, setFlightDetails] = useState({
@@ -165,7 +166,7 @@ const BookFlights = () => {
     header: {
       textAlign: 'center',
       marginBottom: '20px',
-      color: '#007bff',
+      color: '#0F5132',
     },
     form: {
       display: 'grid',
@@ -195,7 +196,7 @@ const BookFlights = () => {
       cursor: 'pointer',
     },
     buttonHover: {
-      backgroundColor: '#0056b3',
+      backgroundColor: '#0F5132',
     },
     flightsContainer: {
       marginTop: '20px',
@@ -235,7 +236,7 @@ const BookFlights = () => {
     },
     routeIcon: {
       fontSize: '24px',
-      color: '#007bff',
+      color: '#0F5132',
     },
     flightDuration: {
       fontSize: '14px',
@@ -247,8 +248,17 @@ const BookFlights = () => {
       color: '#666',
       marginTop: '5px',
     },
+    button: {
+      backgroundColor: '#0F5132', // Updated color
+      color: 'white',
+      padding: '12px',
+      border: 'none',
+      borderRadius: '6px',
+      fontSize: '16px',
+      cursor: 'pointer',
+    },
     bookButton: {
-      backgroundColor: '#28a745',
+      backgroundColor: '#0F5132', // Updated color
       color: 'white',
       padding: '10px',
       border: 'none',
@@ -256,21 +266,32 @@ const BookFlights = () => {
       fontSize: '16px',
       cursor: 'pointer',
     },
+    buttonHover: {
+      backgroundColor: '#064824', // A slightly darker shade for hover effect
+    },
     bookedStatus: {
-      color: '#28a745',
+      color: '#0F5132', // Updated color
       fontWeight: 'bold',
       fontSize: '16px',
       textAlign: 'center',
     },
+  
     errorMessage: {
       color: 'red',
       textAlign: 'center',
     },
+      // Add this style for the icons
+  icon: {
+    fontSize: '18px', // Adjust the size of the icons
+    color: '#0F5132', // Same color as the route icon
+    marginRight: '8px', // Spacing between icon and text
+  },
   };
 
   return (
     <div style={styles.container}>
       <h2 style={styles.header}>Book Your Flight</h2>
+      
       <form style={styles.form} onSubmit={handleSubmit}>
         <div style={styles.formGroup}>
           <label style={styles.label}>Origin (IATA Code):</label>
@@ -326,38 +347,40 @@ const BookFlights = () => {
       </form>
 
       {flights.length > 0 && (
-        <div style={styles.flightsContainer}>
-          {flights.map((flight, index) => (
-            <div key={index} style={styles.flightCard}>
-              <div style={styles.flightHeader}>Flight #{flight.id}</div>
-              <div style={styles.flightRoute}>
-                <div style={styles.flightPoint}>
-                  <span style={styles.iataCode}>{flight.itineraries[0].segments[0].departure.iataCode}</span>
-                  <span style={styles.flightTime}>{flight.itineraries[0].segments[0].departure.time}</span>
-                </div>
-                <span style={styles.routeIcon}>✈️</span>
-                <div style={styles.flightPoint}>
-                  <span style={styles.iataCode}>{flight.itineraries[0].segments[0].arrival.iataCode}</span>
-                  <span style={styles.flightTime}>{flight.itineraries[0].segments[0].arrival.time}</span>
-                </div>
-              </div>
-              <p style={styles.flightDuration}>
-                Duration: {flight.itineraries[0].segments[0].duration}
-              </p>
-              <p style={styles.flightPrice}>
-                Price: {selectedCurrency} {(flight.price.total * conversionRate).toFixed(2)}
-              </p>
-              {bookedFlightId === flight.id ? (
-                <p style={styles.bookedStatus}>Booked!</p>
-              ) : (
-                <button onClick={() => handleBooking(flight.id)} style={styles.bookButton}>
-                  Book Now
-                </button>
-              )}
-            </div>
-          ))}
+  <div style={styles.flightsContainer}>
+    {flights.map((flight, index) => (
+      <div key={index} style={styles.flightCard}>
+        <div style={styles.flightHeader}>Flight #{flight.id}</div>
+        <div style={styles.flightRoute}>
+          <div style={styles.flightPoint}>
+            <FaPlaneDeparture style={styles.icon} />
+            <span style={styles.iataCode}>{flight.itineraries[0].segments[0].departure.iataCode}</span>
+            <span style={styles.flightTime}>{flight.itineraries[0].segments[0].departure.time}</span>
+          </div>
+      
+          <div style={styles.flightPoint}>
+            <FaPlaneArrival style={styles.icon} />
+            <span style={styles.iataCode}>{flight.itineraries[0].segments[0].arrival.iataCode}</span>
+            <span style={styles.flightTime}>{flight.itineraries[0].segments[0].arrival.time}</span>
+          </div>
         </div>
-      )}
+        <p style={styles.flightDuration}>
+          Duration: {flight.itineraries[0].segments[0].duration}
+        </p>
+        <p style={styles.flightPrice}>
+          Price: {selectedCurrency} {(flight.price.total * conversionRate).toFixed(2)}
+        </p>
+        {bookedFlightId === flight.id ? (
+          <p style={styles.bookedStatus}>Booked!</p>
+        ) : (
+          <button onClick={() => handleBooking(flight.id)} style={styles.bookButton}>
+            Book Now
+          </button>
+        )}
+      </div>
+    ))}
+  </div>
+)}
 
       {error && <p style={styles.errorMessage}>Error: {error}</p>}
     </div>
