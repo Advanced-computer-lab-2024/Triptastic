@@ -163,7 +163,7 @@ const Products = () => {
               marginRight: '420px',
             }}
           />
-          <h1 style={styles.title}>Products Page</h1>
+          <h1 style={styles.title}>Products</h1>
         </div>
         <FaUserCircle
           alt="Profile Icon"
@@ -354,11 +354,10 @@ const styles = {
   logoContainer: {
     display: 'flex',
     alignItems: 'center',
-    cursor: 'pointer',
   },
   logo: {
-    height: '70px',
-    width: '80px',
+    height: '80px',
+    width: '90px',
     borderRadius: '10px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
   },
