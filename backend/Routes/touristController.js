@@ -1049,6 +1049,7 @@ const changepasswordTourist = async (req, res) => {
 const calculateAndAddPoints = async (tourist, amountPaid) => {
   let pointsToAdd = 0;
 
+  // Determine points based on the tourist's badge level
   if (tourist.badge === 1) {
     pointsToAdd = amountPaid * 0.5;
   } else if (tourist.badge === 2) {
@@ -1057,8 +1058,16 @@ const calculateAndAddPoints = async (tourist, amountPaid) => {
     pointsToAdd = amountPaid * 1.5;
   }
 
+  // Calculate total points available for bonus (newly earned + leftover points)
+  const totalPointsForBonus = pointsToAdd + (tourist.points % 10000);
+
+  // Calculate bonus cash
+  const bonusCash = Math.floor(totalPointsForBonus / 10000) * 100;
+
+  // Update tourist's total points
   tourist.points += pointsToAdd;
 
+  // Upgrade badge if necessary
   if (tourist.points > 500000) {
     tourist.badge = 3;
   } else if (tourist.points > 100000) {
@@ -1067,17 +1076,19 @@ const calculateAndAddPoints = async (tourist, amountPaid) => {
     tourist.badge = 1;
   }
 
-  await tourist.save(); 
+  // Save the tourist with updated points and badge
+  await tourist.save();
+
+  // Return both newly earned points and the calculated bonus cash
+  return { newlyEarnedPoints: pointsToAdd, bonusCash };
 };
-
-
 const bookActivity = async (req, res) => {
-  const { name, Username } = req.body; 
+  const { name, Username } = req.body;
 
   try {
     // Step 1: Find the activity by its name
     const activity = await activitiesModel.findOne({ name: name });
-    
+
     if (!activity) {
       return res.status(404).json({ error: 'Activity not found' });
     }
@@ -1089,7 +1100,7 @@ const bookActivity = async (req, res) => {
 
     // Step 2: Find the tourist by username
     const tourist = await touristModel.findOne({ Username: Username });
-    
+
     if (!tourist) {
       return res.status(404).json({ error: 'Tourist not found' });
     }
@@ -1102,22 +1113,35 @@ const bookActivity = async (req, res) => {
       return res.status(400).json({ error: 'You have already booked this activity' });
     }
 
-    await calculateAndAddPoints(tourist, activity.price);
-    if (tourist.points >= 10000) {
-      const cashBonus = Math.floor(tourist.points / 10000) * 100; // Calculate cash based on total points
-      tourist.Wallet = (tourist.Wallet || 0) + cashBonus;
-    }
+    // Calculate newly earned points and apply bonus cash
+    const { newlyEarnedPoints, bonusCash } = await calculateAndAddPoints(tourist, activity.price);
+
+    // Update wallet with the bonus cash
+    tourist.Wallet += bonusCash;
+
+    // Add the activity to the tourist's bookings
     tourist.Bookings.push(activity);
 
     // Save the updated tourist record
     await tourist.save();
+
+    // Update activity sales
     activity.sales += activity.price;
     await activity.save();
-    res.status(200).json({ message: 'Activity booked successfully!', tourist });
+
+    res.status(200).json({
+      message: 'Activity booked successfully!',
+      tourist,
+      newlyEarnedPoints,
+      bonusCash,
+      updatedWallet: tourist.Wallet,
+    });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Error booking the activity' });
   }
 };
+
 
 const bookItinerary = async (req, res) => {
   const { itineraryId, Username } = req.body;
@@ -1128,7 +1152,7 @@ const bookItinerary = async (req, res) => {
     if (!itinerary) {
       return res.status(404).json({ error: 'Itinerary not found' });
     }
-   
+
     const tourist = await touristModel.findOne({ Username: Username });
     console.log('Tourist:', tourist);
     if (!tourist) {
@@ -1146,22 +1170,33 @@ const bookItinerary = async (req, res) => {
     if (itinerary.Booked) {
       return res.status(400).json({ message: 'Itinerary is Full' });
     }
-    await calculateAndAddPoints(tourist, itinerary.Price);
-if (tourist.points >= 10000) {
-  const cashBonus = Math.floor(tourist.points / 10000) * 100; // Calculate cash based on total points
-  tourist.Wallet = (tourist.Wallet || 0) + cashBonus;
-}
+
+    // Calculate newly earned points and apply bonus cash
+    const { newlyEarnedPoints, bonusCash } = await calculateAndAddPoints(tourist, itinerary.Price);
+
+    // Update wallet with the bonus cash
+    tourist.Wallet += bonusCash;
+
     tourist.Bookings.push(itinerary);
     await tourist.save();
-    itinerary.sales+=itinerary.Price;
+
+    itinerary.sales += itinerary.Price;
     await itinerary.save();
+
     res.status(200).json({
-      message: 'Itinerary booked successfully!', tourist
+      message: 'Itinerary booked successfully!',
+      tourist,
+      newlyEarnedPoints,
+      bonusCash,
+      updatedWallet: tourist.Wallet,
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Error booking itinerary' });
   }
- };
+};
+
+
 const submitFeedbackItinerary = async (req, res) => {
   const { username } = req.query; // Get the username from the query parameters
   const { Itinerary, rating, comment } = req.body; // Use itineraryId passed in the body
@@ -1307,13 +1342,17 @@ const getBookedItineraries = async(req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
-
 const cancelBookedItinerary = async (req, res) => {
   const { itineraryId } = req.params; // Get the itinerary ID from the request parameters
   const { username } = req.query; // Get the username from the query parameters
 
   try {
-    const itinerary= await itineraryModel.findById(itineraryId);
+    // Find the itinerary by ID
+    const itinerary = await itineraryModel.findById(itineraryId);
+    if (!itinerary) {
+      return res.status(404).json({ message: 'Itinerary not found' });
+    }
+
     // Find the tourist by username
     const tourist = await touristModel.findOne({ Username: username });
     if (!tourist) {
@@ -1340,19 +1379,33 @@ const cancelBookedItinerary = async (req, res) => {
       return res.status(400).json({ message: 'Itinerary cannot be cancelled within 48 hours of start date' });
     }
 
+    // Calculate refund and update wallet
+    const refundAmount = itinerary.Price;
+    tourist.Wallet += refundAmount;
+
     // Remove the booked itinerary from the tourist's bookings
     tourist.Bookings = tourist.Bookings.filter(booking => booking._id.toString() !== itineraryId);
 
     // Save the updated tourist record
     await tourist.save();
-     itinerary.sales-=itinerary.Price;
+
+    // Update itinerary sales
+    itinerary.sales -= refundAmount;
     await itinerary.save();
-    res.status(200).json({ message: 'Itinerary booking cancelled successfully' });
+
+    res.status(200).json({ 
+      message: 'Itinerary booking cancelled successfully', 
+      refundedAmount: refundAmount, 
+      updatedWallet: tourist.Wallet 
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+
+
 const requestAccountDeletionTourist = async (req, res) => {
   const { Username } = req.query;
 
@@ -1392,16 +1445,17 @@ const requestAccountDeletionTourist = async (req, res) => {
     res.status(500).json({ error: "Failed to submit deletion request" });
   }
 };
+
 const cancelActivity = async (req, res) => {
   const { activityId } = req.params; // Get the activity ID from the request parameters
   const { username } = req.query; // Get the username from the query parameters
 
-  console.log('cancelBookedActivity function called'); // Initial log to confirm function call
-  console.log('Received activityId:', activityId); // Log received activityId
-  console.log('Received username:', username); // Log received username
-
   try {
-    const activity= await activitiesModel.findById(activityId);
+    const activity = await activitiesModel.findById(activityId);
+    if (!activity) {
+      return res.status(404).json({ message: 'Activity not found' });
+    }
+
     // Find the tourist by username
     const tourist = await touristModel.findOne({ Username: username });
     if (!tourist) {
@@ -1430,19 +1484,33 @@ const cancelActivity = async (req, res) => {
       return res.status(400).json({ message: 'Activity cannot be cancelled within 48 hours of start date' });
     }
 
+    // Refund the activity price to the tourist's wallet
+    const refundAmount = activity.price;
+    tourist.Wallet += refundAmount;
+
     // Remove the booked activity from the tourist's bookings
     tourist.Bookings = tourist.Bookings.filter(booking => booking._id.toString() !== activityId);
 
     // Save the updated tourist record
     await tourist.save();
-    activity.sales-=activity.price;
+
+    // Deduct the refund amount from the activity's sales
+    activity.sales -= refundAmount;
     await activity.save();
-    res.status(200).json({ message: 'Activity booking cancelled successfully' });
+
+    res.status(200).json({
+      message: 'Activity booking cancelled successfully',
+      refundAmount,
+      updatedWallet: tourist.Wallet,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+
+
 const getBookedActivities = async (req, res) => {
   const { username } = req.query; // Get the username from the query parameters
 
