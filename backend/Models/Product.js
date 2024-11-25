@@ -44,7 +44,8 @@ const productSchema = new Schema({
     type: Number,
     required: false,
     default: 0
-  }
+  },
+  notificationSent: { type: Boolean, default: false }, // New field
 }, { timestamps: true });
 
 const Product = mongoose.model('Product', productSchema);

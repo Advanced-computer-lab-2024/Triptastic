@@ -35,13 +35,15 @@ const AdminPage = () => {
   const [productNameToSearch, setProductNameToSearch] = useState('');
   const [productSearchResult, setProductSearchResult] = useState(null);
   const [productNameToArchive, setProductNameToArchive] = useState(''); // New state variable
-  const [notifications, setNotifications] = useState([]); // State for notifications
   const [showNotifications, setShowNotifications] = useState(false); // Toggle notification dropdown
   const [statistics, setStatistics] = useState(null);
   const [statsLoading, setStatsLoading] = useState(false);
   const [statsError, setStatsError] = useState("");
   const [showStats, setShowStats] = useState(false); // State to toggle visibility
+    const [notifications, setNotifications] = useState([]); // Initialize as an empty array
+  
 
+  
   const [changePasswordData, setChangePasswordData] = useState({
     Username: '',
     currentPassword: '',
@@ -136,14 +138,17 @@ const AdminPage = () => {
       console.error('Error fetching notifications:', error);
     }
   };
+ 
 
+  
+    
+  
   const handleNotificationClick = async () => {
     const Username = localStorage.getItem('Username');
-
+  
     setShowNotifications((prev) => !prev);
-
+  
     if (!showNotifications) {
-      // Fetch notifications only if dropdown is about to be shown
       try {
         const response = await fetch(`http://localhost:8000/getNotificationsForAdmin?Username=${Username}`, {
           method: 'GET',
@@ -151,10 +156,19 @@ const AdminPage = () => {
             'Content-Type': 'application/json',
           },
         });
-
+  
         if (response.ok) {
           const data = await response.json();
-          setNotifications(data.notifications);
+  
+          // Filter and append unique notifications
+          const uniqueNotifications = data.notifications.filter(
+            (newNotification) =>
+              !notifications.some((existingNotification) =>
+                existingNotification.message === newNotification.message
+              )
+          );
+  
+          setNotifications((prev) => [...prev, ...uniqueNotifications]);
         } else {
           console.error('Failed to fetch notifications');
         }
@@ -166,7 +180,7 @@ const AdminPage = () => {
   const checkoutOfStock = async () => {
     try {
       const response = await fetch('http://localhost:8000/checkAndNotifyOutOfStockAdmin', {
-        method: 'GET', // Use GET or any other appropriate method
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -174,15 +188,29 @@ const AdminPage = () => {
   
       if (response.ok) {
         const data = await response.json();
-        // Handle the data response accordingly
-        console.log('Out of stock products checked:', data);
+  
+        // Validate and merge notifications
+        const newNotifications = data.notifications.filter(
+          (notification) =>
+            !notifications.some((n) => n.message === notification.message)
+        );
+  
+        if (newNotifications.length > 0) {
+          setNotifications((prev) => [...(prev || []), ...newNotifications]);
+          console.log('New notifications added:', newNotifications);
+        } else {
+          console.log('No new notifications to add');
+        }
       } else {
-        console.error('Failed to check out of stock products');
+        console.error('Failed to check out-of-stock products');
       }
     } catch (error) {
-      console.error('Error occurred while checking out of stock:', error);
+      console.error('Error occurred while checking out-of-stock:', error);
     }
   };
+  
+  
+  
   const handleFlagActivity= async(id)=>{
     try{
       const response = await fetch(`http://localhost:8000/flagActivity/${id}`, {
@@ -204,6 +232,12 @@ const AdminPage = () => {
       console.log(error);
     }
   }
+
+
+  
+
+  
+  
   const handleFlagItinerary= async(id)=>{
     try{
       const response = await fetch(`http://localhost:8000/flagItinerary/${id}`, {
@@ -944,47 +978,81 @@ const unarchiveProduct = async () => {
   
   return (
     
-    <div>
-      <div style={{ position: 'relative' }}>
-      <button onClick={handleNotificationClick} style={{ background: 'none', border: 'none' }}>
-        <FaBell size={24} />
-      </button>
-
-      {showNotifications && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '40px',
-            right: '0px',
-            width: '300px',
-            background: 'white',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-            borderRadius: '8px',
-            zIndex: 1000,
-          }}
-        >
-          {notifications.length > 0 ? (
-            <ul style={{ listStyle: 'none', padding: '10px' }}>
-              {notifications.map((notification) => (
-                <li key={notification.id} style={{ marginBottom: '10px', borderBottom: '1px solid #ddd', padding: '5px 0' }}>
-                  {notification.message}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div style={{ padding: '10px', textAlign: 'center' }}>No notifications</div>
-          )}
-        </div>
-      )}
-    </div>
-      <h1>Admin Page</h1>
-      
+   
+  <div>
+    <h1>Admin Page</h1>
+    
       <div className="sidebar">
         
         <h3>Explore</h3>
         <ul>
         <li onClick={() => navigate('/PromoCodeForm')}>Promo Codes</li>
-          <li onClick={() => navigate('/products')}>Products</li>
+        <li onClick={() => navigate('/products')}>Products</li>
+        <div style={{ position: 'relative', textAlign: 'right', padding: '10px' }}>
+      <FaBell
+        size={24}
+        style={{ cursor: 'pointer' }}
+        onClick={handleNotificationClick}
+      />
+      {notifications && notifications.length > 0 && (
+        <span
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 10,
+            backgroundColor: 'red',
+            color: 'white',
+            borderRadius: '50%',
+            width: '18px',
+            height: '18px',
+            fontSize: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {notifications.length}
+        </span>
+      )}
+      {showNotifications && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '30px',
+            right: '10px',
+            backgroundColor: 'white',
+            border: '1px solid #ccc',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+            borderRadius: '4px',
+            width: '250px',
+            maxHeight: '300px',
+            overflowY: 'auto',
+            zIndex: 10,
+          }}
+        >
+          <ul style={{ listStyle: 'none', padding: '10px', margin: 0 }}>
+            {notifications && notifications.map((notification) => (
+              <li
+                key={notification.id}
+                style={{
+                  borderBottom: '1px solid #ddd',
+                  padding: '10px 0',
+                  fontSize: '14px',
+                }}
+              >
+                {notification.message}
+              </li>
+            ))}
+          </ul>
+          {!notifications || notifications.length === 0 && (
+            <p style={{ padding: '10px', textAlign: 'center' }}>
+              No notifications
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+     
         </ul>
       </div>
       <h2>Create Admin</h2>
