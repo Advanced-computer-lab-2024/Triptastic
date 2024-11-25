@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react'; 
+import museumHistoryImage from '../images/museumhistory.jpg'; // Adjust the path as needed
+import { FaShareAlt } from "react-icons/fa";
 
 const Museums = () => {
   const [museums, setMuseums] = useState([]);
@@ -135,70 +137,266 @@ const Museums = () => {
     setIsEmailMode(!isEmailMode);
   };
   return (
-    <div>
-      <h1>Museums</h1>
-      <button onClick={handleViewAllMuseums}>View All Museums</button>
+    <div style={styles.container}>
+      <h1 style={styles.title}>Museums</h1>
+      <button onClick={handleViewAllMuseums} style={styles.button}>
+        View All Museums
+      </button>
 
-      <input
-        type="text"
-        placeholder="Search museums..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-      <button onClick={handleSearchMuseums} disabled={!searchTerm}>Search</button>
+      <div style={{ margin: '20px 0', textAlign: 'center' }}>
+        <input
+          type="text"
+          placeholder="Search museums..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={styles.searchInput}
+        />
+        <button onClick={handleSearchMuseums} disabled={!searchTerm} style={styles.button}>
+          Search
+        </button>
+      </div>
 
       {viewMuseums && (
         <>
-          <button onClick={() => setFilterVisible(!filterVisible)}>Filter Museums</button>
+          <button
+            onClick={() => setFilterVisible((prev) => !prev)}
+            style={{ ...styles.button, marginBottom: '20px' }}
+          >
+            Filter Museums
+          </button>
 
           {filterVisible && (
-            <div>
-              <label htmlFor="period-select">Filter by Historical Period:</label>
+            <div style={{ marginBottom: '20px', textAlign: 'center' }}>
+              <label htmlFor="period-select" style={{ marginRight: '10px' }}>
+                Filter by Historical Period:
+              </label>
               <select
                 id="period-select"
                 onChange={(e) => setSelectedPeriod(e.target.value)}
                 value={selectedPeriod}
+                style={styles.dropdown}
               >
-                <option value="" disabled>Select a historical period</option>
+                <option value="" disabled>
+                  Select a historical period
+                </option>
                 {historicalPeriods.map((period) => (
-                  <option key={period.name} value={period.name}>{period.name}</option>
+                  <option key={period.name} value={period.name}>
+                    {period.name}
+                  </option>
                 ))}
               </select>
-              <button onClick={handleFilterMuseums} disabled={!selectedPeriod}>Apply Filter</button>
+              <button
+                onClick={handleFilterMuseums}
+                disabled={!selectedPeriod}
+                style={styles.button}
+              >
+                Apply Filter
+              </button>
             </div>
-          )}
-
-{loading ? (
-            <p>Loading...</p>
-          ) : (
-            <ul>
-            {museums.map((museum) => (
-              <li key={museum._id}>
-                {museum.Name}
-                <button onClick={() => handleShare(museum.Name, 'copy')}>Copy Link</button>
-          <button onClick={() => handleShareMode(museum)}>Share via Email</button>
-
-          {isEmailMode && museumToShare && museumToShare._id === museum._id && (
-            <div>
-              <input
-                type="email"
-                placeholder="Enter recipient's email"
-                value={email}
-                onChange={handleEmailInputChange}
-              />
-              <button onClick={() => handleShare(museum.Name, 'email')}>Send Email</button>
-            </div>
-          )}
-
-          {copySuccess[museum.Name] && <p>{copySuccess[museum.Name]}</p>}
-              </li>
-            ))}
-          </ul>
           )}
         </>
       )}
-    </div>
-  );
+
+      {loading ? (
+        <p style={{ textAlign: 'center', fontSize: '1.2rem' }}>Loading...</p>
+      ) : (
+        <div style={styles.cardContainer}>
+          {museums.map((museum) => (
+            <div key={museum._id} style={styles.card}>
+              <img
+                src={museum.Name === 'National Museum of History' ? museumHistoryImage : museum.mainImage}
+                alt={museum.Name}
+                style={styles.image}
+              />
+              <div style={styles.details}>
+                <h2 style={styles.museumName}>{museum.Name}</h2>
+                <p style={styles.description}>{museum.Description}</p>
+
+                <div style={{ position: 'relative', display: 'inline-block' }}>
+  <button
+    onClick={() => handleShareMode(museum)}
+    style={styles.shareButton}
+  >
+    <FaShareAlt />
+  </button>
+                  <button
+                    onClick={() => handleShareMode(museum)}
+                    style={styles.shareButton}
+                  >
+                    <i className="fas fa-share-alt"></i>
+                  </button>
+
+                 {/* Dropdown */}
+                {isEmailMode &&
+                  museumToShare &&
+                  museumToShare._id === museum._id && (
+                    <div style={styles.shareDropdown}>
+                      <button
+                        onClick={() => handleShare(museum.Name, 'copy')}
+                        style={styles.shareOption}
+                      >
+                        Copy Link
+                      </button>
+                      <button
+                        onClick={() => setIsEmailMode(false)}
+                        style={styles.shareOption}
+                      >
+                        Share via Email
+                      </button>
+
+                      {/* Email Input Field */}
+                      {museumToShare && museumToShare._id === museum._id && (
+                        <div style={{ marginTop: '10px' }}>
+                          <input
+                            type="email"
+                            placeholder="Enter recipient's email"
+                            value={email}
+                            onChange={handleEmailInputChange}
+                            style={styles.emailInput}
+                          />
+                          <button
+                            onClick={() => handleShare(museum.Name, 'email')}
+                            style={{ ...styles.button, marginTop: '10px' }}
+                          >
+                            Send Email
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+              </div>
+
+              
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+);
+  
 };
+const styles = {
+  container: {
+    maxWidth: '1200px',
+    margin: '0 auto',
+    padding: '20px',
+    fontFamily: 'Arial, sans-serif',
+  },
+  title: {
+    textAlign: 'center',
+    fontSize: '2.5rem',
+    marginBottom: '20px',
+  },
+  button: {
+    color:'#0F5132',
+    padding: '10px 20px',
+    backgroundColor: '#0F5132',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    marginRight: '10px',
+  },
+  searchInput: {
+    padding: '10px',
+    fontSize: '16px',
+    width: '300px',
+    marginRight: '10px',
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+  },
+  dropdown: {
+    padding: '10px',
+    fontSize: '16px',
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+  },
+  cardContainer: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '20px',
+    justifyContent: 'space-between',
+  },
+  
+
+  emailInput: {
+    padding: '10px',
+    width: '100%',
+    marginBottom: '10px',
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+  },
+
+  
+    card: {
+      display: 'flex',
+      flexDirection: 'column', // Change to column for better layout
+      alignItems: 'center',
+      border: '1px solid #ddd',
+      borderRadius: '8px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      overflow: 'hidden',
+      width: '100%',
+      maxWidth: '350px', // Adjust the width
+      backgroundColor: '#fff',
+      marginBottom: '20px',
+    },
+    image: {
+      width: '100%', // Make the image take the full width of the card
+      height: '200px', // Adjust the height for better visibility
+      objectFit: 'cover', // Ensure the image scales correctly
+    },
+    details: {
+      padding: '20px',
+      textAlign: 'center', // Center-align the text
+    },
+    museumName: {
+      fontSize: '1.5rem',
+      fontWeight: 'bold',
+      margin: '0 0 10px',
+    },
+    description: {
+      fontSize: '1rem',
+      color: '#555',
+      marginBottom: '20px',
+    },
+  
+    shareButton: {
+      backgroundColor: 'transparent',
+      border: 'none',
+      fontSize: '1.5rem',
+      color: 'black',
+      cursor: 'pointer',
+      marginTop: '10px',
+    },
+    shareDropdown: {
+      top: '40px',
+      left: '0',
+      backgroundColor: '#fff',
+      border: '1px solid #ddd',
+      borderRadius: '8px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      zIndex: '1000',
+      padding: '10px',
+    },
+    shareOption: {
+      display: 'block',
+      width: '100%',
+      padding: '10px',
+      textAlign: 'center',
+      backgroundColor: 'transparent',
+      border: 'none',
+      cursor: 'pointer',
+      fontSize: '1rem',
+      color: '#0F5132',
+      textDecoration: 'none',
+    },
+    };
+    
+  
+  
+
+
 
 export default Museums;
