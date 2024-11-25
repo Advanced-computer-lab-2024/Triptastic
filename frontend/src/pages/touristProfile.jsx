@@ -586,16 +586,20 @@ return (
   <div>
     {/* Header Section */}
     <header style={styles.header}>
-      <div style={styles.logoContainer}>
-        <img src={logo} alt="Logo" style={styles.logo} />
-      </div>
-      <h1 style={styles.title}>Tourist Profile</h1>
-      <FaUserCircle
-        alt="Profile Icon"
-        style={styles.profileIcon}
-        onClick={() => navigate('/touristSettings')} // Navigate to profile
-      />
-    </header>
+  <div style={styles.logoContainer}>
+    <img src={logo} alt="Logo" style={styles.logo} />
+  </div>
+  <h1 style={styles.title}>Tourist Profile</h1>
+  <FaUserCircle
+    alt="Profile Icon"
+    style={styles.profileIcon}
+    onClick={() => navigate('/touristSettings')} // Navigate to profile
+  />
+  <div style={styles.cartButton} onClick={() => navigate('/Cart')}>
+    <FaShoppingCart style={styles.cartIcon} />
+    <span style={styles.cartLabel}></span>
+  </div>
+</header>
 
     {/* Main Content */}
     <div className="tourist-profile-container" style={{ marginTop: '120px' }}>
@@ -618,7 +622,7 @@ return (
         <div style={styles.item} onClick={() => navigate('/historical-locations')}>
           <FaLandmark style={styles.icon} />
           <span className="label" style={styles.label}>
-            Historical Locations
+            Historical Loc
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/museums')}>
@@ -660,7 +664,7 @@ return (
         <div style={styles.item} onClick={() => navigate('/book-transportation')}>
           <FaBus style={styles.icon} />
           <span className="label" style={styles.label}>
-            Book Transportation
+           Transportation
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
@@ -673,12 +677,6 @@ return (
           <FaStar style={styles.icon} />
           <span className="label" style={styles.label}>
             Review Activities
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/Cart')}>
-          <FaShoppingCart style={styles.icon} />
-          <span className="label" style={styles.label}>
-            My Cart
           </span>
         </div>
       </div>
@@ -873,14 +871,18 @@ const styles = {
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
   },
   header: {
+    position: 'fixed', // Make the header fixed
+    top: '0', // Stick to the top of the viewport
+    left: '0',
+    width: '100%', // Make it span the full width of the viewport
+    backgroundColor: '#0F5132', // Green background
+    color: 'white', // White text
     display: 'flex',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '20px',
-    backgroundColor: '#0F5132',
+    justifyContent: 'space-between',
     padding: '10px 20px',
-   
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for depth
+    zIndex: '1000', // Ensure it appears above other content
   },
   logoContainer: {
     display: 'flex',
@@ -897,6 +899,7 @@ const styles = {
     color: 'white',
     cursor: 'pointer',
     borderRadius: '20px',
+    marginRight:'-550px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
   },
   actionButtons: {
@@ -926,42 +929,72 @@ const styles = {
   
   sidebar: {
     position: 'fixed',
-    left: '0',
     top: '90px',
-    height: '100%',
-    width: '60px', /* Default collapsed width */
-    backgroundColor: 'rgba(15, 81, 50, 0.9)',
+    left: 0,
+    height: '100vh',
+    width: '50px', // Default width when collapsed
+    backgroundColor: 'rgba(15, 81, 50, 0.85)',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'right', /* Center the icons horizontally */
+    alignItems: 'flex-start', // Ensure alignment starts from the left
     padding: '10px 0',
+    overflowX: 'hidden',
     transition: 'width 0.3s ease',
-    overflow: 'hidden',
-    zIndex: '1000',
+    zIndex: 1000,
+  },
+  sidebarExpanded: {
+    width: '200px', // Width when expanded
+  },
+  iconContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start', // Align items to the left
+    padding: '10px',
+    width: '100%', // Take full width of the sidebar
+    color: '#fff',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease',
+  },
+  iconContainerHover: {
+    backgroundColor: '#084B24', // Background on hover
   },
   icon: {
     fontSize: '24px',
-    color: 'white', /* Make icons white */
-    marginBottom: '20px', /* Add spacing between icons */
+    marginLeft: '15px', // Move icons slightly to the right
+    color: '#fff', // Icons are always white
   },
   label: {
-    opacity: '0', /* Hide labels initially */
-    whiteSpace: 'nowrap',
-    color: 'white', /* Text color */
-    marginLeft: '5px', /* Space between icon and label */
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#fff',
+    opacity: 0, // Initially hidden
+    whiteSpace: 'nowrap', // Prevent label text from wrapping
     transition: 'opacity 0.3s ease',
   },
-  item: {
-    display: 'flex',
-    alignItems: 'center', /* Align icon and label horizontally */
-    padding: '10px',
-    width: '100%',
-    cursor: 'pointer',
-    color: 'white', /* Ensure text is white */
-    transition: 'background-color 0.3s ease',
+  labelVisible: {
+    opacity: 1, // Fully visible when expanded
   },
-  itemHover: {
-    backgroundColor: '#0d3d2e', /* Background on hover */
+  cartButton: {
+    display: 'flex',
+    alignItems: 'center',
+    backgroundColor: '#fff', // White background for the button
+    color: '#0F5132', // Green text
+    borderRadius: '8px',
+    padding: '5px 5px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease',
+    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.15)', // Subtle shadow for the button
+  },
+  cartButtonHover: {
+    backgroundColor: '#e6e6e6', // Lighter background on hover
+  },
+  cartIcon: {
+    fontSize: '25px',
+    },
+  cartLabel: {
+    fontSize: '16px',
+    fontWeight: 'bold',
   },
 };
 export default TouristProfile;
