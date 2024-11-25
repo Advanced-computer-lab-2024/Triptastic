@@ -4,8 +4,10 @@ import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-route
 import axios from 'axios';
 import { CurrencyContext } from '../pages/CurrencyContext';
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
-import { FaBars, FaTimes,FaHome, FaUser, FaMapMarkerAlt, FaPlane, FaHotel } from "react-icons/fa"; // For menu icons
-
+import { FaBars, FaTimes,FaHome, FaUser, FaMapMarkerAlt } from "react-icons/fa"; // For menu icons
+import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
+  FaClipboardList,
+  FaStar, } from "react-icons/fa";
 import { FaPercentage, FaCalendarAlt, FaTag ,FaUserCircle} from 'react-icons/fa';
 
 const TouristProfile = () => {
@@ -581,125 +583,161 @@ const TouristProfile = () => {
 
 };
 return (
-  
-  <div className="tourist-profile-container">
-    <div className="profile-content">
-    <header style={{ ...styles.header, position: 'fixed', marginLeft: '-46px', top: 0, width: '100%', zIndex: 1000 }}>
-  <div style={styles.logoContainer}>
-    <div style={{ ...styles.logoContainer, marginLeft: '30px' }}>
-      <img
-        src={logo}
-        alt="Logo"
-        style={styles.logo}
-      />
-    </div>
-  </div>
-  <h1 style={styles.title}>Tourist Profile</h1>
-  <FaUserCircle
-    alt="Profile Icon"
-    style={styles.profileIcon}
-    onClick={() => navigate('/touristSettings')} // Navigate to profile
-  />
-</header>
-    </div>
-    
-    <div
-      style={styles.sidebar}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.width = '200px';
-        Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
-          (label) => (label.style.opacity = '1')
-        );
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.width = '60px';
-        Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
-          (label) => (label.style.opacity = '0')
-        );
-      }}
-    >
-      <div style={styles.iconContainer}>
-        <FaHome style={styles.icon} />
-        <span className="label" style={{ ...styles.label }}>Home</span>
-      </div>
-      <div style={styles.iconContainer}>
-        <FaUser style={styles.icon} />
-        <span className="label" style={{ ...styles.label }}>Profile</span>
-      </div>
-      <div style={styles.iconContainer}>
-        <FaMapMarkerAlt style={styles.icon} />
-        <span className="label" style={{ ...styles.label }}>Locations</span>
-      </div>
-      <div style={styles.iconContainer}>
-        <FaPlane style={styles.icon} />
-        <span className="label" style={{ ...styles.label }}>Flights</span>
-      </div>
-      <div style={styles.iconContainer}>
-        <FaHotel style={styles.icon} />
-        <span className="label" style={{ ...styles.label }}>Hotels</span>
-      </div>
-    </div>
   <div>
- 
-</div>
-
-    {/* Preferences Section */}
-    <div className="preferences-section">
-      <h3>Select Your Vacation Preferences</h3>
-      <div className="preferences-form">
-        <label>
-          <input
-            type="checkbox"
-            name="historicAreas"
-            checked={preferences.historicAreas}
-            onChange={handlePreferenceChange}
-          />
-          Historic Areas
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            name="beaches"
-            checked={preferences.beaches}
-            onChange={handlePreferenceChange}
-          />
-          Beaches
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            name="familyFriendly"
-            checked={preferences.familyFriendly}
-            onChange={handlePreferenceChange}
-          />
-          Family-Friendly
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            name="shopping"
-            checked={preferences.shopping}
-            onChange={handlePreferenceChange}
-          />
-          Shopping
-        </label>
-        <label>
-          Budget:
-          <select name="budget" value={preferences.budget} onChange={handlePreferenceChange}>
-            <option value="">Select</option>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
-        </label>
-        <button onClick={submitPreferences}>Save Preferences</button>
+    {/* Header Section */}
+    <header style={styles.header}>
+      <div style={styles.logoContainer}>
+        <img src={logo} alt="Logo" style={styles.logo} />
       </div>
-    </div>
+      <h1 style={styles.title}>Tourist Profile</h1>
+      <FaUserCircle
+        alt="Profile Icon"
+        style={styles.profileIcon}
+        onClick={() => navigate('/touristSettings')} // Navigate to profile
+      />
+    </header>
 
-    {successMessage && <p style={{ color: '0F5132' }}>{successMessage}</p>}
-    
-    
-{/* Fetch Product by Name */}
+    {/* Main Content */}
+    <div className="tourist-profile-container" style={{ marginTop: '120px' }}>
+      {/* Sidebar */}
+      <div
+        style={styles.sidebar}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.width = '200px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '1')
+          );
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.width = '60px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '0')
+          );
+        }}
+      >
+        <div style={styles.item} onClick={() => navigate('/historical-locations')}>
+          <FaLandmark style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Historical Locations
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/museums')}>
+          <FaUniversity style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Museums
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/products')}>
+          <FaBox style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Products
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/itineraries')}>
+          <FaMap style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Itineraries
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/activities')}>
+          <FaRunning style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Activities
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-flights')}>
+          <FaPlane style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Book Flights
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-hotels')}>
+          <FaHotel style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Book a Hotel
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-transportation')}>
+          <FaBus style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Book Transportation
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
+          <FaClipboardList style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Past Orders
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
+          <FaStar style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Review Activities
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/Cart')}>
+          <FaShoppingCart style={styles.icon} />
+          <span className="label" style={styles.label}>
+            My Cart
+          </span>
+        </div>
+      </div>
+
+      {/* Preferences Section */}
+      <div className="preferences-section">
+        <h3>Select Your Vacation Preferences</h3>
+        <div className="preferences-form">
+          <label>
+            <input
+              type="checkbox"
+              name="historicAreas"
+              checked={preferences.historicAreas}
+              onChange={handlePreferenceChange}
+            />
+            Historic Areas
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              name="beaches"
+              checked={preferences.beaches}
+              onChange={handlePreferenceChange}
+            />
+            Beaches
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              name="familyFriendly"
+              checked={preferences.familyFriendly}
+              onChange={handlePreferenceChange}
+            />
+            Family-Friendly
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              name="shopping"
+              checked={preferences.shopping}
+              onChange={handlePreferenceChange}
+            />
+            Shopping
+          </label>
+          <label>
+            Budget:
+            <select name="budget" value={preferences.budget} onChange={handlePreferenceChange}>
+              <option value="">Select</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </label>
+          <button onClick={submitPreferences}>Save Preferences</button>
+        </div>
+      </div>
+
+      {successMessage && <p style={{ color: '#0F5132' }}>{successMessage}</p>}
+      {/* Fetch Product by Name */}
 <div>
 <h3>Fetch Product by Name</h3>
 <input
@@ -820,12 +858,10 @@ return (
     {errorMessage && <div className="error">{errorMessage}</div>}
     {successMessage && <div className="success">{successMessage}</div>}
  
-
-    
+    </div>
   </div>
-  
-  
 );
+
 };
 const styles = {
   container: {
@@ -888,49 +924,44 @@ const styles = {
     cursor: 'pointer',
   },
   
-    sidebar: {
-      position: 'fixed',
-      top: '90px',
-      left: 0,
-      height: '100vh',
-      width: '50px', // Default width when collapsed
-      backgroundColor: 'rgba(15, 81, 50, 0.85)',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      padding: '10px 0',
-      overflowX: 'hidden',
-      transition: 'width 0.3s',
-      zIndex: 1000,
-    },
-    sidebarExpanded: {
-      width: '100px', // Width when expanded
-    },
-    iconContainer: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: '10px 20px',
-      color: '#fff',
-      cursor: 'pointer',
-      transition: 'background-color 0.3s',
-    },
-    iconContainerHover: {
-      backgroundColor: '#084B24', // Background on hover
-    },
-    icon: {
-      fontSize: '24px',
-      marginLeft: '30px',
-    },
-    label: {
-      fontSize: '16px',
-      fontWeight: 'bold',
-      color: '#fff',
-      opacity: 0, // Initially hidden
-      transition: 'opacity 0.3s',
-    },
-    labelVisible: {
-      opacity: 1, // Visible when expanded
-    },
-  
+  sidebar: {
+    position: 'fixed',
+    left: '0',
+    top: '90px',
+    height: '100%',
+    width: '60px', /* Default collapsed width */
+    backgroundColor: 'rgba(15, 81, 50, 0.9)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'right', /* Center the icons horizontally */
+    padding: '10px 0',
+    transition: 'width 0.3s ease',
+    overflow: 'hidden',
+    zIndex: '1000',
+  },
+  icon: {
+    fontSize: '24px',
+    color: 'white', /* Make icons white */
+    marginBottom: '20px', /* Add spacing between icons */
+  },
+  label: {
+    opacity: '0', /* Hide labels initially */
+    whiteSpace: 'nowrap',
+    color: 'white', /* Text color */
+    marginLeft: '5px', /* Space between icon and label */
+    transition: 'opacity 0.3s ease',
+  },
+  item: {
+    display: 'flex',
+    alignItems: 'center', /* Align icon and label horizontally */
+    padding: '10px',
+    width: '100%',
+    cursor: 'pointer',
+    color: 'white', /* Ensure text is white */
+    transition: 'background-color 0.3s ease',
+  },
+  itemHover: {
+    backgroundColor: '#0d3d2e', /* Background on hover */
+  },
 };
 export default TouristProfile;
