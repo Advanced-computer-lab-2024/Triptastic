@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 
 import { CurrencyContext } from '../pages/CurrencyContext';
 import { FaUserCircle,FaCalendar,FaDollarSign ,FaMapMarkerAlt,FaClock,FaLanguage,FaWheelchair,FaShuttleVan} from 'react-icons/fa';
+import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
+  FaClipboardList,
+  FaStar, } from "react-icons/fa";
 import logo from '../images/image.png';
 
 const Itineraries = () => {
@@ -240,7 +243,83 @@ const Itineraries = () => {
           <h2 style={styles.title}>Itineraries</h2>
           <FaUserCircle style={styles.profileIcon} onClick={handleProfileRedirect} />
         </header>
-  
+        {/* Sidebar */}
+      <div
+        style={styles.sidebar}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.width = '200px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '1')
+          );
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.width = '60px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '0')
+          );
+        }}
+      >
+        <div style={styles.item} onClick={() => navigate('/historical-locations')}>
+          <FaLandmark style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Historical Loc
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/museums')}>
+          <FaUniversity style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Museums
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/products')}>
+          <FaBox style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Products
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/itineraries')}>
+          <FaMap style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Itineraries
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/activities')}>
+          <FaRunning style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Activities
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-flights')}>
+          <FaPlane style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Book Flights
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-hotels')}>
+          <FaHotel style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Book a Hotel
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-transportation')}>
+          <FaBus style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Transportation
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
+          <FaClipboardList style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Past Orders
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
+          <FaStar style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Review Activities
+          </span>
+        </div>
+      </div>
         {loading ? (
           <p style={styles.loading}>Loading itineraries...</p>
         ) : (
@@ -248,11 +327,11 @@ const Itineraries = () => {
             {/* Sorting Section */}
             <div style={styles.section}>
               <h3>Sort Itineraries</h3>
-              <button style={styles.button} onClick={handleSortAscending}>
-                Sort by Price (Ascending)
+              <button style={styles.buttonSort} onClick={handleSortAscending}>
+                Sort by <FaDollarSign/> (Ascending)
               </button>
-              <button style={styles.button} onClick={handleSortDescending}>
-                Sort by Price (Descending)
+              <button style={styles.buttonSort} onClick={handleSortDescending}>
+                Sort by <FaDollarSign/> (Descending)
               </button>
             </div>
   
@@ -266,7 +345,7 @@ const Itineraries = () => {
                   fetchFilteredItineraries();
                 }}
               >
-                <label style={styles.label}>
+                <label style={styles.flabel}>
                   Min Budget:
                   <input
                     type="number"
@@ -276,7 +355,7 @@ const Itineraries = () => {
                     style={styles.input}
                   />
                 </label>
-                <label style={styles.label}>
+                <label style={styles.flabel}>
                   Max Budget:
                   <input
                     type="number"
@@ -286,7 +365,7 @@ const Itineraries = () => {
                     style={styles.input}
                   />
                 </label>
-                <label style={styles.label}>
+                <label style={styles.flabel}>
                   Date:
                   <input
                     type="date"
@@ -296,7 +375,7 @@ const Itineraries = () => {
                     style={styles.input}
                   />
                 </label>
-                <label style={styles.label}>
+                <label style={styles.flabel}>
                   Preferences (e.g. beaches, shopping):
                   <input
                     type="text"
@@ -306,7 +385,7 @@ const Itineraries = () => {
                     style={styles.input}
                   />
                 </label>
-                <label style={styles.label}>
+                <label style={styles.flabel}>
                   Language:
                   <input
                     type="text"
@@ -411,20 +490,29 @@ const Itineraries = () => {
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
     },
     header: {
+      position: 'fixed', // Make the header fixed
+      top: '0', // Stick to the top of the viewport
+      left: '0',
+      width: '100%', // Make it span the full width of the viewport
+      backgroundColor: '#0F5132', // Green background
+      color: 'white', // White text
       display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '20px',
-    backgroundColor: '#4CAF50',
-    padding: '10px 20px',
-    borderRadius: '10px',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '10px 20px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for depth
+      zIndex: '1000', // Ensure it appears above other content
+    },
+    logoContainer: {
+      display: 'flex',
+      alignItems: 'center',
     },
     logo: {
       height: '70px',
-    width: '80px',
-    borderRadius: '10px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+      width: '80px',
+      borderRadius: '10px',
+      marginRight:'10px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
     },
     title: {
       fontSize: '24px',
@@ -444,8 +532,8 @@ const Itineraries = () => {
       flexDirection: 'column',
       gap: '10px',
     },
-    label: {
-      marginBottom: '10px',
+    flabel: {
+      marginBottom: '2px',
     },
     input: {
       padding: '10px',
@@ -453,8 +541,11 @@ const Itineraries = () => {
       border: '1px solid #ccc',
       width: '100%',
     },
+    buttonSort:{
+      marginTop:'40px'
+    },
     button: {
-      backgroundColor: '#4CAF50',
+      backgroundColor: '#0F5132',
       color: 'white',
       padding: '10px',
       borderRadius: '5px',
@@ -499,6 +590,55 @@ const Itineraries = () => {
       textAlign: 'center',
       marginTop: '10px',
     },
+    sidebar: {
+      position: 'fixed',
+      top: '90px',
+      left: 0,
+      height: '100vh',
+      width: '50px', // Default width when collapsed
+      backgroundColor: 'rgba(15, 81, 50, 0.85)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-start', // Ensure alignment starts from the left
+      padding: '10px 0',
+      overflowX: 'hidden',
+      transition: 'width 0.3s ease',
+      zIndex: 1000,
+    },
+    sidebarExpanded: {
+      width: '200px', // Width when expanded
+    },
+    iconContainer: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'flex-start', // Align items to the left
+      padding: '10px',
+      width: '100%', // Take full width of the sidebar
+      color: '#fff',
+      cursor: 'pointer',
+      transition: 'background-color 0.3s ease',
+    },
+    iconContainerHover: {
+      backgroundColor: '#084B24', // Background on hover
+    },
+    icon: {
+      fontSize: '24px',
+      marginLeft: '15px', // Move icons slightly to the right
+      color: '#fff', // Icons are always white
+    },
+    label: {
+      cursor: 'pointer',
+      fontSize: '16px',
+      fontWeight: 'bold',
+      color: '#fff',
+      opacity: 0, // Initially hidden
+      whiteSpace: 'nowrap', // Prevent label text from wrapping
+      transition: 'opacity 0.3s ease',
+    },
+    labelVisible: {
+      opacity: 1, // Fully visible when expanded
+    },
+    
   };
 
 export default Itineraries;
