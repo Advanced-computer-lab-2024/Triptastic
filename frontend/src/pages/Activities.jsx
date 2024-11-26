@@ -8,7 +8,6 @@ import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHo
 import logo from '../images/image.png'; // Add your logo file pathimport axios from 'axios';
 import axios from 'axios';
 import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
-
 import { useNavigate } from 'react-router-dom';
 
 const Activities = () => {
@@ -30,10 +29,18 @@ const Activities = () => {
   const navigate = useNavigate();
   const [isBookmarked, setIsBookmarked] = useState(false); // State to toggle fill
 
-  const handleBookmarkToggle = () => {
-    setIsBookmarked(!isBookmarked); // Toggle state
+  const handleBookmarkToggle = (activityId) => {
+    // Check if the activity is already bookmarked
+    const alreadyBookmarked = bookmarkedActivities.some((activity) => activity._id === activityId);
+  
+    if (alreadyBookmarked) {
+      // If it's already bookmarked, remove it
+      handleRemoveBookmark(activityId);
+    } else {
+      // If it's not bookmarked, add it
+      handleBookmark(activityId);
+    }
   };
-
 
   const [notificationRequested, setNotificationRequested] = useState({});
   // Sorting states
@@ -165,8 +172,7 @@ const Activities = () => {
         { eventId: activityId },
         { params: { Username: username } }
       );
-  
-      alert('Activity bookmarked successfully!');
+
       fetchBookmarkedActivities(); // Refresh the bookmarked activities
     } catch (error) {
       console.error('Error bookmarking activity:', error);
@@ -181,7 +187,7 @@ const Activities = () => {
         { eventId: activityId },
         { params: { Username: username } }
       );
-      alert('Bookmark removed successfully!');
+      
       fetchBookmarkedActivities(); // Refresh the bookmarked activities
     } catch (error) {
       console.error('Error removing bookmark:', error);
@@ -392,14 +398,21 @@ return (
     <header style={styles.header}>
       <img src={logo} alt="Logo" style={styles.logo} />
       <h2 style={styles.title}>Activities</h2>
+      <button
+  style={{
+    ...styles.navigationButton,
+    position: 'absolute',
+    right: '60px', // Moves the bookmark button 20px from the right edge
+  }}
+  onClick={() => navigate('/BookmarkedEvents')}
+>
+  <FaBookmark style={{ fontSize: '30px', color: '#FFD700' }} />
+</button>
+
       <FaUserCircle style={styles.profileIcon} onClick={handleProfileRedirect} />
+      
     </header>
-      {/* Button to navigate to Booked Events */}
-      <div style={styles.navigationButtonContainer}>
-        <button style={styles.navigationButton} onClick={() => navigate('/BookmarkedEvents')}>
-          View BookedMarked Events
-        </button>
-      </div>
+
     {loading ? (
       <p style={styles.loading}>Loading activities...</p>
     ) : (
@@ -605,18 +618,19 @@ return (
   <button onClick={() => bookActivity(activity.name)}>Book Ticket</button>
   <button onClick={() => handleShare(activity, 'copy')}>Copy Link</button>
   <button onClick={() => handleShareMode(activity)}>Share via Email</button>
-  <button
-        onClick={handleBookmarkToggle}
+      {/* Bookmark Button */}
+      <button
+        onClick={() => handleBookmarkToggle(activity._id)} // Toggle bookmark for the current activity
         style={{
           backgroundColor: 'transparent',
           border: 'none',
           cursor: 'pointer',
           fontSize: '24px',
         }}
-        title={isBookmarked ? 'Remove Bookmark' : 'Add Bookmark'}
+        title={bookmarkedActivities.some((item) => item._id === activity._id) ? 'Remove Bookmark' : 'Add Bookmark'}
       >
-        {isBookmarked ? (
-          <FaBookmark style={{ color: '#FFD700' }} /> // Filled icon with color
+        {bookmarkedActivities.some((item) => item._id === activity._id) ? (
+          <FaBookmark style={{ color: '#FFD700' }} /> // Filled icon with color (yellow)
         ) : (
           <FaRegBookmark style={{ color: '#000' }} /> // Outline icon
         )}
@@ -667,8 +681,14 @@ container: {
       backgroundColor: '#f9f9f9',
       borderRadius: '10px',
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-      marginTop:'60px'
+      marginTop:'60px',
+},
 
+navigationButton: {
+  backgroundColor: 'transparent',
+  border: 'none',
+  cursor: 'pointer',
+  fontSize: '24px',
 },
 header: {
   position: 'fixed', // Make the header fixed
