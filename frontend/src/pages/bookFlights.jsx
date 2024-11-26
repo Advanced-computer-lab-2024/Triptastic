@@ -194,25 +194,28 @@ const BookFlights = () => {
   },
   
   header: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100%',
-    backgroundColor: '#0F5132',
-    color: 'white',
+    position: 'fixed', // Make the header fixed
+    top: '0', // Stick to the top of the viewport
+    left: '0',
+    width: '100%', // Make it span the full width of the viewport
+    backgroundColor: '#0F5132', // Green background
+    color: 'white', // White text
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: '10px 20px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-    zIndex: '1000',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for depth
+    zIndex: '1000', // Ensure it appears above other content
   },
   logoContainer: {
     display: 'flex',
     alignItems: 'center',
   },
   logo: {
-    height: '50px',
+    height: '70px',
+    width: '80px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
   },
   title: {
     fontSize: '24px',
@@ -318,7 +321,7 @@ const BookFlights = () => {
   },
   sidebar: {
     position: 'fixed',
-    top: '70px',
+    top: '90px',
     left: 0,
     height: '100vh',
     width: '60px',
