@@ -76,6 +76,13 @@ const touristSchema = new Schema({
       ref: 'Product', // Reference to the Product model
     },
   ],
+  notifications: [
+    {
+      message: String,
+      date: Date,
+      read: { type: Boolean, default: false }, // Track read/unread state
+    },
+  ],
 }, 
 { timestamps: true });
 

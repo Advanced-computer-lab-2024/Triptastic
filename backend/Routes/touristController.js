@@ -2023,10 +2023,9 @@ const updateProductQuantityInCart = async (req, res) => {
 };
 
 const requestNotification = async (req, res) => {
-  const { userId, activityId } = req.body;
+  const { username, activityId } = req.body;
 
   try {
-    // Find the activity
     const activity = await activitiesModel.findById(activityId);
 
     if (!activity) {
@@ -2037,31 +2036,69 @@ const requestNotification = async (req, res) => {
       return res.status(400).json({ message: 'Bookings are already open for this activity.' });
     }
 
-    // Check if the user already requested notification
     const existingRequest = activity.notificationRequests.find(
-      (request) => request.userId === userId
+      (request) => request.username === username
     );
 
     if (existingRequest) {
       return res.status(400).json({ message: 'You have already requested a notification for this activity.' });
     }
 
-    // Add notification request
-    activity.notificationRequests.push({ userId });
+    activity.notificationRequests.push({ username });
     await activity.save();
 
     res.status(200).json({ message: 'Notification request added successfully.' });
   } catch (error) {
-    console.error('Error requesting notification:', error);
+    console.error('Error requesting notification:', error.message);
     res.status(500).json({ message: 'Internal server error.' });
   }
 };
 
 
+const getNotifications = async (req, res) => {
+  const { username } = req.query;
+
+  try {
+    const tourist = await touristModel.findOne({ Username: username });
+
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    res.status(200).json({ notifications: tourist.notifications });
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const markNotificationsRead = async (req, res) => {
+  const { username } = req.query;
+
+  try {
+    const tourist = await touristModel.findOne({ Username: username });
+
+    if (!tourist) {
+      return res.status(404).json({ message: "Tourist not found" });
+    }
+
+    tourist.notifications = tourist.notifications.map((notification) => ({
+      ...notification,
+      read: true,
+    }));
+
+    await tourist.save();
+
+    res.status(200).json({ message: "Notifications marked as read" });
+  } catch (error) {
+    console.error("Error marking notifications as read:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 
 
- module.exports = {updateProductQuantityInCart,bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+ module.exports = {getNotifications,markNotificationsRead,updateProductQuantityInCart,bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist

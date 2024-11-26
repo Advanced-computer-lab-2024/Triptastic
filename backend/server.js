@@ -20,7 +20,7 @@ const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActi
 
 
 //Tourist
-const {requestNotification,updateProductQuantityInCart,removeProductFromCart,bookmarkEvent,addToCartAndRemoveFromWishlist,removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,changepasswordTourist,createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
+const {getNotifications,markNotificationsRead,requestNotification,updateProductQuantityInCart,removeProductFromCart,bookmarkEvent,addToCartAndRemoveFromWishlist,removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,changepasswordTourist,createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
   ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,
   sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,
   getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity,
@@ -162,7 +162,8 @@ app.post('/addToCartAndRemoveFromWishlist', addToCartAndRemoveFromWishlist);
 app.post('/removeProductFromCart',removeProductFromCart);
 app.patch('/updateProductQuantityInCart',updateProductQuantityInCart);
 app.post('/requestNotification',requestNotification);
-
+app.get("/getNotifications", getNotifications);
+app.patch("/markNotificationsRead", markNotificationsRead);
 
 
 //TourGuide

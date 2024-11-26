@@ -206,27 +206,85 @@ const viewActivitydetails = async (req, res) => {
     }
 };
 
+const sendNotificationsForActivity = async (activity) => {
+  try {
+    if (!activity.notificationRequests || activity.notificationRequests.length === 0) {
+      console.log('No users to notify.');
+      return;
+    }
+
+    const message = `The activity "${activity.name}" is now open for bookings!`;
+    const now = new Date();
+
+    for (const { username } of activity.notificationRequests) {
+      const tourist = await touristModel.findOne({ Username: username }); // Find tourist by username
+      if (tourist) {
+        tourist.notifications.push({ message, date: now });
+        await tourist.save();
+        console.log(`Notification sent to user: ${username}`);
+      } else {
+        console.log(`User with username ${username} not found.`);
+      }
+    }
+
+    // Clear the notificationRequests array in the activity
+    activity.notificationRequests = [];
+    await activity.save();
+
+    console.log('Notifications sent to all tourists.');
+  } catch (error) {
+    console.error('Error sending notifications:', error.message);
+  }
+};
+
 
 
 const updateActivity = async (req, res) => {
-    const {name,Advertiser}=req.query;
-   const { Category,date,time,rating,location,price,tags,specialDiscounts,bookingOpen }= req.body; // The current category name from the URL parameter
-  // The new name to be updated, taken directly from the request body
+  const { name, Advertiser } = req.query;
+  const { Category, date, time, rating, location, price, tags, specialDiscounts, bookingOpen } = req.body;
 
-   try {
-       const activity = await activitiesModel.findOneAndUpdate(
-        { Advertiser: Advertiser, name: name }, // Find category by the current name
-           { $set: { Category:Category,name:name,date:date,time:time,location:location,rating:rating,price:price,tags:tags,specialDiscounts:specialDiscounts,bookingOpen:bookingOpen  } }, // Update to the new name
-           { new: true } // Return the updated document
-       );
+  try {
+    // Fetch the existing activity to compare the bookingOpen status
+    const existingActivity = await activitiesModel.findOne({ Advertiser, name });
 
-     
+    if (!existingActivity) {
+      return res.status(404).json({ message: "Activity not found" });
+    }
 
-       res.status(200).json(activity); // Return the updated category
-   } catch (error) {
-       res.status(400).json({ error: error.message });
-   }
+    const wasBookingOpen = existingActivity.bookingOpen;
+
+    // Update the activity
+    const updatedActivity = await activitiesModel.findOneAndUpdate(
+      { Advertiser, name },
+      {
+        $set: {
+          Category,
+          name,
+          date,
+          time,
+          location,
+          rating,
+          price,
+          tags,
+          specialDiscounts,
+          bookingOpen,
+        },
+      },
+      { new: true }
+    );
+
+    // If bookingOpen transitioned from false to true, notify tourists
+    if (!wasBookingOpen && bookingOpen) {
+      await sendNotificationsForActivity(updatedActivity);
+    }
+
+    res.status(200).json(updatedActivity);
+  } catch (error) {
+    console.error("Error updating activity:", error);
+    res.status(400).json({ error: error.message });
+  }
 };
+
 
 
 

@@ -337,7 +337,7 @@ const handleNotificationRequest = async (activityId) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        userId: localStorage.getItem('Username'),
+        username: localStorage.getItem('Username'),
         activityId,
       }),
     });

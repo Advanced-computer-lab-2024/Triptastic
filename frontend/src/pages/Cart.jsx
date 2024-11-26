@@ -3,7 +3,9 @@ import { CurrencyContext } from '../pages/CurrencyContext';
 import logo from '../images/image.png'; // Logo image
 import { FaUserCircle ,FaMoneyBillWave,FaRegFileAlt, FaDollarSign,FaBoxes} from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-
+import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
+  FaClipboardList,
+  FaStar, } from "react-icons/fa";
 
 const Cart = () => {
   const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
@@ -135,7 +137,83 @@ const Cart = () => {
           <FaUserCircle alt="Profile" style={styles.profileIcon} />
         </button>
       </header>
-
+      {/* Sidebar */}
+      <div
+        style={styles.sidebar}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.width = '200px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '1')
+          );
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.width = '60px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '0')
+          );
+        }}
+      >
+        <div style={styles.item} onClick={() => navigate('/historical-locations')}>
+          <FaLandmark style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Historical Loc
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/museums')}>
+          <FaUniversity style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Museums
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/products')}>
+          <FaBox style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Products
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/itineraries')}>
+          <FaMap style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Itineraries
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/activities')}>
+          <FaRunning style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Activities
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-flights')}>
+          <FaPlane style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Book Flights
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-hotels')}>
+          <FaHotel style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Book a Hotel
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-transportation')}>
+          <FaBus style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Transportation
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
+          <FaClipboardList style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Past Orders
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
+          <FaStar style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Review Activities
+          </span>
+        </div>
+      </div>
       {/* Currency Dropdown for All Products */}
       <div style={styles.dropdownContainer}>
         <label style={styles.dropdownLabel}><FaMoneyBillWave/>Select Currency:</label>
@@ -202,6 +280,7 @@ const Cart = () => {
 
 const styles = {
   container: {
+    marginTop:'150px',
     maxWidth: '1200px',
     margin: '20px auto',
     padding: '20px',
@@ -210,19 +289,23 @@ const styles = {
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
   },
   header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '20px',
-    backgroundColor: '#0F5132',
-    padding: '10px 20px',
-    borderRadius: '10px',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+    height:'90px',
+  position: 'fixed', // Make the header fixed
+  top: '0', // Stick to the top of the viewport
+  left: '0',
+  width: '100%', // Make it span the full width of the viewport
+  backgroundColor: '#0F5132', // Green background
+  color: 'white', // White text
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding: '10px 20px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for depth
+  zIndex: '1000', // Ensure it appears above other content
   },
   logoContainer: {
     display: 'flex',
     alignItems: 'center',
-    cursor: 'pointer',
   },
   logo: {
     height: '70px',
@@ -266,10 +349,13 @@ const styles = {
     marginBottom: '20px',
   },
   dropdownLabel: {
+    marginTop:'60px',
+
     marginRight: '10px',
     fontWeight: 'bold',
   },
   currencyDropdown: {
+    marginTop:'60px',
     padding: '5px 10px',
     borderRadius: '5px',
     border: '1px solid #ccc',
@@ -314,6 +400,54 @@ const styles = {
     textAlign: 'center',
     fontSize: '18px',
     color: '#555',
+  },
+  sidebar: {
+    position: 'fixed',
+    top: '90px',
+    left: 0,
+    height: '100vh',
+    width: '50px', // Default width when collapsed
+    backgroundColor: 'rgba(15, 81, 50, 0.85)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start', // Ensure alignment starts from the left
+    padding: '10px 0',
+    overflowX: 'hidden',
+    transition: 'width 0.3s ease',
+    zIndex: 1000,
+  },
+  sidebarExpanded: {
+    width: '200px', // Width when expanded
+  },
+  iconContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start', // Align items to the left
+    padding: '10px',
+    width: '100%', // Take full width of the sidebar
+    color: '#fff',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease',
+  },
+  iconContainerHover: {
+    backgroundColor: '#084B24', // Background on hover
+  },
+  icon: {
+    fontSize: '24px',
+    marginLeft: '15px', // Move icons slightly to the right
+    color: '#fff', // Icons are always white
+  },
+  label: {
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#fff',
+    opacity: 0, // Initially hidden
+    whiteSpace: 'nowrap', // Prevent label text from wrapping
+    transition: 'opacity 0.3s ease',
+  },
+  labelVisible: {
+    opacity: 1, // Fully visible when expanded
   },
 };
 
