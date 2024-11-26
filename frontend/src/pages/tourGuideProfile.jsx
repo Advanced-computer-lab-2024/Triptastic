@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-
+import React, { useState, useEffect} from 'react';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 function TourGuideProfile() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -601,6 +601,7 @@ function TourGuideProfile() {
   };
 
 };
+const navigate = useNavigate();
 const handleViewReport = async (itineraryId) => {
   const tourGuideUsername = localStorage.getItem('Username');
 
@@ -1178,6 +1179,9 @@ const handleViewReport = async (itineraryId) => {
 
   {passwordChangeMessage && <p style={{ color: 'green' }}>{passwordChangeMessage}</p>}
   {passwordChangeError && <p style={{ color: 'red' }}>{passwordChangeError}</p>}
+</div>
+<div>
+  <button onClick={()=> navigate('/guideReport')} >View Report</button>
 </div>
 
       </div>
