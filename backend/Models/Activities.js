@@ -101,13 +101,12 @@ ratings: [{
 
   notificationRequests: [
     {
-      userId: {
-        type: String, 
+      username: {
+        type: String,
         required: true,
       },
     },
   ],
-  
 
 
 

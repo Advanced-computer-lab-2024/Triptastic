@@ -4,14 +4,16 @@ import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-route
 import axios from 'axios';
 import { CurrencyContext } from '../pages/CurrencyContext';
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
-import { FaBars, FaTimes,FaHome, FaUser, FaMapMarkerAlt } from "react-icons/fa"; // For menu icons
 import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
   FaClipboardList,
   FaStar, } from "react-icons/fa";
-import { FaPercentage, FaCalendarAlt, FaTag ,FaUserCircle} from 'react-icons/fa';
+import { FaBell,FaUserCircle} from 'react-icons/fa';
 
 const TouristProfile = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const [touristInfo, setTouristInfo] = useState(null);
   const [complaints, setComplaints] = useState([]); // New state for complaints
@@ -68,13 +70,53 @@ const TouristProfile = () => {
   const navigate = useNavigate();
   useEffect(() => {
     fetchItineraries();
+    fetchNotifications();
+
       }, []);
       useEffect(() => {
         fetchBookedItineraries();
         fetchBookedActivities(); // Fetch booked itineraries when the component mounts
       }, []); // Empty dependency array means this runs once after the first render
       
-      
+      const fetchNotifications = async () => {
+        const username = localStorage.getItem('Username'); // Assuming username is stored in local storage
+        if (!username) return;
+    
+        try {
+          const response = await axios.get(
+            `http://localhost:8000/getNotifications?username=${username}`
+          );
+          if (response.status === 200) {
+            setNotifications(response.data.notifications);
+            const unread = response.data.notifications.filter((n) => !n.read).length;
+            setUnreadCount(unread);
+          }
+        } catch (error) {
+          console.error('Error fetching notifications:', error);
+        }
+      };
+    
+      // Mark notifications as read
+      const markNotificationsAsRead = async () => {
+        const username = localStorage.getItem('Username');
+        if (!username) return;
+    
+        try {
+          await axios.patch(
+            `http://localhost:8000/markNotificationsRead?username=${username}`
+          );
+          setUnreadCount(0);
+        } catch (error) {
+          console.error('Error marking notifications as read:', error);
+        }
+      };
+    
+      // Handle click on the notification bell
+      const handleNotificationClick = () => {
+        setShowNotifications((prev) => !prev);
+        if (unreadCount > 0) markNotificationsAsRead();
+      };
+    
       
       const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -590,6 +632,16 @@ return (
     <img src={logo} alt="Logo" style={styles.logo} />
   </div>
   <h1 style={styles.title}>Tourist Profile</h1>
+   {/* Notification Bell */}
+   <div
+            style={styles.notificationButton}
+            onClick={handleNotificationClick}
+          >
+            <FaBell style={styles.notificationIcon} />
+            {unreadCount > 0 && (
+              <span style={styles.notificationBadge}>{unreadCount}</span>
+            )}
+          </div>
   <FaUserCircle
     alt="Profile Icon"
     style={styles.profileIcon}
@@ -600,7 +652,24 @@ return (
     <span style={styles.cartLabel}></span>
   </div>
 </header>
-
+{/* Notification Dropdown */}
+{showNotifications && (
+        <div style={styles.notificationDropdown}>
+          <h3 style={styles.dropdownHeader}>Notifications</h3>
+          {notifications.length > 0 ? (
+            notifications.map((notification, index) => (
+              <div key={index} style={styles.notificationItem}>
+                <p>{notification.message}</p>
+                <span style={styles.notificationDate}>
+                  {new Date(notification.date).toLocaleString()}
+                </span>
+              </div>
+            ))
+          ) : (
+            <p style={styles.noNotifications}>No notifications available</p>
+          )}
+        </div>
+      )}
     {/* Main Content */}
     <div className="tourist-profile-container" style={{ marginTop: '120px' }}>
       {/* Sidebar */}
@@ -894,13 +963,57 @@ const styles = {
     borderRadius: '10px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
   },
+  notificationButton: {
+    position: 'relative',
+    cursor: 'pointer',
+  },
+  notificationIcon: {
+    fontSize: '24px',
+    color: 'white',
+   // marginLeft:'100px'
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: '-5px',
+    right: '-5px',
+    backgroundColor: 'red',
+    color: 'white',
+    borderRadius: '50%',
+    padding: '5px',
+    fontSize: '12px',
+  },
   profileIcon: {
-    fontSize: '40px',
+    fontSize: '30px',
     color: 'white',
     cursor: 'pointer',
-    borderRadius: '20px',
-    marginRight:'-550px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  },
+  notificationDropdown: {
+    position: 'absolute',
+    top: '60px',
+    right: '20px',
+    width: '300px',
+    backgroundColor: '#fff',
+    borderRadius: '8px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    zIndex: 1000,
+  },
+  dropdownHeader: {
+    padding: '10px',
+    borderBottom: '1px solid #ddd',
+    fontWeight: 'bold',
+  },
+  notificationItem: {
+    padding: '10px',
+    borderBottom: '1px solid #ddd',
+  },
+  notificationDate: {
+    fontSize: '12px',
+    color: '#666',
+  },
+  noNotifications: {
+    padding: '10px',
+    color: '#666',
+    textAlign: 'center',
   },
   actionButtons: {
     display: 'flex',
@@ -914,6 +1027,7 @@ const styles = {
     fontWeight: 'bold',
     color: 'white',
     margin: 0,
+    marginLeft:'400px'
   },
 
   
