@@ -1135,6 +1135,7 @@ const bookActivity = async (req, res) => {
       newlyEarnedPoints,
       bonusCash,
       updatedWallet: tourist.Wallet,
+      price:activity.price
     });
   } catch (error) {
     console.error(error);

@@ -307,30 +307,46 @@ const Activities = () => {
     setIsEmailMode(!isEmailMode);
   };
 
-const bookActivity = async (activityName) => {
-  const username = localStorage.getItem('Username');
-  try {
-    const response = await fetch('http://localhost:8000/bookActivity', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name: activityName, Username: username }), 
-    });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Booking failed');
+  const bookActivity = async (activityName) => {
+    const username = localStorage.getItem('Username');
+  
+    if (!username) {
+      alert("Please log in first");
+      return;
     }
-
-    const data = await response.json();
-    setErrorMessage(''); // Clear any previous error messages
-    alert(data.message); // Show success message
-  } catch (error) {
-    setErrorMessage(error.message);
-    console.error(error);
-  }
-};
+  
+    try {
+      const response = await fetch('http://localhost:8000/bookActivity', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: activityName, Username: username }), // Ensure 'Username' is correct
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Booking failed');
+      }
+  
+      const data = await response.json();
+  
+      // Ensure 'data.price' exists before navigating
+      if (data.price) {
+        // Navigate to the payment page with price as the query parameter
+        navigate(`/payment?amount=${data.price}`);
+        setErrorMessage(''); // Clear any previous error messages
+        alert(data.message); // Show success message
+      } else {
+        throw new Error('Invalid response from server');
+      }
+    } catch (error) {
+      setErrorMessage(error.message);
+      console.error(error);
+    }
+  };
+  
 const handleNotificationRequest = async (activityId) => {
   try {
     const response = await fetch('http://localhost:8000/requestNotification', {

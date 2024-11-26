@@ -66,6 +66,24 @@ const activities=require("./Models/Activities");
 const museums=require("./Models/Museums");
 const request=require("./Models/Request");
 const cart=require("./Models/Cart");
+const stripe = require('stripe')('sk_test_51QPR4CHmIrhpZsCU2LMQa6mIZ31UWoQneetd05jwMgPmu7bdstdZmu6L17w0tLU3xSzPbBSeTruUPAyrWCpTCpj900oMSuTeOi'); // Replace with your secret Stripe key
+
+app.post('/create-payment-intent', async (req, res) => {
+  const { amount } = req.body; // The amount should come from the activity's booking price
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount, // Amount in cents (e.g., 1000 = $10)
+      currency: 'usd', // or your desired currency
+      payment_method_types: ['card'], // Allow credit/debit card payments
+    });
+
+    res.send({
+      clientSecret: paymentIntent.client_secret,
+    });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
 
 
 // Set up session middleware

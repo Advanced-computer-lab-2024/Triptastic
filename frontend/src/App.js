@@ -40,9 +40,13 @@ import Wishlist from './pages/Wishlist';
 import PromoCodeForm from './pages/PromoCodeForm';
 import TouristSettings from './pages/touristsettings';
 import BookmarkedEvents from './pages/BookmarkedEvents';
-
+import PaymentPage from './pages/Payment';
+import { Elements } from '@stripe/react-stripe-js'; // Import Elements from Stripe
+import { loadStripe } from '@stripe/stripe-js'; // Import loadStripe
 
 import AttendedActivitiesPage from './pages/AttendedActivities';
+const stripePromise = loadStripe('your-publishable-key-here');
+
 function Home() {
   const navigate = useNavigate();
   
@@ -78,6 +82,7 @@ function Home() {
 function App() {
   return (
     <CurrencyProvider>
+    <Elements stripe={stripePromise}>  {/* Wrap your app or specific routes with Elements provider */}
 
     <Router>
       <Routes>
@@ -122,12 +127,16 @@ function App() {
         <Route path="/PromoCodeForm" element={<PromoCodeForm />} />
         <Route path="/TouristSettings" element={<TouristSettings/>} />
         <Route path="/BookmarkedEvents" element={<BookmarkedEvents />} />
+        <Route path="/payment" element={<PaymentPage />} />
+
 
 
 
 
       </Routes>
     </Router>
+    </Elements>  {/* Close Elements provider */}
+
     </CurrencyProvider>
 
   );
