@@ -28,6 +28,11 @@ const Activities = () => {
   const [bookmarkedActivities, setBookmarkedActivities] = useState([]);
   const [username, setUsername] = useState(localStorage.getItem('Username') || '');
   const navigate = useNavigate();
+  const [isBookmarked, setIsBookmarked] = useState(false); // State to toggle fill
+
+  const handleBookmarkToggle = () => {
+    setIsBookmarked(!isBookmarked); // Toggle state
+  };
 
 
   const [notificationRequested, setNotificationRequested] = useState({});
@@ -601,20 +606,21 @@ return (
   <button onClick={() => handleShare(activity, 'copy')}>Copy Link</button>
   <button onClick={() => handleShareMode(activity)}>Share via Email</button>
   <button
-    onClick={() =>
-      bookmarkedActivities.includes(activity._id)
-        ? handleRemoveBookmark(activity._id)
-        : handleBookmark(activity._id)
-    }
-    style={styles.bookmarkButton} // Add style to align the button
-    title={bookmarkedActivities.includes(activity._id) ? 'Remove Bookmark' : 'Add Bookmark'}
-  >
-    {bookmarkedActivities.includes(activity._id) ? (
-      <FaBookmark style={styles.bookmarkIcon} />
-    ) : (
-      <FaRegBookmark style={styles.bookmarkIcon} />
-    )}
-  </button>
+        onClick={handleBookmarkToggle}
+        style={{
+          backgroundColor: 'transparent',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: '24px',
+        }}
+        title={isBookmarked ? 'Remove Bookmark' : 'Add Bookmark'}
+      >
+        {isBookmarked ? (
+          <FaBookmark style={{ color: '#FFD700' }} /> // Filled icon with color
+        ) : (
+          <FaRegBookmark style={{ color: '#000' }} /> // Outline icon
+        )}
+      </button>
 </div>
 
                 {isEmailMode && activityToShare && activityToShare._id === activity._id && (
