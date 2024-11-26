@@ -172,8 +172,7 @@ const Activities = () => {
         { eventId: activityId },
         { params: { Username: username } }
       );
-  
-      alert('Activity bookmarked successfully!');
+
       fetchBookmarkedActivities(); // Refresh the bookmarked activities
     } catch (error) {
       console.error('Error bookmarking activity:', error);
@@ -188,7 +187,7 @@ const Activities = () => {
         { eventId: activityId },
         { params: { Username: username } }
       );
-      alert('Bookmark removed successfully!');
+      
       fetchBookmarkedActivities(); // Refresh the bookmarked activities
     } catch (error) {
       console.error('Error removing bookmark:', error);
@@ -683,8 +682,6 @@ container: {
       borderRadius: '10px',
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
       marginTop:'60px',
-      
-
 },
 
 navigationButton: {
