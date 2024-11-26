@@ -274,6 +274,11 @@ const Cart = () => {
           </ul>
         )}
       </div>
+      <div style={styles.checkoutContainer}>
+            <button style={styles.checkoutButton} onClick={() => navigate('/checkout.jsx')}>
+              Proceed to Checkout
+            </button>
+          </div>
     </div>
   );
 };
