@@ -409,8 +409,6 @@ const styles = {
     borderRadius: '5px',
     cursor: 'pointer',
   },
-  
-  
   header: {
     position: 'fixed', // Make the header fixed
     top: '0', // Stick to the top of the viewport
@@ -433,7 +431,6 @@ const styles = {
     height: '70px',
     width: '80px',
     borderRadius: '10px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
   },
   profileIcon: {
     fontSize: '40px',
