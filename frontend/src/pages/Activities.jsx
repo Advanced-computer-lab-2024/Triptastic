@@ -448,11 +448,11 @@ return (
   style={{
     ...styles.navigationButton,
     position: 'absolute',
-    right: '60px', // Moves the bookmark button 20px from the right edge
+    left: '1410px', // Moves the bookmark button 20px from the right edge
   }}
   onClick={() => navigate('/BookmarkedEvents')}
 >
-  <FaBookmark style={{ fontSize: '30px', color: '#FFD700' }} />
+  <FaBookmark style={{ fontSize: '20px', color: '#FFD700',marginBottom:'5px'}} />
 </button>
 
       <FaUserCircle style={styles.profileIcon} onClick={handleProfileRedirect} />
@@ -908,7 +908,7 @@ logo: {
   marginRight:'10px',
 },
 profileIcon: {
-  fontSize: '40px',
+  fontSize: '30px',
   color: 'white',
   cursor: 'pointer',
   borderRadius: '20px',
@@ -921,6 +921,7 @@ buttonGroup: {
   alignItems: 'center', // Ensure alignment across buttons
 },
 bookmarkButton: {
+  
   backgroundColor: 'transparent', // Transparent background to match others
   border: 'none', // Remove default button border
   cursor: 'pointer', // Pointer cursor for interactivity
@@ -931,7 +932,7 @@ bookmarkButton: {
   marginTop:'30px'
 },
 bookmarkIcon: {
-  fontSize: '20px', // Match the size of other icons or adjust as needed
+  fontSize: '30px', // Match the size of other icons or adjust as needed
   color: '#FFD700', // Gold color for bookmark icon
 },
 
