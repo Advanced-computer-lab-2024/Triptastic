@@ -3,6 +3,8 @@ import axios from 'axios';
 import { CurrencyContext } from '../pages/CurrencyContext';
 import { FaPlaneDeparture, FaPlaneArrival, FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaClipboardList, FaStar, FaUserCircle } from 'react-icons/fa';
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
+import flight from '../images/flight.jpg'; // Adjust the path as necessary
+
 import { useNavigate } from 'react-router-dom';
 const BookFlights = () => {
   const [flightDetails, setFlightDetails] = useState({
