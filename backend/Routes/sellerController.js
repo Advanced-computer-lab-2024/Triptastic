@@ -439,23 +439,24 @@ const checkAndNotifyOutOfStockSeller = async (req, res) => {
 
 const checkAndNotifyOutOfStockAdmin = async (req, res) => {
   try {
-    // Query for out-of-stock products where notification hasn't been sent
-    const outOfStockProducts = await productModel.find({ stock: 0, notificationSent: { $ne: false } });
+    const { Username } = req.query;
 
-    console.log('Out-of-stock products:', outOfStockProducts);
+    // Fetch out-of-stock products created by the admin where notification hasn't been sent
+    const outOfStockProducts = await productModel.find({
+      stock: 0,
+      notificationSent: { $ne: true },
+      seller: Username, // Filter products by the admin who created them
+    });
+
+    console.log(`Out-of-stock products for admin (${Username}):`, outOfStockProducts);
 
     if (outOfStockProducts.length === 0) {
-      return res.status(200).json({ message: 'No out-of-stock products found.' });
+      return res.status(200).json({ message: 'No out-of-stock products found for this admin.' });
     }
 
-    // Fetch admin emails
-    const adminEmails = await adminModel.find({}, 'Email');
-    console.log('Admin emails:', adminEmails);
-
-    const adminEmailAddresses = adminEmails.map((admin) => admin.Email);
-    if (adminEmailAddresses.length === 0) {
-      return res.status(200).json({ message: 'No admin emails found.' });
-    }
+    // Fetch the admin's email (optional)
+    const admin = await adminModel.findOne({ Username }, 'Email');
+    const adminEmail = admin?.Email;
 
     // Prepare notification messages
     const notifications = [];
@@ -463,18 +464,18 @@ const checkAndNotifyOutOfStockAdmin = async (req, res) => {
 
     for (const product of outOfStockProducts) {
       const adminNotification = {
-        user: 'admin',
+        user: Username,
         type: 'admin',
-        message: `Product "${product.productName}" by ${product.seller} is out of stock.`,
+        message: `Your product "${product.productName}" is out of stock.`,
       };
 
       // Store notifications
       await storeNotification(adminNotification);
-      outOfStockProductsList.push(`- ${product.productName} by ${product.seller}`);
+      outOfStockProductsList.push(`- ${product.productName}`);
     }
 
-    // If there are products to notify about, send an email
-    if (outOfStockProductsList.length > 0) {
+    // Send an email if the admin has an email
+    if (adminEmail && outOfStockProductsList.length > 0) {
       const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -485,16 +486,16 @@ const checkAndNotifyOutOfStockAdmin = async (req, res) => {
 
       const adminMailOptions = {
         from: 'malook25062003@gmail.com',
-        to: adminEmailAddresses.join(', '),
-        subject: 'Out-of-Stock Products Notification',
-        text: `Dear Admins,\n\nThe following products are out of stock:\n${outOfStockProductsList.join(
+        to: adminEmail,
+        subject: 'Your Out-of-Stock Products Notification',
+        text: `Dear Admin,\n\nThe following products you created are out of stock:\n${outOfStockProductsList.join(
           '\n'
         )}\n\nThank you!`,
       };
 
       try {
         await transporter.sendMail(adminMailOptions);
-        console.log('Email sent to admins:', adminEmailAddresses);
+        console.log(`Email sent to admin (${adminEmail}):`, outOfStockProductsList);
 
         // Mark all products as notified
         await productModel.updateMany(
@@ -503,16 +504,28 @@ const checkAndNotifyOutOfStockAdmin = async (req, res) => {
         );
 
         notifications.push({
-          message: 'Out-of-stock notifications sent to admins.',
+          message: 'Out-of-stock notifications sent to admin.',
           products: outOfStockProductsList,
         });
       } catch (emailError) {
-        console.error('Failed to send email to admins:', emailError);
+        console.error('Failed to send email to admin:', emailError);
       }
+    } else if (!adminEmail) {
+      console.log('Admin does not have an email. Skipping email notification.');
+      // Mark all products as notified
+      await productModel.updateMany(
+        { _id: { $in: outOfStockProducts.map((p) => p._id) } },
+        { $set: { notificationSent: true } }
+      );
+
+      notifications.push({
+        message: 'Out-of-stock notifications stored for admin without email.',
+        products: outOfStockProductsList,
+      });
     }
 
     res.status(200).json({
-      message: 'Out-of-stock notifications sent successfully.',
+      message: 'Out-of-stock notifications processed successfully.',
       notifications,
     });
   } catch (error) {
@@ -520,6 +533,8 @@ const checkAndNotifyOutOfStockAdmin = async (req, res) => {
     res.status(500).json({ message: 'An error occurred while sending notifications.', error });
   }
 };
+
+
 
 
 

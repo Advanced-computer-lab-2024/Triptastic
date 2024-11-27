@@ -23,7 +23,20 @@ const TouristSettings = () => {
   const [passwordChangeMessage, setPasswordChangeMessage] = useState('');
   const [passwordChangeError, setPasswordChangeError] = useState('');
   const [changingPassword, setChangingPassword] = useState(false);
-  
+const [showAddresses, setShowAddresses] = useState(false);
+const [showAddressForm, setShowAddressForm] = useState(false);
+const [addresses, setAddresses] = useState([]);
+
+const [newAddress, setNewAddress] = useState({
+  addressLine1: '',
+  addressLine2: '',
+  city: '',
+  state: '',
+  postalCode: '',
+  country: '',
+  phoneNumber: '',
+  isPrimary: false
+});
   localStorage.setItem('context', 'tourist');
   const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
  
@@ -143,7 +156,71 @@ const TouristSettings = () => {
     }
     setLoading(false);
   };
-
+  const fetchAddresses = async () => {
+    const Username = localStorage.getItem('Username');
+    try {
+      const response = await fetch(`http://localhost:8000/getAddresses?username=${Username}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        setAddresses(data);
+        setErrorMessage('');
+      } else {
+        throw new Error('Failed to fetch addresses');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while fetching addresses');
+      console.error(error);
+    }
+  };
+  
+  const handleAddAddress = async (e) => {
+    e.preventDefault();
+    const Username = localStorage.getItem('Username');
+    try {
+      const response = await fetch(`http://localhost:8000/addAddress?username=${Username}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newAddress)
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        setAddresses(data.addresses);
+        setShowAddressForm(false);
+        setNewAddress({
+          addressLine1: '',
+          addressLine2: '',
+          city: '',
+          state: '',
+          postalCode: '',
+          country: '',
+          phoneNumber: '',
+          isPrimary: false
+        });
+        setErrorMessage('');
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to add address');
+      }
+    } catch (error) {
+      setErrorMessage(error.message);
+      console.error(error);
+    }
+  };
+  
+  const handleAddressInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setNewAddress(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
   useEffect(() => {
     fetchTouristInfo();
     fetchComplaints(); // Fetch complaints when the component loads
@@ -305,6 +382,18 @@ const TouristSettings = () => {
                 <label><strong>Wallet Balance:</strong></label>
                 <p>{touristInfo.Wallet} {selectedCurrency}</p> 
               </div>
+              <div>
+  <label><strong>My Preferences:</strong></label>
+  <ul>
+    {touristInfo.preferences && touristInfo.preferences.length > 0 ? (
+      touristInfo.preferences.map((preference, index) => (
+        <li key={index}>{preference}</li>
+      ))
+    ) : (
+      <p>No preferences available.</p>
+    )}
+  </ul>
+</div>
               <div>
                 <label><strong>Email:</strong></label>
                 <input
@@ -499,14 +588,186 @@ const TouristSettings = () => {
     </ul>
   )}
   </div>
-  
+  <div>
       <div>
-      
+        <h2>My Addresses</h2>
       </div>
-      <div>
-       
-      </div>
-      {errorMessage && <div className="error">{errorMessage}</div>}
+
+      <button
+        style={styles.addButton}
+        onClick={() => setShowAddresses((prev) => !prev)} // Toggle addresses visibility
+      >
+        {showAddresses ? 'Hide Addresses' : 'View Addresses'}
+      </button>
+
+      {showAddresses && (
+        <div>
+          {addresses.map((address, index) => (
+            <div key={index} style={styles.productItem}>
+              <p style={styles.productName}>{address.addressLine1}</p>
+              <p>{address.city}, {address.country}</p>
+              {address.isPrimary && <span style={{color: '#0F5132', fontWeight: 'bold'}}>Primary Address</span>}
+            </div>
+          ))}
+          <button
+        style={styles.addButton}
+        onClick={() => setShowAddressForm((prev) => !prev)} // Toggle form visibility independently
+      >
+        {showAddressForm ? 'Cancel' : 'Add New Address'} {/* Dynamic Button Text */}
+      </button>
+
+        </div>
+      )}
+
+      {showAddressForm && (
+     <form onSubmit={handleAddAddress} style={styles.container}>
+     <input
+       style={{
+         width: '100%',
+         padding: '10px',
+         marginBottom: '10px',
+         borderRadius: '5px',
+         border: '1px solid #ddd'
+       }}
+       name="addressLine1"
+       value={newAddress.addressLine1}
+       onChange={handleAddressInputChange}
+       placeholder="Address Line 1"
+       required
+     />
+     
+     <input
+       style={{
+         width: '100%',
+         padding: '10px',
+         marginBottom: '10px',
+         borderRadius: '5px',
+         border: '1px solid #ddd'
+       }}
+       name="addressLine2"
+       value={newAddress.addressLine2}
+       onChange={handleAddressInputChange}
+       placeholder="Address Line 2"
+     />
+     
+     <input
+       style={{
+         width: '100%',
+         padding: '10px',
+         marginBottom: '10px',
+         borderRadius: '5px',
+         border: '1px solid #ddd'
+       }}
+       name="city"
+       value={newAddress.city}
+       onChange={handleAddressInputChange}
+       placeholder="City"
+       required
+     />
+     
+     <input
+       style={{
+         width: '100%',
+         padding: '10px',
+         marginBottom: '10px',
+         borderRadius: '5px',
+         border: '1px solid #ddd'
+       }}
+       name="state"
+       value={newAddress.state}
+       onChange={handleAddressInputChange}
+       placeholder="State"
+     />
+     
+     <input
+       style={{
+         width: '100%',
+         padding: '10px',
+         marginBottom: '10px',
+         borderRadius: '5px',
+         border: '1px solid #ddd'
+       }}
+       name="postalCode"
+       value={newAddress.postalCode}
+       onChange={handleAddressInputChange}
+       placeholder="Postal Code"
+     />
+     
+     <input
+       style={{
+         width: '100%',
+         padding: '10px',
+         marginBottom: '10px',
+         borderRadius: '5px',
+         border: '1px solid #ddd'
+       }}
+       name="country"
+       value={newAddress.country}
+       onChange={handleAddressInputChange}
+       placeholder="Country"
+       required
+     />
+     
+     <input
+       style={{
+         width: '100%',
+         padding: '10px',
+         marginBottom: '10px',
+         borderRadius: '5px',
+         border: '1px solid #ddd'
+       }}
+       name="phoneNumber"
+       value={newAddress.phoneNumber}
+       onChange={handleAddressInputChange}
+       placeholder="Phone Number"
+     />
+     
+     <div style={{ display: 'flex', alignItems: 'center' }}>
+       <label style={{ marginRight: '10px' }}>Is Primary</label>
+       <input
+         type="checkbox"
+         name="isPrimary"
+         checked={newAddress.isPrimary}
+         onChange={handleAddressInputChange}
+       />
+     </div>
+          <div style={{
+            display: 'flex', 
+            justifyContent: 'space-between'
+          }}>
+            <button 
+              type="submit" 
+              style={styles.addButton}
+            >
+              Submit Address
+            </button>
+            <button 
+              type="button" 
+              style={{
+                ...styles.filterButton, 
+                backgroundColor: '#dc3545'
+              }}
+              onClick={() => setShowAddressForm(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
+
+      {errorMessage && (
+        <div style={{
+          color: 'red', 
+          padding: '10px', 
+          backgroundColor: '#f8d7da', 
+          borderRadius: '5px', 
+          marginTop: '10px'
+        }}>
+          {errorMessage}
+        </div>
+      )}
+    </div>
+     
       {successMessage && <div className="success">{successMessage}</div>}
    
   
@@ -524,6 +785,7 @@ const TouristSettings = () => {
       borderRadius: '10px',
       boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
     },
+  
     header: {
       display: 'flex',
       justifyContent: 'space-between',
@@ -571,6 +833,7 @@ const TouristSettings = () => {
       color: 'white',
       margin: 0,
     },
+    
     cartIcon: {
       width: '50px',
       height: '50px',

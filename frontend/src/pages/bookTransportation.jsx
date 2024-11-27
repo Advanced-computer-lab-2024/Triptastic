@@ -2,7 +2,9 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { CurrencyContext } from '../pages/CurrencyContext';
-import { FaBus, FaPlane, FaTrain, FaMoneyBillWave, FaMapMarkerAlt, FaLocationArrow, FaClock ,FaDollarSign, FaArrowCircleLeft } from 'react-icons/fa'; // Icons for transport types
+import { FaBus, FaPlane, FaTrain, FaMoneyBillWave, FaMapMarkerAlt, FaLocationArrow, FaClock ,FaDollarSign, FaArrowCircleLeft,FaUserCircle,FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaHotel, FaShoppingCart,
+  FaClipboardList,
+  FaStar, } from 'react-icons/fa'; // Icons for transport types
 import { AiOutlineCheckCircle, AiOutlineWarning } from 'react-icons/ai'; // Icons for messages
 import logo from '../images/image.png';
 
@@ -62,15 +64,95 @@ const BookTransportation = () => {
         <FaArrowCircleLeft
           style={styles.backIcon}
           onClick={handleProfileRedirect}
+
         />
         <img src={logo} alt="Logo" style={styles.logo} /> {/* Add your logo here */}
         <h1 style={styles.title}>Book Your Transportation</h1>
+        <FaUserCircle style={styles.profileIcon} onClick={handleProfileRedirect} />
+
       </header>
+         {/* Sidebar */}
+         <div
+        style={styles.sidebar}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.width = '200px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '1')
+          );
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.width = '60px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '0')
+          );
+        }}
+      >
+        <div style={styles.item} onClick={() => navigate('/historical-locations')}>
+          <FaLandmark style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Historical Loc
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/museums')}>
+          <FaUniversity style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Museums
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/products')}>
+          <FaBox style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Products
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/itineraries')}>
+          <FaMap style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Itineraries
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/activities')}>
+          <FaRunning style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Activities
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-flights')}>
+          <FaPlane style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Book Flights
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-hotels')}>
+          <FaHotel style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Book a Hotel
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-transportation')}>
+          <FaBus style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Transportation
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
+          <FaClipboardList style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Past Orders
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
+          <FaStar style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Review Activities
+          </span>
+        </div>
+      </div>
 
       {/* Currency Selector */}
       <div style={styles.currencySelector}>
-        <label htmlFor="currency" style={styles.label}>
-          <FaMoneyBillWave style={styles.icon} /> Select Currency:
+        <label htmlFor="currency" style={styles.clabel}>
+          <FaMoneyBillWave style={styles.cicon} /> Select Currency:
         </label>
         <select id="currency" onChange={handleCurrencyChange} style={styles.select}>
         <option value="EGP">EGP</option>
@@ -126,21 +208,44 @@ export default BookTransportation;
 // Inline Styles
 const styles = {
   container: {
+    marginTop:'60px',
     fontFamily: 'Montserrat, sans-serif',
+    fontSize:"15px",
     backgroundColor: '#f9f9f9',
     minHeight: '100vh',
     padding: '20px',
     color: '#333',
+    margin:'100px'
   },
   header: {
-    backgroundColor: '#0F5132',
-    color: '#fff',
-    padding: '15px 20px',
+    position: 'fixed', // Make the header fixed
+    top: '0', // Stick to the top of the viewport
+    left: '0',
+    width: '100%', // Make it span the full width of the viewport
+    backgroundColor: '#0F5132', // Green background
+    color: 'white', // White text
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderRadius: '8px',
-    marginBottom: '20px',
+    padding: '10px 20px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for depth
+    zIndex: '1000', // Ensure it appears above other content
+  },
+  logoContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  logo: {
+    height: '70px',
+    width: '80px',
+    borderRadius: '10px',
+  },
+  profileIcon: {
+    fontSize: '40px',
+    color: 'white',
+    cursor: 'pointer',
+    borderRadius: '20px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
   },
   backIcon: {
     fontSize: '24px',
@@ -148,12 +253,7 @@ const styles = {
     cursor: 'pointer',
     marginRight: '10px',
   },
-  logo: {
-    height: '70px',
-    width: '80px',
-    borderRadius: '10px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
-  },
+ 
   title: {
     fontSize: '24px',
     fontWeight: 'bold',
@@ -166,7 +266,7 @@ const styles = {
     justifyContent: 'flex-end',
     margin: '20px 0',
   },
-  label: {
+  clabel: {
     fontWeight: 'bold',
     marginRight: '10px',
   },
@@ -204,7 +304,7 @@ const styles = {
   bookButton: {
     backgroundColor: '#0F5132',
     color: '#fff',
-    padding: '10px 20px',
+    padding: '10px 10px',
     border: 'none',
     borderRadius: '5px',
     cursor: 'pointer',
@@ -228,7 +328,55 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
   },
-  icon: {
+  cicon: {
     marginRight: '5px',
+  },
+  sidebar: {
+    position: 'fixed',
+    top: '90px',
+    left: 0,
+    height: '100vh',
+    width: '50px', // Default width when collapsed
+    backgroundColor: 'rgba(15, 81, 50, 0.85)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start', // Ensure alignment starts from the left
+    padding: '10px 0',
+    overflowX: 'hidden',
+    transition: 'width 0.3s ease',
+    zIndex: 1000,
+  },
+  sidebarExpanded: {
+    width: '200px', // Width when expanded
+  },
+  iconContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start', // Align items to the left
+    padding: '10px',
+    width: '100%', // Take full width of the sidebar
+    color: '#fff',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease',
+  },
+  iconContainerHover: {
+    backgroundColor: '#084B24', // Background on hover
+  },
+  icon: {
+    fontSize: '24px',
+    marginLeft: '15px', // Move icons slightly to the right
+    color: '#fff', // Icons are always white
+  },
+  label: {
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#fff',
+    opacity: 0, // Initially hidden
+    whiteSpace: 'nowrap', // Prevent label text from wrapping
+    transition: 'opacity 0.3s ease',
+  },
+  labelVisible: {
+    opacity: 1, // Fully visible when expanded
   },
 };

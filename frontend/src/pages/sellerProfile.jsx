@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import image from '../images/image.png';
 import { FaBell,FaBox } from 'react-icons/fa'; // Importing bell icon
+import { MdNotificationImportant } from 'react-icons/md';
+
 
 const SellerProfile = () => {
   const [sellerInfo, setSellerInfo] = useState(null);
@@ -489,74 +491,12 @@ const unarchiveProduct = async () => {
   return (
     
         <div className="seller-profile-container">
-      <div style={{ position: 'relative', textAlign: 'right', padding: '10px' }}>
-        <FaBell
-          size={24}
-          style={{ cursor: 'pointer' }}
-          onClick={handleNotificationClick}
-        />
-        {notifications.length > 0 && (
-          <span
-            style={{
-              position: 'absolute',
-              top: 0,
-              right: 10,
-              backgroundColor: 'red',
-              color: 'white',
-              borderRadius: '50%',
-              width: '18px',
-              height: '18px',
-              fontSize: '12px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            {notifications.length}
-          </span>
-        )}
-        {showNotifications && (
-          <div
-            style={{
-              position: 'absolute',
-              top: '30px',
-              right: '10px',
-              backgroundColor: 'white',
-              border: '1px solid #ccc',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-              borderRadius: '4px',
-              width: '250px',
-              maxHeight: '300px',
-              overflowY: 'auto',
-              zIndex: 10,
-            }}
-          >
-            <ul style={{ listStyle: 'none', padding: '10px', margin: 0 }}>
-              {notifications.map((notification) => (
-                <li
-                  key={notification.id}
-                  style={{
-                    borderBottom: '1px solid #ddd',
-                    padding: '10px 0',
-                    fontSize: '14px',
-                  }}
-                >
-                  {notification.message}
-                </li>
-              ))}
-            </ul>
-            {notifications.length === 0 && (
-              <p style={{ padding: '10px', textAlign: 'center' }}>
-                No notifications
-              </p>
-            )}
-          </div>
-        )}
-      </div>
+     
       <div className="profile-content">
         <h2>Seller Profile</h2>
         <div>
         <div className="sidebar">
+          
         <header style={{ display: 'flex',  padding: '5px', backgroundColor: '#f4f4f4' }}>
   <img 
     src={image} 
@@ -576,6 +516,115 @@ const unarchiveProduct = async () => {
         <ul>
           <li onClick={() => navigate('/products')}><FaBox/>Products</li>
         </ul>
+        <div style={{ position: 'relative', textAlign: 'right', padding: '10px' }}>
+
+       {/* Notification Bell Icon */}
+       <FaBell
+        size={24}
+        style={{ cursor: 'pointer', color: '#333' }}
+        onClick={handleNotificationClick}
+      />
+
+      {/* Notification Count */}
+      {notifications && notifications.length > 0 && (
+        <span
+          style={{
+            position: 'absolute',
+            top: -5,
+            right: -5,
+            backgroundColor: '#ff4d4d',
+            color: 'white',
+            borderRadius: '50%',
+            width: '20px',
+            height: '20px',
+            fontSize: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+          }}
+        >
+          {notifications.length}
+        </span>
+      )}
+
+      {/* Notifications Dropdown */}
+      {showNotifications && (
+        <div
+        
+          style={{
+            position: 'absolute',
+            top: '40px',
+            right: '0px',
+            backgroundColor: 'white',
+            border: '1px solid #ddd',
+            borderRadius: '8px',
+            boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
+            width: '320px',
+            maxHeight: '400px',
+            overflowY: 'auto', // Enable vertical scrolling
+            overflowX: 'hidden',
+            zIndex: 1000,
+          }}
+        >
+          <div style={{ padding: '10px', fontWeight: 'bold', borderBottom: '1px solid #f0f0f0' }}>
+            Notifications
+          </div>
+          <ul style={{ listStyle: 'none', padding: '0', margin: '0',  flexDirection: 'column', // Stack items vertically
+    gap: '10px' }}>
+            {notifications && notifications.map((notification) => (
+              <li
+                key={notification.id}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row', // Align icon and text horizontally
+                  alignItems: 'flex-start', // Align icon with the top of the text
+                  backgroundColor: '#f9f9f9', // Light background for each item
+                  border: '1px solid #ddd', // Add subtle border
+                  borderRadius: '5px', // Rounded corners
+                  padding: '10px', // Add padding inside each item
+                  borderBottom: '1px solid #f0f0f0',
+                  padding: '10px',
+                  fontSize: '14px',
+                }}
+              >
+                <MdNotificationImportant
+                  size={20}
+                  style={{ marginRight: '10px', color: '#ff9800' }}
+                />
+                <div style={{ flex: 1 }}>
+                  <p style={{ margin: 0, fontWeight: '500' }}>{notification.message}</p>
+                  <p style={{ margin: '5px 0 0', fontSize: '12px', color: '#888' }}>
+                    {new Date(notification.createdAt).toLocaleDateString('en-US', {
+                      month: 'long',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}{' '}
+                    at{' '}
+                    {new Date(notification.createdAt).toLocaleTimeString('en-US', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+          {!notifications || notifications.length === 0 ? (
+            <div
+              style={{
+                padding: '20px',
+                textAlign: 'center',
+                color: '#888',
+                fontSize: '14px',
+              }}
+            >
+              No new notifications
+            </div>
+          ) : null}
+        </div>
+      )}
+    </div>
       </div>
   <h3>Change Password</h3>
   {passwordMessage && <p style={{ color: passwordMessage.includes('successfully') ? 'green' : 'red' }}>{passwordMessage}</p>}

@@ -34,7 +34,6 @@ const BookmarkedEvents = () => {
       setBookmarkedEvents((prevEvents) =>
         prevEvents.filter((event) => event._id !== eventId)
       );
-      alert('Bookmark removed successfully!');
     } catch (error) {
       console.error('Error removing bookmark:', error);
       alert('Failed to remove bookmark. Please try again.');
@@ -64,7 +63,7 @@ const BookmarkedEvents = () => {
 
       {/* Bookmarked Events */}
       <div style={styles.content}>
-        <h2 style={styles.pageTitle}>Your Bookmarked Events</h2>
+      
         {bookmarkedEvents.length > 0 ? (
           bookmarkedEvents.map((event) => (
             <div key={event._id} style={styles.eventCard}>
@@ -107,7 +106,7 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '20px',
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#0F5132',
     padding: '10px 20px',
     borderRadius: '10px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
@@ -147,7 +146,7 @@ const styles = {
   eventTitle: {
     fontSize: '22px',
     marginBottom: '10px',
-    color: '#4CAF50',
+    color: '#0F5132',
   },
   eventDescription: {
     fontSize: '16px',

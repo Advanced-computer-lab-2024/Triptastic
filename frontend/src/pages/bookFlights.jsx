@@ -3,6 +3,8 @@ import axios from 'axios';
 import { CurrencyContext } from '../pages/CurrencyContext';
 import { FaPlaneDeparture, FaPlaneArrival, FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaClipboardList, FaStar, FaUserCircle } from 'react-icons/fa';
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
+import flight from '../images/flight.jpg'; // Adjust the path as necessary
+
 import { useNavigate } from 'react-router-dom';
 const BookFlights = () => {
   const [flightDetails, setFlightDetails] = useState({
@@ -215,7 +217,7 @@ const BookFlights = () => {
     height: '70px',
     width: '80px',
     borderRadius: '10px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+  
   },
   title: {
     fontSize: '24px',
@@ -520,6 +522,7 @@ const BookFlights = () => {
     {flights.map((flight, index) => (
       <div key={index} style={styles.flightCard}>
         <div style={styles.flightHeader}>Flight #{flight.id}</div>
+        
         <div style={styles.flightRoute}>
           <div style={styles.flightPoint}>
             <FaPlaneDeparture style={styles.icon2} />
@@ -528,7 +531,9 @@ const BookFlights = () => {
               {formatTime(flight.itineraries[0].segments[0].departure.at)}
             </span>
           </div>
-      
+          <div style={styles.connectionLine}>
+  <span style={styles.connectionIcon}>✈</span>
+</div>
           <div style={styles.flightPoint}>
             <FaPlaneArrival style={styles.icon2} />
             <span style={styles.iataCode}>{flight.itineraries[0].segments[0].arrival.iataCode}</span>

@@ -14,6 +14,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
+const cron = require('node-cron');
+const PromoCode = require('../Models/PromoCode.js');
 
 const getCurrencyRates = async (req, res) => {
   try {
@@ -94,11 +96,41 @@ const loginTourist = async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Generate a JWT token
+    // Check if it's the tourist's birthday
+    const today = new Date();
+    const birthDate = new Date(tourist.DOB);
+    
+    // Check if it's their birthday (ignoring the year)
+    if (today.getMonth() === birthDate.getMonth() && today.getDate() === birthDate.getDate()) {
+      // Check if they already have a birthday promo code
+      if (!tourist.birthdayPromoCode) {
+        // Find an existing promo code that can be used for the birthday
+        const promoCode = await PromoCode.findOne({ 
+          code: 'BIRTHDAY', 
+          active: true, 
+          expirationDate: { $gte: today }, // Ensure the promo code is still valid
+        });
+
+        if (promoCode) {
+          // Assign the existing promo code to the tourist's profile
+          tourist.birthdayPromoCode = promoCode._id;
+          await tourist.save();
+
+          // Send the promo code via email
+          sendBirthdayEmail(tourist, promoCode);
+          
+          // Optionally, send a system notification
+          sendNotification(tourist, promoCode);
+        } else {
+          console.log('No active birthday promo code found.');
+        }
+      }
+    }
+
+    // Generate JWT token for the logged-in user
     const token = jwt.sign(
       { id: tourist._id, Email: tourist.Email },
       'mydevsecretkey',
-     
       { expiresIn: '1h' } // Token expiration time
     );
 
@@ -123,6 +155,46 @@ const loginTourist = async (req, res) => {
   }
 };
 
+// Function to send birthday email with promo code
+function sendBirthdayEmail(tourist, promoCode) {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'malook25062003@gmail.com',
+      
+      pass: 'sxvo feuu woie gpfn', // Use environment variables for this
+    },
+  });
+
+  const mailOptions = {
+    from: 'malook25062003@gmail.com',
+    to: tourist.Email,
+    subject: 'Happy Birthday! Here’s your promo code!',
+    text: `Dear ${tourist.Username},\n\nHappy Birthday! As a special gift, we’ve created a promo code for you. Use the code: ${promoCode.code} to get a ${promoCode.discount}% discount on anything on our website. The offer expires on ${promoCode.expirationDate.toDateString()}.\n\nBest regards,\nYour Company`,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log('Error sending email:', error);
+    } else {
+      console.log('Email sent:', info.response);
+    }
+  });
+}
+
+// Function to send system notification
+function sendNotification(tourist, promoCode) {
+  const notification = {
+    message: `Happy Birthday, ${tourist.Username}! You’ve received a special promo code: ${promoCode.code} for a ${promoCode.discount}% discount.`,
+    date: new Date(),
+    read: false,
+  };
+
+  tourist.notifications.push(notification);
+  tourist.save()
+    .then(() => console.log('Notification sent to tourist'))
+    .catch(err => console.log('Error saving notification:', err));
+}
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
 
 
@@ -1510,8 +1582,71 @@ const cancelActivity = async (req, res) => {
   }
 };
 
+const getAddresses = async (req, res) => {
+  const { username } = req.query;
 
+  try {
+    const tourist = await touristModel.findOne({ Username: username });
+    if (!tourist) {
+      return res.status(404).json({ error: 'Tourist not found' });
+    }
 
+    res.status(200).json(tourist.addresses);
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const addAddress = async (req, res) => {
+  const { addressLine1, addressLine2, city, state, postalCode, country, phoneNumber, isPrimary } = req.body;
+  const username = req.query.username; // Get username from query string
+
+  console.log('Incoming address:', { addressLine1, city, country, username }); // Debugging
+
+  try {
+    // Check if the username is provided
+    if (!username) {
+      return res.status(400).json({ error: 'Username is required' });
+    }
+
+    // Find the tourist by username
+    const tourist = await touristModel.findOne({ Username: username });
+    if (!tourist) {
+      return res.status(404).json({ error: 'Tourist not found' });
+    }
+
+    // New address structure
+    const newAddress = {
+      addressLine1,
+      addressLine2,
+      city,
+      state,
+      postalCode,
+      country,
+      phoneNumber,
+      isPrimary,
+    };
+
+    // If the new address is primary, ensure all others are set to non-primary
+    if (isPrimary) {
+      tourist.addresses.forEach((address) => {
+        address.isPrimary = false;
+      });
+    }
+
+    // Add the new address to the addresses array
+    tourist.addresses.push(newAddress);
+
+    // Save the tourist document
+    await tourist.save();
+
+    // Return the updated tourist data or a success message
+    res.status(201).json({ message: 'Address added successfully', addresses: tourist.addresses });
+  } catch (error) {
+    console.error('Error adding address:', error); // Log error for debugging
+    res.status(400).json({ error: error.message });
+  }
+};
 const getBookedActivities = async (req, res) => {
   const { username } = req.query; // Get the username from the query parameters
 
@@ -2097,9 +2232,145 @@ const markNotificationsRead = async (req, res) => {
   }
 };
 
+// Schedule activity reminders
+cron.schedule('0 9 * * *', () => {
+  console.log('Sending activity reminders...');
+  sendActivityReminders();
+});
+
+// Schedule itinerary reminders
+cron.schedule('0 9 * * *', () => {
+  console.log('Sending itinerary reminders...');
+  sendItineraryReminders();
+});
+const sendActivityReminders = async () => {
+  try {
+    // Fetch all tourists
+    const tourists = await touristModel.find();
+
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    for (const tourist of tourists) {
+      // Loop through bookings to find upcoming ones
+      for (const booking of tourist.Bookings) {
+        if (
+          new Date(booking.date) >= today &&
+          new Date(booking.date) <= tomorrow &&
+          !booking.reminded // Ensure no reminder was sent
+        ) {
+          // Find the related activity
+          const activity = await activitiesModel.findById(booking.activity);
+          if (!activity) continue;
+
+          // In-App Notification
+          const notificationMessage = `Reminder: Your activity "${activity.name}" is scheduled for tomorrow.`;
+          tourist.notifications.push({
+            message: notificationMessage,
+            date: new Date(),
+            read: false,
+          });
+
+          // Email Notification
+          const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: 'malook25062003@gmail.com',
+              pass: 'sxvo feuu woie gpfn',
+            },
+          });
+
+          const mailOptions = {
+            from: 'malook25062003@gmail.com',
+            to: tourist.Email,
+            subject: 'Activity Reminder',
+            text: notificationMessage,
+          };
+
+          await transporter.sendMail(mailOptions);
+
+          console.log(`Reminder sent for activity "${activity.name}" to ${tourist.Email}`);
+
+          // Mark the booking as reminded
+          booking.reminded = true;
+        }
+      }
+
+      // Save the updated tourist
+      await tourist.save();
+    }
+
+    console.log('Reminders sent successfully.');
+  } catch (error) {
+    console.error('Error sending activity reminders:', error.message);
+  }
+};
+
+const sendItineraryReminders = async () => {
+  try {
+    // Fetch all tourists
+    const tourists = await touristModel.find();
+
+    for (const tourist of tourists) {
+      // Get booked itineraries for the tourist
+      const bookedItineraries = await itineraryModel.find({
+        _id: { $in: tourist.Bookings.map(booking => booking.itinerary) },
+      });
+
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+
+      // Filter itineraries happening tomorrow
+      const upcomingItineraries = bookedItineraries.filter(
+        itinerary => 
+          new Date(itinerary.date) >= today && 
+          new Date(itinerary.date) <= tomorrow
+      );
+
+      for (const itinerary of upcomingItineraries) {
+        // In-App Notification
+        const notificationMessage = `Reminder: Your itinerary "${itinerary.name}" is scheduled for tomorrow.`;
+        tourist.notifications.push({
+          message: notificationMessage,
+          date: new Date(),
+          read: false,
+        });
+
+        // Email Notification
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: 'malook25062003@gmail.com',
+            pass: 'sxvo feuu woie gpfn',
+          },
+        });
+
+        const mailOptions = {
+          from: 'malook25062003@gmail.com',
+          to: tourist.Email,
+          subject: 'Itinerary Reminder',
+          text: notificationMessage,
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        console.log(`Reminder sent for itinerary "${itinerary.name}" to ${tourist.Email}`);
+      }
+
+      // Save the updated tourist
+      await tourist.save();
+    }
+  } catch (error) {
+    console.error('Error sending itinerary reminders:', error.message);
+  }
+};
 
 
- module.exports = {getNotifications,markNotificationsRead,updateProductQuantityInCart,bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+
+
+ module.exports = {sendActivityReminders,getNotifications,markNotificationsRead,updateProductQuantityInCart,bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
@@ -2108,4 +2379,4 @@ const markNotificationsRead = async (req, res) => {
   ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
   shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,addToCartAndRemoveFromWishlist,
   getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,
-  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist,removeProductFromCart,requestNotification};
+  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist,removeProductFromCart,requestNotification,addAddress,getAddresses};
