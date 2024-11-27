@@ -14,6 +14,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
+const cron = require('node-cron');
+
 
 const getCurrencyRates = async (req, res) => {
   try {
@@ -2097,9 +2099,145 @@ const markNotificationsRead = async (req, res) => {
   }
 };
 
+// Schedule activity reminders
+cron.schedule('0 9 * * *', () => {
+  console.log('Sending activity reminders...');
+  sendActivityReminders();
+});
+
+// Schedule itinerary reminders
+cron.schedule('0 9 * * *', () => {
+  console.log('Sending itinerary reminders...');
+  sendItineraryReminders();
+});
+const sendActivityReminders = async () => {
+  try {
+    // Fetch all tourists
+    const tourists = await touristModel.find();
+
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+
+    for (const tourist of tourists) {
+      // Loop through bookings to find upcoming ones
+      for (const booking of tourist.Bookings) {
+        if (
+          new Date(booking.date) >= today &&
+          new Date(booking.date) <= tomorrow &&
+          !booking.reminded // Ensure no reminder was sent
+        ) {
+          // Find the related activity
+          const activity = await activitiesModel.findById(booking.activity);
+          if (!activity) continue;
+
+          // In-App Notification
+          const notificationMessage = `Reminder: Your activity "${activity.name}" is scheduled for tomorrow.`;
+          tourist.notifications.push({
+            message: notificationMessage,
+            date: new Date(),
+            read: false,
+          });
+
+          // Email Notification
+          const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+              user: 'malook25062003@gmail.com',
+              pass: 'sxvo feuu woie gpfn',
+            },
+          });
+
+          const mailOptions = {
+            from: 'malook25062003@gmail.com',
+            to: tourist.Email,
+            subject: 'Activity Reminder',
+            text: notificationMessage,
+          };
+
+          await transporter.sendMail(mailOptions);
+
+          console.log(`Reminder sent for activity "${activity.name}" to ${tourist.Email}`);
+
+          // Mark the booking as reminded
+          booking.reminded = true;
+        }
+      }
+
+      // Save the updated tourist
+      await tourist.save();
+    }
+
+    console.log('Reminders sent successfully.');
+  } catch (error) {
+    console.error('Error sending activity reminders:', error.message);
+  }
+};
+
+const sendItineraryReminders = async () => {
+  try {
+    // Fetch all tourists
+    const tourists = await touristModel.find();
+
+    for (const tourist of tourists) {
+      // Get booked itineraries for the tourist
+      const bookedItineraries = await itineraryModel.find({
+        _id: { $in: tourist.Bookings.map(booking => booking.itinerary) },
+      });
+
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+
+      // Filter itineraries happening tomorrow
+      const upcomingItineraries = bookedItineraries.filter(
+        itinerary => 
+          new Date(itinerary.date) >= today && 
+          new Date(itinerary.date) <= tomorrow
+      );
+
+      for (const itinerary of upcomingItineraries) {
+        // In-App Notification
+        const notificationMessage = `Reminder: Your itinerary "${itinerary.name}" is scheduled for tomorrow.`;
+        tourist.notifications.push({
+          message: notificationMessage,
+          date: new Date(),
+          read: false,
+        });
+
+        // Email Notification
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: 'malook25062003@gmail.com',
+            pass: 'sxvo feuu woie gpfn',
+          },
+        });
+
+        const mailOptions = {
+          from: 'malook25062003@gmail.com',
+          to: tourist.Email,
+          subject: 'Itinerary Reminder',
+          text: notificationMessage,
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        console.log(`Reminder sent for itinerary "${itinerary.name}" to ${tourist.Email}`);
+      }
+
+      // Save the updated tourist
+      await tourist.save();
+    }
+  } catch (error) {
+    console.error('Error sending itinerary reminders:', error.message);
+  }
+};
 
 
- module.exports = {getNotifications,markNotificationsRead,updateProductQuantityInCart,bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+
+
+ module.exports = {sendActivityReminders,getNotifications,markNotificationsRead,updateProductQuantityInCart,bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
