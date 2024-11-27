@@ -430,7 +430,7 @@ const styles = {
     gap: '10px',
   },
   profileIcon: {
-    fontSize: '40px',
+    fontSize: '30px',
     color: 'white',
     cursor: 'pointer',
     borderRadius: '20px',
