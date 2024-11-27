@@ -3,12 +3,16 @@ import { Link } from 'react-router-dom'; // Import Link for routing
 import { CurrencyContext } from '../pages/CurrencyContext';
 import { FaBell, FaUserCircle ,FaCalendar,FaDollarSign ,FaMapMarkerAlt,FaClock,FaTags,FaPercent} from 'react-icons/fa'; // Import icons
 import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
-  FaClipboardList,
+  FaClipboardList,FaSearch,
   FaStar, } from "react-icons/fa";
 import logo from '../images/image.png'; // Add your logo file pathimport axios from 'axios';
 import axios from 'axios';
 import { FaBookmark, FaRegBookmark } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import IosShareIcon from '@mui/icons-material/IosShare';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import { FiCopy } from 'react-icons/fi'; // Import a copy icon
+import activity from '../images/activity.jpg'; 
 
 const Activities = () => {
   const { selectedCurrency, conversionRate ,fetchConversionRate} = useContext(CurrencyContext);
@@ -28,6 +32,8 @@ const Activities = () => {
   const [username, setUsername] = useState(localStorage.getItem('Username') || '');
   const navigate = useNavigate();
   const [isBookmarked, setIsBookmarked] = useState(false); // State to toggle fill
+  const [showEmailInput, setShowEmailInput] = useState(false);
+
 
   const handleBookmarkToggle = (activityId) => {
     // Check if the activity is already bookmarked
@@ -296,9 +302,10 @@ const Activities = () => {
         setShareableLink(data.link);
   
         if (shareMethod === 'copy') {
-          await navigator.clipboard.writeText(data.link);
-          setCopySuccess((prev) => ({ ...prev, [activity._id]: 'Link copied to clipboard!' }));
+          await navigator.clipboard.writeText(data.link); // Copy link to clipboard
+          setCopySuccess((prev) => ({ ...prev, [activity._id]: 'Link copied to clipboard!' })); // Set success message for the specific museum
         } else if (shareMethod === 'email') {
+      
           alert('Link sent to the specified email!');
         }
       } else {
@@ -316,8 +323,11 @@ const Activities = () => {
   const handleShareMode = (activity) => {
     setActivityToShare(activity);
     setIsEmailMode(!isEmailMode);
-  };
+    setShowEmailInput(true);
 
+  };
+  
+ 
 
   const bookActivity = async (activityName) => {
     const username = localStorage.getItem('Username');
@@ -394,6 +404,42 @@ const handleProfileRedirect = () => {
   }
 };
 return (
+  <div>
+  <div style={styles.container2}>
+    {/* Background Section */}
+    <div style={styles.background}>
+      <h1 style={styles.title}>Find Things to Do Anywhere</h1>
+      {/* Search Section */}
+<div style={styles.searchSection}>
+  <form onSubmit={handleSearchSubmit} style={styles.searchForm}>
+    <input
+      type="text"
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      placeholder="Search by name, category, or tag"
+      style={styles.searchInput}
+    />
+    <select
+      value={searchType}
+      onChange={(e) => setSearchType(e.target.value)}
+      style={styles.searchSelect}
+    >
+      <option value="name">Name</option>
+      <option value="Category">Category</option>
+      <option value="tags">Tag</option>
+    </select>
+    <button type="submit" style={styles.searchButton}>
+      <FaSearch style={styles.searchIcon} />
+    </button>
+  </form>
+</div>
+
+    </div>
+
+   
+
+  </div>
+
   <div style={styles.container}>
     <header style={styles.header}>
       <img src={logo} alt="Logo" style={styles.logo} />
@@ -412,7 +458,7 @@ return (
       <FaUserCircle style={styles.profileIcon} onClick={handleProfileRedirect} />
       
     </header>
-
+    
     {loading ? (
       <p style={styles.loading}>Loading activities...</p>
     ) : (
@@ -560,30 +606,7 @@ return (
           </form>
         </div>
 
-        {/* Search Form */}
-        <div style={styles.section}>
-          <h3>Search Activities</h3>
-          <form onSubmit={handleSearchSubmit} style={styles.searchForm}>
-            <label>
-              Search Query:
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by name, category, or tag"
-              />
-            </label>
-            <label>
-              Search By:
-              <select value={searchType} onChange={(e) => setSearchType(e.target.value)}>
-                <option value="name">Name</option>
-                <option value="Category">Category</option>
-                <option value="tags">Tag</option>
-              </select>
-            </label>
-            <button type="submit">Search</button>
-          </form>
-        </div>
+     
 
         {/* Error Message */}
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
@@ -593,7 +616,66 @@ return (
           <div>
             {activities.map((activity) => (
               <div key={activity._id} style={styles.activityCard}>
+                 <div style={{ position: 'relative', display: 'inline-block'}}>
+  {/* Share Button */}
+   <button
+    onClick={() => handleShareMode(activity)}
+    style={styles.shareButtonTopRight}
+  >
+    <IosShareIcon />
+  </button>
+
+  <button
+    onClick={() => handleShareMode(activity)}
+    style={styles.shareOption}
+  >
+    <i className="fas fa-share-alt" style={styles.shareOptionIcon}></i>
+  </button>
+
+  {/* Share Dropdown */}
+  {isEmailMode && activityToShare && activityToShare._id === activity._id && (
+    <div style={styles.shareDropdown}>
+      {/* Copy Link Option */}
+      <button
+        onClick={() => handleShare(activity, 'copy')}
+        style={styles.shareOption}
+      >
+        <FiCopy style={styles.shareOptionIcon} /> Copy Link
+      </button>
+
+      {/* Share via Email Option */}
+      <button
+        onClick={() => setIsEmailMode(false)}
+        style={styles.shareOption}
+      >
+        <MailOutlineIcon style={styles.shareOptionIcon} /> Share via Email
+      </button>
+
+      {/* Email Input Field */}
+      {showEmailInput && activityToShare && activityToShare._id === activity._id && (
+        <div style={{ marginTop: '10px' }}>
+          <input
+            type="email"
+            placeholder="Enter recipient's email"
+            value={email}
+            onChange={handleEmailInputChange}
+            style={styles.emailInput}
+          />
+          <button
+            onClick={() => handleShare(activity, 'email')}
+            style={{ ...styles.button, marginTop: '10px' }}
+          >
+            Send Email
+          </button>
+        </div>
+      )}
+    </div>
+  )}
+</div>
+  
+                
                 <h4>{activity.name}</h4>
+                
                 <p>
                   <strong><FaDollarSign /> Price:</strong> {(activity.price * conversionRate).toFixed(2)}{' '}
                   {selectedCurrency}
@@ -615,9 +697,9 @@ return (
                   )}
                 </p>
                 <div style={styles.buttonGroup}>
-  <button onClick={() => bookActivity(activity.name)}>Book Ticket</button>
-  <button onClick={() => handleShare(activity, 'copy')}>Copy Link</button>
-  <button onClick={() => handleShareMode(activity)}>Share via Email</button>
+  <button onClick={() => bookActivity(activity.name)}>Book</button>
+ 
+
       {/* Bookmark Button */}
       <button
         onClick={() => handleBookmarkToggle(activity._id)} // Toggle bookmark for the current activity
@@ -637,21 +719,18 @@ return (
       </button>
 </div>
 
-                {isEmailMode && activityToShare && activityToShare._id === activity._id && (
-                  <div style={styles.emailForm}>
-                    <input
-                      type="email"
-                      placeholder="Enter recipient's email"
-                      value={email}
-                      onChange={handleEmailInputChange}
-                    />
-                    <button onClick={() => handleShare(activity, 'email')}>Send Email</button>
-                  </div>
-                )}
+               
                 {copySuccess[activity._id] && <p>{copySuccess[activity._id]}</p>}
-                <button onClick={() => toggleActivityDetails(activity._id)}>
-                  {expandedActivities[activity._id] ? 'Hide Activity Details' : 'View Activity Details'}
-                </button>
+                <a
+  href="#"
+  onClick={(e) => {
+    e.preventDefault(); // Prevent default anchor behavior
+    toggleActivityDetails(activity._id); // Toggle details visibility
+  }}
+  style={styles.activityDetailsLink}
+>
+  {expandedActivities[activity._id] ? 'Hide Activity Details' : 'View Activity Details'}
+</a>
                 {expandedActivities[activity._id] && (
                   <div style={styles.details}>
                     <p><strong>Category:</strong> {activity.Category}</p>
@@ -670,10 +749,104 @@ return (
       </>
     )}
   </div>
+  </div>
 );
 }
 
 const styles = {
+  container2: {
+    marginTop:'90px',
+    fontFamily: 'Arial, sans-serif',
+  },
+  background: {
+    position: 'relative',
+    backgroundImage:  `url(${activity})`, // Replace with your image path
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    height: '400px', // Adjust height as needed
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: 'white',
+  },
+  title: {
+    fontSize: '2.5rem',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: '20px',
+    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)',
+  },
+  searchSection: {
+    display: 'flex',
+    justifyContent: 'center', // Center the search section
+    marginTop: '20px', // Add spacing above the search bar
+  },
+  
+  searchForm: {
+    display: 'flex',
+    alignItems: 'center', // Align input, select, and button vertically
+    gap: '10px', // Add spacing between elements
+    width: '80%', // Adjust the width of the entire search form
+    maxWidth: '1200px', // Ensure responsiveness
+  },
+  
+  searchInput: {
+    flex: 1, // Expand the input field to take available space
+    padding: '12px 100px',
+    fontSize: '16px',
+    borderRadius: '30px',
+    border: '1px solid rgba(0, 0, 0, 0.2)',
+    outline: 'none',
+    backgroundColor: '#fff',
+    boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.1)',
+  },
+  
+  searchSelect: {
+    padding: '10px',
+    fontSize: '14px',
+    borderRadius: '30px',
+    border: '1px solid rgba(0, 0, 0, 0.2)',
+    outline: 'none',
+    backgroundColor: '#fff',
+    cursor: 'pointer',
+  },
+  
+  searchButton: {
+    padding: '12px 20px',
+    fontSize: '16px',
+    color: '#fff',
+    backgroundColor: 'transparent',
+    border: 'none',
+    borderRadius: '30px',
+    cursor: 'pointer',
+    display: 'flex', // Align icon inside the button
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  
+  searchIcon: {
+    fontSize: '18px', // Adjust the size of the search icon
+  },
+  
+  
+  section: {
+    margin: '20px auto',
+    width: '80%',
+    maxWidth: '1200px',
+    textAlign: 'center',
+  },
+  buttonGroup: {
+    display: 'flex',
+    gap: '10px',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+  },
+
+
+
+
+
 container: {
   maxWidth: '1200px',
       margin: '0 auto',
@@ -682,6 +855,26 @@ container: {
       borderRadius: '10px',
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
       marginTop:'60px',
+      fontSize:'12px'
+},
+activityDetailsLink: {
+  display: 'inline-block',
+  color: '#0F5132', // Blue color for hyperlink
+  textDecoration: 'underline', // Underline for hyperlink
+  cursor: 'pointer', // Pointer cursor
+  fontSize: '14px', // Adjust font size as needed
+  marginTop: '10px', // Add spacing above the link
+},
+shareButtonTopRight: {
+  position: 'absolute', // Positions the button absolutely inside the container
+  top: '20px', // Distance from the top
+  right: '10px', // Distance from the right
+  left:'1000px',
+  backgroundColor: 'transparent',
+  border: 'none',
+  fontSize: '1.5rem',
+  color: 'black',
+  cursor: 'pointer',
 },
 
 navigationButton: {
@@ -771,7 +964,7 @@ bellIcon: {
 },
 activityCard: {
   backgroundColor: '#fff',
-  padding: '20px',
+  padding: '10px',
   borderRadius: '10px',
   marginBottom: '15px',
   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
@@ -781,9 +974,7 @@ buttonGroup: {
   gap: '10px',
   marginTop: '10px',
 },
-emailForm: {
-  marginTop: '10px',
-},
+
 details: {
   marginTop: '10px',
   paddingLeft: '20px',
@@ -835,6 +1026,62 @@ label: {
 },
 labelVisible: {
   opacity: 1, // Fully visible when expanded
+},
+
+shareButton: {
+  backgroundColor: 'transparent',
+  border: 'none',
+  fontSize: '1.5rem',
+  color: 'black',
+  cursor: 'pointer',
+  padding:'0px',
+  
+
+},
+shareDropdown: {
+  position: 'absolute', // Position relative to parent
+  top: '80px', // Distance from the button (adjust as needed)
+  left: '3000%', // Center align with the button
+  transform: 'translateX(-50%)', // Center alignment adjustment
+  backgroundColor: '#fff',
+  border: '1px solid #ddd',
+  borderRadius: '8px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+  zIndex: 1000,
+  padding: '10px',
+  width: '200px', // Fixed width
+},
+shareOption: {
+  display: 'flex',
+  alignItems: 'center', // Align icon and text vertically
+  justifyContent: 'flex-start', // Align icon and text to the left
+  width: '100%',
+  padding: '10px',
+  backgroundColor: 'transparent',
+  border: 'none',
+  cursor: 'pointer',
+  fontSize: '1rem',
+  color: 'black', // Icon and text color
+  textDecoration: 'none',
+},
+shareOptionIcon: {
+  marginRight: '8px', // Space between the icon and text
+  fontSize: '1rem', // Ensure both icons are the same size
+},
+emailInput: {
+  padding: '8px',
+  fontSize: '14px',
+  width: '100%',
+  border: '1px solid #ddd',
+  borderRadius: '5px',
+},
+button: {
+  backgroundColor: '#0F5132',
+  color: 'white',
+  border: 'none',
+  padding: '10px',
+  borderRadius: '5px',
+  cursor: 'pointer',
 },
 };
 export default Activities;
