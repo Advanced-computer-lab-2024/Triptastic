@@ -8,6 +8,8 @@ import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHo
   FaClipboardList,
   FaStar, } from "react-icons/fa";
 import logo from '../images/image.png';
+import itineraries from '../images/it.png';
+
 
 const Itineraries = () => {
   const [itineraries, setItineraries] = useState([]);
@@ -236,6 +238,27 @@ const Itineraries = () => {
       }
     };
     return (
+      <div>
+  <div style={styles.container2}>
+    {/* Background Section */}
+    <div style={styles.background}>
+      <h1 style={styles.title2}>Discover Your Journey</h1>
+     {/* Sorting Section */}
+     <div style={styles.section}>
+   
+              <button style={styles.buttonSort} onClick={handleSortAscending}>
+                Sort by <FaDollarSign/> (Ascending)
+              </button>
+              <button style={styles.buttonSort} onClick={handleSortDescending}>
+                Sort by <FaDollarSign/> (Descending)
+              </button>
+            </div>
+
+    </div>
+
+   
+
+  </div>
       <div style={styles.container}>
         {/* Header */}
         <header style={styles.header}>
@@ -324,16 +347,7 @@ const Itineraries = () => {
           <p style={styles.loading}>Loading itineraries...</p>
         ) : (
           <>
-            {/* Sorting Section */}
-            <div style={styles.section}>
-              <h3>Sort Itineraries</h3>
-              <button style={styles.buttonSort} onClick={handleSortAscending}>
-                Sort by <FaDollarSign/> (Ascending)
-              </button>
-              <button style={styles.buttonSort} onClick={handleSortDescending}>
-                Sort by <FaDollarSign/> (Descending)
-              </button>
-            </div>
+            
   
             {/* Filter Section */}
             <div style={styles.section}>
@@ -477,10 +491,34 @@ const Itineraries = () => {
           </>
         )}
       </div>
+      </div>
     );
   };
   
   const styles = {
+    container2: {
+      marginTop:'90px',
+      fontFamily: 'Arial, sans-serif',
+    },
+    background: {
+      position: 'relative',
+      backgroundImage:  `url(${itineraries})`, // Replace with your image path
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      height: '400px', // Adjust height as needed
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      color: 'white',
+    },
+    title2: {
+      fontSize: '2.0rem',
+      fontWeight: 'bold',
+      textAlign: 'center',
+      marginBottom: '20px',
+      textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)',
+    },
     container: {
       maxWidth: '1200px',
       margin: '0 auto',
@@ -542,7 +580,11 @@ const Itineraries = () => {
       width: '100%',
     },
     buttonSort:{
-      marginTop:'40px'
+      color:'#0F5132',
+      fontSize: '18px',
+
+      marginTop:'40px',
+      background:'transparent'
     },
     button: {
       backgroundColor: '#0F5132',
