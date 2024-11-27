@@ -18,6 +18,7 @@ import {
 } from 'react-icons/fa';
 import logo from '../images/image.png'; // Adjust the path as necessary
 import { useNavigate } from 'react-router-dom';
+import { Tooltip } from 'react-tooltip'; // Updated import
 const BookHotels = () => {
   const navigate = useNavigate();
   const [hotelDetails, setHotelDetails] = useState({
@@ -247,6 +248,7 @@ const BookHotels = () => {
   },
 };
   return (
+    
     <div>
     {/* Header */}
     <header style={styles.header}>
@@ -478,7 +480,9 @@ const BookHotels = () => {
     : 'Price: Contact for details'}
 </p>
 <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-  <FaWifi title="Free Wi-Fi" style={{ color: '#0F5132', fontSize: '20px' }} />
+  <FaWifi
+
+   title="Free Wi-Fi" style={{ color: '#0F5132', fontSize: '20px' }} />
   <FaCoffee title="Breakfast Included" style={{ color: '#FFD700', fontSize: '20px' }} />
   <FaCar title="Parking Available" style={{ color: '#007bff', fontSize: '20px' }} />
 </div>
@@ -523,6 +527,7 @@ const BookHotels = () => {
           )}
         </div>
       ))}
+       <Tooltip id="amenities-tooltip" place="top" />
     </div>
   </div>
 )}
