@@ -10,6 +10,7 @@ const { default: mongoose } = require('mongoose');
 const complaintModel = require('../Models/Complaint.js'); // Adjust the path based on your project structure
 const TourGuideModel = require('../Models/tourGuide.js'); // Adjust path as needed
 const requestModel = require('../Models/Request.js'); // Adjust path as needed
+const ItinBookingModel = require('../Models/itinbookings.js'); 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
@@ -1255,6 +1256,7 @@ const bookItinerary = async (req, res) => {
 
     itinerary.sales += itinerary.Price;
     await itinerary.save();
+   const booking= await ItinBookingModel.create({itineraryId:itineraryId})
 
     res.status(200).json({
       message: 'Itinerary booked successfully!',
@@ -1262,7 +1264,8 @@ const bookItinerary = async (req, res) => {
       newlyEarnedPoints,
       bonusCash,
       updatedWallet: tourist.Wallet,
-    });
+    },);
+ 
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error booking itinerary' });
