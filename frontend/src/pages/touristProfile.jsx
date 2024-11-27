@@ -990,7 +990,7 @@ const styles = {
   notificationDropdown: {
     position: 'absolute',
     top: '60px',
-    right: '20px',
+    right: '180px',
     width: '300px',
     backgroundColor: '#fff',
     borderRadius: '8px',

@@ -517,6 +517,7 @@ const unarchiveProduct = async () => {
           <li onClick={() => navigate('/products')}><FaBox/>Products</li>
         </ul>
         <div style={{ position: 'relative', textAlign: 'right', padding: '10px' }}>
+
        {/* Notification Bell Icon */}
        <FaBell
         size={24}
@@ -550,6 +551,7 @@ const unarchiveProduct = async () => {
       {/* Notifications Dropdown */}
       {showNotifications && (
         <div
+        
           style={{
             position: 'absolute',
             top: '40px',
@@ -560,20 +562,27 @@ const unarchiveProduct = async () => {
             boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
             width: '320px',
             maxHeight: '400px',
-            overflowY: 'auto',
-            zIndex: 10,
+            overflowY: 'auto', // Enable vertical scrolling
+            overflowX: 'hidden',
+            zIndex: 1000,
           }}
         >
           <div style={{ padding: '10px', fontWeight: 'bold', borderBottom: '1px solid #f0f0f0' }}>
             Notifications
           </div>
-          <ul style={{ listStyle: 'none', padding: '0', margin: '0' }}>
+          <ul style={{ listStyle: 'none', padding: '0', margin: '0',  flexDirection: 'column', // Stack items vertically
+    gap: '10px' }}>
             {notifications && notifications.map((notification) => (
               <li
                 key={notification.id}
                 style={{
                   display: 'flex',
-                  alignItems: 'center',
+                  flexDirection: 'row', // Align icon and text horizontally
+                  alignItems: 'flex-start', // Align icon with the top of the text
+                  backgroundColor: '#f9f9f9', // Light background for each item
+                  border: '1px solid #ddd', // Add subtle border
+                  borderRadius: '5px', // Rounded corners
+                  padding: '10px', // Add padding inside each item
                   borderBottom: '1px solid #f0f0f0',
                   padding: '10px',
                   fontSize: '14px',
