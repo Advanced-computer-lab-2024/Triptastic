@@ -306,6 +306,18 @@ const TouristSettings = () => {
                 <p>{touristInfo.Wallet} {selectedCurrency}</p> 
               </div>
               <div>
+  <label><strong>My Preferences:</strong></label>
+  <ul>
+    {touristInfo.preferences && touristInfo.preferences.length > 0 ? (
+      touristInfo.preferences.map((preference, index) => (
+        <li key={index}>{preference}</li>
+      ))
+    ) : (
+      <p>No preferences available.</p>
+    )}
+  </ul>
+</div>
+              <div>
                 <label><strong>Email:</strong></label>
                 <input
                   type="email"
