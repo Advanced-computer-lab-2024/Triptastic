@@ -636,26 +636,32 @@ return (
     <img src={logo} alt="Logo" style={styles.logo} />
   </div>
   <h1 style={styles.title}>Tourist Profile</h1>
-   {/* Notification Bell */}
-   <div
-            style={styles.notificationButton}
-            onClick={handleNotificationClick}
-          >
-            <FaBell style={styles.notificationIcon} />
-            {unreadCount > 0 && (
-              <span style={styles.notificationBadge}>{unreadCount}</span>
-            )}
-          </div>
-  <FaUserCircle
-    alt="Profile Icon"
-    style={styles.profileIcon}
-    onClick={() => navigate('/touristSettings')} // Navigate to profile
-  />
-  <div style={styles.cartButton} onClick={() => navigate('/Cart')}>
-    <FaShoppingCart style={styles.cartIcon} />
-    <span style={styles.cartLabel}></span>
+  <div style={styles.headerIconsContainer}>
+    {/* Notification Bell */}
+    <div
+      style={styles.notificationButton}
+      onClick={handleNotificationClick}
+    >
+      <FaBell style={styles.notificationIcon} />
+      {unreadCount > 0 && (
+        <span style={styles.notificationBadge}>{unreadCount}</span>
+      )}
+    </div>
+
+    {/* Profile Icon */}
+    <FaUserCircle
+      alt="Profile Icon"
+      style={styles.profileIcon}
+      onClick={() => navigate('/touristSettings')}
+    />
+
+    {/* Cart Icon */}
+    <div style={styles.cartButton} onClick={() => navigate('/Cart')}>
+      <FaShoppingCart style={styles.cartIcon} />
+    </div>
   </div>
 </header>
+
 {/* Notification Dropdown */}
 {showNotifications && (
         <div style={styles.notificationDropdown}>
@@ -1280,6 +1286,11 @@ const styles = {
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for depth
     zIndex: '1000', // Ensure it appears above other content
   },
+  headerIconsContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '20px', // Spacing between the icons
+  },
   logoContainer: {
     display: 'flex',
     alignItems: 'center',
@@ -1293,11 +1304,13 @@ const styles = {
   notificationButton: {
     position: 'relative',
     cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   notificationIcon: {
     fontSize: '24px',
     color: 'white',
-   // marginLeft:'100px'
   },
   notificationBadge: {
     position: 'absolute',
@@ -1317,7 +1330,7 @@ const styles = {
   notificationDropdown: {
     position: 'absolute',
     top: '60px',
-    right: '180px',
+    left: '1200px',
     width: '300px',
     backgroundColor: '#fff',
     borderRadius: '8px',
@@ -1354,7 +1367,7 @@ const styles = {
     fontWeight: 'bold',
     color: 'white',
     margin: 0,
-    marginLeft:'400px'
+    marginLeft:'60px'
   },
 
   
@@ -1419,20 +1432,19 @@ const styles = {
   cartButton: {
     display: 'flex',
     alignItems: 'center',
-    backgroundColor: '#fff', // White background for the button
-    color: '#0F5132', // Green text
-    borderRadius: '8px',
-    padding: '5px 5px',
+    justifyContent: 'center',
+   
+    color: '#fff',
     cursor: 'pointer',
+   
     transition: 'background-color 0.3s ease',
-    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.15)', // Subtle shadow for the button
   },
   cartButtonHover: {
-    backgroundColor: '#e6e6e6', // Lighter background on hover
+    backgroundColor: '#e6e6e6', // Change background on hover
   },
   cartIcon: {
     fontSize: '25px',
-    },
+  },
   cartLabel: {
     fontSize: '16px',
     fontWeight: 'bold',

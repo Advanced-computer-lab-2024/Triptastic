@@ -520,6 +520,7 @@ const BookFlights = () => {
     {flights.map((flight, index) => (
       <div key={index} style={styles.flightCard}>
         <div style={styles.flightHeader}>Flight #{flight.id}</div>
+        
         <div style={styles.flightRoute}>
           <div style={styles.flightPoint}>
             <FaPlaneDeparture style={styles.icon2} />
@@ -528,7 +529,9 @@ const BookFlights = () => {
               {formatTime(flight.itineraries[0].segments[0].departure.at)}
             </span>
           </div>
-      
+          <div style={styles.connectionLine}>
+  <span style={styles.connectionIcon}>✈</span>
+</div>
           <div style={styles.flightPoint}>
             <FaPlaneArrival style={styles.icon2} />
             <span style={styles.iataCode}>{flight.itineraries[0].segments[0].arrival.iataCode}</span>
