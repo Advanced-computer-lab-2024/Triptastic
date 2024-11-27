@@ -15,7 +15,7 @@ const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const cron = require('node-cron');
-
+const PromoCode = require('../Models/PromoCode.js');
 
 const getCurrencyRates = async (req, res) => {
   try {
@@ -96,11 +96,41 @@ const loginTourist = async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Generate a JWT token
+    // Check if it's the tourist's birthday
+    const today = new Date();
+    const birthDate = new Date(tourist.DOB);
+    
+    // Check if it's their birthday (ignoring the year)
+    if (today.getMonth() === birthDate.getMonth() && today.getDate() === birthDate.getDate()) {
+      // Check if they already have a birthday promo code
+      if (!tourist.birthdayPromoCode) {
+        // Find an existing promo code that can be used for the birthday
+        const promoCode = await PromoCode.findOne({ 
+          code: 'BIRTHDAY', 
+          active: true, 
+          expirationDate: { $gte: today }, // Ensure the promo code is still valid
+        });
+
+        if (promoCode) {
+          // Assign the existing promo code to the tourist's profile
+          tourist.birthdayPromoCode = promoCode._id;
+          await tourist.save();
+
+          // Send the promo code via email
+          sendBirthdayEmail(tourist, promoCode);
+          
+          // Optionally, send a system notification
+          sendNotification(tourist, promoCode);
+        } else {
+          console.log('No active birthday promo code found.');
+        }
+      }
+    }
+
+    // Generate JWT token for the logged-in user
     const token = jwt.sign(
       { id: tourist._id, Email: tourist.Email },
       'mydevsecretkey',
-     
       { expiresIn: '1h' } // Token expiration time
     );
 
@@ -125,6 +155,46 @@ const loginTourist = async (req, res) => {
   }
 };
 
+// Function to send birthday email with promo code
+function sendBirthdayEmail(tourist, promoCode) {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'malook25062003@gmail.com',
+      
+      pass: 'sxvo feuu woie gpfn', // Use environment variables for this
+    },
+  });
+
+  const mailOptions = {
+    from: 'malook25062003@gmail.com',
+    to: tourist.Email,
+    subject: 'Happy Birthday! Here’s your promo code!',
+    text: `Dear ${tourist.Username},\n\nHappy Birthday! As a special gift, we’ve created a promo code for you. Use the code: ${promoCode.code} to get a ${promoCode.discount}% discount on anything on our website. The offer expires on ${promoCode.expirationDate.toDateString()}.\n\nBest regards,\nYour Company`,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log('Error sending email:', error);
+    } else {
+      console.log('Email sent:', info.response);
+    }
+  });
+}
+
+// Function to send system notification
+function sendNotification(tourist, promoCode) {
+  const notification = {
+    message: `Happy Birthday, ${tourist.Username}! You’ve received a special promo code: ${promoCode.code} for a ${promoCode.discount}% discount.`,
+    date: new Date(),
+    read: false,
+  };
+
+  tourist.notifications.push(notification);
+  tourist.save()
+    .then(() => console.log('Notification sent to tourist'))
+    .catch(err => console.log('Error saving notification:', err));
+}
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
 
 
