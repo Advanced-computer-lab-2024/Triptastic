@@ -362,7 +362,6 @@ const styles = {
     height: '70px',
     width: '80px',
     borderRadius: '10px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
   },
   profileIcon:{
     fontSize: '40px',

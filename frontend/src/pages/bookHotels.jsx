@@ -17,6 +17,8 @@ import {
 
 } from 'react-icons/fa';
 import logo from '../images/image.png'; // Adjust the path as necessary
+import hotel from '../images/hotel.jpg'; // Adjust the path as necessary
+
 import { useNavigate } from 'react-router-dom';
 import { Tooltip } from 'react-tooltip'; // Updated import
 const BookHotels = () => {
@@ -190,7 +192,7 @@ const BookHotels = () => {
     height: '70px',
     width: '80px',
     borderRadius: '10px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+ 
   },
   title: {
     fontSize: '24px',
@@ -246,8 +248,140 @@ const BookHotels = () => {
     whiteSpace: 'nowrap',
     transition: 'opacity 0.3s ease',
   },
+  container2: {
+    marginTop:'90px',
+    fontFamily: 'Arial, sans-serif',
+  },
+  background: {
+    position: 'relative',
+    backgroundImage:  `url(${hotel})`, // Replace with your image path
+    height: '400px', // Keeps the container size the same
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: 'white',
+  },
+  title2: {
+    fontSize: '2.0rem',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: '20px',
+    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)',
+  },
 };
   return (
+    <div>
+    <div style={styles.container2}>
+      {/* Background Section */}
+      <div style={styles.background}>
+        <h1 style={styles.title2}>Latest reviews. Lowest prices.</h1>
+        <form
+        onSubmit={handleSubmit}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          maxWidth: '900px',
+          margin: '0 auto',
+          border: '1px solid rgba(0, 0, 0, 0.2)', // Soft border
+          borderRadius: '55px',
+          backgroundColor: 'white', // White background for search bar
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', // Subtle shadow for elevation
+        }}
+      >
+        <label style={{ display: 'block', marginBottom: '10px' }}>
+          <span>City Code (IATA):</span>
+          <input
+            type="text"
+            name="cityCode"
+             placeholder="City Code"
+            value={hotelDetails.cityCode}
+            onChange={handleInputChange}
+            required
+            style={{
+              flex: 1,
+              padding: '12px 20px',
+              border: 'none',
+              borderRadius: '30px',
+              marginRight: '0px',
+              marginLeft: '18px',
+
+              backgroundColor: '#f4f4f4', // Slightly gray background for inputs
+              outline: 'none',
+              fontSize: '16px',
+            }}
+          />
+        </label>
+        <label style={{ display: 'block', marginBottom: '10px' }}>
+          <span>Check-In Date:</span>
+          <input
+            type="date"
+            name="checkInDate"
+            value={hotelDetails.checkInDate}
+            onChange={handleInputChange}
+            required
+            style={{
+              flex: 1,
+              padding: '12px 20px',
+              border: 'none',
+              borderRadius: '30px',
+              marginRight: '10px',
+              backgroundColor: '#f4f4f4',
+              outline: 'none',
+              fontSize: '16px',
+            }}
+          />
+        </label>
+        <label style={{ display: 'block', marginBottom: '10px' }}>
+          <span>Check-Out Date:</span>
+          <input
+            type="date"
+            name="checkOutDate"
+            value={hotelDetails.checkOutDate}
+            onChange={handleInputChange}
+            required
+            style={{
+              flex: 1,
+              padding: '12px 20px',
+              border: 'none',
+              borderRadius: '30px',
+              marginRight: '10px',
+              backgroundColor: '#f4f4f4',
+              outline: 'none',
+              fontSize: '16px',
+            }}
+          />
+        </label>
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            flex: 'none',
+            padding: '12px 30px',
+            backgroundColor: '#0F5132',
+            color: 'white',
+            border: 'none',
+            borderRadius: '30px',
+            fontSize: '16px',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            whiteSpace: 'nowrap',
+            marginRight: '20px',
+            marginLeft: '0px',
+          }}
+        >
+          {loading ? 'Searching...' : 'Find Hotels'}
+        </button>
+      </form>
+
+  
+      </div>
+  
+     
+  
+    </div>
     
     <div>
     {/* Header */}
@@ -339,87 +473,8 @@ const BookHotels = () => {
         </div>
       </div>
 
-    <div style={{ fontFamily: 'Arial, sans-serif', padding: '20px' }}>
-      <h1 style={{ textAlign: 'center', color: '#333' }}>Hotel Booking</h1>
-      <form
-        onSubmit={handleSubmit}
-        style={{
-          maxWidth: '800px',
-          margin: '0 auto',
-          padding: '20px ',
-          border: '1px solid #ddd',
-          borderRadius: '8px',
-          backgroundColor: '#f9f9f9',
-        }}
-      >
-        <label style={{ display: 'block', marginBottom: '10px' }}>
-          <span>City Code (IATA):</span>
-          <input
-            type="text"
-            name="cityCode"
-            value={hotelDetails.cityCode}
-            onChange={handleInputChange}
-            required
-            style={{
-              width: '100%',
-              padding: '8px',
-              margin: '5px 0',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-            }}
-          />
-        </label>
-        <label style={{ display: 'block', marginBottom: '10px' }}>
-          <span>Check-In Date:</span>
-          <input
-            type="date"
-            name="checkInDate"
-            value={hotelDetails.checkInDate}
-            onChange={handleInputChange}
-            required
-            style={{
-              width: '100%',
-              padding: '8px',
-              margin: '5px 0',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-            }}
-          />
-        </label>
-        <label style={{ display: 'block', marginBottom: '10px' }}>
-          <span>Check-Out Date:</span>
-          <input
-            type="date"
-            name="checkOutDate"
-            value={hotelDetails.checkOutDate}
-            onChange={handleInputChange}
-            required
-            style={{
-              width: '100%',
-              padding: '8px',
-              margin: '5px 0',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-            }}
-          />
-        </label>
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            width: '100%',
-            padding: '10px',
-            backgroundColor: '#0F5132',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '4px',
-            fontSize: '16px',
-            cursor: loading ? 'not-allowed' : 'pointer',
-          }}
-        >
-          {loading ? 'Searching...' : 'Search Hotels'}
-        </button>
-      </form>
+      <div style={{ fontFamily: 'Arial, sans-serif', padding: '20px' }}>
+      
 
       {error && (
         <p style={{ color: 'red', textAlign: 'center', marginTop: '20px' }}>
@@ -534,6 +589,8 @@ const BookHotels = () => {
 
     </div>
     </div>
+    </div>
+
   );
 };
 
