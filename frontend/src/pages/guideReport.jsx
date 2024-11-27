@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-const guideReport = () => {
+const GuideReport = () => {
 const [Itineraries, setItineraries] = useState([]);
 const [isLoading, setIsLoading] = useState(false);
 const [totalSales, setTotalSales] = useState(0);
@@ -102,4 +102,4 @@ const fetchItineraries = async () => {
 </div>
   );
 }
-export default guideReport;
+export default GuideReport;
