@@ -4,9 +4,13 @@ import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-route
 import axios from 'axios';
 import { CurrencyContext } from '../pages/CurrencyContext';
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
+import beach from '../images/beach.jpg';
+import historic from '../images/historic.jpg';
+import family from '../images/family.png';
+import shopping from '../images/shopping.jpg';
 import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
   FaClipboardList,
-  FaStar, } from "react-icons/fa";
+  FaStar, FaDollarSign,FaSearch} from "react-icons/fa";
 import { FaBell,FaUserCircle} from 'react-icons/fa';
 
 const TouristProfile = () => {
@@ -750,187 +754,510 @@ return (
         </div>
       </div>
 
-      {/* Preferences Section */}
-      <div className="preferences-section">
-        <h3>Select Your Vacation Preferences</h3>
-        <div className="preferences-form">
-          <label>
+      <div>
+  <div className="preferences-section" style={{ margin: "20px 0", textAlign: "center" }}>
+    <h3 style={{ fontSize: "18px", marginBottom: "20px", color: "#333" }}>
+      Select Your Vacation Preferences
+    </h3>
+    <div
+      className="carousel-container"
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        overflowX: "auto",
+        gap: "20px",
+        padding: "20px",
+        scrollbarWidth: "none",
+        msOverflowStyle: "none",
+        scrollBehavior: "smooth",
+      }}
+    >
+      {/* Historic Areas */}
+      <div
+        className="carousel-item"
+        style={{
+          position: "relative",
+          width: "450px",
+          height: "290px",
+          border: "1px solid #ddd",
+          borderRadius: "15px",
+          flexShrink: 0,
+          backgroundColor: "#fff",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          overflow: "hidden",
+        }}
+      >
+        <img
+          src={historic}
+          alt="Historic Areas"
+          style={{
+            width: "100%",
+            height: "250px",
+            objectFit: "cover",
+            borderTopLeftRadius: "15px",
+            borderTopRightRadius: "15px",
+          }}
+        />
+        <div
+          style={{
+            padding: "10px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <label
+            style={{
+              fontSize: "16px",
+              fontWeight: "bold",
+              marginBottom: "0",
+              marginRight: "10px",
+              color: "#0F5132",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            Historic Areas
             <input
               type="checkbox"
               name="historicAreas"
               checked={preferences.historicAreas}
               onChange={handlePreferenceChange}
+              style={{
+                width: "20px",
+                height: "20px",
+                cursor: "pointer",
+                marginLeft: "10px",
+              }}
             />
-            Historic Areas
           </label>
-          <label>
+        </div>
+      </div>
+
+      {/* Beaches */}
+      <div
+        className="carousel-item"
+        style={{
+          position: "relative",
+          width: "450px",
+          height: "290px",
+          border: "1px solid #ddd",
+          borderRadius: "15px",
+          flexShrink: 0,
+          backgroundColor: "#fff",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          overflow: "hidden",
+        }}
+      >
+        <img
+          src={beach}
+          alt="Beaches"
+          style={{
+            width: "100%",
+            height: "250px",
+            objectFit: "cover",
+            borderTopLeftRadius: "15px",
+            borderTopRightRadius: "15px",
+          }}
+        />
+        <div
+          style={{
+            padding: "10px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <label
+            style={{
+              fontSize: "16px",
+              fontWeight: "bold",
+              marginBottom: "0",
+              marginRight: "10px",
+              color: "#0F5132",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            Beaches
             <input
               type="checkbox"
               name="beaches"
               checked={preferences.beaches}
               onChange={handlePreferenceChange}
+              style={{
+                width: "20px",
+                height: "20px",
+                cursor: "pointer",
+                marginLeft: "10px",
+              }}
             />
-            Beaches
           </label>
-          <label>
+        </div>
+      </div>
+
+      {/* Family-Friendly */}
+      <div
+        className="carousel-item"
+        style={{
+          position: "relative",
+          width: "450px",
+          height: "290px",
+          border: "1px solid #ddd",
+          borderRadius: "15px",
+          flexShrink: 0,
+          backgroundColor: "#fff",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          overflow: "hidden",
+        }}
+      >
+        <img
+          src={family}
+          alt="Family-Friendly"
+          style={{
+            width: "100%",
+            height: "250px",
+            objectFit: "cover",
+            borderTopLeftRadius: "15px",
+            borderTopRightRadius: "15px",
+          }}
+        />
+        <div
+          style={{
+            padding: "10px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <label
+            style={{
+              fontSize: "16px",
+              fontWeight: "bold",
+              marginBottom: "0",
+              marginRight: "10px",
+              color: "#0F5132",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            Family-Friendly
             <input
               type="checkbox"
               name="familyFriendly"
               checked={preferences.familyFriendly}
               onChange={handlePreferenceChange}
+              style={{
+                width: "20px",
+                height: "20px",
+                cursor: "pointer",
+                marginLeft: "10px",
+              }}
             />
-            Family-Friendly
           </label>
-          <label>
+        </div>
+      </div>
+
+      {/* Shopping */}
+      <div
+        className="carousel-item"
+        style={{
+          position: "relative",
+          width: "450px",
+          height: "290px",
+          border: "1px solid #ddd",
+          borderRadius: "15px",
+          flexShrink: 0,
+          backgroundColor: "#fff",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          overflow: "hidden",
+        }}
+      >
+        <img
+          src={shopping}
+          alt="Shopping"
+          style={{
+            width: "100%",
+            height: "250px",
+            objectFit: "cover",
+            borderTopLeftRadius: "15px",
+            borderTopRightRadius: "15px",
+          }}
+        />
+        <div
+          style={{
+            padding: "10px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <label
+            style={{
+              fontSize: "16px",
+              fontWeight: "bold",
+              marginBottom: "0",
+              marginRight: "10px",
+              color: "#0F5132",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            Shopping
             <input
               type="checkbox"
               name="shopping"
               checked={preferences.shopping}
               onChange={handlePreferenceChange}
+              style={{
+                width: "20px",
+                height: "20px",
+                cursor: "pointer",
+                marginLeft: "10px",
+              }}
             />
-            Shopping
           </label>
-          <label>
-            Budget:
-            <select name="budget" value={preferences.budget} onChange={handlePreferenceChange}>
-              <option value="">Select</option>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-            </select>
-          </label>
-          <button onClick={submitPreferences}>Save Preferences</button>
         </div>
       </div>
-
-      {successMessage && <p style={{ color: '#0F5132' }}>{successMessage}</p>}
-      {/* Fetch Product by Name */}
-<div>
-<h3>Fetch Product by Name</h3>
-<input
-  type="text"
-  name="productName"
-  value={formData.productName}
-  onChange={handleInputChange}
-/>
-<button onClick={handleFetchProduct}>Fetch Product</button>
-
-{fetchedProduct && (
-  <div>
-    <h4>Product Details</h4>
-    <p><strong>Name:</strong> {fetchedProduct.productName}</p>
-    <p><strong>Description:</strong> {fetchedProduct.description}</p>
-    <p>
-      <strong>Price:</strong> {(fetchedProduct.price * conversionRate).toFixed(2)} {selectedCurrency}
-    </p>
-    <p><strong>Stock:</strong> {fetchedProduct.stock}</p>
+    </div>
+      {/* Budget Dropdown */}
+  <div className="budget-selection" style={{ marginTop: "30px", textAlign: "center" }}>
+    <label style={{ fontWeight: "bold", marginRight: "10px", fontSize: "16px" }}>
+      <FaDollarSign style={{ marginRight: "5px" }} />
+      Budget:
+    </label>
+    <select
+      name="budget"
+      value={preferences.budget}
+      onChange={handlePreferenceChange}
+      style={{
+        padding: "10px",
+        fontSize: "16px",
+        border: "1px solid #ddd",
+        borderRadius: "5px",
+      }}
+    >
+      <option value="">Select</option>
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+    </select>
+    <button
+    onClick={submitPreferences}
+    style={{
+      marginTop: "30px",
+      padding: "12px 20px",
+      backgroundColor: "#0F5132",
+      color: "#fff",
+      border: "none",
+      borderRadius: "5px",
+      cursor: "pointer",
+      fontSize: "16px",
+    }}
+  >
+    Save Preferences
+  </button>
+  {successMessage && <p style={{ color: "#0F5132" }}>{successMessage}</p>}
   </div>
-)}
+
+  </div>
+
+  
 </div>
 
-    <div>
-      <button onClick={handleViewItineraries}> {showingItineraries ? 'Hide itineraries' : 'Show itineraries'}</button>
-      { showingItineraries && (
-          <div>
-          {Itineraries.length > 0 ? ( // Use 'itineraries' state variable for mapping
-            Itineraries.map((itinerary) => (
-              <div key={itinerary._id}>
-                <h4>Activities: {itinerary.Activities.join(', ')}</h4>
-                <p>Locations: {itinerary.Locations.join(', ')}</p>
-              </div>
-            ))
-          ) : (
-            <p>No itineraries found.</p>
-          )}
-        </div>
-      )}
+<div className="dashboard-section" style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+  {/* Search Product by Name */}
+  <div className="card" style={styles.card}>
+    <h3 style={styles.cardTitle}>Looking for a certain product?</h3>
+    <div style={styles.inputContainer}>
+      <input
+        type="text"
+        name="productName"
+        value={formData.productName}
+        onChange={handleInputChange}
+        placeholder="Enter product name"
+        style={styles.input}
+      />
+      <button onClick={handleFetchProduct} style={styles.iconButton}>
+        <i className="fas fa-search" style={styles.searchIcon}></i>
+        <FaSearch/>
+      </button>
     </div>
-    
-
-    
-
- 
-
-    <div>
-    <button onClick={handleViewBookedItineraries}> {showingBookedItineraries ? 'Hide booked itineraries' : 'Show booked itineraries'}</button>
-    {showingBookedItineraries && (
-      <div>
-        {bookedItineraries.length > 0 ? (
-          bookedItineraries.map((Itinerary) => (
-            <div key={Itinerary._id}>
-              <h4>Booked Activities: {Itinerary.Activities.join(', ')}</h4>
-              <p>Locations: {Itinerary.Locations.join(', ')}</p>
-              <p>Price: {(Itinerary.price * conversionRate).toFixed(2)} {selectedCurrency}</p> 
-              <p>TourGuide: {Itinerary.TourGuide}</p>
-              <p>Date:{Itinerary.DatesTimes}</p>
-<h4>Feedback on Itinerary</h4>
-
-<input 
-  type="number" 
-  placeholder="Rating" 
-  onChange={(e) => handleRatingChangeI(Itinerary, e.target.value)} // Update the rating state
-/>
-
-<input 
-  type="text" 
-  placeholder="Comment" 
-  onChange={(e) => handleCommentChangeI(Itinerary, e.target.value)} // Update the comment state
-/>
-
-<button onClick={() => submitFeedbackItinerary(Itinerary)}>Submit Feedback</button>
-<h4>Feedback on Tour Guide:</h4>
-
-               <input 
-                type="number" 
-                placeholder="Rating" 
-                onChange={(e) => handleRatingChange(Itinerary, e.target.value)}
-                />
-              <input 
-                type="text" 
-                placeholder="Comment" 
-                onChange={(e) => handleCommentChange(Itinerary, e.target.value)}
-                />
-              <button onClick={() => submitFeedback(Itinerary)}>Submit Feedback</button>
-              <button onClick={()=>handleCancelItineraryBooking(Itinerary._id)}>Cancel Booking( 2 days before )</button>
-            </div>
-            
-          ))
-        ) : (
-          <p>No booked itineraries found.</p>
-        )}
+    {fetchedProduct && (
+      <div style={styles.productDetails}>
+        <h4 style={styles.sectionTitle}>Product Details</h4>
+        <p><strong>Name:</strong> {fetchedProduct.productName}</p>
+        <p><strong>Description:</strong> {fetchedProduct.description}</p>
+        <p>
+          <strong>Price:</strong> {(fetchedProduct.price * conversionRate).toFixed(2)} {selectedCurrency}
+        </p>
+        <p><strong>Stock:</strong> {fetchedProduct.stock}</p>
+        
       </div>
     )}
-    </div>
-    <div>
-      <button onClick={toggleViewBookedActivites}>{showingBookedActivities ? 'Hide booked activites' : 'Show booked activites'}</button>
-      {showingBookedActivities && (
-      <div>
-        {bookedActivities.length > 0 ? (
-          bookedActivities.map((Activity) => (
-            <div key={Activity._id}>
-              <h4>Name: {Activity.name}</h4>
-              <p>Cateogry: {Activity.Category}</p>
-              <p>Price: {(Activity.price * conversionRate).toFixed(2)} {selectedCurrency}</p> {/* Convert price here */}
-              <p>Date: {Activity.date}</p>
-              <p>Location:{Activity.Location}</p>                 
-              <button onClick={()=>handleCancelActivityBooking(Activity._id)}>Cancel Booking( 2 days before )</button>
-            </div>
-          ))
-        ) : (
-          <p>No booked activites found.</p>
-        )}
-      </div>
-    )}
-    </div>
-    {errorMessage && <div className="error">{errorMessage}</div>}
-    {successMessage && <div className="success">{successMessage}</div>}
- 
-    </div>
   </div>
+  {errorMessage && <div style={styles.error}>{errorMessage}</div>}
+  {/* Booked Itineraries Section */}
+  <div className="card" style={styles.card}>
+    <h3 style={styles.cardTitle}>Your Booked Itineraries</h3>
+    {bookedItineraries.length > 0 ? (
+      bookedItineraries.map((Itinerary) => (
+        <div key={Itinerary._id} style={styles.itineraryCard}>
+          <h4>Activities Included: {Itinerary.Activities.join(", ")}</h4>
+          <p>Locations: {Itinerary.Locations.join(", ")}</p>
+          <p>Price: {(Itinerary.price * conversionRate).toFixed(2)} {selectedCurrency}</p>
+          <p>Tour Guide: {Itinerary.TourGuide}</p>
+          <p>Date: {Itinerary.DatesTimes}</p>
+          <div style={styles.feedbackSection}>
+            <h4>Leave Feedback</h4>
+            <input
+              type="number"
+              placeholder="Rating"
+              onChange={(e) => handleRatingChangeI(Itinerary, e.target.value)}
+              style={styles.input}
+            />
+            <input
+              type="text"
+              placeholder="Comment"
+              onChange={(e) => handleCommentChangeI(Itinerary, e.target.value)}
+              style={styles.input}
+            />
+            <button onClick={() => submitFeedbackItinerary(Itinerary)} style={styles.button}>
+              Submit Feedback
+            </button>
+          </div>
+          <button
+            onClick={() => handleCancelItineraryBooking(Itinerary._id)}
+            style={styles.cancelButton}
+          >
+            Cancel Booking (2 days before)
+          </button>
+        </div>
+      ))
+    ) : (
+      <p style={styles.emptyMessage}>You have no booked itineraries.</p>
+    )}
+  </div>
+
+  {/* Booked Activities Section */}
+  <div className="card" style={styles.card}>
+    <h3 style={styles.cardTitle}>Your Booked Activities</h3>
+    {bookedActivities.length > 0 ? (
+      bookedActivities.map((Activity) => (
+        <div key={Activity._id} style={styles.activityCard}>
+          <h4>Activity Name: {Activity.name}</h4>
+          <p>Category: {Activity.Category}</p>
+          <p>
+            Price: {(Activity.price * conversionRate).toFixed(2)} {selectedCurrency}
+          </p>
+          <p>Date: {Activity.date}</p>
+          <p>Location: {Activity.Location}</p>
+          <button
+            onClick={() => handleCancelActivityBooking(Activity._id)}
+            style={styles.cancelButton}
+          >
+            Cancel Booking (2 days before)
+          </button>
+        </div>
+      ))
+    ) : (
+      <p style={styles.emptyMessage}>You have no booked activities.</p>
+    )}
+  </div>
+  {successMessage && <div style={styles.success}>{successMessage}</div>}
+</div>
+</div>
+</div>
 );
 
 };
 const styles = {
+  card: {
+    backgroundColor: "#fff",
+    padding: "20px",
+    borderRadius: "10px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    marginBottom: "20px",
+  },
+  cardTitle: {
+    fontSize: "18px",
+    fontWeight: "bold",
+    marginBottom: "15px",
+    color: "#333",
+  },
+  inputContainer: {
+    display: "flex",
+    gap: "10px",
+    marginBottom: "10px",
+  },
+  input: {
+    padding: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    fontSize: "14px",
+    width: "100%",
+  },
+  iconButton: {
+    padding: "10px",
+    backgroundColor: "#0F5132",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+  },
+  searchIcon: {
+    fontSize: "16px",
+  },
+  button: {
+    padding: "10px 15px",
+    backgroundColor: "#0F5132",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    fontSize: "14px",
+  },
+  cancelButton: {
+    padding: "10px 15px",
+    backgroundColor: "#DC3545",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    fontSize: "14px",
+    marginTop: "10px",
+  },
+  itineraryCard: {
+    padding: "15px",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    marginBottom: "10px",
+  },
+  activityCard: {
+    padding: "15px",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    marginBottom: "10px",
+  },
+  feedbackSection: {
+    marginTop: "10px",
+    borderTop: "1px solid #ddd",
+    paddingTop: "10px",
+  },
+  emptyMessage: {
+    color: "#888",
+    fontStyle: "italic",
+    textAlign: "center",
+  },
+  error: {
+    color: "#DC3545",
+    marginTop: "10px",
+  },
+  success: {
+    color: "#0F5132",
+    marginTop: "10px",
+  },
   container: {
     maxWidth: '800px',
     margin: '20px auto',

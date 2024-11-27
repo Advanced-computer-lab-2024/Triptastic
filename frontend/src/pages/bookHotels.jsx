@@ -1,6 +1,25 @@
 import React, { useState, useEffect } from 'react';
+import {
+  FaLandmark,
+  FaUniversity,
+  FaBox,
+  FaMap,
+  FaRunning,
+  FaBus,
+  FaPlane,
+  FaHotel,
+  FaClipboardList,
+  FaStar,
+  FaUserCircle,
+  FaWifi,
+  FaCoffee,
+  FaCar
 
+} from 'react-icons/fa';
+import logo from '../images/image.png'; // Adjust the path as necessary
+import { useNavigate } from 'react-router-dom';
 const BookHotels = () => {
+  const navigate = useNavigate();
   const [hotelDetails, setHotelDetails] = useState({
     cityCode: '',
     checkInDate: '',
@@ -10,9 +29,8 @@ const BookHotels = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState(null);
-  const [bookedHotels, setBookedHotels] = useState([]); // Track booked status for each hotel
+  const [bookedHotels, setBookedHotels] = useState([]);
 
-  // Fetch access token from Amadeus API when component mounts
   useEffect(() => {
     const fetchToken = async () => {
       const API_KEY = process.env.REACT_APP_API_KEY;
@@ -25,9 +43,9 @@ const BookHotels = () => {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
           body: new URLSearchParams({
-            'grant_type': 'client_credentials',
-            'client_id': API_KEY,
-            'client_secret': API_SECRET,
+            grant_type: 'client_credentials',
+            client_id: API_KEY,
+            client_secret: API_SECRET,
           }),
         });
 
@@ -45,7 +63,6 @@ const BookHotels = () => {
     fetchToken();
   }, []);
 
-  // Update form inputs
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setHotelDetails({
@@ -54,7 +71,6 @@ const BookHotels = () => {
     });
   };
 
-  // Fetch hotel IDs by city code and limit to 20 IDs
   const fetchHotelIds = async () => {
     const API_URL = 'https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city';
     const { cityCode } = hotelDetails;
@@ -71,18 +87,15 @@ const BookHotels = () => {
       if (!res.ok) throw new Error('Failed to fetch hotel IDs');
 
       const data = await res.json();
-      return data.data.slice(0, 20).map((hotel) => hotel.hotelId); // Limit to 20 hotels
+      return data.data.slice(0, 20).map((hotel) => hotel.hotelId);
     } catch (err) {
       setError(err.message);
       return [];
     }
   };
 
-  // Fetch hotel offers for the first 20 hotel IDs
   const fetchHotelOffers = async (hotelIds) => {
     const { checkInDate, checkOutDate } = hotelDetails;
-
-    // Join hotel IDs as a single comma-separated string
     const hotelIdsString = hotelIds.join(',');
     const url = `https://test.api.amadeus.com/v3/shopping/hotel-offers?hotelIds=${hotelIdsString}&checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&adults=1`;
 
@@ -97,14 +110,13 @@ const BookHotels = () => {
 
       if (!res.ok) {
         const errorData = await res.json();
-        console.error("Error from Amadeus API:", errorData);
+        console.error('Error from Amadeus API:', errorData);
         throw new Error(errorData.message || 'Failed to fetch hotel offers');
       }
+
       const data = await res.json();
-      
-      // Set hotels state with the fetched offers and reset booked status
       setHotels(data.data);
-      setBookedHotels(new Array(data.data.length).fill(false)); // Initialize booked status array
+      setBookedHotels(new Array(data.data.length).fill(false));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -112,7 +124,6 @@ const BookHotels = () => {
     }
   };
 
-  // Handle form submission and search for hotels
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -133,77 +144,390 @@ const BookHotels = () => {
     }
   };
 
-  // Handle booking a hotel
   const handleBooking = (index) => {
     const updatedBookings = [...bookedHotels];
-    updatedBookings[index] = true; // Mark the specific hotel as booked
+    updatedBookings[index] = true;
     setBookedHotels(updatedBookings);
   };
 
+  const styles = {
+  container: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+    maxWidth: '500px', // Smaller width for the form container
+    margin: '150px auto', // Center form horizontally and give space from the top
+    padding: '20px',
+    backgroundColor: '#f9f9f9',
+    borderRadius: '12px',
+    boxShadow: '0 6px 10px rgba(0, 0, 0, 0.1)',
+    fontFamily: 'Arial, sans-serif',
+    color: '#333',
+    height: 'auto', // Ensures that the container height adjusts based on the content
+  },
+  
+  header: {
+    position: 'fixed', // Make the header fixed
+    top: '0', // Stick to the top of the viewport
+    left: '0',
+    width: '100%', // Make it span the full width of the viewport
+    backgroundColor: '#0F5132', // Green background
+    color: 'white', // White text
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '10px 20px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for depth
+    zIndex: '1000', // Ensure it appears above other content
+  },
+  logoContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  logo: {
+    height: '70px',
+    width: '80px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+  },
+  title: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  profileIcon: {
+    fontSize: '40px',
+    color: 'white',
+    cursor: 'pointer',
+  },
+  sidebar: {
+    position: 'fixed',
+    top: '90px',
+    left: 0,
+    height: '100vh',
+    width: '60px',
+    backgroundColor: 'rgba(15, 81, 50, 0.85)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    padding: '10px 0',
+    overflowY: 'auto',
+    transition: 'width 0.3s ease',
+    zIndex: 1000,
+    boxSizing: 'border-box',  // Include padding in width/height calculation
+  },
+  
+  sidebarExpanded: {
+    width: '200px',
+  },
+  iconContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    padding: '10px',
+    width: '100%',
+    color: '#fff',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease',
+  },
+  icon: {
+    fontSize: '24px',
+    marginLeft: '15px',
+    color: '#fff',
+  },
+  label: {
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#fff',
+    opacity: 0,
+    whiteSpace: 'nowrap',
+    transition: 'opacity 0.3s ease',
+  },
+};
   return (
     <div>
-      <h2>Search Hotels</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          City Code (IATA Code):
+    {/* Header */}
+    <header style={styles.header}>
+      <div style={styles.logoContainer}>
+        <img src={logo} alt="Logo" style={styles.logo} />
+      </div>
+      <h1 style={styles.title}>Book Hotels</h1>
+      <FaUserCircle
+        style={styles.profileIcon}
+        onClick={() => navigate('/touristSettings')}
+      />
+    </header>
+     {/* Sidebar */}
+    <div
+        style={styles.sidebar}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.width = '200px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '1')
+          );
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.width = '60px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '0')
+          );
+        }}
+      >
+        <div style={styles.item} onClick={() => navigate('/historical-locations')}>
+          <FaLandmark style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Historical Loc
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/museums')}>
+          <FaUniversity style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Museums
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/products')}>
+          <FaBox style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Products
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/itineraries')}>
+          <FaMap style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Itineraries
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/activities')}>
+          <FaRunning style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Activities
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-flights')}>
+          <FaPlane style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Book Flights
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-hotels')}>
+          <FaHotel style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Book a Hotel
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-transportation')}>
+          <FaBus style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Transportation
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
+          <FaClipboardList style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Past Orders
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
+          <FaStar style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Review Activities
+          </span>
+        </div>
+      </div>
+
+    <div style={{ fontFamily: 'Arial, sans-serif', padding: '20px' }}>
+      <h1 style={{ textAlign: 'center', color: '#333' }}>Hotel Booking</h1>
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          maxWidth: '800px',
+          margin: '0 auto',
+          padding: '20px ',
+          border: '1px solid #ddd',
+          borderRadius: '8px',
+          backgroundColor: '#f9f9f9',
+        }}
+      >
+        <label style={{ display: 'block', marginBottom: '10px' }}>
+          <span>City Code (IATA):</span>
           <input
             type="text"
             name="cityCode"
             value={hotelDetails.cityCode}
             onChange={handleInputChange}
             required
+            style={{
+              width: '100%',
+              padding: '8px',
+              margin: '5px 0',
+              border: '1px solid #ddd',
+              borderRadius: '4px',
+            }}
           />
         </label>
-        <label>
-          Check-In Date:
+        <label style={{ display: 'block', marginBottom: '10px' }}>
+          <span>Check-In Date:</span>
           <input
             type="date"
             name="checkInDate"
             value={hotelDetails.checkInDate}
             onChange={handleInputChange}
             required
+            style={{
+              width: '100%',
+              padding: '8px',
+              margin: '5px 0',
+              border: '1px solid #ddd',
+              borderRadius: '4px',
+            }}
           />
         </label>
-        <label>
-          Check-Out Date:
+        <label style={{ display: 'block', marginBottom: '10px' }}>
+          <span>Check-Out Date:</span>
           <input
             type="date"
             name="checkOutDate"
             value={hotelDetails.checkOutDate}
             onChange={handleInputChange}
             required
+            style={{
+              width: '100%',
+              padding: '8px',
+              margin: '5px 0',
+              border: '1px solid #ddd',
+              borderRadius: '4px',
+            }}
           />
         </label>
-        <button type="submit" disabled={loading}>
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            width: '100%',
+            padding: '10px',
+            backgroundColor: '#0F5132',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '4px',
+            fontSize: '16px',
+            cursor: loading ? 'not-allowed' : 'pointer',
+          }}
+        >
           {loading ? 'Searching...' : 'Search Hotels'}
         </button>
       </form>
 
-      {hotels.length > 0 && (
-        <div>
-          <h3>Hotel Offers</h3>
-          {hotels.map((hotel, index) => (
-            <div key={index} style={{ border: '1px solid #ccc', padding: '16px', borderRadius: '8px', marginBottom: '16px', position: 'relative' }}>
-              <p><strong>Hotel ID:</strong> {hotel.hotel.hotelId}</p>
-              <p><strong>Name:</strong> {hotel.hotel.name}</p>
-              <p><strong>Rating:</strong> {hotel.hotel.rating}</p>
-
-              {bookedHotels[index] ? (
-                <p style={{ color: 'green', fontWeight: 'bold', position: 'absolute', top: '10px', right: '10px' }}>Booked!</p>
-              ) : (
-                <button
-                  onClick={() => handleBooking(index)} // Pass the index to mark this hotel as booked
-                  style={{ marginTop: '8px', backgroundColor: '#007bff', color: '#fff', padding: '8px 16px', border: 'none', borderRadius: '4px' }}
-                >
-                  Book
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
+      {error && (
+        <p style={{ color: 'red', textAlign: 'center', marginTop: '20px' }}>
+          Error: {error}
+        </p>
       )}
 
-      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+{hotels.length > 0 && (
+  <div style={{ maxWidth: '800px', margin: '20px auto' }}>
+    <h2 style={{ textAlign: 'center', color: '#333', marginBottom: '20px' }}>Available Offers</h2>
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        gap: '20px',
+      }}
+    >
+      {hotels.map((hotel, index) => (
+        <div
+          key={index}
+          style={{
+            backgroundColor: '#fff',
+            border: '1px solid #ddd',
+            borderRadius: '10px',
+            padding: '20px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            transition: 'transform 0.2s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.03)';
+            e.currentTarget.style.boxShadow = '0 8px 12px rgba(0, 0, 0, 0.15)';
+            e.currentTarget.style.borderColor = '#0F5132';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+            e.currentTarget.style.borderColor = '#ddd';
+          }}
+          
+        >
+          <div>
+            <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>
+              {hotel.hotel.name}
+            </h3>
+            <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
+              <strong>Hotel ID:</strong> {hotel.hotel.hotelId}
+            </p>
+            <div style={{ marginTop: '10px', fontSize: '14px', color: '#555' }}>
+  <strong>Amenities:</strong> {hotel.hotel.amenities ? hotel.hotel.amenities.join(', ') : 'Standard'}
+</div>
+
+<p style={{ fontSize: '16px', fontWeight: 'bold', color: '#0F5132', marginTop: '10px' }}>
+  {hotel.offers && hotel.offers[0]?.price?.total
+    ? `Price: $${hotel.offers[0].price.total}`
+    : 'Price: Contact for details'}
+</p>
+<div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+  <FaWifi title="Free Wi-Fi" style={{ color: '#0F5132', fontSize: '20px' }} />
+  <FaCoffee title="Breakfast Included" style={{ color: '#FFD700', fontSize: '20px' }} />
+  <FaCar title="Parking Available" style={{ color: '#007bff', fontSize: '20px' }} />
+</div>
+
+
+<div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+  <FaStar style={{ color: '#FFD700' }} />
+  <span style={{ fontSize: '14px', color: '#555' }}>
+    {hotel.hotel.userRating ? `${hotel.hotel.userRating} / 5` : 'No ratings available'}
+  </span>
+</div>
+          </div>
+          {bookedHotels[index] ? (
+            <p
+              style={{
+                color: '#0F5132',
+                fontWeight: 'bold',
+                fontSize: '16px',
+                textAlign: 'center',
+                marginTop: '10px',
+              }}
+            >
+              Booked!
+            </p>
+          ) : (
+            <button
+              onClick={() => handleBooking(index)}
+              style={{
+                marginTop: '10px',
+                backgroundColor: '#0F5132',
+                color: '#fff',
+                padding: '10px 16px',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                alignSelf: 'center',
+              }}
+            >
+              Book
+            </button>
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
+    </div>
     </div>
   );
 };
