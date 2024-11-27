@@ -66,6 +66,11 @@ const touristSchema = new Schema({
     shopping: { type: Boolean, default: false },
     budget: { type: String, enum: ['low', 'medium', 'high'], default: 'medium' },
   },
+  birthdayPromoCode: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'PromoCode',
+    default: null, // Will hold the reference to the generated promo code
+  },
   bookmarkedEvents: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -86,6 +91,7 @@ const touristSchema = new Schema({
     },
   ],
 }, 
+
 { timestamps: true });
 
 const Tourist = mongoose.models.Tourist || mongoose.model('Tourist', touristSchema);
