@@ -159,7 +159,10 @@ const AdminPage = () => {
   
         if (response.ok) {
           const data = await response.json();
-  
+          if (!data.notifications || data.notifications.length === 0) {
+            console.log('No new notifications found.');
+            return;
+          }
           // Filter and append unique notifications
           const uniqueNotifications = data.notifications.filter(
             (newNotification) =>
@@ -411,6 +414,8 @@ const handleAddProduct = () => {
 };
 
   const handleProductSubmit = async (e) => {
+    const Username = localStorage.getItem('Username'); // Assuming the Username is stored in local storage
+
     e.preventDefault();
     handleAddProduct();
     const formData = new FormData();
@@ -419,7 +424,7 @@ const handleAddProduct = () => {
     }
   
     try {
-      const response = await fetch('http://localhost:8000/createProduct', {
+      const response = await fetch(`http://localhost:8000/createProduct?Username=${Username}`, {
         method: 'POST',
         body: formData,
       });
@@ -989,11 +994,14 @@ const unarchiveProduct = async () => {
         <li onClick={() => navigate('/PromoCodeForm')}>Promo Codes</li>
         <li onClick={() => navigate('/products')}>Products</li>
         <div style={{ position: 'relative', textAlign: 'right', padding: '10px' }}>
+      {/* Notification Bell Icon */}
       <FaBell
         size={24}
         style={{ cursor: 'pointer' }}
         onClick={handleNotificationClick}
       />
+
+      {/* Notification Count */}
       {notifications && notifications.length > 0 && (
         <span
           style={{
@@ -1014,6 +1022,8 @@ const unarchiveProduct = async () => {
           {notifications.length}
         </span>
       )}
+
+      {/* Notifications Dropdown */}
       {showNotifications && (
         <div
           style={{
@@ -1024,7 +1034,7 @@ const unarchiveProduct = async () => {
             border: '1px solid #ccc',
             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
             borderRadius: '4px',
-            width: '250px',
+            width: '300px',
             maxHeight: '300px',
             overflowY: 'auto',
             zIndex: 10,
@@ -1040,7 +1050,11 @@ const unarchiveProduct = async () => {
                   fontSize: '14px',
                 }}
               >
-                {notification.message}
+                <p style={{ margin: 0, fontWeight: 'bold' }}>{notification.message}</p>
+                <p style={{ margin: 0, fontSize: '12px', color: 'gray' }}>
+                  {new Date(notification.date).toLocaleDateString()}{' '}
+                  {new Date(notification.date).toLocaleTimeString()}
+                </p>
               </li>
             ))}
           </ul>
@@ -1052,7 +1066,6 @@ const unarchiveProduct = async () => {
         </div>
       )}
     </div>
-     
         </ul>
       </div>
       <h2>Create Admin</h2>

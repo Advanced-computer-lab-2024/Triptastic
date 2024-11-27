@@ -134,15 +134,34 @@ const deleteCategory = async (req, res) => {
 };
 
 const createProduct = async (req, res) => {
-    const { productName,description,price,rating,seller,review,stock } = req.body;
-    const image = req.file ? req.file.path : null;
-    try {
-      const product = await productModel.create({ productName,description,price,rating,seller,review,stock,image });
-      res.status(201).json(product);
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
-  };
+  const { Username } = req.query; // Extract seller's username from query
+
+  if (!Username) {
+    return res.status(400).json({ error: 'Username is required in the query.' });
+  }
+
+  const { productName, description, price, rating, review, stock } = req.body;
+  const image = req.file ? req.file.path : null;
+
+  try {
+    // Create the product with the seller's username
+    const product = await productModel.create({
+      productName,
+      description,
+      price,
+      rating,
+      seller: Username, // Use the Username as the seller
+      review,
+      stock,
+      image,
+    });
+
+    res.status(201).json(product); // Return the created product
+  } catch (error) {
+    res.status(400).json({ error: error.message }); // Handle errors
+  }
+};
+
  
 
 const getProduct = async (req, res) => {
