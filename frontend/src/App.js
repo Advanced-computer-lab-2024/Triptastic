@@ -38,6 +38,7 @@ import HistoricalDetail from './pages/historicalDetails';
 import MuseumDetail from './pages/MuseumDetails';
 import { CurrencyProvider } from './pages/CurrencyContext'; // Import the provider from correct path
 import Cart from './pages/Cart';
+import Checkout from './pages/checkout'
 import Wishlist from './pages/Wishlist';
 import PromoCodeForm from './pages/PromoCodeForm';
 import TouristSettings from './pages/touristsettings';
@@ -136,6 +137,8 @@ function App() {
             <Route path="/BookmarkedEvents" element={<BookmarkedEvents />} />
             <Route path="/payment" element={<PaymentPage />} />
             <Route path="/guideReport" element={<GuideReport />} />
+            <Route path="/checkout" element={<Checkout />} />
+
           </Routes>
         </Router>
       </Elements>

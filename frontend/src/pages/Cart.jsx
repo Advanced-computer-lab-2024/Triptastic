@@ -275,7 +275,7 @@ const Cart = () => {
         )}
       </div>
       <div style={styles.checkoutContainer}>
-            <button style={styles.checkoutButton} onClick={() => navigate('/checkout.jsx')}>
+            <button style={styles.checkoutButton} onClick={() => navigate('/Checkout')}>
               Proceed to Checkout
             </button>
           </div>

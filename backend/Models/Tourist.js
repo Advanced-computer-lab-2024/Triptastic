@@ -45,7 +45,6 @@ const touristSchema = new Schema({
   },
   Bookings: [
     {
-     
       type: Object, 
       required: true,
       reminded: { type: Boolean, default: false }, // To track if a reminder has been sent
@@ -84,6 +83,42 @@ const touristSchema = new Schema({
       date: Date,
       read: { type: Boolean, default: false }, // Track read/unread state
     },
+  ],
+  addresses: [
+    {
+      addressLine1: {
+        type: String,
+        required: true,
+      },
+      addressLine2: {
+        type: String,
+        required: false,
+      },
+      city: {
+        type: String,
+        required: true,
+      },
+      state: {
+        type: String,
+        required: true,
+      },
+      postalCode: {
+        type: String,
+        required: true,
+      },
+      country: {
+        type: String,
+        required: true,
+      },
+      phoneNumber: {
+        type: String,
+        required: true,
+      },
+      isPrimary: {
+        type: Boolean,
+        default: false, // Mark one address as primary
+      },
+    }
   ],
 }, 
 { timestamps: true });

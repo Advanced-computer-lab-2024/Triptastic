@@ -64,6 +64,7 @@ const TouristProfile = () => {
     body: '',  
     date: ''  
   });
+  
   const [preferences, setPreferences] = useState({
     historicAreas: false,
     beaches: false,
@@ -1116,7 +1117,7 @@ return (
           <p>Tour Guide: {Itinerary.TourGuide}</p>
           <p>Date: {Itinerary.DatesTimes}</p>
           <div style={styles.feedbackSection}>
-            <h4>Leave Feedback</h4>
+            <h4>Leave Feedback on itinerary</h4>
             <input
               type="number"
               placeholder="Rating"
@@ -1130,6 +1131,24 @@ return (
               style={styles.input}
             />
             <button onClick={() => submitFeedbackItinerary(Itinerary)} style={styles.button}>
+              Submit Feedback
+            </button>
+          </div>
+          <div style={styles.feedbackSection}>
+            <h4>Leave Feedback on tour Guide</h4>
+            <input
+              type="number"
+              placeholder="Rating"
+              onChange={(e) => handleRatingChange(Itinerary, e.target.value)}
+              style={styles.input}
+            />
+            <input
+              type="text"
+              placeholder="Comment"
+              onChange={(e) => handleCommentChange(Itinerary, e.target.value)}
+              style={styles.input}
+            />
+            <button onClick={() => submitFeedback(Itinerary)} style={styles.button}>
               Submit Feedback
             </button>
           </div>

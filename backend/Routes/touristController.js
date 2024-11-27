@@ -1512,8 +1512,71 @@ const cancelActivity = async (req, res) => {
   }
 };
 
+const getAddresses = async (req, res) => {
+  const { username } = req.query;
 
+  try {
+    const tourist = await touristModel.findOne({ Username: username });
+    if (!tourist) {
+      return res.status(404).json({ error: 'Tourist not found' });
+    }
 
+    res.status(200).json(tourist.addresses);
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+const addAddress = async (req, res) => {
+  const { addressLine1, addressLine2, city, state, postalCode, country, phoneNumber, isPrimary } = req.body;
+  const username = req.query.username; // Get username from query string
+
+  console.log('Incoming address:', { addressLine1, city, country, username }); // Debugging
+
+  try {
+    // Check if the username is provided
+    if (!username) {
+      return res.status(400).json({ error: 'Username is required' });
+    }
+
+    // Find the tourist by username
+    const tourist = await touristModel.findOne({ Username: username });
+    if (!tourist) {
+      return res.status(404).json({ error: 'Tourist not found' });
+    }
+
+    // New address structure
+    const newAddress = {
+      addressLine1,
+      addressLine2,
+      city,
+      state,
+      postalCode,
+      country,
+      phoneNumber,
+      isPrimary,
+    };
+
+    // If the new address is primary, ensure all others are set to non-primary
+    if (isPrimary) {
+      tourist.addresses.forEach((address) => {
+        address.isPrimary = false;
+      });
+    }
+
+    // Add the new address to the addresses array
+    tourist.addresses.push(newAddress);
+
+    // Save the tourist document
+    await tourist.save();
+
+    // Return the updated tourist data or a success message
+    res.status(201).json({ message: 'Address added successfully', addresses: tourist.addresses });
+  } catch (error) {
+    console.error('Error adding address:', error); // Log error for debugging
+    res.status(400).json({ error: error.message });
+  }
+};
 const getBookedActivities = async (req, res) => {
   const { username } = req.query; // Get the username from the query parameters
 
@@ -2246,4 +2309,4 @@ const sendItineraryReminders = async () => {
   ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
   shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,addToCartAndRemoveFromWishlist,
   getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,
-  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist,removeProductFromCart,requestNotification};
+  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist,removeProductFromCart,requestNotification,addAddress,getAddresses};
