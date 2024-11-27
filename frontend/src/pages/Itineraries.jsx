@@ -512,7 +512,6 @@ const Itineraries = () => {
       width: '80px',
       borderRadius: '10px',
       marginRight:'10px',
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
     },
     title: {
       fontSize: '24px',
