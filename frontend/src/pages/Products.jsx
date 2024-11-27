@@ -157,16 +157,24 @@ const Products = () => {
     <img src={logo} alt="Logo" style={styles.logo} />
   </div>
   <h1 style={styles.title}>Products</h1>
-  <FaUserCircle
-    alt="Profile Icon"
-    style={styles.profileIcon}
-    onClick={handleProfileRedirect} // Navigate to profile
-  />
-  <div style={styles.cartButton} onClick={() => navigate('/Cart')}>
-    <FaShoppingCart style={styles.cartIcon} />
-    <span style={styles.cartLabel}></span>
+  <div style={styles.headerIcons}>
+    {/* Profile Icon */}
+    <FaUserCircle
+      alt="Profile Icon"
+      style={styles.profileIcon}
+      onClick={handleProfileRedirect} // Navigate to profile
+    />
+    {/* Wishlist Icon */}
+    <div style={styles.wishlistIcon} onClick={() => navigate('/wishlist')}>
+      <FaHeart style={styles.wishlistHeartIcon} />
+    </div>
+    {/* Cart Icon */}
+    <div style={styles.cartButton} onClick={() => navigate('/Cart')}>
+      <FaShoppingCart style={styles.cartIcon} />
+    </div>
   </div>
 </header>
+
  {/* Sidebar */}
  <div
         style={styles.sidebar}
@@ -245,12 +253,6 @@ const Products = () => {
         </div>
       </div>
 
-      <div style={styles.actionButtons}>
-  <button onClick={handleViewWishlist} style={styles.wishlistButton}>
-    View My Wishlist
-  </button>
-</div>
-
 
 
       <form onSubmit={handleFilterSubmit} style={styles.filterForm}>
@@ -302,13 +304,13 @@ const Products = () => {
         <p><strong><FaChartBar /> Sales:</strong> {product.sales}</p>
         <div style={styles.productActions}>
           <button onClick={() => handleAddToCart(product)} style={styles.actionButton}>
-            Add to Cart
+          <FaShoppingCart/>
           </button>
           <button
   onClick={() => handleAddToWishlist(product)}
-  style={styles.iconButton}
+  style={styles.icons}
 >
-  <FaHeart style={styles.icon} />
+  <FaHeart style={styles.icons} />
 
 </button>
 
@@ -326,6 +328,7 @@ const Products = () => {
 //styles
 const styles = {
   container: {
+    //marginTop:'400px',
     maxWidth: '1200px',
     marginBottom:'20px',
     margin: '20px auto',
@@ -335,11 +338,12 @@ const styles = {
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
   },
   filterGroup: {
+    marginTop:'50px',
     display: 'flex',
     gap: '10px',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: '20px',
+   // marginBottom: '20px',
   },
   filterInput: {
     padding: '10px',
@@ -364,39 +368,27 @@ const styles = {
     gap: '10px',
   },
   actionButton: {
+    fontSize:'30px',
     padding: '10px 15px',
-    backgroundColor: '#0F5132',
-    color: '#fff',
+    backgroundColor: 'white',
+    color: '#0F5132',
     border: 'none',
     borderRadius: '5px',
     cursor: 'pointer',
+    marginLeft:"650px"
+
   },
-  iconButton: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '5px',
-    padding: '10px 15px',
-    backgroundColor: '#f44336', // Red color for "Add to Wishlist"
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    fontSize: '16px',
+ 
+  icons: {
+    fontSize: '25px', // Adjust size for the heart icon
+    color: 'red', // White icon color to contrast with the red background
+    backgroundColor:'white',
+    //marginLeft:"340px"
   },
-  icon: {
-    fontSize: '18px', // Size of the heart icon
-  },
-  actionButtons: {
-    display: 'flex', // Ensures the items are laid out horizontally
-    alignItems: 'center', // Vertically aligns the items
-    justifyContent: 'flex-end', // Aligns the items to the right
-    gap: '10px', // Adds spacing between items
-    marginTop: '10px',
-  },
+ 
   
   cartIcon: {
-    fontSize: '30px', // Adjust size
+    fontSize: '20px', // Adjust size
     color: 'white',
     cursor: 'pointer',
   },
@@ -432,27 +424,46 @@ const styles = {
     width: '80px',
     borderRadius: '10px',
   },
+  headerIcons: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+  },
   profileIcon: {
     fontSize: '40px',
     color: 'white',
     cursor: 'pointer',
     borderRadius: '20px',
-    marginRight:'-580px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+   // boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
   },
-  cartIcon: {
+  wishlistIcon: {
+    fontSize: '24px',
+    cursor: 'pointer',
+    padding: '10px',
+    //borderRadius: '30%',
     display: 'flex',
     alignItems: 'center',
-    backgroundColor: '#fff', // White background for the button
-    color: '#0F5132', // Green text
-    borderRadius: '8px',
-    padding: '5px 5px',
-    cursor: 'pointer',
+    justifyContent: 'center',
     transition: 'background-color 0.3s ease',
-    backgroundColor: '#e6e6e6', // Lighter background on hover
-    fontSize:'35px'
-    },
- 
+  },
+  wishlistHeartIcon: {
+    fontSize: '25px',
+    color: 'white', // Red color for the heart icon
+    cursor: 'pointer'
+  },
+  cartButton: {
+    fontSize: '24px',
+    cursor: 'pointer',
+    borderRadius: '20%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'background-color 0.3s ease',
+  },
+  cartIcon: {
+    fontSize: '25px', // Adjust size
+    color: 'white', // Green text
+  },
   title: {
     fontSize: '24px',
     fontWeight: 'bold',
@@ -460,21 +471,7 @@ const styles = {
     margin: 0,
   },
 
-  actionButtons: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-end',
-    marginTop: '10px',
-  },
-  wishlistButton: {
-    backgroundColor: '#0F5132',
-    color: '#fff',
-    padding: '10px 20px',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    marginTop: '50px', // Adds space above the button
-  },
+ 
   filterForm: {
     margin: '20px 0',
   },
@@ -488,6 +485,7 @@ const styles = {
     cursor: 'pointer',
   },
   productList: {
+    fontSize:'11px',
     listStyleType: 'none',
     padding: 0,
   },
@@ -497,21 +495,24 @@ const styles = {
     marginBottom: '10px',
     borderRadius: '10px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+
   },
   productName: {
-    fontSize: '30px',
+    fontSize: '25px',
     color: '#0F5132',
+    marginTop:'60px'
+
   },
   productImage: {
     width: '100%',
-    maxWidth: '400px',
-    height: '300px',
+    maxWidth: '300px',
+    height: '200px',
     objectFit: 'cover',
     borderRadius: '10px',
   },
   addButton: {
     marginTop: '10px',
-    padding: '10px 20px',
+    padding: '5px 10px',
     backgroundColor: '#0F5132',
     color: '#fff',
     border: 'none',
