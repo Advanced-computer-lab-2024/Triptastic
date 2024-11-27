@@ -755,7 +755,7 @@ return (
 
 const styles = {
   container2: {
-    marginTop:'90px',
+    marginTop:'60px',
     fontFamily: 'Arial, sans-serif',
   },
   background: {
@@ -884,6 +884,7 @@ navigationButton: {
   fontSize: '24px',
 },
 header: {
+  height:'60px',
   position: 'fixed', // Make the header fixed
   top: '0', // Stick to the top of the viewport
   left: '0',
@@ -902,8 +903,8 @@ logoContainer: {
   alignItems: 'center',
 },
 logo: {
-  height: '70px',
-  width: '80px',
+  height: '60px',
+  width: '70px',
   borderRadius: '10px',
   marginRight:'10px',
 },
@@ -981,7 +982,7 @@ details: {
 },
 sidebar: {
   position: 'fixed',
-  top: '90px',
+  top: '60px',
   left: 0,
   height: '100vh',
   width: '50px', // Default width when collapsed

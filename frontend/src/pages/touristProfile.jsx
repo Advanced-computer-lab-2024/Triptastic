@@ -1292,6 +1292,7 @@ const styles = {
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
   },
   header: {
+    height:'60px',
     position: 'fixed', // Make the header fixed
     top: '0', // Stick to the top of the viewport
     left: '0',
@@ -1315,11 +1316,11 @@ const styles = {
     alignItems: 'center',
   },
   logo: {
-    height: '70px',
-    width: '80px',
+    height: '60px',
+    width: '70px',
     borderRadius: '10px',
- 
   },
+  
   notificationButton: {
     position: 'relative',
     cursor: 'pointer',
@@ -1402,7 +1403,7 @@ const styles = {
   
   sidebar: {
     position: 'fixed',
-    top: '90px',
+    top: '60px',
     left: 0,
     height: '100vh',
     width: '50px', // Default width when collapsed

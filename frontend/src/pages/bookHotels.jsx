@@ -171,6 +171,7 @@ const BookHotels = () => {
   },
   
   header: {
+    height:'60px',
     position: 'fixed', // Make the header fixed
     top: '0', // Stick to the top of the viewport
     left: '0',
@@ -189,8 +190,8 @@ const BookHotels = () => {
     alignItems: 'center',
   },
   logo: {
-    height: '70px',
-    width: '80px',
+    height: '60px',
+    width: '70px',
     borderRadius: '10px',
  
   },
@@ -206,7 +207,7 @@ const BookHotels = () => {
   },
   sidebar: {
     position: 'fixed',
-    top: '90px',
+    top: '60px',
     left: 0,
     height: '100vh',
     width: '60px',
@@ -249,7 +250,7 @@ const BookHotels = () => {
     transition: 'opacity 0.3s ease',
   },
   container2: {
-    marginTop:'90px',
+    marginTop:'60px',
     fontFamily: 'Arial, sans-serif',
   },
   background: {
@@ -287,12 +288,13 @@ const BookHotels = () => {
           maxWidth: '900px',
           margin: '0 auto',
           border: '1px solid rgba(0, 0, 0, 0.2)', // Soft border
-          borderRadius: '55px',
+          borderRadius: '30px',
           backgroundColor: 'white', // White background for search bar
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', // Subtle shadow for elevation
         }}
       >
-        <label style={{ display: 'block', marginBottom: '10px' }}>
+        <label style={{ display: 'block', marginBottom: '10px' 
+}}>
           <span>City Code (IATA):</span>
           <input
             type="text"

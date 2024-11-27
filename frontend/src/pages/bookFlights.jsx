@@ -196,6 +196,7 @@ const BookFlights = () => {
   },
   
   header: {
+    height:'60px',
     position: 'fixed', // Make the header fixed
     top: '0', // Stick to the top of the viewport
     left: '0',
@@ -214,8 +215,8 @@ const BookFlights = () => {
     alignItems: 'center',
   },
   logo: {
-    height: '70px',
-    width: '80px',
+    height: '60px',
+    width: '70px',
     borderRadius: '10px',
   
   },
@@ -323,7 +324,7 @@ const BookFlights = () => {
   },
   sidebar: {
     position: 'fixed',
-    top: '90px',
+    top: '60px',
     left: 0,
     height: '100vh',
     width: '60px',
