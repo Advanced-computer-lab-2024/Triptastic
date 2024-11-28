@@ -1155,6 +1155,8 @@ const calculateAndAddPoints = async (tourist, amountPaid) => {
   // Return both newly earned points and the calculated bonus cash
   return { newlyEarnedPoints: pointsToAdd, bonusCash };
 };
+
+
 const bookActivity = async (req, res) => {
   const { name, Username } = req.body;
 
@@ -1421,8 +1423,7 @@ const getBookedItineraries = async(req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
-};
-const cancelBookedItinerary = async (req, res) => {
+};const cancelBookedItinerary = async (req, res) => { 
   const { itineraryId } = req.params; // Get the itinerary ID from the request parameters
   const { username } = req.query; // Get the username from the query parameters
 
@@ -1459,9 +1460,33 @@ const cancelBookedItinerary = async (req, res) => {
       return res.status(400).json({ message: 'Itinerary cannot be cancelled within 48 hours of start date' });
     }
 
-    // Calculate refund and update wallet
+    // Calculate refund amount
     const refundAmount = itinerary.Price;
-    tourist.Wallet += refundAmount;
+    tourist.Wallet += refundAmount; // Add refund amount to the wallet
+
+    // Deduct points based on the badge level
+    let pointsToDeduct = 0;
+
+    if (tourist.badge === 1) {
+      pointsToDeduct = refundAmount * 0.5;
+    } else if (tourist.badge === 2) {
+      pointsToDeduct = refundAmount * 1;
+    } else if (tourist.badge === 3) {
+      pointsToDeduct = refundAmount * 1.5;
+    }
+
+    // Decrease points, but ensure it doesn't go below zero
+    tourist.points -= pointsToDeduct;
+    if (tourist.points < 0) tourist.points = 0;
+
+    // Update badge level if necessary
+    if (tourist.points > 500000) {
+      tourist.badge = 3;
+    } else if (tourist.points > 100000) {
+      tourist.badge = 2;
+    } else {
+      tourist.badge = 1;
+    }
 
     // Remove the booked itinerary from the tourist's bookings
     tourist.Bookings = tourist.Bookings.filter(booking => booking._id.toString() !== itineraryId);
@@ -1476,15 +1501,15 @@ const cancelBookedItinerary = async (req, res) => {
     res.status(200).json({ 
       message: 'Itinerary booking cancelled successfully', 
       refundedAmount: refundAmount, 
-      updatedWallet: tourist.Wallet 
+      updatedWallet: tourist.Wallet,
+      updatedPoints: tourist.points,
+      updatedBadge: tourist.badge,
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
-
-
 
 const requestAccountDeletionTourist = async (req, res) => {
   const { Username } = req.query;
