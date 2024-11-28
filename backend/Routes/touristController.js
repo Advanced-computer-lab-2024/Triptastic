@@ -2239,80 +2239,130 @@ const markNotificationsRead = async (req, res) => {
   }
 };
 
-// Schedule activity reminders
-cron.schedule('0 9 * * *', () => {
-  console.log('Sending activity reminders...');
-  sendActivityReminders();
-});
-
-// Schedule itinerary reminders
-cron.schedule('0 9 * * *', () => {
-  console.log('Sending itinerary reminders...');
-  sendItineraryReminders();
-});
-const sendActivityReminders = async () => {
+const sendActivityReminders = async (req, res) => {
+  const { username } = req.query; // Get the username from the query
   try {
-    // Fetch all tourists
-    const tourists = await touristModel.find();
-
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
-
-    for (const tourist of tourists) {
-      // Loop through bookings to find upcoming ones
-      for (const booking of tourist.Bookings) {
-        if (
-          new Date(booking.date) >= today &&
-          new Date(booking.date) <= tomorrow &&
-          !booking.reminded // Ensure no reminder was sent
-        ) {
-          // Find the related activity
-          const activity = await activitiesModel.findById(booking.activity);
-          if (!activity) continue;
-
-          // In-App Notification
-          const notificationMessage = `Reminder: Your activity "${activity.name}" is scheduled for tomorrow.`;
-          tourist.notifications.push({
-            message: notificationMessage,
-            date: new Date(),
-            read: false,
-          });
-
-          // Email Notification
-          const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-              user: 'malook25062003@gmail.com',
-              pass: 'sxvo feuu woie gpfn',
-            },
-          });
-
-          const mailOptions = {
-            from: 'malook25062003@gmail.com',
-            to: tourist.Email,
-            subject: 'Activity Reminder',
-            text: notificationMessage,
-          };
-
-          await transporter.sendMail(mailOptions);
-
-          console.log(`Reminder sent for activity "${activity.name}" to ${tourist.Email}`);
-
-          // Mark the booking as reminded
-          booking.reminded = true;
-        }
-      }
-
-      // Save the updated tourist
-      await tourist.save();
+    // Fetch the tourist by Username
+    const tourist = await touristModel.findOne({ Username: username });
+    if (!tourist) {
+      console.log('Tourist not found:', username);
+      return res.status(404).json({ message: 'Tourist not found.' });
     }
 
-    console.log('Reminders sent successfully.');
+    console.log('Tourist found:', tourist.Username);
+
+    // Check if there are no bookings
+    if (!tourist.Bookings || tourist.Bookings.length === 0) {
+      console.log('No bookings found for the tourist:', username);
+      return res.status(200).json({ message: 'No bookings found to send reminders for.' });
+    }
+
+    // Define start and end of "tomorrow"
+    const today = new Date();
+    const tomorrowStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+    const tomorrowEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 2);
+
+    let notificationsSent = [];
+
+    // Check bookings for reminders
+    for (const booking of tourist.Bookings) {
+      console.log('Checking booking:', booking);
+
+      if (
+        new Date(booking.date) >= tomorrowStart &&
+        new Date(booking.date) < tomorrowEnd &&
+        !booking.reminded
+      ) {
+        console.log('Upcoming booking found:', booking);
+
+        // Find the activity associated with the booking
+        const activity = await activitiesModel.findOne({ name: booking.name });
+        if (!activity) {
+          console.log('Activity not found for booking name:', booking.name);
+          continue;
+        }
+
+        console.log('Activity details:', activity);
+
+        // Check if the notification already exists
+        const existingNotification = tourist.notifications.some(
+          (notification) =>
+            notification.message.includes(activity.name) &&
+            new Date(notification.date).toDateString() === new Date().toDateString()
+        );
+
+        if (existingNotification) {
+          console.log(`Notification already exists for activity "${activity.name}"`);
+          continue;
+        }
+
+        // Prepare the notification
+        const notificationMessage = `Reminder: Your activity "${activity.name}" is scheduled for tomorrow.`;
+        tourist.notifications.push({
+          message: notificationMessage,
+          date: new Date(),
+          read: false,
+        });
+
+        // Send an email notification
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: 'malook25062003@gmail.com',
+            pass: 'sxvo feuu woie gpfn',
+          },
+        });
+
+        const mailOptions = {
+          from: 'malook25062003@gmail.com',
+          to: tourist.Email,
+          subject: 'Activity Reminder',
+          text: notificationMessage,
+        };
+
+        try {
+          await transporter.sendMail(mailOptions);
+          console.log(`Reminder sent for activity "${activity.name}" to ${tourist.Email}`);
+          notificationsSent.push({
+            activity: activity.name,
+            email: tourist.Email,
+            status: 'success',
+          });
+        } catch (emailError) {
+          console.error(`Failed to send email for activity "${activity.name}":`, emailError.message);
+          notificationsSent.push({
+            activity: activity.name,
+            email: tourist.Email,
+            status: 'failed',
+          });
+        }
+
+        // Mark the booking as reminded
+        booking.reminded = true;
+      } else {
+        console.log('Booking does not meet criteria for reminder:', booking);
+      }
+    }
+
+    // Save tourist data
+    await tourist.save();
+
+    if (notificationsSent.length === 0) {
+      console.log('No reminders were sent as no bookings required reminders.');
+      return res.status(200).json({ message: 'No booking reminders for tomorrow.' });
+    }
+
+    console.log('Final notifications sent:', notificationsSent);
+    return res.status(200).json({ message: 'Reminders processed successfully.', notificationsSent });
   } catch (error) {
     console.error('Error sending activity reminders:', error.message);
+    return res.status(500).json({ message: 'Internal server error.', error: error.message });
   }
 };
+
+
+
+
 
 const sendItineraryReminders = async () => {
   try {

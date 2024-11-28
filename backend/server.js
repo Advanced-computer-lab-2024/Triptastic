@@ -182,7 +182,6 @@ app.patch('/updateProductQuantityInCart',updateProductQuantityInCart);
 app.post('/requestNotification',requestNotification);
 app.get("/getNotifications", getNotifications);
 app.patch("/markNotificationsRead", markNotificationsRead);
-app.get("/sendActivityReminders", sendActivityReminders);
 app.post('/addAddress',addAddress);
 app.get("/getAddresses", getAddresses);
 
@@ -249,6 +248,8 @@ app.get('/getNotificationsForSeller', getNotificationsForSeller);
 app.get("/checkAndNotifyOutOfStockAdmin",checkAndNotifyOutOfStockAdmin);
 app.get('/getNotificationsForAdmin', getNotificationsForAdmin);
 app.delete("/deleteAllNotifications",deleteAllNotifications);
+app.post("/sendActivityReminders", sendActivityReminders);
+
 
 
 //Admin
