@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { CurrencyContext } from '../pages/CurrencyContext';
-import { FaPlaneDeparture, FaPlaneArrival, FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaClipboardList, FaStar, FaUserCircle } from 'react-icons/fa';
+import { FaPlaneDeparture, FaPlaneArrival,FaSearch,FaUser,FaCalendarAlt, FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaClipboardList, FaStar, FaUserCircle } from 'react-icons/fa';
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
 import flight from '../images/flight.jpg'; // Adjust the path as necessary
 
@@ -366,7 +366,53 @@ const BookFlights = () => {
     whiteSpace: 'nowrap',
     transition: 'opacity 0.3s ease',
   },
-  
+  searchForm: {
+    display: 'flex',
+    gap: '10px',
+    backgroundColor: '#fff',
+    padding: '15px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+  },
+  searchField: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    padding: '10px',
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+    backgroundColor: '#f9f9f9',
+  },
+  input: {
+    border: 'none',
+    outline: 'none',
+    backgroundColor: 'transparent',
+    fontSize: '14px',
+    width: '150px',
+  },
+  searchButton: {
+    backgroundColor: '#0F5132',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    padding: '10px 20px',
+    cursor: 'pointer',
+    fontSize: '16px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '5px',
+  },
+  flightsContainer: {
+    marginTop: '20px',
+    display: 'grid',
+    gap: '20px',
+  },
+  flightCard: {
+    backgroundColor: '#fff',
+    padding: '20px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+  },
 };
 
   
@@ -464,59 +510,65 @@ const BookFlights = () => {
         </div>
       </div>
       
-      <form style={styles.form} onSubmit={handleSubmit}>
-        <div style={styles.formGroup}>
-          <label style={styles.label}>Origin (IATA Code):</label>
-          <input
-            type="text"
-            name="origin"
-            value={flightDetails.origin}
-            onChange={handleInputChange}
-            required
-            placeholder="e.g., JFK"
-            style={styles.input}
-          />
-        </div>
-        <div style={styles.formGroup}>
-          <label style={styles.label}>Destination (IATA Code):</label>
-          <input
-            type="text"
-            name="destination"
-            value={flightDetails.destination}
-            onChange={handleInputChange}
-            required
-            placeholder="e.g., LAX"
-            style={styles.input}
-          />
-        </div>
-        <div style={styles.formGroup}>
-          <label style={styles.label}>Departure Date:</label>
-          <input
-            type="date"
-            name="date"
-            value={flightDetails.date}
-            onChange={handleInputChange}
-            required
-            style={styles.input}
-          />
-        </div>
-        <div style={styles.formGroup}>
-          <label style={styles.label}>Adults:</label>
-          <input
-            type="number"
-            name="adults"
-            value={flightDetails.adults}
-            onChange={handleInputChange}
-            required
-            min="1"
-            max="10"
-            style={styles.input}
-          />
-        </div>
-        <button type="submit" disabled={loading} style={styles.button}>
+      {/* Search Form */}
+ <div style={styles.searchFormContainer}>
+ <form onSubmit={handleSubmit} style={styles.searchForm}>
+   <div style={styles.searchField}>
+     <FaPlaneDeparture style={styles.icon} />
+     <input
+       type="text"
+       name="origin"
+       value={flightDetails.origin}
+       onChange={handleInputChange}
+       placeholder="From: Origin"
+       style={styles.input}
+       required
+     />
+   </div>
+   <div style={styles.searchField}>
+     <FaPlaneArrival style={styles.icon} />
+     <input
+       type="text"
+       name="destination"
+       value={flightDetails.destination}
+       onChange={handleInputChange}
+       placeholder="To: Destination"
+       style={styles.input}
+       required
+     />
+   </div>
+   <div style={styles.searchField}>
+     <FaCalendarAlt style={styles.icon} />
+     <input
+       type="date"
+       name="date"
+       value={flightDetails.date}
+       onChange={handleInputChange}
+       style={styles.input}
+       required
+     />
+   </div>
+   <div style={styles.searchField}>
+     <FaUser style={styles.icon} />
+     <input
+       type="number"
+       name="adults"
+       value={flightDetails.adults}
+       onChange={handleInputChange}
+       placeholder="1 Traveler"
+       min="1"
+       max="10"
+       style={styles.input}
+       required
+     />
+   </div>
+   <button type="submit" disabled={loading} style={styles.searchButton}>
           {loading ? 'Searching...' : 'Search Flights'}
+          <FaSearch /> Search
         </button>
       </form>
+</div>
+       
 
       {flights.length > 0 && (
   <div style={styles.flightsContainer}>

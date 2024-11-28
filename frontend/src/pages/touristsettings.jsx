@@ -50,6 +50,7 @@ const [newAddress, setNewAddress] = useState({
     DOB: '',
     Occupation: '',
     Wallet: '',
+    preferences:[],
     title: '', 
     body: '',  
     date: ''  
@@ -383,12 +384,20 @@ const [newAddress, setNewAddress] = useState({
                 <p>{touristInfo.Wallet} {selectedCurrency}</p> 
               </div>
               <div>
-  <label><strong>My Preferences:</strong></label>
+  <h3>My Preferences</h3>
   <ul>
-    {touristInfo.preferences && touristInfo.preferences.length > 0 ? (
-      touristInfo.preferences.map((preference, index) => (
-        <li key={index}>{preference}</li>
-      ))
+    {touristInfo.preferences && Object.keys(touristInfo.preferences).length > 0 ? (
+      Object.entries(touristInfo.preferences).map(([key, value], index) => {
+        // Only display preferences where the value is true or a non-empty string
+        if (value === true || (typeof value === 'string' && value.trim() !== '')) {
+          return (
+            <li key={index}>
+              <strong>{key}:</strong> {value === true ? 'Yes' : value}
+            </li>
+          );
+        }
+        return null; // Skip preferences that are `false` or invalid
+      })
     ) : (
       <p>No preferences available.</p>
     )}
