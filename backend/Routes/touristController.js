@@ -1155,6 +1155,8 @@ const calculateAndAddPoints = async (tourist, amountPaid) => {
   // Return both newly earned points and the calculated bonus cash
   return { newlyEarnedPoints: pointsToAdd, bonusCash };
 };
+
+
 const bookActivity = async (req, res) => {
   const { name, Username } = req.body;
 
@@ -1421,8 +1423,7 @@ const getBookedItineraries = async(req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
-};
-const cancelBookedItinerary = async (req, res) => {
+};const cancelBookedItinerary = async (req, res) => { 
   const { itineraryId } = req.params; // Get the itinerary ID from the request parameters
   const { username } = req.query; // Get the username from the query parameters
 
@@ -1459,9 +1460,33 @@ const cancelBookedItinerary = async (req, res) => {
       return res.status(400).json({ message: 'Itinerary cannot be cancelled within 48 hours of start date' });
     }
 
-    // Calculate refund and update wallet
+    // Calculate refund amount
     const refundAmount = itinerary.Price;
-    tourist.Wallet += refundAmount;
+    tourist.Wallet += refundAmount; // Add refund amount to the wallet
+
+    // Deduct points based on the badge level
+    let pointsToDeduct = 0;
+
+    if (tourist.badge === 1) {
+      pointsToDeduct = refundAmount * 0.5;
+    } else if (tourist.badge === 2) {
+      pointsToDeduct = refundAmount * 1;
+    } else if (tourist.badge === 3) {
+      pointsToDeduct = refundAmount * 1.5;
+    }
+
+    // Decrease points, but ensure it doesn't go below zero
+    tourist.points -= pointsToDeduct;
+    if (tourist.points < 0) tourist.points = 0;
+
+    // Update badge level if necessary
+    if (tourist.points > 500000) {
+      tourist.badge = 3;
+    } else if (tourist.points > 100000) {
+      tourist.badge = 2;
+    } else {
+      tourist.badge = 1;
+    }
 
     // Remove the booked itinerary from the tourist's bookings
     tourist.Bookings = tourist.Bookings.filter(booking => booking._id.toString() !== itineraryId);
@@ -1476,15 +1501,15 @@ const cancelBookedItinerary = async (req, res) => {
     res.status(200).json({ 
       message: 'Itinerary booking cancelled successfully', 
       refundedAmount: refundAmount, 
-      updatedWallet: tourist.Wallet 
+      updatedWallet: tourist.Wallet,
+      updatedPoints: tourist.points,
+      updatedBadge: tourist.badge,
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
-
-
 
 const requestAccountDeletionTourist = async (req, res) => {
   const { Username } = req.query;
@@ -1531,6 +1556,7 @@ const cancelActivity = async (req, res) => {
   const { username } = req.query; // Get the username from the query parameters
 
   try {
+    // Find the activity by ID
     const activity = await activitiesModel.findById(activityId);
     if (!activity) {
       return res.status(404).json({ message: 'Activity not found' });
@@ -1539,7 +1565,7 @@ const cancelActivity = async (req, res) => {
     // Find the tourist by username
     const tourist = await touristModel.findOne({ Username: username });
     if (!tourist) {
-      console.log('Tourist not found'); // Log if tourist is not found
+      console.log('Tourist not found');
       return res.status(404).json({ message: 'Tourist not found' });
     }
 
@@ -1549,7 +1575,7 @@ const cancelActivity = async (req, res) => {
     // Find the booked activity by ID
     const bookedActivity = tourist.Bookings.find(booking => booking._id.toString() === activityId);
     if (!bookedActivity) {
-      console.log('Activity not found in the tourist\'s bookings'); // Log if activity is not found
+      console.log('Activity not found in the tourist\'s bookings');
       return res.status(404).json({ message: 'Activity not found in the tourist\'s bookings' });
     }
 
@@ -1560,13 +1586,37 @@ const cancelActivity = async (req, res) => {
     const hoursDifference = timeDifference / (1000 * 60 * 60); // Convert milliseconds to hours
 
     if (hoursDifference <= 48) {
-      console.log('Activity cannot be cancelled within 48 hours of start date'); // Log if within cancellation window
+      console.log('Activity cannot be cancelled within 48 hours of start date');
       return res.status(400).json({ message: 'Activity cannot be cancelled within 48 hours of start date' });
     }
 
-    // Refund the activity price to the tourist's wallet
+    // Calculate the refund amount
     const refundAmount = activity.price;
     tourist.Wallet += refundAmount;
+
+    // Deduct points based on the badge level
+    let pointsToDeduct = 0;
+
+    if (tourist.badge === 1) {
+      pointsToDeduct = refundAmount * 0.5;
+    } else if (tourist.badge === 2) {
+      pointsToDeduct = refundAmount * 1;
+    } else if (tourist.badge === 3) {
+      pointsToDeduct = refundAmount * 1.5;
+    }
+
+    // Decrease points, but ensure they don't go below zero
+    tourist.points -= pointsToDeduct;
+    if (tourist.points < 0) tourist.points = 0;
+
+    // Update badge level if necessary
+    if (tourist.points > 500000) {
+      tourist.badge = 3;
+    } else if (tourist.points > 100000) {
+      tourist.badge = 2;
+    } else {
+      tourist.badge = 1;
+    }
 
     // Remove the booked activity from the tourist's bookings
     tourist.Bookings = tourist.Bookings.filter(booking => booking._id.toString() !== activityId);
@@ -1574,7 +1624,7 @@ const cancelActivity = async (req, res) => {
     // Save the updated tourist record
     await tourist.save();
 
-    // Deduct the refund amount from the activity's sales
+    // Update activity sales
     activity.sales -= refundAmount;
     await activity.save();
 
@@ -1582,6 +1632,8 @@ const cancelActivity = async (req, res) => {
       message: 'Activity booking cancelled successfully',
       refundAmount,
       updatedWallet: tourist.Wallet,
+      updatedPoints: tourist.points,
+      updatedBadge: tourist.badge,
     });
   } catch (error) {
     console.error(error);
@@ -2363,39 +2415,72 @@ const sendActivityReminders = async (req, res) => {
 
 
 
-
-const sendItineraryReminders = async () => {
+const sendItineraryReminders = async (req, res) => {
+  const { username } = req.query; // Get the username from the query
   try {
-    // Fetch all tourists
-    const tourists = await touristModel.find();
+    // Fetch the tourist by Username
+    const tourist = await touristModel.findOne({ Username: username });
+    if (!tourist) {
+      console.log('Tourist not found:', username);
+      return res.status(404).json({ message: 'Tourist not found.' });
+    }
 
-    for (const tourist of tourists) {
-      // Get booked itineraries for the tourist
-      const bookedItineraries = await itineraryModel.find({
-        _id: { $in: tourist.Bookings.map(booking => booking.itinerary) },
-      });
+    console.log('Tourist found:', tourist.Username);
 
-      const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(today.getDate() + 1);
+    // Check if there are no booked itineraries
+    if (!tourist.Bookings || tourist.Bookings.length === 0) {
+      console.log('No itineraries found for the tourist:', username);
+      return res.status(200).json({ message: 'No itineraries found to send reminders for.' });
+    }
 
-      // Filter itineraries happening tomorrow
-      const upcomingItineraries = bookedItineraries.filter(
-        itinerary => 
-          new Date(itinerary.date) >= today && 
-          new Date(itinerary.date) <= tomorrow
-      );
+    // Define start and end of "tomorrow"
+    const today = new Date();
+    const tomorrowStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+    const tomorrowEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 2);
 
-      for (const itinerary of upcomingItineraries) {
-        // In-App Notification
-        const notificationMessage = `Reminder: Your itinerary "${itinerary.name}" is scheduled for tomorrow.`;
+    const notificationsSent = [];
+
+    // Check itineraries for reminders
+    for (const booking of tourist.Bookings) {
+      console.log('Checking itinerary booking:', booking);
+
+      if (
+        new Date(booking.DatesTimes) >= tomorrowStart &&
+        new Date(booking.DatesTimes) < tomorrowEnd &&
+        !booking.reminded
+      ) {
+        console.log('Upcoming itinerary booking found:', booking);
+
+        // Find the itinerary associated with the booking
+        const itinerary = await itineraryModel.findOne({ Activities: booking.Activities });
+        if (!itinerary) {
+          console.log('Itinerary not found for booking name:', booking.Activities);
+          continue;
+        }
+
+        console.log('Itinerary details:', itinerary);
+                
+        // Check if the notification already exists
+        const existingNotification = tourist.notifications.some(
+          (notification) =>
+            notification.message.includes(itinerary.Activities) &&
+            new Date(notification.date).toDateString() === new Date().toDateString()
+        );
+
+        if (existingNotification) {
+          console.log(`Notification already exists for itinerary "${itinerary.Activities}"`);
+          continue;
+        }
+
+        // Prepare the notification
+        const notificationMessage = `Reminder: Your itinerary "${itinerary.Activities}" is scheduled for tomorrow.`;
         tourist.notifications.push({
           message: notificationMessage,
           date: new Date(),
           read: false,
         });
 
-        // Email Notification
+        // Send an email notification
         const transporter = nodemailer.createTransport({
           service: 'gmail',
           auth: {
@@ -2411,23 +2496,50 @@ const sendItineraryReminders = async () => {
           text: notificationMessage,
         };
 
-        await transporter.sendMail(mailOptions);
+        try {
+          await transporter.sendMail(mailOptions);
+          console.log(`Reminder sent for itinerary "${itinerary.Activities}" to ${tourist.Email}`);
+          notificationsSent.push({
+            itinerary: itinerary.Activities,
+            email: tourist.Email,
+            status: 'success',
+          });
+        } catch (emailError) {
+          console.error(`Failed to send email for itinerary "${itinerary.Activities}":`, emailError.message);
+          notificationsSent.push({
+            itinerary: itinerary.Activities,
+            email: tourist.Email,
+            status: 'failed',
+          });
+        }
 
-        console.log(`Reminder sent for itinerary "${itinerary.name}" to ${tourist.Email}`);
+        // Mark the booking as reminded
+        booking.reminded = true;
+      } else {
+        console.log('Itinerary booking does not meet criteria for reminder:', booking);
       }
-
-      // Save the updated tourist
-      await tourist.save();
     }
+
+    // Save tourist data
+    await tourist.save();
+
+    if (notificationsSent.length === 0) {
+      console.log('No reminders were sent as no itineraries required reminders.');
+      return res.status(200).json({ message: 'No itinerary reminders for tomorrow.' });
+    }
+
+    console.log('Final notifications sent:', notificationsSent);
+    res.status(200).json({ message: 'Reminders processed successfully.', notificationsSent });
   } catch (error) {
     console.error('Error sending itinerary reminders:', error.message);
+    res.status(500).json({ message: 'Internal server error.', error: error.message });
   }
 };
 
 
 
 
- module.exports = {sendActivityReminders,getNotifications,markNotificationsRead,updateProductQuantityInCart,bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+ module.exports = {sendItineraryReminders,sendActivityReminders,getNotifications,markNotificationsRead,updateProductQuantityInCart,bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
