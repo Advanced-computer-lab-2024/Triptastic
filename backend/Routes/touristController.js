@@ -1084,7 +1084,7 @@ const getComplaintsByTourist = async (req, res) => {
 
     res.status(200).json(complaints);
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred while fetching complaints.' });
+    res.status(500).json({ error: 'An error occurred while aaaaaaaafetching complaints.' });
   }
 };
 

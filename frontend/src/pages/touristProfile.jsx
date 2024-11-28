@@ -341,6 +341,8 @@ const TouristProfile = () => {
     fetchItineraries();
   }, []);
   // New function to fetch complaints
+
+  
   const fetchComplaints = async () => {
     setLoading(true);
     const Username = localStorage.getItem('Username');
@@ -358,7 +360,7 @@ const TouristProfile = () => {
         throw new Error('Failed to fetch complaints');
       }
     } catch (error) {
-      setErrorMessage('An error occurred while fetching complaints');
+      setErrorMessage('An error occurred while fetching aaaaaaaacomplaints');
       console.error(error);
     }
     setLoading(false);

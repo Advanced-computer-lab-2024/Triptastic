@@ -165,8 +165,7 @@ const [newAddress, setNewAddress] = useState({
         throw new Error('Failed to fetch complaints');
       }
     } catch (error) {
-      setErrorMessage('An error occurred while fetching complaints');
-      console.error(error);
+      setErrorMessage('');
     }
     setLoading(false);
   };
@@ -612,29 +611,34 @@ const [newAddress, setNewAddress] = useState({
        <div id="target-section" ref={targetRef}>
         <h2>My Addresses</h2>
        </div>
-
        <button
         style={styles.addButton}
         onClick={() => setShowAddresses((prev) => !prev)} // Toggle addresses visibility
-       >
+      >
         {showAddresses ? 'Hide Addresses' : 'View Addresses'}
-       </button>
-       {isLoading && <p>Loading addresses...</p>}
+      </button>
 
-       {showAddresses && !isLoading && addresses.length > 0 && (
+      {isLoading && <p>Loading addresses...</p>}  {/* Show loading message while fetching */}
 
-       <div >
-          {addresses.map((address, index) => (
-            <div key={index} style={styles.productItem}>
-              <p style={styles.productName}>{address.addressLine1}</p>
-              <p>{address.city}, {address.country}</p>
-              {address.isPrimary && <span style={{color: '#0F5132', fontWeight: 'bold'}}>Primary Address</span>}
+      {showAddresses && !isLoading && (
+        <div>
+          {addresses.length === 0 ? (  // Show message if no addresses exist
+            <p>No addresses available.</p>
+          ) : (
+            <div>
+              {addresses.map((address, index) => (
+                <div key={index} style={styles.productItem}>
+                  <p style={styles.productName}>{address.addressLine1}</p>
+                  <p>{address.city}, {address.country}</p>
+                  {address.isPrimary && (
+                    <span style={{ color: '#0F5132', fontWeight: 'bold' }}>Primary Address</span>
+                  )}
+                </div>
+              ))}
             </div>
-          ))}
-          
-
+          )}
         </div>
-       )}
+      )}
        <button
         style={styles.addButton}
         onClick={() => setShowAddressForm((prev) => !prev)} // Toggle form visibility independently
