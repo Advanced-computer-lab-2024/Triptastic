@@ -683,6 +683,19 @@ const handleViewReport = async (itineraryId) => {
                 <p><strong>Mobile Number:</strong> {tourGuideInfo?.mobileNumber}</p> 
                <p><strong>Years of Experience:</strong> {tourGuideInfo?.yearsOfExperience}</p> 
                <p><strong>Previous Work:</strong> {tourGuideInfo?.previousWork}</p> 
+               
+      <p>Feedback</p>
+      {tourGuideInfo.feedback.length === 0 ? (
+        <p>No feedback yet.</p>
+      ) : (
+        tourGuideInfo.feedback.map((feedback, index) => (
+          <div key={index}>
+            <p><strong>{feedback.touristUsername}:</strong></p>
+            <p>Rating: {feedback.rating}/5 and commented:</p>
+            <p>{feedback.comment}</p>
+          </div>
+        ))
+      )}
                 <button onClick={handleEditToggle}>{isEditing ? 'Cancel Edit' : 'Edit Data'}</button>
               </div>
               </div>
