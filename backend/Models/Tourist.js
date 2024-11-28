@@ -47,7 +47,7 @@ const touristSchema = new Schema({
     {
       type: Object, 
       required: true,
-      reminded: { type: Boolean, default: false }, // To track if a reminder has been sent
+
     }
   ],
   points: {
