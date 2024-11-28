@@ -1293,7 +1293,6 @@ const submitFeedbackItinerary = async (req, res) => {
   try {
     // Fetch the itinerary
     const itinerary = await itineraryModel.findById(Itinerary); // Ensure you have the correct model here
-    console.log(Itinerary);
 
     if (!itinerary) {
       return res.status(404).json({ message: 'Itinerary not found' });
@@ -1302,6 +1301,7 @@ const submitFeedbackItinerary = async (req, res) => {
     if (rating < 1 || rating > 5) {
       return res.status(400).json({ message: 'Rating must be between 1 and 5.' });
     }
+    console.log(touristUsername);
 
     // Create the feedback object
     const feedbackEntry = {
@@ -1320,8 +1320,7 @@ const submitFeedbackItinerary = async (req, res) => {
 
     res.status(200).json({ message: 'Feedback submitted successfully!' });
   } catch (error) {
-    console.log(comment);
-    console.log(rating);
+    
 
     console.error(error);
     res.status(500).json({ message: 'Server error while submitting feedback' });
@@ -1341,7 +1340,9 @@ const submitFeedback = async (req, res) => {
 
   // Retrieve the tourist's username from the request or session (logged-in user)
   const touristUsername = await touristModel.findOne({ Username: username });
-
+  console.log(comment);
+  console.log(rating);
+  console.log(touristUsername);
   // Check if the tourist is authenticated
   if (!touristUsername) {
     return res.status(403).json({ message: 'User is not authenticated' });
@@ -1357,7 +1358,7 @@ const submitFeedback = async (req, res) => {
     if (rating < 0 || rating > 5) {
       return res.status(400).json({ message: 'Rating must be between 0 and 5.' });
     }
-    const tourGuideUsername = itinerary.TourGuide; // Get the tour guide's username from the itinerary
+    const tourGuideUsername = Itinerary.TourGuide; // Get the tour guide's username from the itinerary
 
     // Create the feedback object
     const feedbackEntry = {
@@ -1380,11 +1381,14 @@ const submitFeedback = async (req, res) => {
 
     // Save the updated tour guide document
     await foundTourGuide.save();
-
+    
     res.status(200).json({ message: 'Feedback submitted successfully!' });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error while submitting feedback' });
+    console.log(comment);
+    console.log(rating);
+    console.log(foundTourGuide);
+
+        res.status(500).json({ message: 'Server error while submitting feedback' });
   }
 };
 

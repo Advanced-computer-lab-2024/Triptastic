@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useRef,useEffect, useContext } from 'react';
 import './touristsettings.css'; // Assuming you create a CSS file for styling
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -6,6 +6,7 @@ import { CurrencyContext } from '../pages/CurrencyContext';
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
 import { FaBars, FaTimes, FaUserCircle } from "react-icons/fa"; // For menu icons
 import { FaPercentage, FaCalendarAlt, FaTag } from 'react-icons/fa';
+import { useLocation } from 'react-router-dom';
 
 const TouristSettings = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -26,6 +27,19 @@ const TouristSettings = () => {
 const [showAddresses, setShowAddresses] = useState(false);
 const [showAddressForm, setShowAddressForm] = useState(false);
 const [addresses, setAddresses] = useState([]);
+const location = useLocation();
+const [isLoading, setIsLoading] = useState(false);
+
+const targetRef = useRef(null); // Reference to target section
+
+ 
+useEffect(() => {
+  if (location.hash === '#target-section' && targetRef.current) {
+    setTimeout(() => {
+      targetRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 400); // Delay to ensure all rendering is done
+  }
+}, [location]);
 
 const [newAddress, setNewAddress] = useState({
   addressLine1: '',
@@ -176,7 +190,13 @@ const [newAddress, setNewAddress] = useState({
       console.error(error);
     }
   };
-  
+
+
+  useEffect(() => {
+    if (showAddresses) fetchAddresses();
+  }, [showAddresses]);
+
+
   const handleAddAddress = async (e) => {
     e.preventDefault();
     const Username = localStorage.getItem('Username');
@@ -554,7 +574,7 @@ const [newAddress, setNewAddress] = useState({
       </div>
   
     {/* Display Complaints */}
-  <div>
+  <div >
   <h3>Your Complaints</h3>
   {complaints.length === 0 ? (
     <p>No complaints filed yet.</p>
@@ -584,24 +604,26 @@ const [newAddress, setNewAddress] = useState({
             <p><em>No replies yet.</em></p>
           )}
         </li>
-      ))}
-    </ul>
-  )}
-  </div>
-  <div>
-      <div>
+         ))}
+        </ul>
+        )}
+       </div>
+       <div>
+       <div id="target-section" ref={targetRef}>
         <h2>My Addresses</h2>
-      </div>
+       </div>
 
-      <button
+       <button
         style={styles.addButton}
         onClick={() => setShowAddresses((prev) => !prev)} // Toggle addresses visibility
-      >
+       >
         {showAddresses ? 'Hide Addresses' : 'View Addresses'}
-      </button>
+       </button>
+       {isLoading && <p>Loading addresses...</p>}
 
-      {showAddresses && (
-        <div>
+       {showAddresses && !isLoading && addresses.length > 0 && (
+
+       <div >
           {addresses.map((address, index) => (
             <div key={index} style={styles.productItem}>
               <p style={styles.productName}>{address.addressLine1}</p>
@@ -609,15 +631,16 @@ const [newAddress, setNewAddress] = useState({
               {address.isPrimary && <span style={{color: '#0F5132', fontWeight: 'bold'}}>Primary Address</span>}
             </div>
           ))}
-          <button
-        style={styles.addButton}
-        onClick={() => setShowAddressForm((prev) => !prev)} // Toggle form visibility independently
-      >
-        {showAddressForm ? 'Cancel' : 'Add New Address'} {/* Dynamic Button Text */}
-      </button>
+          
 
         </div>
-      )}
+       )}
+       <button
+        style={styles.addButton}
+        onClick={() => setShowAddressForm((prev) => !prev)} // Toggle form visibility independently
+       >
+         {showAddressForm ? 'Cancel' : 'Add New Address'} {/* Dynamic Button Text */}
+      </button>
 
       {showAddressForm && (
      <form onSubmit={handleAddAddress} style={styles.container}>
@@ -767,13 +790,13 @@ const [newAddress, setNewAddress] = useState({
         </div>
       )}
     </div>
-     
-      {successMessage && <div className="success">{successMessage}</div>}
+
+      {successMessage && <div  className="success">{successMessage}</div>}
    
-  
-      
+
+
     </div>
-    
+
   );
   };
   const styles = {

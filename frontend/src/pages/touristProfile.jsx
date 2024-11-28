@@ -46,6 +46,8 @@ const TouristProfile = () => {
   const [passwordChangeMessage, setPasswordChangeMessage] = useState('');
   const [passwordChangeError, setPasswordChangeError] = useState('');
   const [changingPassword, setChangingPassword] = useState(false);
+  const [pastItineraries, setPastItineraries] = useState([]);
+  const [showPastItineraries, setShowPastItineraries] = useState(false);
 
   localStorage.setItem('context', 'tourist');
   const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
@@ -300,6 +302,15 @@ const TouristProfile = () => {
       console.error(error);
     }
   }
+  const filterPastItineraries = (data) => {
+    const today = new Date();
+    const past = data.filter(itinerary => new Date(itinerary.DatesTimes) < today);
+    setPastItineraries(past);
+  };
+
+  useEffect(() => {
+    fetchItineraries();
+  }, []);
   // New function to fetch complaints
   const fetchComplaints = async () => {
     setLoading(true);
@@ -520,7 +531,6 @@ const TouristProfile = () => {
         setErrorMessage('');
       }
     } catch (err) {
-      console.log(Itinerary);
 
       setErrorMessage(err.response?.data?.message || 'Failed to submit feedback');
       setSuccessMessage('');
@@ -1107,7 +1117,7 @@ return (
   {errorMessage && <div style={styles.error}>{errorMessage}</div>}
   {/* Booked Itineraries Section */}
   <div className="card" style={styles.card}>
-    <h3 style={styles.cardTitle}>Your Booked Itineraries</h3>
+    <h3 style={styles.cardTitle}>Your Upcoming Booked Itineraries</h3>
     {bookedItineraries.length > 0 ? (
       bookedItineraries.map((Itinerary) => (
         <div key={Itinerary._id} style={styles.itineraryCard}>
@@ -1161,13 +1171,13 @@ return (
         </div>
       ))
     ) : (
-      <p style={styles.emptyMessage}>You have no booked itineraries.</p>
+      <p style={styles.emptyMessage}>You have no booked upcoming itineraries.</p>
     )}
   </div>
 
   {/* Booked Activities Section */}
   <div className="card" style={styles.card}>
-    <h3 style={styles.cardTitle}>Your Booked Activities</h3>
+    <h3 style={styles.cardTitle}>Your Upcoming Booked Activities</h3>
     {bookedActivities.length > 0 ? (
       bookedActivities.map((Activity) => (
         <div key={Activity._id} style={styles.activityCard}>
@@ -1187,9 +1197,42 @@ return (
         </div>
       ))
     ) : (
-      <p style={styles.emptyMessage}>You have no booked activities.</p>
+      <p style={styles.emptyMessage}>You have no upcoming booked activities.</p>
     )}
   </div>
+  <button
+        onClick={() => setShowPastItineraries(!showPastItineraries)}
+        style={{
+          marginTop: '20px',
+          padding: '10px 20px',
+          backgroundColor: '#0F5132',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer'
+        }}
+      >
+        {showPastItineraries ? 'Hide Past Itineraries' : 'Show Past Itineraries'}
+      </button>
+
+      {showPastItineraries && (
+        <div className="card" style={{ marginTop: '20px', padding: '10px', backgroundColor: '#f9f9f9', borderRadius: '5px' }}>
+          <h3 style={{ fontSize: '18px', marginBottom: '10px' }}>Past Itineraries</h3>
+          {pastItineraries.length > 0 ? (
+            pastItineraries.map(itinerary => (
+              <div key={itinerary._id} style={{ marginBottom: '10px', padding: '10px', border: '1px solid #ddd', borderRadius: '5px' }}>
+                <h4>Activities Included: {itinerary.Activities.join(", ")}</h4>
+                <p>Locations: {itinerary.Locations.join(", ")}</p>
+                <p>Price: {(itinerary.price * conversionRate).toFixed(2)} {selectedCurrency}</p>
+                <p>Tour Guide: {itinerary.TourGuide}</p>
+                <p>Date: {itinerary.DatesTimes}</p>
+              </div>
+            ))
+          ) : (
+            <p>No past itineraries found.</p>
+          )}
+        </div>
+      )}
   {successMessage && <div style={styles.success}>{successMessage}</div>}
 </div>
 </div>

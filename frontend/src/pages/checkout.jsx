@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import logo from '../images/image.png'; // Adjust the path based on your folder structure
+import { FaUserCircle,FaShoppingCart,FaRegFileAlt, FaDollarSign, FaStar, FaComments, FaWarehouse, FaChartBar,FaBars} from 'react-icons/fa';
+import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel,
+  FaClipboardList } from "react-icons/fa";
+  import { FaHeart } from 'react-icons/fa';
 
 const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -8,109 +13,177 @@ const Checkout = () => {
   const [showAddresses, setShowAddresses] = useState(false); // Track visibility of addresses
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Define styles object
+  const handleAddressSelect = (address) => {
+    setSelectedAddress(address); // Set the selected address
+    setShowAddresses(false); // Optionally hide the address list after selection
+  };
+  // Example styles
   const styles = {
     container: {
       padding: '20px',
       maxWidth: '1200px',
       margin: '20px auto',
-      backgroundColor: '#f4f4f4',
-      borderRadius: '10px',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    },
-    header: {
-      height: '90px',
-      position: 'fixed',
-      top: '0',
-      left: '0',
-      width: '100%',
-      backgroundColor: '#0F5132', // Dark Green
-      color: 'white',
+      backgroundColor: '#f9f9f9',
+      borderRadius: '8px',
+      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+    }, iconContainer: {
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'space-between',
-      padding: '10px 20px',
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-      zIndex: '1000',
-    },
-    button: {
-      backgroundColor: '#0F5132', // Dark Green
-      color: 'white',
-      padding: '8px 15px',
-      borderRadius: '5px',
-      cursor: 'pointer',
-      textAlign: 'center',
-      border: 'none',
-      margin: '5px 0',
-    },
-    buttonSelected: {
-      backgroundColor: '#0F5132', // Dark Green
-      color: 'white',
-      padding: '8px 15px',
-      borderRadius: '5px',
-      cursor: 'pointer',
-      textAlign: 'center',
-      border: 'none',
-      margin: '5px 0',
-      opacity: 0.7, // Apply a "selected" effect to indicate the selection
-    },
-    addressList: {
+      justifyContent: 'flex-start', // Align items to the left
       padding: '10px',
-      backgroundColor: '#fff',
-      borderRadius: '5px',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      marginTop: '10px',
-    },
-    addressItem: {
-      padding: '10px',
-      backgroundColor: 'white', // Dark Green for background
-      color: 'white', // White text
-      borderRadius: '5px',
+      width: '100%', // Take full width of the sidebar
+      color: '#fff',
       cursor: 'pointer',
-      marginBottom: '5px',
-    //   boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-      transition: 'background-color 0.2s',
+      transition: 'background-color 0.3s ease',
     },
-    addressItemSelected: {
-      backgroundColor: '#0F5132', // Slightly lighter green for selected state
+    iconContainerHover: {
+      backgroundColor: '#084B24', // Background on hover
     },
+    icon: {
+      fontSize: '24px',
+      marginLeft: '15px', // Move icons slightly to the right
+      color: '#fff', // Icons are always white
+    },header: {
+      height:'60px',
+    position: 'fixed', // Make the header fixed
+    top: '0', // Stick to the top of the viewport
+    left: '0',
+    width: '100%', // Make it span the full width of the viewport
+    backgroundColor: '#0F5132',
+    color: 'white', // White text
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '10px 10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for depth
+    zIndex: '1000', // Ensure it appears above other content
+  },logoContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  logo: {
+    height: '60px',
+    width: '70px',
+    borderRadius: '10px',
+  }, profileIcon: {
+    fontSize: '30px',
+    color: 'white',
+    cursor: 'pointer',
+    borderRadius: '20px',
+   // boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  },
+  label: {
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#fff',
+    opacity: 0, // Initially hidden
+    whiteSpace: 'nowrap', // Prevent label text from wrapping
+    transition: 'opacity 0.3s ease',
+  },
+  labelVisible: {
+    opacity: 1, // Fully visible when expanded
+  },
     cartContent: {
-      padding: '20px',
+      marginBottom: '20px',
+    },
+    sidebarExpanded: {
+      width: '200px', // Width when expanded
+    },
+    sidebar: {
+      position: 'fixed',
+      top: '60px',
+      left: 0,
+      height: '100vh',
+      width: '50px', // Default width when collapsed
+      backgroundColor: 'rgba(15, 81, 50, 0.85)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-start', // Ensure alignment starts from the left
+      padding: '10px 0',
+      overflowX: 'hidden',
+      transition: 'width 0.3s ease',
+      zIndex: 1000,
     },
     cartList: {
-      listStyle: 'none',
-      paddingLeft: '0',
+      listStyleType: 'none',
+      padding: 0,
     },
     cartItem: {
-      padding: '15px',
-      margin: '10px 0',
-      backgroundColor: '#ffffff',
-      borderRadius: '10px',
-      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+      marginBottom: '10px',
     },
     productName: {
-      fontSize: '1.2rem',
+      fontSize: '18px',
       fontWeight: 'bold',
     },
-    removeButton: {
-      backgroundColor: '#FF4D4D',
-      color: 'white',
-      padding: '8px 15px',
+    addButton: {
+      padding: '10px 20px',
+      backgroundColor: '#0F5132', // Changed to the specified green
+      color: '#fff',
+      border: 'none',
       borderRadius: '5px',
       cursor: 'pointer',
-      border: 'none',
+      marginBottom: '10px',
+    },
+    addressButton: {
+      display: 'block',
+      width: '100%',
+      padding: '10px',
+      marginBottom: '10px',
+      border: '1px solid #0F5132', // Changed to match green border
+      borderRadius: '5px',
+      backgroundColor: '#0F5132',
+      textAlign: 'left',
+      cursor: 'pointer',
+      fontSize: '16px',
+      transition: 'background-color 0.2s, border-color 0.2s',
+    },
+    selectedAddressButton: {
+      backgroundColor: '#0F5132', // Light green for selected address
+      borderColor: '#0F5132', // Dark green border for selected address
+      fontWeight: 'bold',
     },
     emptyMessage: {
-      fontSize: '1.2rem',
+      color: '#888',
+    },
+    button: {
+      padding: '10px 20px',
+      backgroundColor: '#0F5132', // Changed to your green color
+      color: '#fff',
+      border: 'none',
+      borderRadius: '5px',
+      cursor: 'pointer',
+    }, iconContainer: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'flex-start', // Align items to the left
+      padding: '10px',
+      width: '100%', // Take full width of the sidebar
+      color: '#fff',
+      cursor: 'pointer',
+      transition: 'background-color 0.3s ease',
+    },
+    // Added styles for selected address
+    selectedAddressContainer: {
+      marginTop: '20px',
+      padding: '10px',
+      backgroundColor: '#d4edda',
+      borderRadius: '5px',
+      border: '1px solid #28a745',
+    },
+    selectedAddressLabel: {
+      fontSize: '18px',
+      fontWeight: 'bold',
+      color: '#28a745',
+    },
+    selectedAddress: {
+      fontSize: '16px',
       color: '#333',
     },
-    loading: {
-      fontSize: '1.2rem',
-      color: '#999',
-    },
   };
-
+  
   // Fetch cart items
   const fetchCart = async () => {
     const username = localStorage.getItem('Username');
@@ -147,10 +220,21 @@ const Checkout = () => {
     }
   };
 
-  // Handle address selection
-  const handleAddressSelect = (address) => {
-    setSelectedAddress(address);
-    setShowAddresses(false); // Hide address dropdown after selection
+  const handleProfileRedirect = () => {
+    const context = localStorage.getItem('context');
+
+    if (context === 'tourist') {
+      navigate('/tourist-profile');
+    } else if (context === 'seller') {
+      navigate('/seller-profile');
+    } else if (context === 'admin') {
+      navigate('/adminPage');
+     } else if (context === 'guest') {
+        navigate('/Guest');
+    } else {
+      console.error('Unknown context');
+      navigate('/'); // Fallback to home
+    }
   };
 
   // Proceed to payment
@@ -160,7 +244,7 @@ const Checkout = () => {
       return;
     }
     // Navigate to payment page or process order
-    navigate('/payment', { 
+    navigate('/Payment', { 
       state: { 
         cartItems, 
         selectedAddress 
@@ -172,94 +256,193 @@ const Checkout = () => {
     fetchCart();
     fetchAddresses();
   }, []);
-
   return (
     <div style={styles.container}>
-      <h1 style={styles.cartContent}>Checkout</h1>
-
-      {/* Cart Items Section */}
-      <div style={styles.cartContent}>
-        {cartItems.length === 0 ? (
-          <p style={styles.emptyMessage}>Your cart is empty</p>
-        ) : (
-          <ul style={styles.cartList}>
-            {cartItems.map((item, index) => (
-              <li key={index} style={styles.cartItem}>
-                <h2 style={styles.productName}>{item.productName}</h2>
-                <p>
-                  <strong>Price:</strong> {item.price}
-                </p>
-                <p>
-                  <strong>Quantity:</strong> {item.quantity}
-                </p>
-              </li>
-            ))}
-          </ul>
-        )}
+      <header style={styles.header}>
+        <div style={styles.logoContainer}>
+          <img src={logo} alt="Logo" style={styles.logo} />
+        </div>
+        <h1 style={styles.title}>Checkout</h1>
+        <div style={styles.headerIcons}>
+          {/* Profile Icon */}
+          <FaUserCircle
+            alt="Profile Icon"
+            style={styles.profileIcon}
+            onClick={handleProfileRedirect} // Navigate to profile
+          />
+        </div>
+      </header>
+  
+      {/* Sidebar */}
+      <div
+        style={styles.sidebar}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.width = '200px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '1')
+          );
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.width = '60px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '0')
+          );
+        }}
+      >
+        <div style={styles.item} onClick={() => navigate('/historical-locations')}>
+          <FaLandmark style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Historical Loc
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/museums')}>
+          <FaUniversity style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Museums
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/products')}>
+          <FaBox style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Products
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/itineraries')}>
+          <FaMap style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Itineraries
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/activities')}>
+          <FaRunning style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Activities
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-flights')}>
+          <FaPlane style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Book Flights
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-hotels')}>
+          <FaHotel style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Book a Hotel
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-transportation')}>
+          <FaBus style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Transportation
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
+          <FaClipboardList style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Past Orders
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
+          <FaStar style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Review Activities
+          </span>
+        </div>
       </div>
-
-      {/* Address Selection */}
-      <div style={styles.cartContent}>
-        <h3 style={styles.productName}>Choose Address</h3>
-        {selectedAddress ? (
-          <div style={styles.button}>
-            <p>{selectedAddress.street}</p>
-            <p>{selectedAddress.city}, {selectedAddress.state} {selectedAddress.zipCode}</p>
-            <button 
-              onClick={() => setShowAddresses(true)}
-              style={styles.button}
-            >
-              Change Address
-            </button>
-          </div>
-        ) : (
-          <button 
-            onClick={() => setShowAddresses((prev) => !prev)} // Toggle visibility of addresses
-            style={styles.button}
-          >
-            View Addresses
-          </button>
-        )}
-      </div>
-
-      {/* Address Dropdown */}
-      {showAddresses && (
-        <div style={styles.addressList}>
-          <h3 style={styles.productName}>Select an Address</h3>
-          {addresses.length === 0 ? (
-            <p style={styles.emptyMessage}>No addresses found. Please add an address.</p>
+  
+      <div style={styles.container}>
+        <h1 style={styles.cartContent}>Checkout</h1>
+  
+        {/* Cart Items Section */}
+        <div style={styles.cartContent}>
+          {cartItems.length === 0 ? (
+            <p style={styles.emptyMessage}>Your cart is empty</p>
           ) : (
-            <ul>
-              {addresses.map((address, index) => (
-                <li 
-                  key={index}
-                  onClick={() => handleAddressSelect(address)} 
-                  style={{
-                    ...styles.addressItem,
-                    ...(selectedAddress?.id === address.id ? styles.addressItemSelected : {}),
-                  }}
-                >
-                  <p>{address.street}</p>
-                  <p>{address.city}, {address.state} {address.zipCode}</p>
+            <ul style={styles.cartList}>
+              {cartItems.map((item, index) => (
+                <li key={index} style={styles.cartItem}>
+                  <h2 style={styles.productName}>{item.productName}</h2>
+                  <p>
+                    <strong>Price:</strong> {item.price}
+                  </p>
+                  <p>
+                    <strong>Quantity:</strong> {item.quantity}
+                  </p>
                 </li>
               ))}
             </ul>
           )}
         </div>
-      )}
-
-      {/* Proceed to Payment Button */}
-      <div style={styles.cartContent}>
-        <button 
-          onClick={handleProceedToPayment}
-          style={styles.button}
-          disabled={cartItems.length === 0 || !selectedAddress}
+  
+        <button
+          style={styles.addButton}
+          onClick={() => setShowAddresses((prev) => !prev)} // Toggle addresses visibility
         >
-          Proceed to Payment
+          {showAddresses ? 'Hide Addresses' : 'Select Address'}
         </button>
+  
+        {isLoading && <p style={styles.emptyMessage}>Loading addresses...</p>}
+  
+        {showAddresses && !isLoading && addresses.length > 0 && (
+          <div>
+            {addresses.map((address, index) => (
+              <button
+                key={index}
+                style={{
+                  ...styles.addressButton, // Use addressButton style
+                  ...(selectedAddress?.id === address.id ? styles.selectedAddressButton : {}),
+                }}
+                onClick={() => handleAddressSelect(address)} // Select the address
+              >
+                {address.addressLine1}, {address.city}, {address.country}
+                {address.isPrimary && (
+                  <span style={{ color: '#0F5132', fontWeight: 'bold' }}>
+                    {' '}
+                    (Primary Address)
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+  
+        {/* Display the selected address with a label */}
+        {selectedAddress && (
+          <div style={styles.selectedAddressContainer}>
+            <p style={styles.selectedAddressLabel}>Selected Address:</p>
+            <p style={styles.selectedAddress}>
+              {selectedAddress.addressLine1}, {selectedAddress.city}, {selectedAddress.country}
+              {selectedAddress.isPrimary && (
+                <span style={{ color: '#0F5132', fontWeight: 'bold' }}>
+                  {' '}
+                  (Primary Address)
+                </span>
+              )}
+            </p>
+          </div>
+        )}
+  
+        <button
+          style={styles.addButton}
+          onClick={() => (window.location.href = '/touristsettings#target-section')}
+        >
+          Add Address
+        </button>
+  
+        {/* Proceed to Payment Button */}
+        <div style={styles.cartContent}>
+          <button
+            onClick={handleProceedToPayment}
+            style={styles.button}
+            disabled={cartItems.length === 0 || !selectedAddress}
+          >
+            Proceed to Payment
+          </button>
+        </div>
       </div>
     </div>
   );
-};
+}
 
 export default Checkout;
