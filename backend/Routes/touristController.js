@@ -1556,6 +1556,7 @@ const cancelActivity = async (req, res) => {
   const { username } = req.query; // Get the username from the query parameters
 
   try {
+    // Find the activity by ID
     const activity = await activitiesModel.findById(activityId);
     if (!activity) {
       return res.status(404).json({ message: 'Activity not found' });
@@ -1564,7 +1565,7 @@ const cancelActivity = async (req, res) => {
     // Find the tourist by username
     const tourist = await touristModel.findOne({ Username: username });
     if (!tourist) {
-      console.log('Tourist not found'); // Log if tourist is not found
+      console.log('Tourist not found');
       return res.status(404).json({ message: 'Tourist not found' });
     }
 
@@ -1574,7 +1575,7 @@ const cancelActivity = async (req, res) => {
     // Find the booked activity by ID
     const bookedActivity = tourist.Bookings.find(booking => booking._id.toString() === activityId);
     if (!bookedActivity) {
-      console.log('Activity not found in the tourist\'s bookings'); // Log if activity is not found
+      console.log('Activity not found in the tourist\'s bookings');
       return res.status(404).json({ message: 'Activity not found in the tourist\'s bookings' });
     }
 
@@ -1585,13 +1586,37 @@ const cancelActivity = async (req, res) => {
     const hoursDifference = timeDifference / (1000 * 60 * 60); // Convert milliseconds to hours
 
     if (hoursDifference <= 48) {
-      console.log('Activity cannot be cancelled within 48 hours of start date'); // Log if within cancellation window
+      console.log('Activity cannot be cancelled within 48 hours of start date');
       return res.status(400).json({ message: 'Activity cannot be cancelled within 48 hours of start date' });
     }
 
-    // Refund the activity price to the tourist's wallet
+    // Calculate the refund amount
     const refundAmount = activity.price;
     tourist.Wallet += refundAmount;
+
+    // Deduct points based on the badge level
+    let pointsToDeduct = 0;
+
+    if (tourist.badge === 1) {
+      pointsToDeduct = refundAmount * 0.5;
+    } else if (tourist.badge === 2) {
+      pointsToDeduct = refundAmount * 1;
+    } else if (tourist.badge === 3) {
+      pointsToDeduct = refundAmount * 1.5;
+    }
+
+    // Decrease points, but ensure they don't go below zero
+    tourist.points -= pointsToDeduct;
+    if (tourist.points < 0) tourist.points = 0;
+
+    // Update badge level if necessary
+    if (tourist.points > 500000) {
+      tourist.badge = 3;
+    } else if (tourist.points > 100000) {
+      tourist.badge = 2;
+    } else {
+      tourist.badge = 1;
+    }
 
     // Remove the booked activity from the tourist's bookings
     tourist.Bookings = tourist.Bookings.filter(booking => booking._id.toString() !== activityId);
@@ -1599,7 +1624,7 @@ const cancelActivity = async (req, res) => {
     // Save the updated tourist record
     await tourist.save();
 
-    // Deduct the refund amount from the activity's sales
+    // Update activity sales
     activity.sales -= refundAmount;
     await activity.save();
 
@@ -1607,6 +1632,8 @@ const cancelActivity = async (req, res) => {
       message: 'Activity booking cancelled successfully',
       refundAmount,
       updatedWallet: tourist.Wallet,
+      updatedPoints: tourist.points,
+      updatedBadge: tourist.badge,
     });
   } catch (error) {
     console.error(error);
