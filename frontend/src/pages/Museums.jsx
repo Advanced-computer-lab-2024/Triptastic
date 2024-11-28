@@ -341,6 +341,7 @@ const styles = {
     fontFamily: 'Arial, sans-serif',
   },
   header: {
+    height:'60px',
     position: 'fixed', // Make the header fixed
     top: '0', // Stick to the top of the viewport
     left: '0',
@@ -359,8 +360,8 @@ const styles = {
     alignItems: 'center',
   },
   logo: {
-    height: '70px',
-    width: '80px',
+    height: '60px',
+    width: '70px',
     borderRadius: '10px',
   },
   profileIcon:{

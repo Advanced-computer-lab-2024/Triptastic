@@ -27,6 +27,22 @@ const fetchItineraries = async () => {
       }
     }
   };
+const fetchFilteredItineraries = async (date) => {
+    const Username = localStorage.getItem('Username');
+    setIsLoading(true);
+    try{
+    const response = await fetch(`http://localhost:8000/getFilteredItineraries?Username=${Username}&date=${date}`);
+    if (response.ok) {
+        const data = await response.json();
+        setItineraries(data);
+        setIsLoading(false);
+    } else {
+        console.error('Failed to fetch itineraries');
+    }
+    } catch (error) {
+        console.error('Error fetching itineraries:', error);
+    }
+};
   const calculateTotalSales = (itineraries) => {
     const total = itineraries.reduce((sum, itinerary) => sum + itinerary.sales, 0);
     setTotalSales(total);
@@ -44,6 +60,16 @@ const fetchItineraries = async () => {
       setLeastSold(leastSoldItinerary);
     }
   };
+  const handleFilter = () => {
+    if(!filtered){
+        fetchFilteredItineraries(date);
+        setFiltered(true);
+    }else{
+        fetchItineraries();
+        setFiltered(false);
+    }
+    };
+
   useEffect(() => {
     fetchItineraries()
     calculateTotalSales(Itineraries);
@@ -61,7 +87,7 @@ const fetchItineraries = async () => {
           onChange={(e) => setDate(e.target.value)}
           style={{ marginLeft: '10px' }}
         />
-        <button onClick={() => setFiltered(!filtered)}>{filtered? "Clear filter":"Filter"}</button>
+        <button onClick={() => handleFilter()}>{filtered? "Clear filter":"Filter"}</button>
         <h2>Total profit from sales: {totalSales}</h2>
         <h3>Most sold itinerary</h3>
         {!isLoading && mostSold && (

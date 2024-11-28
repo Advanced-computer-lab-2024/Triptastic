@@ -787,6 +787,7 @@ const [newAddress, setNewAddress] = useState({
     },
   
     header: {
+      height:'60px',
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -801,8 +802,8 @@ const [newAddress, setNewAddress] = useState({
       alignItems: 'center',
     },
     logo: {
-      height: '70px',
-      width: '80px',
+      height: '80px',
+      width: '70px',
       borderRadius: '10px',
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
     },

@@ -4,6 +4,7 @@ const touristItineraryModel= require('../Models/touristItinerary.js');
 const touristModel=require('../Models/Tourist.js');
 const requestModel= require('../Models/Request.js');
 const { default: mongoose } = require('mongoose');
+const ItinBookingModel = require('../Models/itinbookings.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const createTourGuide = async (req, res) => {
@@ -220,6 +221,47 @@ const createTouristItinerary=async(req,res)=>{
    } catch (error) {
        res.status(400).json({ error: error.message });
    }
+};
+const getFilteredItineraries = async (req, res) => {
+  const { date, Username } = req.query;
+
+  if (!date || !Username) {
+    return res.status(400).json({ error: 'Date and Username are required' });
+  }
+
+  try {
+    // Parse the input date string
+    const startDate = new Date(date);
+    const endDate = new Date(date);
+
+    // Check if the date parsing was successful
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      return res.status(400).json({ error: 'Invalid date format' });
+    }
+
+    // Set the time for the start of the day
+    startDate.setUTCHours(0, 0, 0, 0);
+
+    // Set the time for the end of the day
+    endDate.setUTCHours(23, 59, 59, 999);
+
+    // Query for bookings within the date range and populate the itineraryID field
+    const bookings = await ItinBookingModel.find({
+      createdAt: {
+        $gte: startDate,
+        $lte: endDate
+      }
+    }).populate('itineraryId');
+
+    // Extract itineraries from the populated bookings and filter by TourGuide
+    const itineraries = bookings
+      .map(booking => booking.itineraryID)
+      .filter(itinerary => itinerary.TourGuide === Username);
+
+    res.status(200).json(itineraries);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
 };
 const getMyItineraries= async(req,res) =>{
    const {Username}= req.query;
@@ -466,5 +508,5 @@ const settleDocsTourGuide = async (req, res) => {
  
  
  module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG
-   ,changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide,deactivateItinrary,activateItinrary,getTouristReportForItinerary,filterItinerariesByMonth,loginTourGuide};
+   ,changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide,deactivateItinrary,activateItinrary,getTouristReportForItinerary,filterItinerariesByMonth,loginTourGuide,getFilteredItineraries};
  

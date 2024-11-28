@@ -271,6 +271,7 @@ const styles = {
     padding: "20px",
   },
   header: {
+    height:'60px',
     position: 'fixed', // Make the header fixed
     top: '0', // Stick to the top of the viewport
     left: '0',
