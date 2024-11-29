@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaBell } from 'react-icons/fa'; // Importing bell icon
+import { FaBell,FaPlus,FaChartBar  } from 'react-icons/fa'; // Importing bell icon
 import { FaUserCircle} from 'react-icons/fa';
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
 
@@ -962,6 +962,68 @@ const unarchiveProduct = async () => {
         color: '#333',
         paddingTop: '100px', // Avoid overlap with the header
       },
+      heading: {
+        fontSize: "24px",
+        fontWeight: "bold",
+        color: "#0F5132", // Green theme
+        marginBottom: "20px",
+        textAlign: "center",
+      },
+      noRequestsMessage: {
+        fontSize: "16px",
+        color: "#555",
+        textAlign: "center",
+        marginTop: "20px",
+      },
+      requestsList: {
+        listStyleType: "none",
+        padding: 0,
+        margin: 0,
+      },
+      requestItem: {
+        backgroundColor: "#f9f9f9",
+        padding: "20px",
+        marginBottom: "15px",
+        borderRadius: "10px",
+        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+      },
+      requestDetails: {
+        flex: 1,
+      },
+      detail: {
+        fontSize: "16px",
+        margin: "5px 0",
+        color: "#333",
+      },
+      buttonsContainer: {
+        display: "flex",
+        gap: "10px",
+      },
+      acceptButton: {
+        padding: "10px 20px",
+        backgroundColor: "#0F5132",
+        color: "#fff",
+        fontSize: "14px",
+        fontWeight: "bold",
+        border: "none",
+        borderRadius: "5px",
+        cursor: "pointer",
+        transition: "background-color 0.3s ease",
+      },
+      rejectButton: {
+        padding: "10px 20px",
+        backgroundColor: "#C82333", // Red theme for reject
+        color: "#fff",
+        fontSize: "14px",
+        fontWeight: "bold",
+        border: "none",
+        borderRadius: "5px",
+        cursor: "pointer",
+        transition: "background-color 0.3s ease",
+      },
       
       header: {
         height:'60px',
@@ -1060,6 +1122,7 @@ const unarchiveProduct = async () => {
   heading: {
     textAlign: 'center',
     fontSize: '24px',
+    textAlign: 'left', // Change from 'center' to 'left'
     color: '#0F5132',
     marginBottom: '20px',
   },
@@ -1143,8 +1206,24 @@ const unarchiveProduct = async () => {
     fontWeight: 'bold',
     color: '#FFF', // White text for the value
   },
-  /////////////
+  headerContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px", // Space between the icon and text
+  },
+  statisticsIcon: {
+    color: "black", // Black color for the icon
+    fontSize: "24px", // Size of the icon
+  },
+  heading: {
+    fontSize: "24px",
+    fontWeight: "bold",
+    margin: 0,
+    color: "#0F5132", // Green theme for text
+  },
+
   };
+ 
 
   return (
   <div>
@@ -1176,7 +1255,10 @@ const unarchiveProduct = async () => {
         <li onClick={() => navigate('/PromoCodeForm')}>Promo Codes</li>
         <li onClick={() => navigate('/Complaints')}>Complaints</li>
         <li onClick={() => navigate('/preftags')}>Preference Tags</li>
+        <li onClick={() => navigate('/docs')}>Docs</li>
         <li onClick={() => navigate('/products')}>Products</li>
+      
+        
         <div style={{ position: 'relative', textAlign: 'right', padding: '10px' }}>
       {/* Notification Bell Icon */}
       <FaBell
@@ -1253,7 +1335,11 @@ const unarchiveProduct = async () => {
         </ul>
       </div>
 
+      <div style={styles.headerContainer}>
+  
       <h2 style={styles.heading}>Users Statistics</h2>
+      <FaChartBar style={styles.statisticsIcon} />
+    </div>
 {statsError && <p style={styles.error}>{statsError}</p>}
 {statistics ? (
  <div style={styles.statisticsContainer}>
@@ -1551,29 +1637,43 @@ const unarchiveProduct = async () => {
          </div>
         )}
       </div>
-      <div>
-      <h2>Pending Account Deletion Requests</h2>
-      {requests.length === 0 ? (
-        <p>No pending requests.</p>
-      ) : (
-        <ul>
-          {requests.map((request) => (
-            <li key={request._id}>
-              <p>Username: {request.Username}</p>
-              <p>Request Date: {new Date(request.requestDate).toLocaleDateString()}</p>
-              <p>Status: {request.status}</p>
-              <button onClick={() => handleAccept(request._id)}>Accept</button>
-              <button onClick={() => handleReject(request._id)}>Reject</button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
- 
-      <div>
-      <button onClick={() => navigate('/docs')}>See unsettled docs</button>
-      </div>
-      
+      <h2 style={styles.heading}>Pending Account Deletion Requests</h2>
+{requests.length === 0 ? (
+  <p style={styles.noRequestsMessage}>No pending requests.</p>
+) : (
+  <ul style={styles.requestsList}>
+    {requests.map((request) => (
+      <li key={request._id} style={styles.requestItem}>
+        <div style={styles.requestDetails}>
+          <p style={styles.detail}>
+            <strong>Username:</strong> {request.Username}
+          </p>
+          <p style={styles.detail}>
+            <strong>Request Date:</strong> {new Date(request.requestDate).toLocaleDateString()}
+          </p>
+          <p style={styles.detail}>
+            <strong>Status:</strong> {request.status}
+          </p>
+        </div>
+        <div style={styles.buttonsContainer}>
+          <button
+            onClick={() => handleAccept(request._id)}
+            style={styles.acceptButton}
+          >
+            Accept
+          </button>
+          <button
+            onClick={() => handleReject(request._id)}
+            style={styles.rejectButton}
+          >
+            Reject
+          </button>
+        </div>
+      </li>
+    ))}
+  </ul>
+)}
+
      
     </div>
   );
