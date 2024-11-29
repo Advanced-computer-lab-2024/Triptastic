@@ -390,7 +390,7 @@ const TouristProfile = () => {
         throw new Error('Failed to fetch complaints');
       }
     } catch (error) {
-      setErrorMessage('An error occurred while fetching aaaaaaaacomplaints');
+      setErrorMessage('An error occurred while fetching complaints');
       console.error(error);
     }
     setLoading(false);

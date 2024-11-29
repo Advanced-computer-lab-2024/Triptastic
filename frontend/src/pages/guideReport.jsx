@@ -14,7 +14,7 @@ const [refresh, setRefresh] = useState(false);
 const [mostSold, setMostSold] = useState();
 const [leastSold, setLeastSold] = useState();
 const [date, setDate] = useState('');
-const [filtered,setFiltered]=useState(false);
+const [filteredD,setFilteredD]=useState(false);
 const navigate = useNavigate(); // Initialize useNavigate for navigation
 
 const handleProfileRedirect = () => {
@@ -86,13 +86,17 @@ const fetchFilteredItineraries = async (date) => {
       setLeastSold(leastSoldItinerary);
     }
   };
-  const handleFilter = () => {
-    if(!filtered){
+  const handleFilterD = () => {
+    if(!filteredD){
         fetchFilteredItineraries(date);
-        setFiltered(true);
+        setFilteredD(true);
+        findMostSold(Itineraries);
+        findLeastSold(Itineraries);
     }else{
         fetchItineraries();
-        setFiltered(false);
+        setFilteredD(false);
+        findMostSold(Itineraries);
+        findLeastSold(Itineraries);
     }
     };
 
@@ -101,7 +105,7 @@ const fetchFilteredItineraries = async (date) => {
     calculateTotalSales(Itineraries);
     findMostSold(Itineraries);
     findLeastSold(Itineraries);
-  }, [refresh,filtered]);
+  }, [refresh]);
   return (
     <div>
   <header style={styles.header}>
@@ -137,12 +141,12 @@ const fetchFilteredItineraries = async (date) => {
       onChange={(e) => setDate(e.target.value)}
       style={{ marginLeft: '10px' }}
     />
-    <button onClick={() => handleFilter()}>
-      {filtered ? 'Clear filter' : 'Filter'}
+    <button onClick={() => handleFilterD()}>
+      {filteredD ? 'Clear filter' : 'Filter'}
     </button>
-    <h2>Total profit from sales: {totalSales}</h2>
-    <h3>Most sold itinerary</h3>
-    {!isLoading && mostSold && (
+    {!filteredD && (<h2>Total profit from sales: {totalSales}</h2>)}
+    {!filteredD && (<h3>Most sold itinerary</h3>)}
+    {!filteredD && !isLoading && mostSold && (
       <div>
         <p>Locations: {mostSold.Locations.join(', ')}</p>
         <p>Price: {mostSold.Price}</p>
@@ -152,8 +156,8 @@ const fetchFilteredItineraries = async (date) => {
         </p>
       </div>
     )}
-    <h3>Least sold itinerary</h3>
-    {!isLoading && leastSold && (
+   {!filteredD && ( <h3>Least sold itinerary</h3>)}
+    {!filteredD && !isLoading && leastSold && (
       <div>
         <p>Locations: {leastSold.Locations.join(', ')}</p>
         <p>Price: {leastSold.Price}</p>

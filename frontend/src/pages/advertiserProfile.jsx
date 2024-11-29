@@ -369,40 +369,6 @@ const [filteredActivities, setFilteredActivities] = useState([]);
     }
   };
 
-  const handleCreateTransportation = async () => {
-    try {
-      const response = await fetch(`http://localhost:8000/createTransportation`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(transportFormData),
-      });
-
-      if (response.ok) {
-        alert('Transportation created successfully!');
-        setTransportFormData({
-          type: 'Bus',
-          company: {
-            name: '',
-            contact: {
-              phone: '',
-              email: '',
-            },
-          },
-          origin: '',
-          destination: '',
-          departureTime: '',
-          arrivalTime: '',
-          price: '',
-          availability: true,
-          seatsAvailable: '',
-        });
-      } else {
-        throw new Error('Failed to create transportation');
-      }
-    } catch (error) {
-      console.error('An error occurred while creating transportation:', error);
-    }
-  };
 
   const toggleModal = () => setShowModal(!showModal);
   const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
@@ -437,6 +403,9 @@ const [filteredActivities, setFilteredActivities] = useState([]);
       
         <ul>
           <li onClick={() => navigate('/advertiser-Activities')}>MY Activities</li>
+        </ul>
+        <ul>
+          <li onClick={() => navigate('/createTransportation')}>Create Transportation</li>
         </ul>
        
       </div>
@@ -637,85 +606,79 @@ const [filteredActivities, setFilteredActivities] = useState([]);
     <option value="12">December</option>
   </select>
 </div>
-      {/* Activities Section */}
-      <h3 className="activities-title">Your Activities</h3>
+     {/* Activities Section */}
+<h3 className="activities-title"> Activity Reports</h3>
 {filteredActivities.length > 0 ? (
-  <div className="activities-container">
+  <div className="activities-grid">
     {filteredActivities.map((activity) => (
       <div key={activity._id} className="activity-card">
-        <p><strong>Name:</strong> {activity.name}</p>
-        <p><strong>Category:</strong> {activity.Category}</p>
-        <p><strong>Date:</strong> {activity.date}</p>
-        <p><strong>Budget:</strong> {activity.budget}</p>
-        <p><strong>Flagged:</strong> {activity.FlagInappropriate? "yes": "no"}</p>
+        <div className="activity-info">
+          <h4 className="activity-name">{activity.name}</h4>
+          <p className="activity-detail"><strong>Category:</strong> {activity.Category}</p>
+          <p className="activity-detail"><strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}</p>
+          <p className="activity-detail"><strong>Budget:</strong> ${activity.budget}</p>
+          <p className="activity-detail">
+            <strong>Flagged:</strong> 
+            <span className={activity.FlagInappropriate ? 'flag-yes' : 'flag-no'}>
+              {activity.FlagInappropriate ? "Yes" : "No"}
+            </span>
+          </p>
+        </div>
+
         <button
-          className="view-report-button"
+          className="toggle-report-button"
           onClick={() => handleViewReport(activity._id)}
         >
           {activityReports[activity._id]?.visible ? 'Hide Report' : 'View Report'}
         </button>
 
-        {/* Display the report for this activity if visible */}
-        {activityReports[activity._id]?.visible && (
-          <div className="report-section">
-            <h4>Report</h4>
-            <p><strong>Total Tourists:</strong> {activityReports[activity._id].totalTourists}</p>
-            {activityReports[activity._id].tourists.length > 0 ? (
-              <div>
-                <h5>Tourists:</h5>
-                <ul>
-                  {activityReports[activity._id].tourists.map((tourist, index) => (
-                    <li key={index}>
-                      {tourist.Username} - {tourist.Email}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : (
-              <p>No tourists booked this activity yet.</p>
-            )}
-          </div>
+        {/* Collapsible Report Section */}
+       {/* Collapsible Report Section */}
+{activityReports[activity._id]?.visible && (
+  <div className="report-section">
+    <h5 className="report-title">Activity Report</h5>
+    <table className="report-table">
+      <thead>
+        <tr>
+          <th>Total Tourists</th>
+          <th colSpan="2">{activityReports[activity._id].totalTourists}</th>
+        </tr>
+        <tr>
+          <th>#</th>
+          <th>Tourist Name</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        {activityReports[activity._id].tourists.length > 0 ? (
+          activityReports[activity._id].tourists.map((tourist, index) => (
+            <tr key={index}>
+              <td>{index + 1}</td>
+              <td>{tourist.Username}</td>
+              <td>{tourist.Email}</td>
+            </tr>
+          ))
+        ) : (
+          <tr>
+            <td colSpan="3" className="no-tourists">No tourists booked this activity yet.</td>
+          </tr>
         )}
+      </tbody>
+    </table>
+  </div>
+)}
+
       </div>
     ))}
   </div>
 ) : (
-  <p>No activities found.</p>
+  <p className="no-activities">No activities found.</p>
 )}
+
 
 
    
 
-      {/* Transportation Creation */}
-      <h3>Create Transportation</h3>
-      <div className="transportation-form">
-        <label>Type:</label>
-        <select name="type" value={transportFormData.type} onChange={handleTransportInputChange}>
-          <option value="Bus">Bus</option>
-          <option value="Taxi">Taxi</option>
-          <option value="Train">Train</option>
-          <option value="Boat">Boat</option>
-        </select>
-        <label>Company Name:</label>
-        <input type="text" name="company.name" value={transportFormData.company.name} onChange={handleTransportInputChange} />
-        <label>Company Contact Phone:</label>
-        <input type="text" name="company.contact.phone" value={transportFormData.company.contact.phone} onChange={handleTransportInputChange} />
-        <label>Company Contact Email:</label>
-        <input type="email" name="company.contact.email" value={transportFormData.company.contact.email} onChange={handleTransportInputChange} />
-        <label>Origin:</label>
-        <input type="text" name="origin" value={transportFormData.origin} onChange={handleTransportInputChange} />
-        <label>Destination:</label>
-        <input type="text" name="destination" value={transportFormData.destination} onChange={handleTransportInputChange} />
-        <label>Departure Time:</label>
-        <input type="datetime-local" name="departureTime" value={transportFormData.departureTime} onChange={handleTransportInputChange} />
-        <label>Arrival Time:</label>
-        <input type="datetime-local" name="arrivalTime" value={transportFormData.arrivalTime} onChange={handleTransportInputChange} />
-        <label>Price:</label>
-        <input type="number" name="price" value={transportFormData.price} onChange={handleTransportInputChange} />
-        <label>Seats Available:</label>
-        <input type="number" name="seatsAvailable" value={transportFormData.seatsAvailable} onChange={handleTransportInputChange} />
-        <button onClick={handleCreateTransportation} className="create-transport-button">Create Transportation</button>
-      </div>
     </div>
     </div>
 
@@ -724,7 +687,7 @@ const [filteredActivities, setFilteredActivities] = useState([]);
 };
 
 const styles = {
-  sidebar:{
+  sidebar  :{
     marginTop: '60px',
 
   },
