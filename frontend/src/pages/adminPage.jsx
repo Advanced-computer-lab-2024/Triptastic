@@ -1,7 +1,8 @@
 import React, { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaBell } from 'react-icons/fa'; // Importing bell icon
-
+import { FaUserCircle} from 'react-icons/fa';
+import logo from '../images/image.png'; // Adjust the path based on your folder structure
 
 const AdminPage = () => {
   const [formData, setFormData] = useState({
@@ -42,7 +43,6 @@ const AdminPage = () => {
   const [showStats, setShowStats] = useState(false); // State to toggle visibility
     const [notifications, setNotifications] = useState([]); // Initialize as an empty array
   
-
   
   const [changePasswordData, setChangePasswordData] = useState({
     Username: '',
@@ -108,6 +108,7 @@ const AdminPage = () => {
     getActivities();
     checkoutOfStock();
     fetchNotifications();
+    fetchStatistics();
 
   }, []);
   const addNotification = (message) => {
@@ -983,16 +984,232 @@ const unarchiveProduct = async () => {
       }
     };
   
+
+
+    const styles = {
+      container: {
+        maxWidth: '800px',
+        margin: '0 auto',
+        padding: '20px',
+        backgroundColor: '#0F5132',
+        borderRadius: '12px',
+        boxShadow: '0 6px 10px rgba(0, 0, 0, 0.1)',
+        fontFamily: 'Arial, sans-serif',
+        color: '#333',
+        paddingTop: '100px', // Avoid overlap with the header
+      },
+      
+      header: {
+        height:'60px',
+        position: 'fixed', // Make the header fixed
+        top: '0', // Stick to the top of the viewport
+        left: '0',
+        width: '100%', // Make it span the full width of the viewport
+        backgroundColor: '#0F5132', // Green background
+        color: 'white', // White text
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '10px 20px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for depth
+        zIndex: '1000', // Ensure it appears above other content
+      },
+      logoContainer: {
+        display: 'flex',
+        alignItems: 'center',
+      },
+      logo: {
+        height: '60px',
+        width: '70px',
+        borderRadius: '10px',
+      
+      },
+      title: {
+        fontSize: '24px',
+        fontWeight: 'bold',
+        color: 'white',
+      },
+      profileIcon: {
+        fontSize: '40px',
+        color: 'white',
+        cursor: 'pointer',
+      },
+        heading: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    marginBottom: '20px',
+    color: '#0F5132', // Green theme
+    textAlign: 'center',
+  },
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '15px',
+    maxWidth: '700px',
+    margin: '0 auto',
+    backgroundColor: '#f9f9f9',
+    padding: '20px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+  },
+  formGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '5px',
+  },
+  label: {
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#555',
+  },
+  input: {
+    padding: '10px',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
+    fontSize: '14px',
+  },
+  button: {
+    padding: '12px',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    backgroundColor: '#0F5132',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease',
+  },
+  buttonHover: {
+    backgroundColor: '#155724', // Darker green on hover
+  },
+  error: {
+    color: 'red',
+    fontSize: '14px',
+    textAlign: 'center',
+  },
+  success: {
+    color: 'green',
+    fontSize: '14px',
+    textAlign: 'center',
+  },
+//statsitics 
+  heading: {
+    textAlign: 'center',
+    fontSize: '24px',
+    color: '#0F5132',
+    marginBottom: '20px',
+  },
+  error: {
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: '20px',
+  },
+  loadingText: {
+    textAlign: 'center',
+    color: '#555',
+  },
+  statisticsContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: '20px',
+    alignItems: 'flex-start',
+    padding: '20px',
+    backgroundColor: '#f9f9f9',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+  },
+
+  tableContainer: {
+    flex: '2',
+    backgroundColor: '#fff',
+    padding: '20px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+  },
+  tableHeading: {
+    fontSize: '18px',
+    fontWeight: 'bold',
+    color: '#0F5132',
+    marginBottom: '10px',
+    textAlign: 'center',
+  },
+  table: {
+    width: '100%',
+    borderCollapse: 'collapse',
+    marginTop: '10px',
+  },
+  tableHeader: {
+    backgroundColor: '#0F5132',
+    color: '#fff',
+    padding: '10px',
+    textAlign: 'left',
+    borderBottom: '2px solid #ddd',
+  },
+  tableCell: {
+    padding: '10px',
+    borderBottom: '1px solid #ddd',
+    color: '#333',
+  },
+  noDataText: {
+    fontSize: '14px',
+    color: '#555',
+    textAlign: 'center',
+  },
+  statValue: {
+    fontSize: '32px',
+    fontWeight: 'bold',
+    color: '#FFD700', // Bright gold color for emphasis
+  },
+  statCard: {
+    backgroundColor: '#0F5132', // A sleek green card background
+    color: '#fff', // White text for contrast
+    borderRadius: '10px',
+    padding: '20px',
+    textAlign: 'center',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  },
+  statTitle: {
+    fontSize: '18px',
+    fontWeight: 'bold',
+    marginBottom: '10px',
+    color: '#FFF', // Golden color for the title
+  },
+  statValue: {
+    fontSize: '32px',
+    fontWeight: 'bold',
+    color: '#FFF', // White text for the value
+  },
+  /////////////
+  };
+
   return (
-    
-   
   <div>
     <h1>Admin Page</h1>
-    
+    <header style={styles.header}>
+  <div style={styles.logoContainer}>
+    <img src={logo} alt="Logo" style={styles.logo} />
+  </div>
+  <h1 style={styles.title}>Admin Profile</h1>
+  <div style={styles.headerIconsContainer}>
+    {/* Notification Bell */}
+    <div
+      style={styles.notificationButton}
+      onClick={handleNotificationClick}
+    >
+
+    </div>
+
+    {/* Profile Icon */}
+    <FaUserCircle
+      alt="Profile Icon"
+      style={styles.profileIcon}
+      onClick={() => navigate('/touristSettings')}
+    />
+  </div>
+</header>
       <div className="sidebar">
-        
-        <h3>Explore</h3>
         <ul>
+          
         <li onClick={() => navigate('/PromoCodeForm')}>Promo Codes</li>
         <li onClick={() => navigate('/products')}>Products</li>
         <div style={{ position: 'relative', textAlign: 'right', padding: '10px' }}>
@@ -1070,82 +1287,90 @@ const unarchiveProduct = async () => {
     </div>
         </ul>
       </div>
-      <h2>Create Admin</h2>
-      <form onSubmit={createAdmin}>
-        <div>
-          <label>Username:</label>
-          <input
-            type="text"
-            name="Username"
-            value={formData.Username}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            name="Password"
-            value={formData.Password}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Email:</label>
-          <input
-            type="text"
-            name="Email"
-            value={formData.Email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading}>Create Admin</button>
-        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-        {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-      </form>
+
+      <h2 style={styles.heading}>Users Statistics</h2>
+{statsError && <p style={styles.error}>{statsError}</p>}
+{statistics ? (
+ <div style={styles.statisticsContainer}>
+ <div style={styles.statCard}>
+   <p style={styles.statTitle}>Total Users</p>
+   <p style={styles.statValue}>{statistics.totalUsers}</p>
+ </div>
+ <div style={styles.tableContainer}>
+   <h3 style={styles.tableHeading}>New Users per Month</h3>
+   {statistics.monthlyUsers && Object.keys(statistics.monthlyUsers).length > 0 ? (
+     <table style={styles.table}>
+       <thead>
+         <tr>
+           <th style={styles.tableHeader}>Month</th>
+           <th style={styles.tableHeader}>New Users</th>
+         </tr>
+       </thead>
+       <tbody>
+         {Object.entries(statistics.monthlyUsers).map(([month, count]) => (
+           <tr key={month}>
+             <td style={styles.tableCell}>{month}</td>
+             <td style={styles.tableCell}>{count}</td>
+           </tr>
+         ))}
+       </tbody>
+     </table>
+   ) : (
+     <p style={styles.noDataText}>No new users recorded this month.</p>
+   )}
+ </div>
+</div>
+
+) : (
+  <p style={styles.loadingText}>Fetching statistics...</p>
+)}
+
+
+
+ <h2 style={styles.heading}>Create Admin</h2>
+<form onSubmit={createAdmin} style={styles.form}>
+  <div style={styles.formGroup}>
+    <label style={styles.label}>Username:</label>
+    <input
+      type="text"
+      name="Username"
+      value={formData.Username}
+      onChange={handleChange}
+      required
+      style={styles.input}
+    />
+  </div>
+  <div style={styles.formGroup}>
+    <label style={styles.label}>Password:</label>
+    <input
+      type="password"
+      name="Password"
+      value={formData.Password}
+      onChange={handleChange}
+      required
+      style={styles.input}
+    />
+  </div>
+  <div style={styles.formGroup}>
+    <label style={styles.label}>Email:</label>
+    <input
+      type="text"
+      name="Email"
+      value={formData.Email}
+      onChange={handleChange}
+      required
+      style={styles.input}
+    />
+  </div>
+  <button type="submit" disabled={loading} style={styles.button}>
+    {loading ? 'Creating...' : 'Create Admin'}
+  </button>
+  {errorMessage && <p style={styles.error}>{errorMessage}</p>}
+  {successMessage && <p style={styles.success}>{successMessage}</p>}
+</form>
       
 
-      
-      <h2>Users Statistics</h2>
-      {!showStats ? (
-        <button onClick={fetchStatistics} disabled={statsLoading}>
-          {statsLoading ? "Loading..." : "View Users Statistics"}
-        </button>
-      ) : (
-        <button onClick={handleHideStatistics}>
-          Hide Users Statistics
-        </button>
-      )}
-      {statsError && <p style={{ color: "red" }}>{statsError}</p>}
-      {showStats && statistics && (
-        <div style={{ marginTop: "20px" }}>
-          <p><strong>Total Users:</strong> {statistics.totalUsers}</p>
-          <h3>New Users per Month:</h3>
-          {statistics.monthlyUsers && Object.keys(statistics.monthlyUsers).length > 0 ? (
-            <table border="1" style={{ width: "50%", margin: "auto" }}>
-              <thead>
-                <tr>
-                  <th>Month</th>
-                  <th>New Users</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(statistics.monthlyUsers).map(([month, count]) => (
-                  <tr key={month}>
-                    <td>{month}</td>
-                    <td>{count}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <p>No new users recorded this month.</p>
-          )}
-        </div>
-      )}
+
 
       <h2>Change Admin Password</h2>
 <form onSubmit={handleChangePassword}>

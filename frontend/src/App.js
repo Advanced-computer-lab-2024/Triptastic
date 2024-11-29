@@ -44,7 +44,7 @@ import PromoCodeForm from './pages/PromoCodeForm';
 import TouristSettings from './pages/touristsettings';
 import BookmarkedEvents from './pages/BookmarkedEvents';
 import PaymentPage from './pages/Payment';
-import GuideReport from './pages/guideReport';
+import GuideReport from './pages/GuideReport';
 import { Elements } from '@stripe/react-stripe-js'; // Import Elements from Stripe
 import { loadStripe } from '@stripe/stripe-js'; // Import loadStripe
 
@@ -136,7 +136,7 @@ function App() {
             <Route path="/TouristSettings" element={<TouristSettings />} />
             <Route path="/BookmarkedEvents" element={<BookmarkedEvents />} />
             <Route path="/payment" element={<PaymentPage />} />
-            <Route path="/guideReport" element={<GuideReport />} />
+            <Route path="/GuideReport" element={<GuideReport />} />
             <Route path="/checkout" element={<Checkout />} />
 
           </Routes>

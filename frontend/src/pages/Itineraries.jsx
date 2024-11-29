@@ -457,7 +457,19 @@ const Itineraries = () => {
                         <p>
                           <strong>Booked:</strong> {itinerary.Booked ? 'Yes' : 'No'}
                         </p>
-                        
+                        <div style={{ marginTop: '20px', padding: '10px', border: '1px solid #ddd', borderRadius: '5px', backgroundColor: '#f9f9f9' }}>
+      <h3>Feedback</h3>
+      {itinerary.feedback.length > 0 ? (
+        itinerary.feedback.map((f, idx) => (
+          <div key={idx} style={{ marginBottom: '10px' }}>
+            <p><strong>{f.touristUsername}</strong> rated {f.rating}/5 and commented:</p>
+            {f.comment && <p>{f.comment}</p>}
+          </div>
+        ))
+      ) : (
+        <p>No feedback yet.</p>
+      )}
+    </div>
                       </div>
                     )}
                     {/* Share button and success message */}
