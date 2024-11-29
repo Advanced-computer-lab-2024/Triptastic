@@ -2435,10 +2435,12 @@ const sendItineraryReminders = async (req, res) => {
 
     // Define start and end of "tomorrow"
     const today = new Date();
-    const tomorrowStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
-    const tomorrowEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 2);
+    const tomorrowStart = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() + 1));
+    const tomorrowEnd = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() + 2));
+    
 
     const notificationsSent = [];
+    
 
     // Check itineraries for reminders
     for (const booking of tourist.Bookings) {
@@ -2446,16 +2448,17 @@ const sendItineraryReminders = async (req, res) => {
 
       if (
         new Date(booking.DatesTimes) >= tomorrowStart &&
-        new Date(booking.DatesTimes) < tomorrowEnd &&
-        !booking.reminded
+        new Date(booking.DatesTimes) < tomorrowEnd 
+        //!booking.reminded
+
       )
        {
         console.log('Upcoming itinerary booking found:', booking);
 
         // Find the itinerary associated with the booking
-        const itinerary = await itineraryModel.findOne({ Activities: booking.Activities });
+        const itinerary = await itineraryModel.findById({ _id: booking._id });
         if (!itinerary) {
-          console.log('Itinerary not found for booking name:', booking.Activities);
+          console.log('Itinerary not found for booking name:', booking._id);
           continue;
         }
 
@@ -2518,6 +2521,7 @@ const sendItineraryReminders = async (req, res) => {
         booking.reminded = true;
       } else {
         console.log('Itinerary booking does not meet criteria for reminder:', booking);
+        
       }
     }
 
