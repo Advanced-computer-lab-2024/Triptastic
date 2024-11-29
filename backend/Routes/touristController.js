@@ -2448,7 +2448,8 @@ const sendItineraryReminders = async (req, res) => {
         new Date(booking.DatesTimes) >= tomorrowStart &&
         new Date(booking.DatesTimes) < tomorrowEnd &&
         !booking.reminded
-      ) {
+      )
+       {
         console.log('Upcoming itinerary booking found:', booking);
 
         // Find the itinerary associated with the booking
