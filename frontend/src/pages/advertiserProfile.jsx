@@ -6,7 +6,8 @@ import { FaBell,FaUserCircle} from 'react-icons/fa';
 import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
   FaClipboardList,
   FaStar, FaDollarSign,FaSearch} from "react-icons/fa";
-
+  import LockResetIcon from '@mui/icons-material/LockReset';
+  import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 const AdvertiserProfile = () => {
   const [advertiserInfo, setAdvertiserInfo] = useState(null);
   const [activities, setActivities] = useState([]);
@@ -22,6 +23,8 @@ const [filteredActivities, setFilteredActivities] = useState([]);
   const [Logo, setLogo] = useState(null);
   const [activityReports, setActivityReports] = useState({});
   const [showModal, setShowModal] = useState(false); // State for modal visibility
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+
 
     const [formData, setFormData] = useState({
     Username: '',
@@ -295,6 +298,7 @@ const [filteredActivities, setFilteredActivities] = useState([]);
         alert('Password changed successfully!');
         setCurrentPassword('');
         setNewPassword('');
+        togglePasswordModal();
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.error || 'Failed to change password');
@@ -399,7 +403,9 @@ const [filteredActivities, setFilteredActivities] = useState([]);
       console.error('An error occurred while creating transportation:', error);
     }
   };
+
   const toggleModal = () => setShowModal(!showModal);
+  const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
 
   return (
     <div className="advertiser-profile">
@@ -411,11 +417,18 @@ const [filteredActivities, setFilteredActivities] = useState([]);
     <img src={logo} alt="Logo" style={styles.logo} />
   </div>
   <h1 style={styles.title}>Advertiser Profile</h1>
-  <div style={styles.headerIconsContainer}>
-          <FaUserCircle
+  <div style={styles.leftContainer}>
+          <ManageAccountsIcon
             alt="Profile Icon"
             style={styles.profileIcon}
             onClick={toggleModal}
+          />
+     
+       
+          <LockResetIcon
+            alt="Profile Icon"
+            style={styles.profileIcon}
+            onClick={togglePasswordModal}
           />
         </div>
 </header>
@@ -525,39 +538,60 @@ const [filteredActivities, setFilteredActivities] = useState([]);
             </div>
 
 
-            <div style={styles.passwordSection}>
-              <h3>Change Password</h3>
-              <label style={styles.modalContentLabel}>Current Password:</label>
-              <input
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                style={styles.modalContentInput}
-              />
-              <label style={styles.modalContentLabel}>New Password:</label>
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                style={styles.modalContentInput}
-              />
-              <button
-                onClick={handlePasswordChange}
-                style={{
-                  ...styles.modalContentButton,
-                  backgroundColor: '#007bff',
-                }}
-              >
-                Change Password
-              </button>
-            </div>
-
+            
             <button
               onClick={toggleModal}
               style={styles.modalContentButton}
             >
               Cancel
             </button>
+          </div>
+        </div>
+      )}
+
+       {/* Password Modal */}
+       {showPasswordModal && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <h2 style={styles.modalContentH2}>Change Password</h2>
+
+            <label style={styles.modalContentLabel}>Current Password:</label>
+            <input
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              style={styles.modalContentInput}
+            />
+
+            <label style={styles.modalContentLabel}>New Password:</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              style={styles.modalContentInput}
+            />
+
+            <div style={styles.modalButtonsContainer}>
+              <button
+                onClick={handlePasswordChange}
+                style={{
+                  ...styles.modalContentButton,
+                  backgroundColor: '#0F5132',
+                }}
+              >
+                Change Password
+              </button>
+
+              <button
+                onClick={togglePasswordModal}
+                style={{
+                  ...styles.modalContentButton,
+                  backgroundColor: '#0F5132',
+                }}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -732,6 +766,11 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '20px', // Spacing between the icons
+  },
+  leftContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '15px', // Adjust spacing between icons
   },
   logoContainer: {
     display: 'flex',
