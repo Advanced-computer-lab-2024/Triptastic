@@ -222,7 +222,7 @@ const createTouristItinerary=async(req,res)=>{
        res.status(400).json({ error: error.message });
    }
 };
-const getFilteredItineraries = async (req, res) => {
+const getFilteredItineraries = async (req, res) => { //filtered by date
   const { date, Username } = req.query;
 
   if (!date || !Username) {
@@ -255,7 +255,7 @@ const getFilteredItineraries = async (req, res) => {
 
     // Extract itineraries from the populated bookings and filter by TourGuide
     const itineraries = bookings
-      .map(booking => booking.itineraryID)
+      .map(booking => booking.itineraryId)
       .filter(itinerary => itinerary.TourGuide === Username);
 
     res.status(200).json(itineraries);
