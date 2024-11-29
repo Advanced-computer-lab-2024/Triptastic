@@ -2543,7 +2543,7 @@ const sendItineraryReminders = async (req, res) => {
   }
 };
 
-
+// Function to create a new order
 const createOrder = async (req, res) => {
   try {
     const { touristId, productId, quantity, shippingAddress } = req.body;
@@ -2570,7 +2570,7 @@ const createOrder = async (req, res) => {
 
     // Create the order
     const newOrder = new Order({
-      orderNumber: ORD${Date.now()}, // Generate a unique order number
+      orderNumber: `ORD${Date.now()}`, // Generate a unique order number
       tourist: tourist._id,
       product: product._id,
       quantity,
@@ -2591,6 +2591,12 @@ const createOrder = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+module.exports = { createOrder };
+
+
+
+
 
 
  module.exports = {sendItineraryReminders,sendActivityReminders,getNotifications,markNotificationsRead,updateProductQuantityInCart,bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
