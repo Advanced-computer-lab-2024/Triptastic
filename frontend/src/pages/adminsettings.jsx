@@ -31,7 +31,9 @@ const [loading, setLoading] = useState(false);
   const [updateStatusLoading, setUpdateStatusLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  
+  const [usernameToDelete, setUsernameToDelete] = useState('');
+  const [userType, setUserType] = useState('');
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -75,34 +77,7 @@ const [loading, setLoading] = useState(false);
     }
   };
   
-  const fetchComplaintDetails = async (e) => {
-    e.preventDefault();
-    setComplaintLoading(true);
-    setComplaintError('');
-    setComplaintDetails(null);
-  
-    try {
-      const response = await fetch(`http://localhost:8000/getComplaintDetails/${complaintIdToSearch.trim()}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
-        setComplaintDetails(data); // Store the fetched complaint details
-      } else {
-        const errorData = await response.json();
-        setComplaintError(errorData.error || 'Complaint not found.');
-      }
-    } catch (error) {
-      setComplaintError('An error occurred while fetching the complaint details.');
-      console.error(error);
-    } finally {
-      setComplaintLoading(false);
-    }
-  };
+
 
   const createAdmin = async (e) => {
     e.preventDefault();
@@ -131,6 +106,38 @@ const [loading, setLoading] = useState(false);
       console.error(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    setErrorMessage('');
+    setSuccessMessage('');
+
+    if (!usernameToDelete) {
+      setErrorMessage('Please enter a username to delete.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:8000/delete${userType}?Username=${usernameToDelete}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSuccessMessage(data.msg);
+        setUsernameToDelete('');
+        setUserType('');
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || `Failed to delete ${userType}.`);
+      }
+    } catch (error) {
+      setErrorMessage(`An error occurred while deleting the ${userType}.`);
+      console.error(error);
     }
   };
 
@@ -269,75 +276,54 @@ return (
         </form>
         </div>
       
-
-    {/* View Complaint Details Section */}
-    <div style={styles.section}>
-      <div style={styles.card}>
-        <h3 style={styles.sectionHeading}>View Complaint Details</h3>
-        <form onSubmit={fetchComplaintDetails} style={styles.form}>
+       {/* Delete User Section */}
+       <div style={styles.card}>
+        <h3 style={styles.sectionHeading}>Delete User</h3>
+        <div style={styles.form}>
           <div style={styles.formGroup}>
-            <label style={styles.label}>Complaint ID:</label>
+            <label style={styles.label}>Username to Delete:</label>
             <input
               type="text"
-              value={complaintIdToSearch}
-              onChange={(e) => setComplaintIdToSearch(e.target.value)}
+              value={usernameToDelete}
+              onChange={(e) => setUsernameToDelete(e.target.value)}
               required
-              placeholder="Enter Complaint ID"
               style={styles.input}
             />
           </div>
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Select User Type:</label>
+            <select
+              value={userType}
+              onChange={(e) => setUserType(e.target.value)}
+              required
+              style={styles.input}
+            >
+              <option value="">Select Type</option>
+              <option value="Admin">Admin</option>
+              <option value="TourismGov">Tourism Governor</option>
+              <option value="Tourist">Tourist</option>
+              <option value="Advertiser">Advertiser</option>
+              <option value="Seller">Seller</option>
+              <option value="TourGuide">Tour Guide</option>
+            </select>
+          </div>
           <button
-            type="submit"
-            disabled={complaintLoading}
+            onClick={handleDeleteUser}
+            disabled={!usernameToDelete || !userType || loading}
             style={{
               ...styles.button,
-              backgroundColor: complaintLoading ? '#ccc' : '#0F5132',
+              backgroundColor: loading ? '#ccc' : '#dc3545', // Red for delete
             }}
           >
-            {complaintLoading ? 'Searching...' : 'Get Complaint Details'}
+            {loading ? 'Deleting...' : 'Delete User'}
           </button>
-          {complaintError && <p style={styles.error}>{complaintError}</p>}
-        </form>
-
-        {complaintDetails && (
-          <div style={styles.detailsCard}>
-            <h3 style={styles.detailsHeading}>Complaint Details</h3>
-            <div style={styles.detailItem}>
-              <span style={styles.detailLabel}>Title:</span>
-              <span style={styles.detailValue}>{complaintDetails.title}</span>
-            </div>
-            <div style={styles.detailItem}>
-              <span style={styles.detailLabel}>Body:</span>
-              <p style={styles.detailDescription}>{complaintDetails.body}</p>
-            </div>
-            <div style={styles.detailItem}>
-              <span style={styles.detailLabel}>Date:</span>
-              <span style={styles.detailValue}>
-                {new Date(complaintDetails.date).toLocaleDateString()}
-              </span>
-            </div>
-            <div style={styles.detailItem}>
-              <span style={styles.detailLabel}>Username:</span>
-              <span style={styles.detailValue}>{complaintDetails.username}</span>
-            </div>
-            <div style={styles.detailItem}>
-              <span style={styles.detailLabel}>Status:</span>
-              <span
-                style={{
-                  ...styles.detailValue,
-                  color:
-                    complaintDetails.status === 'pending'
-                      ? '#FFA500'
-                      : '#0F5132', // Orange for pending, green for resolved
-                }}
-              >
-                {complaintDetails.status}
-              </span>
-            </div>
-          </div>
-        )}
+          {errorMessage && <p style={styles.error}>{errorMessage}</p>}
+          {successMessage && <p style={styles.success}>{successMessage}</p>}
+        </div>
       </div>
-    </div>
+
+
+
   </div>
 );
 

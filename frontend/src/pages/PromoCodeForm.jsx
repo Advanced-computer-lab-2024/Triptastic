@@ -91,30 +91,16 @@ const PromoCodeForm = () => {
 
 
   return (
+    <div style={styles.container}>
+      <h2 style={styles.heading}>Promo Code Management</h2>
     <div className="promo-container">
       
-      <header style={styles.header}>
-        <div style={styles.logoContainer}>
-          <img
-            src={logo}
-            alt="Logo"
-            style={styles.logo}
 
-          />
-        </div>
-        <h1 style={styles.title}>Promo Code Creation</h1>
-        <FaUserCircle
-          alt="Profile Icon"
-          style={styles.profileIcon}
-          onClick={() => navigate('/adminPage')} // Navigate to profile
-        />
-        
-      </header>
 
 
       {/* Create Promo Code Section */}
       <div className="promo-section">
-        <h3 className="promo-subtitle">Create Promo Code</h3>
+        <h3 className="promo-subtitle">Promo Code Management</h3>
         <form onSubmit={handleSubmit} className="promo-form">
           <div className="form-group">
             <label><FaTag /> Promo Code:</label>
@@ -211,6 +197,7 @@ const PromoCodeForm = () => {
         )}
       </div>
     </div>
+    </div>
   );
 };
 const styles = {
@@ -221,6 +208,13 @@ const styles = {
     backgroundColor: '#f4f4f4',
     borderRadius: '10px',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  },
+  heading: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: '20px',
+    color: '#0F5132',
   },
   header: {
     height:'60px',

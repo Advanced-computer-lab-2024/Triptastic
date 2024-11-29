@@ -963,6 +963,7 @@ const unarchiveProduct = async () => {
         paddingTop: '100px', // Avoid overlap with the header
       },
       
+      
       header: {
         height:'60px',
         position: 'fixed', // Make the header fixed
@@ -1060,6 +1061,7 @@ const unarchiveProduct = async () => {
   heading: {
     textAlign: 'center',
     fontSize: '24px',
+    textAlign: 'left', // Change from 'center' to 'left'
     color: '#0F5132',
     marginBottom: '20px',
   },
@@ -1143,7 +1145,7 @@ const unarchiveProduct = async () => {
     fontWeight: 'bold',
     color: '#FFF', // White text for the value
   },
-  /////////////
+
   };
 
   return (
@@ -1173,9 +1175,13 @@ const unarchiveProduct = async () => {
 </header>
       <div className="sidebar">
         <ul>
-          
         <li onClick={() => navigate('/PromoCodeForm')}>Promo Codes</li>
+        <li onClick={() => navigate('/Complaints')}>Complaints</li>
+        <li onClick={() => navigate('/preftags')}>Preference Tags</li>
+        <li onClick={() => navigate('/docs')}>Docs</li>
         <li onClick={() => navigate('/products')}>Products</li>
+      
+        
         <div style={{ position: 'relative', textAlign: 'right', padding: '10px' }}>
       {/* Notification Bell Icon */}
       <FaBell
@@ -1290,63 +1296,6 @@ const unarchiveProduct = async () => {
 )}
 
 
-<h2>View Complaint Details</h2>
-<form onSubmit={fetchComplaintDetails}>
-  <div>
-    <label>Complaint ID:</label>
-    <input
-      type="text"
-      value={complaintIdToSearch}
-      onChange={(e) => setComplaintIdToSearch(e.target.value)}
-      required
-    />
-  </div>
-  <button type="submit" disabled={complaintLoading}>
-    {complaintLoading ? 'Searching...' : 'Get Complaint Details'}
-  </button>
-  {complaintError && <p style={{ color: 'red' }}>{complaintError}</p>}
-</form>
-
-{complaintDetails && (
-  <div>
-    <h3>Complaint Details</h3>
-    <p><strong>Title:</strong> {complaintDetails.title}</p>
-    <p><strong>Body:</strong> {complaintDetails.body}</p>
-    <p><strong>Date:</strong> {new Date(complaintDetails.date).toLocaleDateString()}</p>
-    <p><strong>Username:</strong> {complaintDetails.username}</p>
-    <p><strong>Status:</strong> {complaintDetails.status}</p>
-  </div>
-)}
-
-<h2>Update Complaint Status</h2>
-<form onSubmit={updateComplaintStatus}>
-  <div>
-    <label>Complaint ID:</label>
-    <input
-      type="text"
-      value={complaintIdToUpdate}
-      onChange={(e) => setComplaintIdToUpdate(e.target.value)}
-      required
-    />
-  </div>
-  <div>
-    <label>Status:</label>
-    <select
-      value={complaintStatus}
-      onChange={(e) => setComplaintStatus(e.target.value)}
-      required
-    >
-      <option value="pending">Pending</option>
-      <option value="resolved">Resolved</option>
-    </select>
-  </div>
-  <button type="submit" disabled={updateStatusLoading}>
-    {updateStatusLoading ? 'Updating...' : 'Update Status'}
-  </button>
-  {updateStatusError && <p style={{ color: 'red' }}>{updateStatusError}</p>}
-  {updateStatusMessage && <p style={{ color: 'green' }}>{updateStatusMessage}</p>}
-</form>
-
       <h2>Add Product</h2>
       <form onSubmit={handleProductSubmit}>
         <div>
@@ -1440,54 +1389,7 @@ const unarchiveProduct = async () => {
         <button type="submit">Add Tourism Governor</button>
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
       </form>
-      <h2>Get Preference Tag</h2>
-            <input 
-                type="text" 
-                value={prefTagName} 
-                onChange={(e) => setPrefTagName(e.target.value)} 
-                placeholder="Enter Preference Tag Name" 
-            />
-            <button onClick={fetchPrefTag}>Fetch Preference Tag</button>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            {prefTag && <div>{JSON.stringify(prefTag)}</div>}
-
-            <h2>Delete Preference Tag</h2>
-            <input 
-                type="text" 
-                value={prefTagName} 
-                onChange={(e) => setPrefTagName(e.target.value)} 
-                placeholder="Preference Tag Name" 
-            />
-            <button onClick={deletePrefTag}>Delete Preference Tag</button>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            {message && <p style={{ color: 'green' }}>{message}</p>}
-
-      <h2>Delete User</h2>
-      <div>
-        <label>Username to delete:</label>
-        <input
-          type="text"
-          value={usernameToDelete}
-          onChange={(e) => setUsernameToDelete(e.target.value)}
-          required
-        />
-        <div>
-          <label>Select User Type:</label>
-          <select value={userType} onChange={(e) => setUserType(e.target.value)} required>
-            <option value="">Select Type</option>
-            <option value="Admin">Admin</option>
-            <option value="TourismGov">Tourism Governor</option>
-            <option value="Tourist">Tourist</option>
-            <option value="Advertiser">Advertiser</option>
-            <option value="Seller">Seller</option>
-            <option value="TourGuide">tourGuide</option>
-
-          </select>
-        </div>
-        <button onClick={handleDeleteUser} disabled={!usernameToDelete || !userType}>Delete User</button>
-        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-        {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-      </div>
+    
 
       <h2>Create Category</h2>
       <form onSubmit={createCategory}>
@@ -1504,23 +1406,7 @@ const unarchiveProduct = async () => {
       </form>
       {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
 
-      <h2>Update Preference Tag</h2>
-            <input 
-                type="text" 
-                value={prefTagName} 
-                onChange={(e) => setPrefTagName(e.target.value)} 
-                placeholder="Current Preference Tag Name" 
-            />
-            <input 
-                type="text" 
-                value={newPrefTagName} 
-                onChange={(e) => setNewPrefTagName(e.target.value)} 
-                placeholder="New Preference Tag Name" 
-            />
-            <button onClick={updatePrefTag}>Update Preference Tag</button>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            {message && <p style={{ color: 'green' }}>{message}</p>}
-      
+    
       <h2>Update Category</h2>
       <form onSubmit={handleUpdateCategory}>
         <div>
@@ -1547,22 +1433,7 @@ const unarchiveProduct = async () => {
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
       </form>
-        {/* Create Preference Tag Section */}
-        <h2>Create Preference Tag</h2>
-      <form onSubmit={createPrefTag}>
-        <div>
-          <label>Preference Tag Name:</label>
-          <input
-            type="text"
-            value={prefTagName}
-            onChange={(e) => setPrefTagName(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading}>Create Preference Tag</button>
-      </form>
-      {createPrefTagMessage && <p>{createPrefTagMessage}</p>}
-
+       
         {/* Delete Category Section */}
         <h2>Delete Category</h2>
       <form onSubmit={deleteCategory}>
@@ -1703,13 +1574,7 @@ const unarchiveProduct = async () => {
         </ul>
       )}
     </div>
-      <div>
-      <button onClick={() => navigate('/Complaints')}>Go to complaints</button>
-      </div>
-      <div>
-      <button onClick={() => navigate('/docs')}>See unsettled docs</button>
-      </div>
-      
+   
      
     </div>
   );

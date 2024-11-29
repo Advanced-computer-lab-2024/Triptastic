@@ -21,7 +21,7 @@
   
   .promo-subtitle {
     font-size: 18px;
-    color: #495057;
+    color: #0F5132;
     margin-bottom: 15px;
   }
   
@@ -32,7 +32,7 @@
   .promo-form label {
     display: block;
     font-weight: bold;
-    color: #495057;
+    color: #0F5132;
     margin-bottom: 5px;
   }
   
@@ -45,7 +45,7 @@
   }
   
   .btn-submit {
-    background-color: #4CAF50;
+    background-color: #0F5132;
     color: white;
     padding: 10px 15px;
     border: none;
@@ -54,11 +54,11 @@
   }
   
   .btn-submit:hover {
-    background-color: #0056b3;
+    background-color: #0F5132;
   }
   
   .success-message {
-    color: #28a745;
+    color: #0F5132;
     font-weight: bold;
   }
   
@@ -68,7 +68,7 @@
   }
   
   .loading-message {
-    color: #4CAF50;
+    color: #0F5132;
     font-style: italic;
   }
   
@@ -84,7 +84,7 @@
   }
  
   .promo-table th {
-    background-color: #4CAF50;
+    background-color: #0F5132;
     color: white;
   }
   
@@ -93,13 +93,13 @@
   }
   
   .no-data-message {
-    color: #6c757d;
+    color: #0F5132;
     text-align: center;
   }
 
   .percentage-checkbox {
     position: relative;
-    margin-left: -400px; /* Adjust horizontal spacing */
+    margin-left: -350px; /* Adjust horizontal spacing */
     transform: translateY(3px); /* Move it down slightly */
   }
   
