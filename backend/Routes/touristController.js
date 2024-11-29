@@ -17,6 +17,8 @@ const axios = require('axios');
 const nodemailer = require('nodemailer');
 const cron = require('node-cron');
 const PromoCode = require('../Models/PromoCode.js');
+const Order = require('../Models/Orders.js'); 
+
 
 const getCurrencyRates = async (req, res) => {
   try {
@@ -2542,6 +2544,53 @@ const sendItineraryReminders = async (req, res) => {
 };
 
 
+const createOrder = async (req, res) => {
+  try {
+    const { touristId, productId, quantity, shippingAddress } = req.body;
+
+    // Validate input data
+    if (!touristId || !productId || !quantity || !shippingAddress) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    // Find the tourist and product by their IDs
+    const tourist = await Tourist.findById(touristId);
+    const product = await Product.findById(productId);
+
+    if (!tourist) {
+      return res.status(404).json({ message: 'Tourist not found' });
+    }
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    // Calculate the total price (assuming product price * quantity)
+    const totalPrice = product.price * quantity;
+
+    // Create the order
+    const newOrder = new Order({
+      orderNumber: ORD${Date.now()}, // Generate a unique order number
+      tourist: tourist._id,
+      product: product._id,
+      quantity,
+      totalPrice,
+      shippingAddress,
+      status: 'pending', // Default status
+      paymentStatus: 'pending', // Default payment status
+    });
+
+    // Save the new order to the database
+    await newOrder.save();
+
+    // Return the created order
+    res.status(201).json({ message: 'Order created successfully', order: newOrder });
+
+  } catch (error) {
+    console.error('Error creating order:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
 
  module.exports = {sendItineraryReminders,sendActivityReminders,getNotifications,markNotificationsRead,updateProductQuantityInCart,bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
