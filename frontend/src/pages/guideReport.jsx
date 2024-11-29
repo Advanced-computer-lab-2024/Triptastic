@@ -141,7 +141,7 @@ const fetchFilteredItineraries = async (date) => {
       onChange={(e) => setDate(e.target.value)}
       style={{ marginLeft: '10px' }}
     />
-    <button onClick={() => handleFilter()}>
+    <button onClick={() => handleFilterD()}>
       {filteredD ? 'Clear filter' : 'Filter'}
     </button>
     {!filteredD && (<h2>Total profit from sales: {totalSales}</h2>)}
