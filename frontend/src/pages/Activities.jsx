@@ -356,7 +356,7 @@ const Activities = () => {
       // Ensure 'data.price' exists before navigating
       if (data.price) {
         // Navigate to the payment page with price as the query parameter
-        navigate(`/payment?amount=${data.price}`);
+        navigate(`/payment?amount=${data.price}`,{ state: { from: '/activities' } });
         setErrorMessage(''); // Clear any previous error messages
         alert(data.message); // Show success message
       } else {

@@ -1,18 +1,27 @@
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState ,useEffect} from 'react';
+
+import { useLocation,useNavigate } from 'react-router-dom';
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import axios from 'axios';
 import { FaLock, FaDollarSign, FaCreditCard } from 'react-icons/fa';
-
 const PaymentPage = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const amount = parseInt(queryParams.get('amount'), 10); // Amount in cents
   console.log(amount); // Debugging step to ensure amount is being sent correctly
-
+  const Username = localStorage.getItem('Username');
   const [loading, setLoading] = useState(false);
   const stripe = useStripe();
   const elements = useElements();
+  const navigate = useNavigate(); 
+
+
+  useEffect(() => {
+    // Save the previous page (from) in localStorage
+    const fromPage = location.state?.from || '/';
+    localStorage.setItem('previousPage', fromPage);
+    console.log('Stored previous page:', fromPage); // Debugging log
+  }, [location]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -32,7 +41,7 @@ const PaymentPage = () => {
         payment_method: {
           card: elements.getElement(CardElement),
           billing_details: {
-            name: 'John Doe', // Dynamically update based on logged-in user
+            name:Username, // Dynamically update based on logged-in user
           },
         },
       });
@@ -41,6 +50,10 @@ const PaymentPage = () => {
         alert(`Payment failed: ${result.error.message}`);
       } else if (result.paymentIntent.status === 'succeeded') {
         alert('Payment succeeded! Thank you for your purchase.');
+    // Retrieve the previous page from localStorage
+    const previousPage = localStorage.getItem('previousPage');
+    console.log('Redirecting to previous page:', previousPage); // Debugging log
+    navigate(previousPage || '/'); // Redirect to the previous page or default to '/'
       }
     } catch (error) {
       console.error(error);
@@ -61,7 +74,7 @@ const PaymentPage = () => {
 
       {/* Progress Indicator */}
       <div style={styles.progress}>
-        Step 2 of 3: Payment
+        Step 2 of 2: Payment
       </div>
 
       {/* Payment Summary */}
@@ -76,7 +89,7 @@ const PaymentPage = () => {
           <strong>Description:</strong> Service Purchase
         </p>
         <p style={styles.summaryText}>
-          <strong>User:</strong> John Doe
+          <strong>User:</strong> {Username}
         </p>
       </div>
 
