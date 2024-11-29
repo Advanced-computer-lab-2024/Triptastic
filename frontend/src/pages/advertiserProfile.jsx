@@ -432,7 +432,14 @@ const [filteredActivities, setFilteredActivities] = useState([]);
           />
         </div>
 </header>
-
+   {/* Sidebar */}
+   <div className="sidebar"style={styles.sidebar}>
+      
+        <ul>
+          <li onClick={() => navigate('/advertiser-Activities')}>MY Activities</li>
+        </ul>
+       
+      </div>
 
      
       
@@ -677,13 +684,7 @@ const [filteredActivities, setFilteredActivities] = useState([]);
 )}
 
 
-      {/* Sidebar */}
-      <div className="sidebar">
-        <h3>Explore</h3>
-        <ul>
-          <li onClick={() => navigate('/advertiser-Activities')}>MY Activities</li>
-        </ul>
-      </div>
+   
 
       {/* Transportation Creation */}
       <h3>Create Transportation</h3>
@@ -723,6 +724,10 @@ const [filteredActivities, setFilteredActivities] = useState([]);
 };
 
 const styles = {
+  sidebar:{
+    marginTop: '60px',
+
+  },
  
   activitiesContainer: {
 
