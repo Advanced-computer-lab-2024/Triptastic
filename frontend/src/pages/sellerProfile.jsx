@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import image from '../images/image.png';
-import { FaUserCircle, FaBell, FaBox, FaLandmark, FaUniversity, FaMap, FaRunning, FaPlane, FaHotel, FaClipboardList, FaStar, FaBus } from 'react-icons/fa';
+import { FaUserCircle, FaBell,FaSearch, FaBox, FaLandmark, FaUniversity, FaMap, FaRunning, FaPlane, FaHotel, FaClipboardList, FaStar, FaBus } from 'react-icons/fa';
 import { MdNotificationImportant } from 'react-icons/md';
-
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
+import LockResetIcon from '@mui/icons-material/LockReset';
 
 const SellerProfile = () => {
   const [sellerInfo, setSellerInfo] = useState(null);
@@ -26,6 +28,7 @@ const SellerProfile = () => {
   const [logo, setLogo] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalLogoPreview, setModalLogoPreview] = useState(null);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [notifications, setNotifications] = useState([]); // Initialize as an empty array
   const [showNotifications, setShowNotifications] = useState(false); // Toggle notification dropdown
   const [productFormData, setProductFormData] = useState({
@@ -493,6 +496,7 @@ const unarchiveProduct = async () => {
 };
 
 
+const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
   const handleCurrentPasswordChange = (e) => setCurrentPassword(e.target.value);
   const handleNewPasswordChange = (e) => setNewPassword(e.target.value);
   return (
@@ -517,9 +521,15 @@ const unarchiveProduct = async () => {
           style={{ cursor: 'pointer', color: 'white', marginRight: '-530px' }}
           onClick={handleNotificationClick}
         />
+         <LockResetIcon
+            alt="Profile Icon"
+            style={{cursor: 'pointer', color: 'white', marginRight: '-530px' }}
+            onClick={togglePasswordModal}
+          />
+        
   
         {/* Profile Icon */}
-        <FaUserCircle
+        <ManageAccountsIcon
           style={styles.profileIcon}
           title="Edit Profile"
           onClick={toggleModal} // Open modal on click
@@ -628,220 +638,265 @@ const unarchiveProduct = async () => {
           ) : null}
         </div>
       )}
-    
-    
-       {/* Change Password Section */}
-       <h2 style={styles.sectionTitle}>Change Password</h2>
-      {passwordMessage && (
-        <p
-          style={{
-            color: passwordMessage.includes('successfully') ? 'green' : 'red',
-          }}
-        >
-          {passwordMessage}
-        </p>
-      )}
-      <div style={styles.formGroup}>
-        <label style={styles.label}>Current Password</label>
-        <input
-          type="password"
-          value={currentPassword}
-          onChange={handleCurrentPasswordChange}
-          style={styles.input}
-        />
-      </div>
-      <div style={styles.formGroup}>
-        <label style={styles.label}>New Password</label>
-        <input
-          type="password"
-          value={newPassword}
-          onChange={handleNewPasswordChange}
-          style={styles.input}
-        />
-      </div>
-      <button
-        onClick={handlePasswordChange}
-        disabled={changingPassword}
-        style={styles.buttonPrimary}
-      >
-        {changingPassword ? 'Changing Password...' : 'Change Password'}
-      </button>
-      {/* Add Product Button */}
-      {!addingProduct && (
-        <button style={styles.buttonPrimary} onClick={() => setAddingProduct(true)}>
-          Add Product
-        </button>
-      )}
-     {/* Product Form */}
-{addingProduct && (
-  <form onSubmit={handleProductSubmit}>
-    <h3>Add Product</h3>
-    <div>
-      <label><strong>Product Name:</strong></label>
+
+   {/* Add Product Section */}
+   <div style={styles.card}>
+    <h3 style={styles.cardTitle}>Add Product</h3>
+    <form onSubmit={handleProductSubmit} style={styles.form}>
       <input
         type="text"
+        placeholder="Product Name"
         name="productName"
         value={productFormData.productName}
         onChange={handleProductInputChange}
         required
+        style={styles.input}
       />
-    </div>
-    <div>
-      <label><strong>Description:</strong></label>
-      <input
-        type="text"
+      <textarea
+        placeholder="Description"
         name="description"
         value={productFormData.description}
         onChange={handleProductInputChange}
         required
+        style={styles.textarea}
       />
-    </div>
-    <div>
-      <label><strong>Price:</strong></label>
       <input
         type="number"
+        placeholder="Price"
         name="price"
         value={productFormData.price}
         onChange={handleProductInputChange}
         required
+        style={styles.input}
       />
-    </div>
-    {/* <div>
-      <label><strong>Rating:</strong></label>
       <input
         type="number"
-        name="rating"
-        value={productFormData.rating}
-        onChange={handleProductInputChange}
-        required
-      />
-    </div> */}
-    <div>
-      <label><strong>Stock:</strong></label>
-      <input
-        type="number"
+        placeholder="Stock"
         name="stock"
         value={productFormData.stock}
         onChange={handleProductInputChange}
         required
+        style={styles.input}
       />
-    </div>
-    <div>
-      <label><strong>Image:</strong></label>
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handleImageChange}
-        required
-      />
-    </div>
-    {imagePreview && <img src={imagePreview} alt="Product Preview" style={{ width: '100px', height: '100px' }} />}
-    
-    {/* Submit Button */}
-    <button type="submit">Submit Product</button>
-  </form>
-)}
-        
-        {waiting && <p>Waiting for deletion request...</p>}
-        <button onClick={handleDeleteRequest} disabled={waiting}>
-          Request Account Deletion
-        </button>
-      {/* Search Product Section */}
-      <h2 style={styles.sectionTitle}>Search Product by Name</h2>
-      <form onSubmit={getProductByName}>
-        <div>
-          <label>Product Name:</label>
-          <input
-            type="text"
-            value={productNameToSearch}
-            onChange={(e) => setProductNameToSearch(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading}>Search Product</button>
-      </form>
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-      {productSearchResult && (
-        <div>
-          <h3>Product Details</h3>
-          <p>Name: {productSearchResult.productName}</p>
-          <p>Description: {productSearchResult.description}</p>
-          <p>Price: {productSearchResult.price}</p>
-          <p>Rating: {productSearchResult.rating}</p>
-          <p>Seller: {productSearchResult.seller}</p>
-          <p>Archived: {productSearchResult.archived !== undefined ? productSearchResult.archived.toString() : 'N/A'}</p>
-          <button onClick={archiveProduct} disabled={loading}>Archive Product</button>
-          <button onClick={unarchiveProduct} disabled={loading || !productSearchResult.archived}>Unarchive Product</button>
-
-          {/* Add more product details as needed */}
-        </div>
+      <div style={styles.fileUploadContainer}>
+        <label style={styles.fileLabel}>
+          <strong>Upload Image</strong>
+        </label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          required
+          style={styles.fileInput}
+        />
+      </div>
+      {imagePreview && (
+        <img
+          src={imagePreview}
+          alt="Product Preview"
+          style={styles.imagePreview}
+        />
       )}
+      <button type="submit" style={styles.submitButton}>
+        Submit Product
+      </button>
+    </form>
+  </div>
+
+  {/* Search Product Section */}
+  <div style={styles.card}>
+    <h3 style={styles.cardTitle}>Search Product to Archive</h3>
+    <form onSubmit={getProductByName} style={styles.form}>
+      <input
+        type="text"
+        placeholder="Enter Product Name"
+        value={productNameToSearch}
+        onChange={(e) => setProductNameToSearch(e.target.value)}
+        required
+        style={styles.input}
+      />
+      <button
+        type="submit"
+        style={styles.searchButton}
+        disabled={loading}
+        
+      >
+        <FaSearch style={{ marginRight: '5px' }} />
+        Search
+      </button>
+    </form>
+    {errorMessage && <p style={styles.errorMessage}>{errorMessage}</p>}
+    {successMessage && (
+      <p style={styles.successMessage}>{successMessage}</p>
+    )}
+    {productSearchResult && (
+      <div style={styles.searchResult}>
+        <h4 style={styles.resultTitle}>Product Details</h4>
+        <p><strong>Name:</strong> {productSearchResult.productName}</p>
+        <p><strong>Description:</strong> {productSearchResult.description}</p>
+        <p><strong>Price:</strong> {productSearchResult.price}</p>
+        <p><strong>Rating:</strong> {productSearchResult.rating}</p>
+        <p><strong>Seller:</strong> {productSearchResult.seller}</p>
+        <p>
+          <strong>Archived:</strong>{' '}
+          {productSearchResult.archived !== undefined
+            ? productSearchResult.archived.toString()
+            : 'N/A'}
+        </p>
+        <button
+          onClick={archiveProduct}
+          disabled={loading}
+          style={styles.archiveButton}
+        >
+          Archive Product
+        </button>
+        <button
+          onClick={unarchiveProduct}
+          disabled={loading || !productSearchResult.archived}
+          style={styles.unarchiveButton}
+        >
+          Unarchive Product
+        </button>
+      </div>
+    )}
+  </div>
       
       {/* Modal for Editing Profile */}
       {modalOpen && (
         <div style={styles.modalOverlay}>
-          <div style={styles.modal}>
-            <h2 style={styles.modalTitle}>Edit Profile</h2>
-            <div style={styles.modalLogoContainer}>
-              {modalLogoPreview ? (
+          <div style={styles.modalContent}>
+          <h2 style={styles.modalContentH2}>Edit Profile</h2>
+          <HighlightOffOutlinedIcon
+          onClick={toggleModal}
+          style={styles.cancelIcon} // Apply cancel icon style
+        />
+      
+          <div style={styles.infoHeader}>
+            
+              {logo && (
                 <img
-                  src={modalLogoPreview}
-                  alt="Logo Preview"
-                  style={styles.modalLogo}
+                  src={`http://localhost:8000/${logo.replace(/\\/g, '/')}`}
+                  alt="Seller Logo"
+                  className="logo"
+                  style={styles.logo}
                 />
-              ) : (
-                <p style={styles.noLogoText}>No logo uploaded</p>
               )}
+              <h3>{sellerInfo.Username}</h3>
             </div>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Email</label>
+            
+              <label style={styles.modalContentLabel}>Email</label>
               <input
                 type="email"
                 name="Email"
                 value={formData.Email}
                 onChange={handleInputChange}
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Name</label>
+                style={styles.modalContentTextarea}              />
+            
+           
+              <label style={styles.modalContentLabel}>Name</label>
               <input
                 type="text"
                 name="Name"
                 value={formData.Name}
                 onChange={handleInputChange}
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Description</label>
+                style={styles.modalContentTextarea}              />
+           
+
+              <label style={styles.modalContentLabel}>Description</label>
               <textarea
                 name="Description"
                 value={formData.Description}
                 onChange={handleInputChange}
-                style={styles.textarea}
-              />
-            </div>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Upload Logo</label>
+                style={styles.modalContentInput}
+                />
+           
+          
+              <label style={styles.modalContentLabel}>Upload Logo</label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleLogoChange}
-                style={styles.input}
-              />
+                style={styles.modalContentTextarea}              />
+            
+            <div style={styles.modalButtonsContainer}>
+              <button
+                onClick={handleUpdate}
+                disabled={updating}
+                style={{
+                  ...styles.modalContentButton,
+                  ...(updating ? { opacity: 0.6, cursor: 'not-allowed' } : {}),
+                }}
+              >
+                {updating ? 'Updating...' : 'Save Changes'}
+              </button>
+
+              <button
+                onClick={handleDeleteRequest}
+                disabled={waiting || requestSent}
+                style={{
+                  ...styles.modalContentButton,
+                  backgroundColor: '#dc3545',
+                  ...(waiting || requestSent
+                    ? { opacity: 0.6, cursor: 'not-allowed' }
+                    : {}),
+                }}
+              >
+                {waiting ? 'Waiting...' : requestSent ? 'Request Sent' : 'Delete Account'}
+              </button>
             </div>
-            <div style={styles.modalActions}>
-              <button style={styles.buttonPrimary} onClick={handleUpdate}>
-                Save Changes
+
+
+            
+           
+          </div>
+        </div>
+      )}
+       {/* Password Modal */}
+       {showPasswordModal && (
+        
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <h2 style={styles.modalContentH2}>Change Password</h2>
+            <HighlightOffOutlinedIcon
+          onClick={togglePasswordModal}
+          style={styles.cancelpasswordIcon} />
+            {passwordMessage && (
+        <p
+          style={{
+            color: passwordMessage.includes('successfully') ? 'green' : 'red',
+            marginBottom: '15px', // Add spacing below the message
+          }}
+        >
+          {passwordMessage}
+        </p>
+      )}
+                  <input
+              type="password"
+              placeholder='Enter Current Password'
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              style={styles.modalContentInput}
+            />
+            <input
+              type="password"
+              placeholder='Enter New Password'
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              style={styles.modalContentInput}
+            />
+
+            <div style={styles.modalButtonsContainer}>
+              <button
+                onClick={handlePasswordChange}
+                style={{
+                  ...styles.modalContentButton,
+                  backgroundColor: '#0F5132',
+                }}
+              >
+                Change Password
               </button>
-              <button style={styles.buttonSecondary} onClick={toggleModal}>
-                Cancel
-              </button>
-              <button style={styles.buttonSecondary} onClick={fetchSellerInfo}>
-                Refresh Profile
-              </button>
+               
+
             </div>
           </div>
         </div>
@@ -898,77 +953,195 @@ const styles = {
     position: 'fixed',
     top: 0,
     left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    width: '100vw',
+    height: '100vh',
+    background: 'rgba(0, 0, 0, 0.5)',
     display: 'flex',
-    alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 1100,
+    alignItems: 'center',
+    zIndex: 1000,
   },
-  modal: {
-    backgroundColor: 'white',
+  modalContent: {
+    background: 'white',
     padding: '20px',
     borderRadius: '10px',
-    width: '400px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+    width: '50%',
+    maxWidth: '600px',
+    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '15px',
+    maxHeight: '80vh',
+    overflowY: 'auto',
   },
-  modalTitle: {
-    fontSize: '20px',
-    marginBottom: '10px',
+  modalContentH2: {
+    fontSize: '22px',
+    textAlign: 'center',
     color: '#333',
   },
-  modalLogoContainer: {
-    textAlign: 'center',
-    marginBottom: '20px',
-  },
-  modalLogo: {
-    width: '80px',
-    height: '80px',
-    borderRadius: '50%',
-  },
-  formGroup: {
-    marginBottom: '15px',
-  },
-  label: {
-    display: 'block',
-    marginBottom: '5px',
+  modalContentLabel: {
     fontWeight: 'bold',
+    marginBottom: '5px',
     color: '#555',
   },
-  input: {
+  modalContentInput: {
     width: '100%',
-    padding: '8px',
+    padding: '10px',
+    border: '1px solid #ccc',
     borderRadius: '5px',
+    fontSize: '14px',
+  },
+  modalContentTextarea: {
+    width: '100%',
+    padding: '10px',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
+    fontSize: '14px',
+    resize: 'vertical',
+  },
+  modalContentButton: {
+    padding: '10px 20px',
+    border: 'none',
+    background: '#0F5132',
+    color: 'white',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '14px',
+  },
+  passwordSection: {
+    borderTop: '1px solid #ddd',
+    marginTop: '20px',
+    paddingTop: '15px',
+  },
+  cancelIcon: {
+    color: '#0F5132', // Set the color of the icon
+    fontSize: '30px', // Adjust the size as needed
+    cursor: 'pointer', // Ensure it acts as a button
+    position: 'absolute', // Position it correctly in the modal
+    right: '500px', // Adjust placement
+    top: '100px', // Adjust placement
+  },
+  cancelpasswordIcon: {
+    color: '#0F5132', // Set the color of the icon
+    fontSize: '30px', // Adjust the size as needed
+    cursor: 'pointer', // Ensure it acts as a button
+    position: 'absolute', // Position it correctly in the modal
+    right: '490px', // Adjust placement
+    top: '280px', // Adjust placement
+  },
+  card: {
+    backgroundColor: '#fff',
+    padding: '20px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  },
+  cardTitle: {
+    fontSize: '20px',
+    fontWeight: 'bold',
+    marginBottom: '15px',
+    color: '#0F5132',
+  },
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '15px',
+    width: '80%', // Maintain consistent form width
+    alignItems: 'center', // Center-align the form
+    margin: '0 auto', // Center the form on the page
+  },
+  input: {
+    width: '100%', // Ensure inputs span the full width of the form
+    padding: '10px',
     border: '1px solid #ddd',
+    borderRadius: '5px',
+    fontSize: '16px',
   },
   textarea: {
-    width: '100%',
-    padding: '8px',
-    borderRadius: '5px',
+    width: '100%', // Ensure the textarea matches input width
+    padding: '10px',
     border: '1px solid #ddd',
+    borderRadius: '5px',
+    fontSize: '16px',
     resize: 'none',
   },
-  modalActions: {
+  fileUploadContainer: {
     display: 'flex',
-    justifyContent: 'space-between',
-    marginTop: '15px',
+    flexDirection: 'column',
+    gap: '5px',
   },
-  buttonPrimary: {
+  fileLabel: {
+    right:'80px',
+    fontWeight: 'bold',
+  },
+  fileInput: {
+    border: 'none',
+  },
+  imagePreview: {
+    width: '150px',
+    height: '150px',
+    objectFit: 'cover',
+    borderRadius: '10px',
+    marginTop: '10px',
+  },
+  submitButton: {
     backgroundColor: '#0F5132',
     color: 'white',
-    padding: '10px 20px',
-    borderRadius: '5px',
+    padding: '10px 15px',
     border: 'none',
+    borderRadius: '5px',
     cursor: 'pointer',
+    fontSize: '16px',
   },
-  buttonSecondary: {
-    backgroundColor: '#ccc',
-    color: 'black',
-    padding: '10px 20px',
-    borderRadius: '5px',
+  searchButton: {
+    backgroundColor: '#0F5132',
+    color: 'white',
+    padding: '10px 15px',
     border: 'none',
+    borderRadius: '5px',
     cursor: 'pointer',
+    fontSize: '16px',
+    display: 'flex',
+    alignItems: 'center',
+  },
+  errorMessage: {
+    color: 'red',
+    fontWeight: 'bold',
+    marginTop: '10px',
+  },
+  successMessage: {
+    color: 'green',
+    fontWeight: 'bold',
+    marginTop: '10px',
+  },
+  searchResult: {
+    marginTop: '15px',
+    padding: '10px',
+    backgroundColor: '#f0f0f0',
+    borderRadius: '10px',
+  },
+  resultTitle: {
+    fontSize: '18px',
+    fontWeight: 'bold',
+    marginBottom: '10px',
+  },
+  archiveButton: {
+    backgroundColor: '#dc3545',
+    color: 'white',
+    padding: '10px 15px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    marginTop: '10px',
+  },
+  unarchiveButton: {
+    backgroundColor: '#0F5132',
+    color: 'white',
+    padding: '10px 15px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    marginTop: '10px',
+    marginLeft: '10px',
   },
 };
 
