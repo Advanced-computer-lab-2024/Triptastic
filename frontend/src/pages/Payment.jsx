@@ -8,6 +8,7 @@ const PaymentPage = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const amount = parseInt(queryParams.get('amount'), 10); // Amount in cents
+  console.log(amount); // Debugging step to ensure amount is being sent correctly
 
   const [loading, setLoading] = useState(false);
   const stripe = useStripe();
@@ -21,9 +22,9 @@ const PaymentPage = () => {
 
     try {
       // 1. Call the backend to create a payment intent
-      const { data } = await axios.post('http://localhost:8000/create-payment-intent', {
-        amount: amount,
-      });
+      const { data } = await axios.post(`http://localhost:8000/create-payment-intent?amount=${amount}`);
+
+      console.log(data);
 
       // 2. Confirm the payment using Stripe.js
       const { clientSecret } = data;
