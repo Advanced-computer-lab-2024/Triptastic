@@ -1,325 +1,254 @@
+import React, { useState, useEffect } from 'react';
 
-import React, { useState,useEffect } from 'react';
-const Docs=()=>{
-const [showingSellers, setShowingSellers] = useState(false);
-const [sellers, setSellers] = useState([]);
-const [errorMessage, setErrorMessage] = useState('');
-const [showingTourGuides, setShowingTourGuides] = useState(false);
-const [tourGuides, setTourGuides] = useState([]);
-const [showingAdvertisers, setShowingAdvertisers] = useState(false);
-const [advertisers, setAdvertisers] = useState([]);
-const [viewingDocsSellerId, setViewingDocsSellerId] = useState(null);
-const [viewingDocsTourGuideId, setViewingDocsTourGuideId] = useState(null);
-const [viewingDocsAdvertiserId, setViewingDocsAdvertiserId] = useState(null);
-const fetchSellers = async () => {
+const Docs = () => {
+  const [activeSection, setActiveSection] = useState('');
+  const [sellers, setSellers] = useState([]);
+  const [tourGuides, setTourGuides] = useState([]);
+  const [advertisers, setAdvertisers] = useState([]);
+  const [viewingDocsId, setViewingDocsId] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const fetchData = async (endpoint, setter, errorMsg) => {
     try {
-      const response = await fetch(`http://localhost:8000/getPendingSellers`, {
+      const response = await fetch(`http://localhost:8000/${endpoint}`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
 
       if (response.ok) {
         const data = await response.json();
-        setSellers(data);
+        setter(data);
         setErrorMessage('');
       } else {
-        throw new Error('Failed to fetch sellers');
+        throw new Error(errorMsg);
       }
     } catch (error) {
-      setErrorMessage('An error occurred while fetching sellers');
+      setErrorMessage(errorMsg);
       console.error(error);
-    } 
+    }
   };
-const fetchTourGuides = async () => {
-    try {
-      const response = await fetch(`http://localhost:8000/getPendingTourGuides`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
 
-      if (response.ok) {
-        const data = await response.json();
-        setTourGuides(data);
-        setErrorMessage('');
-      } else {
-        throw new Error('Failed to fetch tour guides');
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while fetching tour guides');
-      console.error(error);
-    } 
-  };
-const fetchAdvertisers = async () => {
-    try {
-      const response = await fetch(`http://localhost:8000/getPendingAdvertisers`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setAdvertisers(data);
-        setErrorMessage('');
-      } else {
-        throw new Error('Failed to fetch advertisers');
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while fetching advertisers');
-      console.error(error);
-    } 
-  };
   useEffect(() => {
-    fetchSellers();
-    fetchTourGuides();
-    fetchAdvertisers();
+    fetchData('getPendingSellers', setSellers, 'Failed to fetch sellers');
+    fetchData('getPendingTourGuides', setTourGuides, 'Failed to fetch tour guides');
+    fetchData('getPendingAdvertisers', setAdvertisers, 'Failed to fetch advertisers');
   }, []);
-const handleToggleViewSellers = () => {
-    setShowingSellers(!showingSellers);
-    setShowingTourGuides(false);
-    setShowingAdvertisers(false);
-    };
-const handleToggleViewTourGuides = () => {
-    setShowingTourGuides(!showingTourGuides);
-    setShowingSellers(false);
-    setShowingAdvertisers(false);
-    };
-const handleToggleViewAdvertisers = () => {
-    setShowingAdvertisers(!showingAdvertisers);
-    setShowingSellers(false);
-    setShowingTourGuides(false);
-    };
-const handleViewSellerDocs = (sellerId) => {
-      setViewingDocsSellerId((prevId) => (prevId === sellerId ? null : sellerId));
-    };
-const handleViewTourGuideDocs = (tourGuideId) => {
-      setViewingDocsTourGuideId((prevId) => (prevId === tourGuideId ? null : tourGuideId));
-    };
-const handleViewAdvertiserDocs = (advertiserId) => {
-      setViewingDocsAdvertiserId((prevId) => (prevId === advertiserId ? null : advertiserId));
-    };
-const handleTourGuideAccept = async (Username) => {
-    
-      try {
-        const response = await fetch(`http://localhost:8000/settleDocsTourGuide?Username=${Username}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            docsApproved: "accepted"
-          }),
-        });
-    
-        if (response.ok) {
-          const data = await response.json();
-          alert("Tour guide accepted");
-          fetchTourGuides();
-        }
-      } catch (error) {
-        console.error('Error accepting tour guide:', error);
-      } 
-    };
-  const handleTourGuideReject = async (Username) => {
-    
-      try {
-        const response = await fetch(`http://localhost:8000/settleDocsTourGuide?Username=${Username}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            docsApproved: "rejected"
-          }),
-        });
-    
-        if (response.ok) {
-          const data = await response.json();
-          alert("Tour guide rejected");
-          fetchTourGuides();
-        }
-      } catch (error) {
-        console.error('Error rejecting tour guide:', error);
-      } 
-    };
-    const handleSellerReject = async (Username) => {
-    
-      try {
-        const response = await fetch(`http://localhost:8000/settleDocsSeller?Username=${Username}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            docsApproved: "rejected"
-          }),
-        });
-    
-        if (response.ok) {
-          const data = await response.json();
-          alert("Seller rejected");
-          fetchSellers();
-        }
-      } catch (error) {
-        console.error('Error rejecting seller:', error);
-      } 
-    };    
-const handleSellerAccept = async (Username) => {
-    
-      try {
-        const response = await fetch(`http://localhost:8000/settleDocsSeller?Username=${Username}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            docsApproved: "accepted"
-          }),
-        });
-    
-        if (response.ok) {
-          const data = await response.json();
-          alert("Seller accepted");
-          fetchSellers();
-        }
-      } catch (error) {
-        console.error('Error accepting seller:', error);
-      } 
-    };   
-const handleAdvertiserAccept = async (Username) => {
-    
-      try {
-        const response = await fetch(`http://localhost:8000/settleDocsAdvertiser?Username=${Username}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            docsApproved: "accepted"
-          }),
-        });
-    
-        if (response.ok) {
-          const data = await response.json();
-          alert("Advertiser accepted");
-          fetchAdvertisers();
-        }
-      } catch (error) {
-        console.error('Error accepting advertiser:', error);
-      } 
-    };     
-const handleAdvertiserReject = async (Username) => {
-    
-      try {
-        const response = await fetch(`http://localhost:8000/settleDocsAdvertiser?Username=${Username}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            docsApproved: "rejected"
-          }),
-        });
-    
-        if (response.ok) {
-          const data = await response.json();
-          alert("Advertiser rejected");
-          fetchAdvertisers();
 
-        }
-      } catch (error) {
-        console.error('Error rejecting advertiser:', error);
-      } 
-    };     
-    return(
-     <div>
-       <div>
-        <button onClick={handleToggleViewSellers}>View Sellers</button>
-        <button onClick={handleToggleViewTourGuides}>View Tour Guides</button>
-        <button onClick={handleToggleViewAdvertisers}>View Advertisers</button>
-        </div>
-        <div>
-        {showingSellers && (
-          <div>
-            <h2>Sellers</h2>
-            <ul>
-              {sellers.map((seller) => (
-                <li key={seller._id}>
-                  <p><strong>Name:{seller.Name}</strong></p>
-                  <p><strong>Description:{seller.Description}</strong></p>
-                  <p><strong>Username:{seller.Username}</strong></p>
-                  <button onClick={()=>handleViewSellerDocs(seller._id)}>View Docs</button>
-                  <button onClick={()=>handleSellerAccept(seller.Username)}>Accept</button>
-                  <button onClick={()=>handleSellerReject(seller.Username)}>Reject</button>
-                  {viewingDocsSellerId === seller._id && (
-                    <div>
-                      <img src={`http://localhost:8000/${seller.Id.replace(/\\/g, '/')}`} alt={seller.Id} style={{ width: '400px', height: '300px' }}/>
-                      <img src={`http://localhost:8000/${seller.TaxationRegistryCard.replace(/\\/g, '/')}`} alt={seller.TaxationRegistryCard} style={{ width: '400px', height: '300px' }}/>                   
-                    </div>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        </div>
-        <div>
-        {showingTourGuides && (
-          <div>
-            <h2>Tour guides</h2>
-            <ul>
-              {tourGuides.map((tourGuide) => (
-                <li key={tourGuide._id}>
-                  <p><strong>Username:{tourGuide.Username}</strong></p>
-                  <p><strong>Email:{tourGuide.Email}</strong></p>
-                  <button onClick={()=>handleViewTourGuideDocs(tourGuide._id)}>View Docs</button>
-                  <button onClick={()=>handleTourGuideAccept(tourGuide.Username)}>Accept</button>
-                  <button onClick={()=>handleTourGuideReject(tourGuide.Username)}>Reject</button>
-                  {viewingDocsTourGuideId === tourGuide._id && (
-                    <div>
-                      <img src={`http://localhost:8000/${tourGuide.Id.replace(/\\/g, '/')}`} alt={tourGuide.Id} style={{ width: '400px', height: '300px' }}/>
-                      <img src={`http://localhost:8000/${tourGuide.Certificate.replace(/\\/g, '/')}`} alt={tourGuide.Certificate} style={{ width: '400px', height: '300px' }}/>                   
-                    </div>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        </div>
-        <div>
-        {showingAdvertisers && (
-          <div>
-            <h2>Advertisers</h2>
-            <ul>
-              {advertisers.map((advertiser) => (
-                <li key={advertiser._id}>
-                  <p><strong>Username:{advertiser.Username}</strong></p>
-                  <p><strong>Email:{advertiser.Email}</strong></p>
-                  <button onClick={()=>handleViewAdvertiserDocs(advertiser._id)}>View Docs</button>
-                  <button onClick={()=>handleAdvertiserAccept(advertiser.Username)}>Accept</button>
-                  <button onClick={()=>handleAdvertiserReject(advertiser.Username)}>Reject</button>
-                  {viewingDocsAdvertiserId === advertiser._id && (
-                    <div>
-                      <img src={`http://localhost:8000/${advertiser.Id.replace(/\\/g, '/')}`} alt={advertiser.Id} style={{ width: '400px', height: '300px' }}/>
-                      <img src={`http://localhost:8000/${advertiser.TaxationRegistryCard.replace(/\\/g, '/')}`} alt={advertiser.TaxationRegistryCard} style={{ width: '400px', height: '300px' }}/>                   
-                    </div>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        </div>
-     </div>
-     
-    
-    )
-        
-}
+  const handleAction = async (endpoint, username, action, refresh) => {
+    try {
+      const response = await fetch(`http://localhost:8000/${endpoint}?Username=${username}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ docsApproved: action }),
+      });
+
+      if (response.ok) {
+        alert(`${username} ${action === 'accepted' ? 'approved' : 'rejected'}`);
+        refresh();
+      } else {
+        throw new Error('Action failed');
+      }
+    } catch (error) {
+      console.error(`Error ${action === 'accepted' ? 'accepting' : 'rejecting'} ${username}:`, error);
+    }
+  };
+
+  const renderDocs = (docs) =>
+    docs.map((doc, index) => (
+      <img
+        key={index}
+        src={`http://localhost:8000/${doc.replace(/\\/g, '/')}`}
+        alt={`Document ${index + 1}`}
+        style={{
+          width: '300px',
+          height: '200px',
+          margin: '10px',
+          borderRadius: '8px',
+          border: '1px solid #ccc',
+        }}
+      />
+    ));
+
+  const Section = ({ title, items, itemType, refresh }) => (
+    <div style={{ marginBottom: '40px' }}>
+      <h2 style={{ color: '#0F5132', marginBottom: '20px', fontSize: '1.5em', borderBottom: '2px solid #ddd', paddingBottom: '5px' }}>
+        {title}
+      </h2>
+      <ul style={{ listStyle: 'none', padding: 0 }}>
+        {items.map((item) => (
+          <li
+            key={item._id}
+            style={{
+              background: '#f9f9f9',
+              margin: '20px 0',
+              padding: '20px',
+              borderRadius: '10px',
+              boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+            }}
+          >
+            <p><strong>Name:</strong> {item.Name || 'N/A'}</p>
+            <p><strong>Username:</strong> {item.Username}</p>
+            <p><strong>Email:</strong> {item.Email || 'N/A'}</p>
+            <div style={{ marginTop: '10px' }}>
+              <button
+                onClick={() => setViewingDocsId(viewingDocsId === item._id ? null : item._id)}
+                style={{
+                  backgroundColor: viewingDocsId === item._id ? '#0F5132' : '#0F5132',
+                  color: '#fff',
+                  padding: '8px 12px',
+                  border: 'none',
+                  borderRadius: '5px',
+                  marginRight: '10px',
+                  cursor: 'pointer',
+                }}
+              >
+                {viewingDocsId === item._id ? 'Hide Docs' : 'View Docs'}
+              </button>
+              <button
+                onClick={() =>
+                  handleAction(
+                    `settleDocs${itemType}`,
+                    item.Username,
+                    'accepted',
+                    refresh
+                  )
+                }
+                style={{
+                  backgroundColor: '#0F5132',
+                  color: '#fff',
+                  padding: '8px 12px',
+                  border: 'none',
+                  borderRadius: '5px',
+                  marginRight: '10px',
+                  cursor: 'pointer',
+                }}
+              >
+                Accept
+              </button>
+              <button
+                onClick={() =>
+                  handleAction(
+                    `settleDocs${itemType}`,
+                    item.Username,
+                    'rejected',
+                    refresh
+                  )
+                }
+                style={{
+                  backgroundColor: '#dc3545',
+                  color: '#fff',
+                  padding: '8px 12px',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                }}
+              >
+                Reject
+              </button>
+            </div>
+            {viewingDocsId === item._id && (
+              <div style={{ marginTop: '20px' }}>
+                {renderDocs([item.Id, item.TaxationRegistryCard || item.Certificate])}
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+
+  return (
+    <div style={{ fontFamily: 'Arial, sans-serif', padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+      {/* Header */}
+      <header
+        style={{
+          backgroundColor: '#0F5132',
+          color: '#fff',
+          padding: '15px',
+          textAlign: 'center',
+          borderRadius: '10px',
+          marginBottom: '30px',
+        }}
+      >
+        <h1 style={{ margin: 0, fontSize: '2em' }}>Document Approval Dashboard</h1>
+      </header>
+
+      {/* Navigation Buttons */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+        <button
+          onClick={() => setActiveSection('sellers')}
+          style={{
+            backgroundColor: activeSection === 'sellers' ? '#0F5132' : '#0F5132',
+            color: '#fff',
+            padding: '10px 20px',
+            border: 'none',
+            borderRadius: '5px',
+            margin: '0 10px',
+            cursor: 'pointer',
+          }}
+        >
+          View Sellers
+        </button>
+        <button
+          onClick={() => setActiveSection('tourGuides')}
+          style={{
+            backgroundColor: activeSection === 'tourGuides' ? '#0F5132' : '#0F5132',
+            color: '#fff',
+            padding: '10px 20px',
+            border: 'none',
+            borderRadius: '5px',
+            margin: '0 10px',
+            cursor: 'pointer',
+          }}
+        >
+          View Tour Guides
+        </button>
+        <button
+          onClick={() => setActiveSection('advertisers')}
+          style={{
+            backgroundColor: activeSection === 'advertisers' ? '#0F5132' : '#0F5132',
+            color: '#fff',
+            padding: '10px 20px',
+            border: 'none',
+            borderRadius: '5px',
+            margin: '0 10px',
+            cursor: 'pointer',
+          }}
+        >
+          View Advertisers
+        </button>
+      </div>
+
+      {/* Error Message */}
+      {errorMessage && <p style={{ color: '#dc3545', textAlign: 'center' }}>{errorMessage}</p>}
+
+      {/* Sections */}
+      {activeSection === 'sellers' && (
+        <Section
+          title="Pending Sellers"
+          items={sellers}
+          itemType="Seller"
+          refresh={() => fetchData('getPendingSellers', setSellers, 'Failed to fetch sellers')}
+        />
+      )}
+      {activeSection === 'tourGuides' && (
+        <Section
+          title="Pending Tour Guides"
+          items={tourGuides}
+          itemType="TourGuide"
+          refresh={() => fetchData('getPendingTourGuides', setTourGuides, 'Failed to fetch tour guides')}
+        />
+      )}
+      {activeSection === 'advertisers' && (
+        <Section
+          title="Pending Advertisers"
+          items={advertisers}
+          itemType="Advertiser"
+          refresh={() => fetchData('getPendingAdvertisers', setAdvertisers, 'Failed to fetch advertisers')}
+        />
+      )}
+    </div>
+  );
+};
+
 export default Docs;

@@ -963,6 +963,7 @@ const unarchiveProduct = async () => {
         paddingTop: '100px', // Avoid overlap with the header
       },
       
+      
       header: {
         height:'60px',
         position: 'fixed', // Make the header fixed
@@ -1060,6 +1061,7 @@ const unarchiveProduct = async () => {
   heading: {
     textAlign: 'center',
     fontSize: '24px',
+    textAlign: 'left', // Change from 'center' to 'left'
     color: '#0F5132',
     marginBottom: '20px',
   },
@@ -1143,7 +1145,7 @@ const unarchiveProduct = async () => {
     fontWeight: 'bold',
     color: '#FFF', // White text for the value
   },
-  /////////////
+
   };
 
   return (
@@ -1176,7 +1178,10 @@ const unarchiveProduct = async () => {
         <li onClick={() => navigate('/PromoCodeForm')}>Promo Codes</li>
         <li onClick={() => navigate('/Complaints')}>Complaints</li>
         <li onClick={() => navigate('/preftags')}>Preference Tags</li>
+        <li onClick={() => navigate('/docs')}>Docs</li>
         <li onClick={() => navigate('/products')}>Products</li>
+      
+        
         <div style={{ position: 'relative', textAlign: 'right', padding: '10px' }}>
       {/* Notification Bell Icon */}
       <FaBell
@@ -1569,11 +1574,7 @@ const unarchiveProduct = async () => {
         </ul>
       )}
     </div>
- 
-      <div>
-      <button onClick={() => navigate('/docs')}>See unsettled docs</button>
-      </div>
-      
+   
      
     </div>
   );
