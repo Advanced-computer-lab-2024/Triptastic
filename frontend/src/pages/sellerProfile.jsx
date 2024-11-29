@@ -748,45 +748,34 @@ const unarchiveProduct = async () => {
         </button>
       {/* Search Product Section */}
       <h2 style={styles.sectionTitle}>Search Product by Name</h2>
-      <form onSubmit={getProductByName} style={styles.form}>
-        <div style={styles.formGroup}>
-          <label style={styles.label}>Product Name</label>
+      <form onSubmit={getProductByName}>
+        <div>
+          <label>Product Name:</label>
           <input
             type="text"
             value={productNameToSearch}
             onChange={(e) => setProductNameToSearch(e.target.value)}
-            style={styles.input}
             required
           />
         </div>
-        <button type="submit" style={styles.buttonPrimary} disabled={loading}>
-          Search Product
-        </button>
+        <button type="submit" disabled={loading}>Search Product</button>
       </form>
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
       {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
       {productSearchResult && (
-        <div style={styles.productDetails}>
+        <div>
           <h3>Product Details</h3>
-          <p>
-            <strong>Name:</strong> {productSearchResult.productName}
-          </p>
-          <p>
-            <strong>Description:</strong> {productSearchResult.description}
-          </p>
-          <p>
-            <strong>Price:</strong> {productSearchResult.price}
-          </p>
-          <p>
-            <strong>Rating:</strong> {productSearchResult.rating}
-          </p>
-          <p>
-            <strong>Archived:</strong>{' '}
-            {productSearchResult.archived ? 'Yes' : 'No'}
-          </p>
-          
+          <p>Name: {productSearchResult.productName}</p>
+          <p>Description: {productSearchResult.description}</p>
+          <p>Price: {productSearchResult.price}</p>
+          <p>Rating: {productSearchResult.rating}</p>
+          <p>Seller: {productSearchResult.seller}</p>
+          <p>Archived: {productSearchResult.archived !== undefined ? productSearchResult.archived.toString() : 'N/A'}</p>
+          <button onClick={archiveProduct} disabled={loading}>Archive Product</button>
+          <button onClick={unarchiveProduct} disabled={loading || !productSearchResult.archived}>Unarchive Product</button>
+
+          {/* Add more product details as needed */}
         </div>
-        
       )}
       
       {/* Modal for Editing Profile */}
