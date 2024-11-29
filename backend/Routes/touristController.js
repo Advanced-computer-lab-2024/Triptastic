@@ -2359,39 +2359,72 @@ const sendActivityReminders = async (req, res) => {
 
 
 
-
-const sendItineraryReminders = async () => {
+const sendItineraryReminders = async (req, res) => {
+  const { username } = req.query; // Get the username from the query
   try {
-    // Fetch all tourists
-    const tourists = await touristModel.find();
+    // Fetch the tourist by Username
+    const tourist = await touristModel.findOne({ Username: username });
+    if (!tourist) {
+      console.log('Tourist not found:', username);
+      return res.status(404).json({ message: 'Tourist not found.' });
+    }
 
-    for (const tourist of tourists) {
-      // Get booked itineraries for the tourist
-      const bookedItineraries = await itineraryModel.find({
-        _id: { $in: tourist.Bookings.map(booking => booking.itinerary) },
-      });
+    console.log('Tourist found:', tourist.Username);
 
-      const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(today.getDate() + 1);
+    // Check if there are no booked itineraries
+    if (!tourist.Bookings || tourist.Bookings.length === 0) {
+      console.log('No itineraries found for the tourist:', username);
+      return res.status(200).json({ message: 'No itineraries found to send reminders for.' });
+    }
 
-      // Filter itineraries happening tomorrow
-      const upcomingItineraries = bookedItineraries.filter(
-        itinerary => 
-          new Date(itinerary.date) >= today && 
-          new Date(itinerary.date) <= tomorrow
-      );
+    // Define start and end of "tomorrow"
+    const today = new Date();
+    const tomorrowStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+    const tomorrowEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 2);
 
-      for (const itinerary of upcomingItineraries) {
-        // In-App Notification
-        const notificationMessage = `Reminder: Your itinerary "${itinerary.name}" is scheduled for tomorrow.`;
+    const notificationsSent = [];
+
+    // Check itineraries for reminders
+    for (const booking of tourist.Bookings) {
+      console.log('Checking itinerary booking:', booking);
+
+      if (
+        new Date(booking.DatesTimes) >= tomorrowStart &&
+        new Date(booking.DatesTimes) < tomorrowEnd &&
+        !booking.reminded
+      ) {
+        console.log('Upcoming itinerary booking found:', booking);
+
+        // Find the itinerary associated with the booking
+        const itinerary = await itineraryModel.findOne({ Activities: booking.Activities });
+        if (!itinerary) {
+          console.log('Itinerary not found for booking name:', booking.Activities);
+          continue;
+        }
+
+        console.log('Itinerary details:', itinerary);
+                
+        // Check if the notification already exists
+        const existingNotification = tourist.notifications.some(
+          (notification) =>
+            notification.message.includes(itinerary.Activities) &&
+            new Date(notification.date).toDateString() === new Date().toDateString()
+        );
+
+        if (existingNotification) {
+          console.log(`Notification already exists for itinerary "${itinerary.Activities}"`);
+          continue;
+        }
+
+        // Prepare the notification
+        const notificationMessage = `Reminder: Your itinerary "${itinerary.Activities}" is scheduled for tomorrow.`;
         tourist.notifications.push({
           message: notificationMessage,
           date: new Date(),
           read: false,
         });
 
-        // Email Notification
+        // Send an email notification
         const transporter = nodemailer.createTransport({
           service: 'gmail',
           auth: {
@@ -2407,23 +2440,50 @@ const sendItineraryReminders = async () => {
           text: notificationMessage,
         };
 
-        await transporter.sendMail(mailOptions);
+        try {
+          await transporter.sendMail(mailOptions);
+          console.log(`Reminder sent for itinerary "${itinerary.Activities}" to ${tourist.Email}`);
+          notificationsSent.push({
+            itinerary: itinerary.Activities,
+            email: tourist.Email,
+            status: 'success',
+          });
+        } catch (emailError) {
+          console.error(`Failed to send email for itinerary "${itinerary.Activities}":`, emailError.message);
+          notificationsSent.push({
+            itinerary: itinerary.Activities,
+            email: tourist.Email,
+            status: 'failed',
+          });
+        }
 
-        console.log(`Reminder sent for itinerary "${itinerary.name}" to ${tourist.Email}`);
+        // Mark the booking as reminded
+        booking.reminded = true;
+      } else {
+        console.log('Itinerary booking does not meet criteria for reminder:', booking);
       }
-
-      // Save the updated tourist
-      await tourist.save();
     }
+
+    // Save tourist data
+    await tourist.save();
+
+    if (notificationsSent.length === 0) {
+      console.log('No reminders were sent as no itineraries required reminders.');
+      return res.status(200).json({ message: 'No itinerary reminders for tomorrow.' });
+    }
+
+    console.log('Final notifications sent:', notificationsSent);
+    res.status(200).json({ message: 'Reminders processed successfully.', notificationsSent });
   } catch (error) {
     console.error('Error sending itinerary reminders:', error.message);
+    res.status(500).json({ message: 'Internal server error.', error: error.message });
   }
 };
 
 
 
 
- module.exports = {sendActivityReminders,getNotifications,markNotificationsRead,updateProductQuantityInCart,bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+ module.exports = {sendItineraryReminders,sendActivityReminders,getNotifications,markNotificationsRead,updateProductQuantityInCart,bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist

@@ -181,8 +181,10 @@ const AdminPage = () => {
     }
   };
   const checkoutOfStock = async () => {
+    const Username = localStorage.getItem('Username');
+
     try {
-      const response = await fetch('http://localhost:8000/checkAndNotifyOutOfStockAdmin', {
+      const response = await fetch(`http://localhost:8000/checkAndNotifyOutOfStockAdmin?Username=${Username}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
