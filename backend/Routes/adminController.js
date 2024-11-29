@@ -509,15 +509,15 @@ const sortProductsByRatingAdmin = async (req, res) => {
      }   
     }
 
-    const changePasswordAdmin= async (req, res) => {
-      const {Username, currentPassword, newPassword } = req.body;
+    const changePasswordAdmin = async (req, res) => { 
+      const { Username, Email, currentPassword, newPassword } = req.body;
     
       try {
-        // Find the seller by Username
-        const admin = await adminModel.findOne({ Username });
+        // Find the admin by Username and Email
+        const admin = await adminModel.findOne({ Username, Email });
     
         if (!admin) {
-          return res.status(404).json({ error: "Admin not found" });
+          return res.status(404).json({ error: "Admin with the provided Username and Email not found" });
         }
     
         // Compare current password directly (plain text comparison)
@@ -525,15 +525,17 @@ const sortProductsByRatingAdmin = async (req, res) => {
           return res.status(400).json({ error: "Current password is incorrect" });
         }
     
-        // Update the seller's password (plain text)
+        // Update the admin's password (plain text)
         admin.Password = newPassword;
         await admin.save();
     
         res.status(200).json({ message: "Password changed successfully" });
       } catch (error) {
-        res.status(500).json({ error: "Error changing password" });
+        console.error('Error during password change:', error); // Log the error for debugging
+        res.status(500).json({ error: error.message || "Error changing password" });
       }
     };
+    
 
     const getComplaints=async(req,res)=>{
       try{
@@ -790,6 +792,7 @@ const getPromoCodes = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 
 module.exports = {getPromoCodes,createPromoCode,getUserStatistics,replyToComplaint,getPendingDeletionRequests,acceptDeletionRequest,rejectDeletionRequest,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
