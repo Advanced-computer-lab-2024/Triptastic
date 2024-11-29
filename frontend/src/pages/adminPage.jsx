@@ -44,14 +44,7 @@ const AdminPage = () => {
     const [notifications, setNotifications] = useState([]); // Initialize as an empty array
   
   
-  const [changePasswordData, setChangePasswordData] = useState({
-    Username: '',
-    currentPassword: '',
-    newPassword: ''
-  });
-  const [changePasswordLoading, setChangePasswordLoading] = useState(false);
-  const [changePasswordSuccess, setChangePasswordSuccess] = useState('');
-  const [changePasswordError, setChangePasswordError] = useState('');
+
   const [complaintIdToSearch, setComplaintIdToSearch] = useState('');
   const [complaintDetails, setComplaintDetails] = useState(null);
   const [complaintLoading, setComplaintLoading] = useState(false);
@@ -182,8 +175,10 @@ const AdminPage = () => {
     }
   };
   const checkoutOfStock = async () => {
+    const Username = localStorage.getItem('Username');
+
     try {
-      const response = await fetch('http://localhost:8000/checkAndNotifyOutOfStockAdmin', {
+      const response = await fetch(`http://localhost:8000/checkAndNotifyOutOfStockAdmin?Username=${Username}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -823,36 +818,7 @@ const unarchiveProduct = async () => {
     }
   };
 
-  const handleChangePassword = async (e) => {
-    e.preventDefault();
-    setChangePasswordLoading(true);
-    setChangePasswordSuccess('');
-    setChangePasswordError('');
-  
-    try {
-      const response = await fetch('http://localhost:8000/changePasswordAdmin', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(changePasswordData)
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
-        setChangePasswordSuccess(data.message);
-        setChangePasswordData({ Username: '', currentPassword: '', newPassword: '' });
-      } else {
-        const errorData = await response.json();
-        setChangePasswordError(errorData.error || 'Failed to change password.');
-      }
-    } catch (error) {
-      setChangePasswordError('An error occurred while changing the password.');
-      console.error(error);
-    } finally {
-      setChangePasswordLoading(false);
-    }
-  };
+
   const fetchComplaintDetails = async (e) => {
     e.preventDefault();
     setComplaintLoading(true);
@@ -1201,7 +1167,7 @@ const unarchiveProduct = async () => {
     <FaUserCircle
       alt="Profile Icon"
       style={styles.profileIcon}
-      onClick={() => navigate('/touristSettings')}
+      onClick={() => navigate('/adminsettings')}
     />
   </div>
 </header>
@@ -1323,106 +1289,6 @@ const unarchiveProduct = async () => {
   <p style={styles.loadingText}>Fetching statistics...</p>
 )}
 
-
-
- <h2 style={styles.heading}>Create Admin</h2>
-<form onSubmit={createAdmin} style={styles.form}>
-  <div style={styles.formGroup}>
-    <label style={styles.label}>Username:</label>
-    <input
-      type="text"
-      name="Username"
-      value={formData.Username}
-      onChange={handleChange}
-      required
-      style={styles.input}
-    />
-  </div>
-  <div style={styles.formGroup}>
-    <label style={styles.label}>Password:</label>
-    <input
-      type="password"
-      name="Password"
-      value={formData.Password}
-      onChange={handleChange}
-      required
-      style={styles.input}
-    />
-  </div>
-  <div style={styles.formGroup}>
-    <label style={styles.label}>Email:</label>
-    <input
-      type="text"
-      name="Email"
-      value={formData.Email}
-      onChange={handleChange}
-      required
-      style={styles.input}
-    />
-  </div>
-  <button type="submit" disabled={loading} style={styles.button}>
-    {loading ? 'Creating...' : 'Create Admin'}
-  </button>
-  {errorMessage && <p style={styles.error}>{errorMessage}</p>}
-  {successMessage && <p style={styles.success}>{successMessage}</p>}
-</form>
-      
-
-
-
-      <h2>Change Admin Password</h2>
-<form onSubmit={handleChangePassword}>
-  <div>
-    <label>Username:</label>
-    <input
-      type="text"
-      name="Username"
-      value={changePasswordData.Username}
-      onChange={(e) =>
-        setChangePasswordData((prevData) => ({
-          ...prevData,
-          Username: e.target.value
-        }))
-      }
-      required
-    />
-  </div>
-  <div>
-    <label>Current Password:</label>
-    <input
-      type="password"
-      name="currentPassword"
-      value={changePasswordData.currentPassword}
-      onChange={(e) =>
-        setChangePasswordData((prevData) => ({
-          ...prevData,
-          currentPassword: e.target.value
-        }))
-      }
-      required
-    />
-  </div>
-  <div>
-    <label>New Password:</label>
-    <input
-      type="password"
-      name="newPassword"
-      value={changePasswordData.newPassword}
-      onChange={(e) =>
-        setChangePasswordData((prevData) => ({
-          ...prevData,
-          newPassword: e.target.value
-        }))
-      }
-      required
-    />
-  </div>
-  <button type="submit" disabled={changePasswordLoading}>
-    {changePasswordLoading ? 'Changing...' : 'Change Password'}
-  </button>
-  {changePasswordSuccess && <p style={{ color: 'green' }}>{changePasswordSuccess}</p>}
-  {changePasswordError && <p style={{ color: 'red' }}>{changePasswordError}</p>}
-</form>
 
 <h2>View Complaint Details</h2>
 <form onSubmit={fetchComplaintDetails}>
