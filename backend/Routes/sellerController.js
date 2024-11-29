@@ -550,8 +550,21 @@ const deleteAllNotifications = async () => {
   }
 };
 
+const viewMyProducts = async (req, res) => {
+  const { seller } = req.query; // Extract 'seller' from query parameters
+
+  if (!seller) {
+    return res.status(400).json({ error: 'Seller username is required' });
+  }
+
+  try {
+    const products = await productModel.find({ seller }); // Find all products by seller
+    res.status(200).json(products); // Return the list of products
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
 
 
-
- module.exports = {deleteAllNotifications,getNotificationsForAdmin,checkAndNotifyOutOfStockAdmin,getNotificationsForSeller,checkAndNotifyOutOfStockSeller,incrementProductSales,viewProductSales ,changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller};
+ module.exports = {viewMyProducts,deleteAllNotifications,getNotificationsForAdmin,checkAndNotifyOutOfStockAdmin,getNotificationsForSeller,checkAndNotifyOutOfStockSeller,incrementProductSales,viewProductSales ,changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller};
