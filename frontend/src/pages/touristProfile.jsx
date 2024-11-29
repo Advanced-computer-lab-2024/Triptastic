@@ -12,6 +12,7 @@ import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHo
   FaClipboardList,
   FaStar, FaDollarSign,FaSearch} from "react-icons/fa";
 import { FaBell,FaUserCircle} from 'react-icons/fa';
+import { MdNotificationImportant } from 'react-icons/md';
 
 const TouristProfile = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -733,6 +734,11 @@ return (
   </div>
 </header>
 
+
+
+ 
+
+
 {/* Notification Dropdown */}
 {showNotifications && (
         <div style={styles.notificationDropdown}>
@@ -740,6 +746,27 @@ return (
           {notifications.length > 0 ? (
             notifications.map((notification, index) => (
               <div key={index} style={styles.notificationItem}>
+                 <li
+         key={notification.id}
+         style={{
+           display: 'flex',
+           flexDirection: 'row', // Align icon and text horizontally
+           alignItems: 'flex-start', // Align icon with the top of the text
+           backgroundColor: '#f9f9f9', // Light background for each item
+           border: '1px solid #ddd', // Add subtle border
+           borderRadius: '5px', // Rounded corners
+           padding: '10px', // Add padding inside each item
+           borderBottom: '1px solid #f0f0f0',
+           padding: '10px',
+           fontSize: '14px',
+         }}
+       >
+         <MdNotificationImportant
+           size={20}
+           style={{ marginRight: '10px', color: '#ff9800' }}
+         />
+         
+       </li>
                 <p>{notification.message}</p>
                 <span style={styles.notificationDate}>
                   {new Date(notification.date).toLocaleString()}
@@ -1451,14 +1478,24 @@ const styles = {
     cursor: 'pointer',
   },
   notificationDropdown: {
-    position: 'absolute',
-    top: '60px',
-    left: '1200px',
-    width: '300px',
+ 
+   
     backgroundColor: '#fff',
-    borderRadius: '8px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-    zIndex: 1000,
+  
+ 
+      position: 'absolute',
+      top: '40px',
+      right: '0px',
+   
+      border: '1px solid #ddd',
+      borderRadius: '8px',
+      boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
+      width: '320px',
+      maxHeight: '400px',
+      overflowY: 'auto', // Enable vertical scrolling
+      overflowX: 'hidden',
+      zIndex: 1000,
+   
   },
   dropdownHeader: {
     padding: '10px',
@@ -1466,8 +1503,12 @@ const styles = {
     fontWeight: 'bold',
   },
   notificationItem: {
-    padding: '10px',
+   
     borderBottom: '1px solid #ddd',
+    padding: '20px',
+    textAlign: 'center',
+    color: '#888',
+    fontSize: '14px',
   },
   notificationDate: {
     fontSize: '12px',
