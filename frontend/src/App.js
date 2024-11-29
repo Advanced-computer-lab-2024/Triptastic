@@ -50,6 +50,7 @@ import { loadStripe } from '@stripe/stripe-js'; // Import loadStripe
 import AdminSettings from './pages/adminsettings';
 import AttendedActivitiesPage from './pages/AttendedActivities';
 
+
 const stripePromise = loadStripe('pk_test_51QPR4CHmIrhpZsCUkNDleRBlZDavN3bJ0zSGja0odQdTv8F6suSp02Cyx2sOVDyTbxi4J7Yqrnj7kQMwlu2LbwaU00pnINWNUs');
 stripePromise.then((stripe) => console.log('Stripe initialized:', stripe));
 
@@ -139,6 +140,7 @@ function App() {
             <Route path="/GuideReport" element={<GuideReport />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/adminsettings" element={<AdminSettings />} />
+
 
           </Routes>
         </Router>

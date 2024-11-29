@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './advertiserProfile.css';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+import logo from '../images/image.png'; // Adjust the path based on your folder structure
+import { FaBell,FaUserCircle} from 'react-icons/fa';
+import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
+  FaClipboardList,
+  FaStar, FaDollarSign,FaSearch} from "react-icons/fa";
 
 const AdvertiserProfile = () => {
   const [advertiserInfo, setAdvertiserInfo] = useState(null);
@@ -16,6 +21,8 @@ const [filteredActivities, setFilteredActivities] = useState([]);
   const [newPassword, setNewPassword] = useState('');
   const [Logo, setLogo] = useState(null);
   const [activityReports, setActivityReports] = useState({});
+  const [showModal, setShowModal] = useState(false); // State for modal visibility
+
     const [formData, setFormData] = useState({
     Username: '',
     Email: '',
@@ -392,57 +399,183 @@ const [filteredActivities, setFilteredActivities] = useState([]);
       console.error('An error occurred while creating transportation:', error);
     }
   };
+  const toggleModal = () => setShowModal(!showModal);
 
   return (
     <div className="advertiser-profile">
-      <h2 className="profile-title">Advertiser Profile</h2>
-      {errorMessage && <p className="error-message">{errorMessage}</p>}
 
-      {/* Advertiser Information */}
-      {loading ? (
-        <p className="loading">Loading advertiser information...</p>
-      ) : (
-        advertiserInfo && (
-          <div className="info-section">
-            <div className="info-header">
-              {Logo && <img src={`http://localhost:8000/${Logo.replace(/\\/g, '/')}`} alt="Advertiser Logo" className="logo" />}
+    <div>
+    {/* Header Section */}
+    <header style={styles.header}>
+  <div style={styles.logoContainer}>
+    <img src={logo} alt="Logo" style={styles.logo} />
+  </div>
+  <h1 style={styles.title}>Advertiser Profile</h1>
+  <div style={styles.headerIconsContainer}>
+          <FaUserCircle
+            alt="Profile Icon"
+            style={styles.profileIcon}
+            onClick={toggleModal}
+          />
+        </div>
+</header>
+
+
+     
+      
+
+
+      {/* Modal */}
+      {showModal && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <h2 style={styles.modalContentH2}>Edit Profile</h2>
+
+            <div style={styles.infoHeader}>
+              {Logo && (
+                <img
+                  src={`http://localhost:8000/${Logo.replace(/\\/g, '/')}`}
+                  alt="Advertiser Logo"
+                  className="logo"
+                  style={styles.logo}
+                />
+              )}
               <h3>{advertiserInfo.Username}</h3>
             </div>
-            <div className="info-content">
-              <label>Website Link:</label>
-              <input type="text" name="Website_Link" value={formData.Website_Link} onChange={handleInputChange} />
-              <label>Password:</label>
-              <input type="password" name="Password" value={formData.Password} onChange={handleInputChange} />
-              <label>Hotline:</label>
-              <input type="text" name="Hotline" value={formData.Hotline} onChange={handleInputChange} />
-              <label>Company Profile:</label>
-              <input type="text" name="Company_Profile" value={formData.Company_Profile} onChange={handleInputChange} />
-              <label>Logo:</label>
-              <input type="file" accept="image/*" onChange={handleLogoChange} />
+
+            <label style={styles.modalContentLabel}>Email:</label>
+            <input
+              type="email"
+              name="Email"
+              value={formData.Email}
+              onChange={handleInputChange}
+              style={styles.modalContentInput}
+            />
+
+            <label style={styles.modalContentLabel}>Password:</label>
+            <input
+              type="password"
+              name="Password"
+              value={formData.Password}
+              onChange={handleInputChange}
+              style={styles.modalContentInput}
+            />
+
+            <label style={styles.modalContentLabel}>Website Link:</label>
+            <input
+              type="text"
+              name="Website_Link"
+              value={formData.Website_Link}
+              onChange={handleInputChange}
+              style={styles.modalContentInput}
+            />
+
+            <label style={styles.modalContentLabel}>Hotline:</label>
+            <input
+              type="text"
+              name="Hotline"
+              value={formData.Hotline}
+              onChange={handleInputChange}
+              style={styles.modalContentInput}
+            />
+
+            <label style={styles.modalContentLabel}>Company Profile:</label>
+            <textarea
+              name="Company_Profile"
+              value={formData.Company_Profile}
+              onChange={handleInputChange}
+              style={styles.modalContentTextarea}
+            ></textarea>
+
+
+
+            <label style={styles.modalContentLabel}>Logo:</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleLogoChange}
+              style={styles.modalContentInput}
+            />
+
+            <div style={styles.modalButtonsContainer}>
+              <button
+                onClick={handleUpdate}
+                disabled={updating}
+                style={{
+                  ...styles.modalContentButton,
+                  ...(updating ? { opacity: 0.6, cursor: 'not-allowed' } : {}),
+                }}
+              >
+                {updating ? 'Updating...' : 'Save Changes'}
+              </button>
+
+              <button
+                onClick={handleDeleteRequest}
+                disabled={waiting || requestSent}
+                style={{
+                  ...styles.modalContentButton,
+                  backgroundColor: '#dc3545',
+                  ...(waiting || requestSent
+                    ? { opacity: 0.6, cursor: 'not-allowed' }
+                    : {}),
+                }}
+              >
+                {waiting ? 'Waiting...' : requestSent ? 'Request Sent' : 'Delete Account'}
+              </button>
             </div>
-            <button onClick={handleUpdate} disabled={updating} className="update-button">
-              {updating ? 'Updating...' : 'Update Information'}
-            </button>
-            <button onClick={handleDeleteRequest} disabled={waiting || requestSent} className="delete-button">
-              {waiting ? 'Waiting...' : requestSent ? 'Request Sent' : 'Delete Account'}
+
+
+            <div style={styles.passwordSection}>
+              <h3>Change Password</h3>
+              <label style={styles.modalContentLabel}>Current Password:</label>
+              <input
+                type="password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                style={styles.modalContentInput}
+              />
+              <label style={styles.modalContentLabel}>New Password:</label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                style={styles.modalContentInput}
+              />
+              <button
+                onClick={handlePasswordChange}
+                style={{
+                  ...styles.modalContentButton,
+                  backgroundColor: '#007bff',
+                }}
+              >
+                Change Password
+              </button>
+            </div>
+
+            <button
+              onClick={toggleModal}
+              style={styles.modalContentButton}
+            >
+              Cancel
             </button>
           </div>
-        )
+        </div>
       )}
+ 
+
+
+{/* Notification Dropdown */}
+
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
+
+     
 
       
-      {/* Password Change Section */}
-      <div className="password-section">
-        <h3>Change Password</h3>
-        <label>Current Password:</label>
-        <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
-        <label>New Password:</label>
-        <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-        <button onClick={handlePasswordChange} className="password-button">Change Password</button>
-      </div>
+      
 {/* Filter Activities by Month */}
-<div className="filter-section">
-  <label htmlFor="monthFilter">Filter by Month:</label>
+<div className="filter-section" style={{ marginTop: '40px' }}>
+
+  <label htmlFor="monthFilter" >Filter by Month:</label>
   <select
     id="monthFilter"
     value={filterMonth}
@@ -549,12 +682,16 @@ const [filteredActivities, setFilteredActivities] = useState([]);
         <button onClick={handleCreateTransportation} className="create-transport-button">Create Transportation</button>
       </div>
     </div>
+    </div>
+
   );
   
 };
 
 const styles = {
+ 
   activitiesContainer: {
+
     display: 'flex',
     flexDirection: 'column',
     gap: '10px',
@@ -568,6 +705,113 @@ const styles = {
   activityRow: {
     display: 'flex',
     justifyContent: 'space-between',
+  },
+  title: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: 'white',
+    margin: 0,
+    marginLeft:'60px'
+  },
+  header: {
+    height:'60px',
+    position: 'fixed', // Make the header fixed
+    top: '0', // Stick to the top of the viewport
+    left: '0',
+    width: '100%', // Make it span the full width of the viewport
+    backgroundColor: '#0F5132', // Green background
+    color: 'white', // White text
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '10px 20px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for depth
+    zIndex: '1000', // Ensure it appears above other content
+  },
+  headerIconsContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '20px', // Spacing between the icons
+  },
+  logoContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  logo: {
+    height: '60px',
+    width: '70px',
+    borderRadius: '10px',
+  },
+  
+ 
+  profileIcon: {
+    fontSize: '30px',
+    color: 'white',
+    cursor: 'pointer',
+  },
+  modalOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
+    background: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  modalContent: {
+    background: 'white',
+    padding: '20px',
+    borderRadius: '10px',
+    width: '50%',
+    maxWidth: '600px',
+    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '15px',
+    maxHeight: '80vh',
+    overflowY: 'auto',
+  },
+  modalContentH2: {
+    fontSize: '22px',
+    textAlign: 'center',
+    color: '#333',
+  },
+  modalContentLabel: {
+    fontWeight: 'bold',
+    marginBottom: '5px',
+    color: '#555',
+  },
+  modalContentInput: {
+    width: '100%',
+    padding: '10px',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
+    fontSize: '14px',
+  },
+  modalContentTextarea: {
+    width: '100%',
+    padding: '10px',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
+    fontSize: '14px',
+    resize: 'vertical',
+  },
+  modalContentButton: {
+    padding: '10px 20px',
+    border: 'none',
+    background: '#0F5132',
+    color: 'white',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '14px',
+  },
+  passwordSection: {
+    borderTop: '1px solid #ddd',
+    marginTop: '20px',
+    paddingTop: '15px',
   },
 };
 
