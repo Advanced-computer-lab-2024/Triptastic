@@ -259,19 +259,25 @@ const Checkout = () => {
   return (
     <div style={styles.container}>
       <header style={styles.header}>
-        <div style={styles.logoContainer}>
-          <img src={logo} alt="Logo" style={styles.logo} />
-        </div>
-        <h1 style={styles.title}>Checkout</h1>
-        <div style={styles.headerIcons}>
-          {/* Profile Icon */}
-          <FaUserCircle
-            alt="Profile Icon"
-            style={styles.profileIcon}
-            onClick={handleProfileRedirect} // Navigate to profile
-          />
-        </div>
-      </header>
+  <div style={styles.logoContainer}>
+    <img src={logo} alt="Logo" style={styles.logo} />
+  </div>
+  <h1 style={styles.title}>Tourist Profile</h1>
+  <div style={styles.headerIconsContainer}>
+
+    {/* Profile Icon */}
+    <FaUserCircle
+      alt="Profile Icon"
+      style={styles.profileIcon}
+      onClick={() => navigate('/touristSettings')}
+    />
+
+    {/* Cart Icon */}
+    <div style={styles.cartButton} onClick={() => navigate('/Cart')}>
+      <FaShoppingCart style={styles.cartIcon} />
+    </div>
+  </div>
+</header>
   
       {/* Sidebar */}
       <div
@@ -356,24 +362,34 @@ const Checkout = () => {
   
         {/* Cart Items Section */}
         <div style={styles.cartContent}>
-          {cartItems.length === 0 ? (
-            <p style={styles.emptyMessage}>Your cart is empty</p>
-          ) : (
-            <ul style={styles.cartList}>
-              {cartItems.map((item, index) => (
-                <li key={index} style={styles.cartItem}>
-                  <h2 style={styles.productName}>{item.productName}</h2>
-                  <p>
-                    <strong>Price:</strong> {item.price}
-                  </p>
-                  <p>
-                    <strong>Quantity:</strong> {item.quantity}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+  {cartItems.length === 0 ? (
+    <p style={styles.emptyMessage}>Your cart is empty</p>
+  ) : (
+    <div>
+      <ul style={styles.cartList}>
+        {cartItems.map((item, index) => (
+          <li key={index} style={styles.cartItem}>
+            <h2 style={styles.productName}>{item.productName}</h2>
+            <p>
+              <strong>Price:</strong> {item.price}
+            </p>
+            <p>
+              <strong>Quantity:</strong> {item.quantity}
+            </p>
+          </li>
+        ))}
+      </ul>
+      {/* Display total price */}
+      <div style={styles.totalPriceContainer}>
+        <p style={styles.totalPrice}>
+          <strong>Total Price: </strong> 
+          {cartItems.reduce((total, item) => total + (item.price * item.quantity), 0)}
+        </p>
+      </div>
+    </div>
+  )}
+</div>
+
   
         <button
           style={styles.addButton}
@@ -383,29 +399,36 @@ const Checkout = () => {
         </button>
   
         {isLoading && <p style={styles.emptyMessage}>Loading addresses...</p>}
-  
-        {showAddresses && !isLoading && addresses.length > 0 && (
-          <div>
-            {addresses.map((address, index) => (
-              <button
-                key={index}
-                style={{
-                  ...styles.addressButton, // Use addressButton style
-                  ...(selectedAddress?.id === address.id ? styles.selectedAddressButton : {}),
-                }}
-                onClick={() => handleAddressSelect(address)} // Select the address
-              >
-                {address.addressLine1}, {address.city}, {address.country}
-                {address.isPrimary && (
-                  <span style={{ color: '#0F5132', fontWeight: 'bold' }}>
-                    {' '}
-                    (Primary Address)
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-        )}
+
+{showAddresses && !isLoading && (
+  <div>
+    {addresses.length === 0 ? (  // Show message if no addresses exist
+      <p>No addresses available.</p>
+    ) : (
+      <div>
+        {addresses.map((address, index) => (
+          <button
+            key={index}
+            style={{
+              ...styles.addressButton, // Use addressButton style
+              ...(selectedAddress?.id === address.id ? styles.selectedAddressButton : {}),
+            }}
+            onClick={() => handleAddressSelect(address)} // Select the address
+          >
+            {address.addressLine1}, {address.city}, {address.country}
+            {address.isPrimary && (
+              <span style={{ color: '#0F5132', fontWeight: 'bold' }}>
+                {' '}
+                (Primary Address)
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
   
         {/* Display the selected address with a label */}
         {selectedAddress && (
