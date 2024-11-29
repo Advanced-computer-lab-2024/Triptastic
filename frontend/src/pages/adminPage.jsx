@@ -347,7 +347,7 @@ const getActivities= async ()=>{
     currentPassword: '',
     newPassword: ''
   });
-  
+
   const [changePasswordLoading, setChangePasswordLoading] = useState(false);
   const [changePasswordSuccess, setChangePasswordSuccess] = useState('');
   const [changePasswordError, setChangePasswordError] = useState('');
@@ -389,38 +389,44 @@ const createAdmin = async (e) => {
   }
 };
 
+const [deleteUserError, setDeleteUserError] = useState('');
+const [deleteUserSuccess, setDeleteUserSuccess] = useState('');
 
-  const handleDeleteUser = async () => {
-    setErrorMessage('');
-    setSuccessMessage('');
+const handleDeleteUser = async () => {
+  setDeleteUserError('');
+  setDeleteUserSuccess('');
 
-    if (!usernameToDelete) {
-      setErrorMessage('Please enter a username to delete.');
-      return;
-    }
+  if (!usernameToDelete) {
+    setDeleteUserError('Please enter a username to delete.');
+    return;
+  }
 
-    try {
-      const response = await fetch(`http://localhost:8000/delete${userType}?Username=${usernameToDelete}`, {
+  try {
+    const response = await fetch(
+      `http://localhost:8000/delete${userType}?Username=${usernameToDelete}`,
+      {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setSuccessMessage(data.msg);
-        setUsernameToDelete('');
-        setUserType('');
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(errorData.error || `Failed to delete ${userType}.`);
       }
-    } catch (error) {
-      setErrorMessage(`An error occurred while deleting the ${userType}.`);
-      console.error(error);
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      setDeleteUserSuccess(data.msg || 'User deleted successfully.');
+      setUsernameToDelete('');
+      setUserType('');
+    } else {
+      const errorData = await response.json();
+      setDeleteUserError(errorData.error || `Failed to delete ${userType}.`);
     }
-  };
+  } catch (error) {
+    setDeleteUserError(`An error occurred while deleting the ${userType}.`);
+    console.error(error);
+  }
+};
+
 
   const toggleModal = (content = null) => {
     setModalOpen((prev) => !prev);
@@ -723,31 +729,41 @@ const unarchiveProduct = async () => {
     }
   };
 
-  const addTourismGov = async (e) => {
-    e.preventDefault();
-    const { Username, Password } = tourismGovData;
+  const [addTourismGovError, setAddTourismGovError] = useState('');
+const [addTourismGovSuccess, setAddTourismGovSuccess] = useState('');
 
-    try {
-      const response = await fetch('http://localhost:8000/addTourismGov', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ Username, Password })
-      });
+const addTourismGov = async (e) => {
+  e.preventDefault();
+  const { Username, Password } = tourismGovData;
 
-      if (response.ok) {
-        alert('Tourism Governor added successfully!');
-        setTourismGovData({ Username: '', Password: '' });
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(errorData.error || 'Failed to add Tourism Governor.');
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while adding the Tourism Governor.');
-      console.error(error);
+  // Clear previous messages
+  setAddTourismGovError('');
+  setAddTourismGovSuccess('');
+
+  try {
+    const response = await fetch('http://localhost:8000/addTourismGov', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ Username, Password }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      setAddTourismGovSuccess('Tourism Governor added successfully!');
+      setTourismGovData({ Username: '', Password: '' });
+    } else {
+      const errorData = await response.json();
+      setAddTourismGovError(errorData.error || 'Failed to add Tourism Governor.');
     }
-  };
+  } catch (error) {
+    setAddTourismGovError('An error occurred while adding the Tourism Governor.');
+    console.error(error);
+  }
+};
+
+  
 
   const handleTourismGovChange = (e) => {
     const { name, value } = e.target;
@@ -1354,6 +1370,10 @@ const unarchiveProduct = async () => {
     color: 'white',
     cursor: 'pointer',
   },
+  deleteButton:{
+    backgroundColor: loading ? '#ccc' : '#dc3545', // Red for delete
+
+  }
   };
  
   const handleChangePassword = async (e) => {
@@ -1682,24 +1702,69 @@ const unarchiveProduct = async () => {
               <option value="TourGuide">Tour Guide</option>
             </select>
           </div>
-
-          {/* Display Success or Error Message */}
-          {successMessage && (
-            <p style={{ color: 'green', textAlign: 'center' }}>
-              {successMessage}
-            </p>
-          )}
-          {errorMessage && (
-            <p style={{ color: 'red', textAlign: 'center' }}>
-              {errorMessage}
-            </p>
-          )}
-
+  {/* Display Success or Error Message */}
+  {deleteUserSuccess && (
+    <p style={{ color: 'green', textAlign: 'center' }}>
+      {deleteUserSuccess}
+    </p>
+  )}
+  {deleteUserError && (
+    <p style={{ color: 'red', textAlign: 'center' }}>
+      {deleteUserError}
+    </p>
+  )}
           {/* Delete User Button */}
           <button type="submit" style={styles.deleteButton}>
             Delete User
           </button>
         </form>
+
+                {/* Add Tourism Governor Form */}
+                <form style={styles.form} onSubmit={addTourismGov}>
+          <h3 style={styles.modalContentH2}>Add Tourism Governor</h3>
+          {/* Username Input */}
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Username:</label>
+            <input
+              type="text"
+              name="Username"
+              value={tourismGovData.Username}
+              onChange={handleTourismGovChange}
+              style={styles.input}
+              required
+            />
+          </div>
+
+          {/* Password Input */}
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Password:</label>
+            <input
+              type="password"
+              name="Password"
+              value={tourismGovData.Password}
+              onChange={handleTourismGovChange}
+              style={styles.input}
+              required
+            />
+          </div>
+
+          {/* Submit Button */}
+          <button type="submit" style={styles.submitButton}>
+            Add Tourism Governor
+          </button>
+
+     {/* Display Success or Error Message */}
+  {addTourismGovSuccess && (
+    <p style={{ color: 'green', textAlign: 'center' }}>
+      {addTourismGovSuccess}
+    </p>
+  )}
+  {addTourismGovError && (
+    <p style={{ color: 'red', textAlign: 'center' }}>
+      {addTourismGovError}
+    </p>
+  )}
+          </form>
       </div>
     </div>
   </div>
@@ -1774,33 +1839,6 @@ const unarchiveProduct = async () => {
 </div>
         <button type="submit">Add Product</button>
       </form>
-
-      <h2>Add Tourism Governor</h2>
-      <form onSubmit={addTourismGov}>
-        <div>
-          <label>Username:</label>
-          <input
-            type="text"
-            name="Username"
-            value={tourismGovData.Username}
-            onChange={handleTourismGovChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            name="Password"
-            value={tourismGovData.Password}
-            onChange={handleTourismGovChange}
-            required
-          />
-        </div>
-        <button type="submit">Add Tourism Governor</button>
-        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      </form>
-    
 
       <h2>Create Category</h2>
       <form onSubmit={createCategory}>
