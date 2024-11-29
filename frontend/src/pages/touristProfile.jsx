@@ -84,6 +84,7 @@ const TouristProfile = () => {
         fetchBookedItineraries();
         fetchBookedActivities(); // Fetch booked itineraries when the component mounts
         sendReminders();
+        sendItineraryReminders();
       }, []); // Empty dependency array means this runs once after the first render
       
       const fetchNotifications = async () => {
@@ -123,6 +124,34 @@ const TouristProfile = () => {
       const handleNotificationClick = () => {
         setShowNotifications((prev) => !prev);
         if (unreadCount > 0) markNotificationsAsRead();
+      };
+      const sendItineraryReminders = async () => {
+        const username = localStorage.getItem('Username');
+        if (!username) {
+          alert('Username not found.');
+          return;
+        }
+      
+        try {
+          const response = await fetch(`http://localhost:8000/sendItineraryReminders?username=${username}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+      
+          if (response.ok) {
+            const data = await response.json();
+            //alert('Reminders sent successfully.');
+            console.log('Notifications:', data.notificationsSent);
+          } else {
+            const errorData = await response.json();
+            alert(errorData.message || 'Error sending reminders.');
+          }
+        } catch (error) {
+          console.error('Error sending reminders:', error);
+          alert('Failed to send reminders.');
+        }
       };
       const sendReminders = async () => {
         const username = localStorage.getItem('Username');
