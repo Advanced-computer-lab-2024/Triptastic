@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import image from '../images/image.png';
-import { FaBell,FaBox } from 'react-icons/fa'; // Importing bell icon
+import { FaUserCircle, FaBell, FaBox, FaLandmark, FaUniversity, FaMap, FaRunning, FaPlane, FaHotel, FaClipboardList, FaStar, FaBus } from 'react-icons/fa';
 import { MdNotificationImportant } from 'react-icons/md';
 
 
@@ -24,6 +24,8 @@ const SellerProfile = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [productNameToArchive, setProductNameToArchive] = useState(''); // New state variable
   const [logo, setLogo] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalLogoPreview, setModalLogoPreview] = useState(null);
   const [notifications, setNotifications] = useState([]); // Initialize as an empty array
   const [showNotifications, setShowNotifications] = useState(false); // Toggle notification dropdown
   const [productFormData, setProductFormData] = useState({
@@ -60,14 +62,15 @@ const SellerProfile = () => {
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const logoURL = URL.createObjectURL(file);
-      setLogo(logoURL); // Display the selected logo immediately
+      const logoPreviewURL = URL.createObjectURL(file);
+      setModalLogoPreview(logoPreviewURL); // Update the modal-specific preview
       setFormData((prevData) => ({
         ...prevData,
         Logo: file, // Store the file for uploading
       }));
     }
   };
+  
   const addNotification = (message) => {
     setNotifications((prevNotifications) => [
       ...prevNotifications,
@@ -262,6 +265,10 @@ const handleUpdate = async () => {
     }));
   };
 
+  const toggleModal = () => {
+    setModalOpen((prev) => !prev);
+  };
+  
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -489,269 +496,102 @@ const unarchiveProduct = async () => {
   const handleCurrentPasswordChange = (e) => setCurrentPassword(e.target.value);
   const handleNewPasswordChange = (e) => setNewPassword(e.target.value);
   return (
-    
-        <div className="seller-profile-container">
-     
-      <div className="profile-content">
-        <h2>Seller Profile</h2>
-        <div>
-        <div className="sidebar">
-          
-        <header style={{ display: 'flex',  padding: '5px', backgroundColor: '#f4f4f4' }}>
-  <img 
-    src={image} 
-    alt="Logo" 
-    style={{ 
-      height: '70px', 
-      width: '70px', 
-      borderRadius: '10px', 
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)', 
-      objectFit: 'cover',
-      marginRight:'10px'
-      
-    }}
-  />
-</header>
-        <h3>Explore</h3>
-        <ul>
-          <li onClick={() => navigate('/products')}><FaBox/>Products</li>
-        </ul>
-        <div style={{ position: 'relative', textAlign: 'right', padding: '10px' }}>
-
-       {/* Notification Bell Icon */}
-       <FaBell
-        size={24}
-        style={{ cursor: 'pointer', color: '#333' }}
-        onClick={handleNotificationClick}
-      />
-
-      {/* Notification Count */}
-      {notifications && notifications.length > 0 && (
-        <span
-          style={{
-            position: 'absolute',
-            top: -5,
-            right: -5,
-            backgroundColor: '#ff4d4d',
-            color: 'white',
-            borderRadius: '50%',
-            width: '20px',
-            height: '20px',
-            fontSize: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
-          }}
-        >
-          {notifications.length}
-        </span>
-      )}
-
+    <div style={styles.container}>
+      {/* Header */}
+      <header style={styles.header}>
+        <div style={styles.logoContainer}>
+          <img src={image} alt="Logo" style={styles.logo} />
+        </div>
+        <h1 style={styles.title}>Seller Profile</h1>
+  
+        {/* Products Icon */}
+        <FaBox
+          size={22}
+          style={{ cursor: 'pointer', color: 'white', marginRight: '-530px' }}
+          onClick={() => navigate('/products')} // Navigate to Products page
+        />
+  
+        {/* Notification Bell */}
+        <FaBell
+          size={22}
+          style={{ cursor: 'pointer', color: 'white', marginRight: '-530px' }}
+          onClick={handleNotificationClick}
+        />
+  
+        {/* Profile Icon */}
+        <FaUserCircle
+          style={styles.profileIcon}
+          title="Edit Profile"
+          onClick={toggleModal} // Open modal on click
+        />
+      </header>
+  
       {/* Notifications Dropdown */}
       {showNotifications && (
-        <div
-        
+        <div style={styles.notificationsDropdown}>
+          <div style={styles.notificationsHeader}>Notifications</div>
+          <ul style={styles.notificationsList}>
+            {notifications.length > 0 ? (
+              notifications.map((notification) => (
+                <li key={notification.id} style={styles.notificationItem}>
+                  <MdNotificationImportant style={styles.notificationIcon} />
+                  <div style={styles.notificationContent}>
+                    <p>{notification.message}</p>
+                    <small>
+                      {new Date(notification.createdAt).toLocaleString()}
+                    </small>
+                  </div>
+                </li>
+              ))
+            ) : (
+              <div style={styles.noNotifications}>No new notifications</div>
+            )}
+          </ul>
+        </div>
+      )}
+       {/* Change Password Section */}
+       <h2 style={styles.sectionTitle}>Change Password</h2>
+      {passwordMessage && (
+        <p
           style={{
-            position: 'absolute',
-            top: '40px',
-            right: '0px',
-            backgroundColor: 'white',
-            border: '1px solid #ddd',
-            borderRadius: '8px',
-            boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
-            width: '320px',
-            maxHeight: '400px',
-            overflowY: 'auto', // Enable vertical scrolling
-            overflowX: 'hidden',
-            zIndex: 1000,
+            color: passwordMessage.includes('successfully') ? 'green' : 'red',
           }}
         >
-          <div style={{ padding: '10px', fontWeight: 'bold', borderBottom: '1px solid #f0f0f0' }}>
-            Notifications
-          </div>
-          <ul style={{ listStyle: 'none', padding: '0', margin: '0',  flexDirection: 'column', // Stack items vertically
-    gap: '10px' }}>
-            {notifications && notifications.map((notification) => (
-              <li
-                key={notification.id}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row', // Align icon and text horizontally
-                  alignItems: 'flex-start', // Align icon with the top of the text
-                  backgroundColor: '#f9f9f9', // Light background for each item
-                  border: '1px solid #ddd', // Add subtle border
-                  borderRadius: '5px', // Rounded corners
-                  padding: '10px', // Add padding inside each item
-                  borderBottom: '1px solid #f0f0f0',
-                  padding: '10px',
-                  fontSize: '14px',
-                }}
-              >
-                <MdNotificationImportant
-                  size={20}
-                  style={{ marginRight: '10px', color: '#ff9800' }}
-                />
-                <div style={{ flex: 1 }}>
-                  <p style={{ margin: 0, fontWeight: '500' }}>{notification.message}</p>
-                  <p style={{ margin: '5px 0 0', fontSize: '12px', color: '#888' }}>
-                    {new Date(notification.createdAt).toLocaleDateString('en-US', {
-                      month: 'long',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })}{' '}
-                    at{' '}
-                    {new Date(notification.createdAt).toLocaleTimeString('en-US', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-          {!notifications || notifications.length === 0 ? (
-            <div
-              style={{
-                padding: '20px',
-                textAlign: 'center',
-                color: '#888',
-                fontSize: '14px',
-              }}
-            >
-              No new notifications
-            </div>
-          ) : null}
-        </div>
+          {passwordMessage}
+        </p>
       )}
-    </div>
+      <div style={styles.formGroup}>
+        <label style={styles.label}>Current Password</label>
+        <input
+          type="password"
+          value={currentPassword}
+          onChange={handleCurrentPasswordChange}
+          style={styles.input}
+        />
       </div>
-  <h3>Change Password</h3>
-  {passwordMessage && <p style={{ color: passwordMessage.includes('successfully') ? 'green' : 'red' }}>{passwordMessage}</p>}
-  <div>
-    <label>Current Password:</label>
-    <input
-      type="password"
-      value={currentPassword}
-      onChange={handleCurrentPasswordChange}
-    />
-  </div>
-  <div>
-    <label>New Password:</label>
-    <input
-      type="password"
-      value={newPassword}
-      onChange={handleNewPasswordChange}
-    />
-  </div>
-  <button onClick={handlePasswordChange} disabled={changingPassword}>
-    {changingPassword ? 'Changing Password...' : 'Change Password'}
-  </button>
-</div>
-
-        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-        {loading ? (
-          <p>Loading seller information...</p>
-        ) : (
-          sellerInfo && (
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-              {logo && <img src={`http://localhost:8000/${logo.replace(/\\/g, '/')}`} alt="Logo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
-                <label><strong>Username:</strong></label>
-                <p> {sellerInfo.Username}</p> {/* Display Username with logo */}
-              </div>
-              <div>
-                <label><strong>Email:</strong></label>
-                <input
-                  type="email"
-                  name="Email"
-                  value={formData.Email}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div>
-                <label><strong>Password:</strong></label>
-                <input
-                  type="password" // Visible password
-                  name="Password"
-                  value={formData.Password}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div>
-                <label><strong>Name:</strong></label>
-                <input
-                  type="text"
-                  name="Name"
-                  value={formData.Name}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div>
-                <label><strong>Description:</strong></label>
-                <input
-                  type="text"
-                  name="Description"
-                  value={formData.Description}
-                  onChange={handleInputChange}
-                />
-              </div>
-
-              {/* New Logo Upload Section */}
-              <div>
-                <label><strong>Upload Logo:</strong></label>
-                <input
-                  type="file"
-                  accept="image/*" // This allows any image type
-                  onChange={handleLogoChange}
-                />
-              </div>
-
-              <button onClick={handleUpdate} disabled={updating}>
-                {updating ? 'Updating...' : 'Update Information'}
-              </button>
-            </div>
-          )
-        )}
-        <button onClick={fetchSellerInfo}>Refresh Profile</button>
-
-        {/* Button to Show Add Product Form */}
-{!addingProduct && (
-  <button onClick={() => setAddingProduct(true)}>Add Product</button>
-)}
-
-<h2>Search Product by Name</h2>
-      <form onSubmit={getProductByName}>
-        <div>
-          <label>Product Name:</label>
-          <input
-            type="text"
-            value={productNameToSearch}
-            onChange={(e) => setProductNameToSearch(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading}>Search Product</button>
-      </form>
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-      {productSearchResult && (
-        <div>
-          <h3>Product Details</h3>
-          <p>Name: {productSearchResult.productName}</p>
-          <p>Description: {productSearchResult.description}</p>
-          <p>Price: {productSearchResult.price}</p>
-          <p>Rating: {productSearchResult.rating}</p>
-          <p>Seller: {productSearchResult.seller}</p>
-          <p>Archived: {productSearchResult.archived !== undefined ? productSearchResult.archived.toString() : 'N/A'}</p>
-          <button onClick={archiveProduct} disabled={loading}>Archive Product</button>
-          <button onClick={unarchiveProduct} disabled={loading || !productSearchResult.archived}>Unarchive Product</button>
-
-          {/* Add more product details as needed */}
-        </div>
+      <div style={styles.formGroup}>
+        <label style={styles.label}>New Password</label>
+        <input
+          type="password"
+          value={newPassword}
+          onChange={handleNewPasswordChange}
+          style={styles.input}
+        />
+      </div>
+      <button
+        onClick={handlePasswordChange}
+        disabled={changingPassword}
+        style={styles.buttonPrimary}
+      >
+        {changingPassword ? 'Changing Password...' : 'Change Password'}
+      </button>
+      {/* Add Product Button */}
+      {!addingProduct && (
+        <button style={styles.buttonPrimary} onClick={() => setAddingProduct(true)}>
+          Add Product
+        </button>
       )}
-
-{/* Product Form */}
+     {/* Product Form */}
 {addingProduct && (
   <form onSubmit={handleProductSubmit}>
     <h3>Add Product</h3>
@@ -785,7 +625,7 @@ const unarchiveProduct = async () => {
         required
       />
     </div>
-    <div>
+    {/* <div>
       <label><strong>Rating:</strong></label>
       <input
         type="number"
@@ -794,7 +634,7 @@ const unarchiveProduct = async () => {
         onChange={handleProductInputChange}
         required
       />
-    </div>
+    </div> */}
     <div>
       <label><strong>Stock:</strong></label>
       <input
@@ -825,10 +665,243 @@ const unarchiveProduct = async () => {
         <button onClick={handleDeleteRequest} disabled={waiting}>
           Request Account Deletion
         </button>
-      </div>
+      {/* Search Product Section */}
+      <h2 style={styles.sectionTitle}>Search Product by Name</h2>
+      <form onSubmit={getProductByName} style={styles.form}>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Product Name</label>
+          <input
+            type="text"
+            value={productNameToSearch}
+            onChange={(e) => setProductNameToSearch(e.target.value)}
+            style={styles.input}
+            required
+          />
+        </div>
+        <button type="submit" style={styles.buttonPrimary} disabled={loading}>
+          Search Product
+        </button>
+      </form>
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+      {productSearchResult && (
+        <div style={styles.productDetails}>
+          <h3>Product Details</h3>
+          <p>
+            <strong>Name:</strong> {productSearchResult.productName}
+          </p>
+          <p>
+            <strong>Description:</strong> {productSearchResult.description}
+          </p>
+          <p>
+            <strong>Price:</strong> {productSearchResult.price}
+          </p>
+          <p>
+            <strong>Rating:</strong> {productSearchResult.rating}
+          </p>
+          <p>
+            <strong>Archived:</strong>{' '}
+            {productSearchResult.archived ? 'Yes' : 'No'}
+          </p>
+          
+        </div>
+        
+      )}
+      
+      {/* Modal for Editing Profile */}
+      {modalOpen && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modal}>
+            <h2 style={styles.modalTitle}>Edit Profile</h2>
+            <div style={styles.modalLogoContainer}>
+              {modalLogoPreview ? (
+                <img
+                  src={modalLogoPreview}
+                  alt="Logo Preview"
+                  style={styles.modalLogo}
+                />
+              ) : (
+                <p style={styles.noLogoText}>No logo uploaded</p>
+              )}
+            </div>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Email</label>
+              <input
+                type="email"
+                name="Email"
+                value={formData.Email}
+                onChange={handleInputChange}
+                style={styles.input}
+              />
+            </div>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Name</label>
+              <input
+                type="text"
+                name="Name"
+                value={formData.Name}
+                onChange={handleInputChange}
+                style={styles.input}
+              />
+            </div>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Description</label>
+              <textarea
+                name="Description"
+                value={formData.Description}
+                onChange={handleInputChange}
+                style={styles.textarea}
+              />
+            </div>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Upload Logo</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleLogoChange}
+                style={styles.input}
+              />
+            </div>
+            <div style={styles.modalActions}>
+              <button style={styles.buttonPrimary} onClick={handleUpdate}>
+                Save Changes
+              </button>
+              <button style={styles.buttonSecondary} onClick={toggleModal}>
+                Cancel
+              </button>
+              <button style={styles.buttonSecondary} onClick={fetchSellerInfo}>
+                Refresh Profile
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
   
+  
+  
 };
+
+const styles = {
+  container: {
+    margin: '90px auto',
+    maxWidth: '1000px',
+    padding: '20px',
+    backgroundColor: '#f9f9f9',
+    borderRadius: '10px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  },
+  header: {
+    position: 'fixed',
+    height: '60px',
+    top: 0,
+    left: 0,
+    width: '100%',
+    backgroundColor: '#0F5132',
+    color: 'white',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '10px 20px',
+    zIndex: 1000,
+  },
+  logoContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  logo: {
+    height: '60px',
+    width: '70px',
+    borderRadius: '10px',
+  },
+  title: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+  },
+  profileIcon: {
+    fontSize: '30px',
+    color: 'white',
+    cursor: 'pointer',
+  },
+  modalOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1100,
+  },
+  modal: {
+    backgroundColor: 'white',
+    padding: '20px',
+    borderRadius: '10px',
+    width: '400px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  },
+  modalTitle: {
+    fontSize: '20px',
+    marginBottom: '10px',
+    color: '#333',
+  },
+  modalLogoContainer: {
+    textAlign: 'center',
+    marginBottom: '20px',
+  },
+  modalLogo: {
+    width: '80px',
+    height: '80px',
+    borderRadius: '50%',
+  },
+  formGroup: {
+    marginBottom: '15px',
+  },
+  label: {
+    display: 'block',
+    marginBottom: '5px',
+    fontWeight: 'bold',
+    color: '#555',
+  },
+  input: {
+    width: '100%',
+    padding: '8px',
+    borderRadius: '5px',
+    border: '1px solid #ddd',
+  },
+  textarea: {
+    width: '100%',
+    padding: '8px',
+    borderRadius: '5px',
+    border: '1px solid #ddd',
+    resize: 'none',
+  },
+  modalActions: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginTop: '15px',
+  },
+  buttonPrimary: {
+    backgroundColor: '#0F5132',
+    color: 'white',
+    padding: '10px 20px',
+    borderRadius: '5px',
+    border: 'none',
+    cursor: 'pointer',
+  },
+  buttonSecondary: {
+    backgroundColor: '#ccc',
+    color: 'black',
+    padding: '10px 20px',
+    borderRadius: '5px',
+    border: 'none',
+    cursor: 'pointer',
+  },
+};
+
+
 
 export default SellerProfile;
