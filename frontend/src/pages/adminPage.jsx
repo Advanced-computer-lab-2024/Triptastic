@@ -1,8 +1,12 @@
 import React, { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaBell,FaPlus,FaChartBar  } from 'react-icons/fa'; // Importing bell icon
+import { FaBell,FaPlus,FaChartBar,FaBox  } from 'react-icons/fa'; // Importing bell icon
 import { FaUserCircle} from 'react-icons/fa';
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
+import LockResetIcon from '@mui/icons-material/LockReset';
+
 
 const AdminPage = () => {
   const [formData, setFormData] = useState({
@@ -41,9 +45,9 @@ const AdminPage = () => {
   const [statsLoading, setStatsLoading] = useState(false);
   const [statsError, setStatsError] = useState("");
   const [showStats, setShowStats] = useState(false); // State to toggle visibility
-    const [notifications, setNotifications] = useState([]); // Initialize as an empty array
+  const [notifications, setNotifications] = useState([]); // Initialize as an empty array
   
-  
+
 
   const [complaintIdToSearch, setComplaintIdToSearch] = useState('');
   const [complaintDetails, setComplaintDetails] = useState(null);
@@ -55,8 +59,16 @@ const AdminPage = () => {
   const [updateStatusError, setUpdateStatusError] = useState('');
   const [updateStatusLoading, setUpdateStatusLoading] = useState(false);
   
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState(null); 
+
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [passwordMessage, setPasswordMessage] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
+
   
- 
+
   const [productFormData, setProductFormData] = useState({
     productName: '',
     description: '',
@@ -330,35 +342,53 @@ const getActivities= async ()=>{
     console.error(error);
   }
 }
-  const createAdmin = async (e) => {
-    e.preventDefault();
-    const { Username, Password ,Email} = formData;
-    setLoading(true);
-    setErrorMessage('');
+  const [changePasswordData, setChangePasswordData] = useState({
+    Username: '',
+    currentPassword: '',
+    newPassword: ''
+  });
+  
+  const [changePasswordLoading, setChangePasswordLoading] = useState(false);
+  const [changePasswordSuccess, setChangePasswordSuccess] = useState('');
+  const [changePasswordError, setChangePasswordError] = useState('');
 
-    try {
-      const response = await fetch('http://localhost:8000/createAdmin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ Username, Password ,Email})
-      });
 
-      if (response.ok) {
-        alert('Admin created successfully!');
-        setFormData({ Username: '', Password: '' ,Email:''});
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(errorData.error || 'Failed to create admin.');
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while creating admin.');
-      console.error(error);
-    } finally {
-      setLoading(false);
+const [createAdminSuccess, setCreateAdminSuccess] = useState('');
+const [createAdminError, setCreateAdminError] = useState('');
+
+const createAdmin = async (e) => {
+  e.preventDefault(); // Prevent the default form submission
+  const { Username, Password, Email } = formData;
+
+  setLoading(true);
+  setCreateAdminSuccess(''); // Clear previous success message
+  setCreateAdminError(''); // Clear previous error message
+
+  try {
+    const response = await fetch('http://localhost:8000/createAdmin', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ Username, Password, Email }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      setCreateAdminSuccess(`Admin "${data.Username}" created successfully!`);
+      setFormData({ Username: '', Password: '', Email: '' }); // Reset the form
+    } else {
+      const errorData = await response.json();
+      setCreateAdminError(errorData.error || 'Failed to create admin.');
     }
-  };
+  } catch (error) {
+    setCreateAdminError('An error occurred while creating the admin.');
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleDeleteUser = async () => {
     setErrorMessage('');
@@ -392,6 +422,18 @@ const getActivities= async ()=>{
     }
   };
 
+  const toggleModal = (content = null) => {
+    setModalOpen((prev) => !prev);
+    setModalContent(content);
+  
+    // Reset the messages when the modal is closed
+    if (!modalOpen) {
+      setCreateAdminSuccess('');
+      setCreateAdminError('');
+    }
+  };
+  
+  
   const handleProductInputChange = (e) => {
     const { name, value } = e.target;
     setProductFormData((prevData) => ({
@@ -1221,10 +1263,135 @@ const unarchiveProduct = async () => {
     margin: 0,
     color: "#0F5132", // Green theme for text
   },
-
+  openModalButton: {
+    margin: '10px',
+    padding: '10px 20px',
+    backgroundColor: '#0F5132',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+  modalOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
+    background: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  modalContent: {
+    background: '#fff',
+    padding: '20px',
+    borderRadius: '10px',
+    width: '50%',
+    maxWidth: '600px',
+    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+    position: 'relative',
+    maxHeight: '80vh', // Limit modal height
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden', // Ensure no overflow outside modal container
+  },
+  modalBody: {
+    flex: 1,
+    overflowY: 'auto', // Make modal scrollable
+    paddingRight: '10px', // Add space for scroll bar
+  },
+  cancelIcon: {
+    position: 'absolute',
+    top: '10px',
+    right: '10px',
+    fontSize: '24px',
+    color: '#dc3545',
+    cursor: 'pointer',
+  },
+ 
+  modalContentH2: {
+    fontSize: '24px',
+    textAlign: 'center',
+    color: '#333',
+    marginBottom: '15px',
+  },
+  formGroup: {
+    marginBottom: '15px',
+  },
+  label: {
+    display: 'block',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    marginBottom: '5px',
+  },
+  input: {
+    width: '100%',
+    padding: '10px',
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+    fontSize: '14px',
+  },
+  submitButton: {
+    width: '100%',
+    padding: '10px',
+    fontSize: '16px',
+    backgroundColor: '#0F5132',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+  iconContainer: {
+    display: 'flex', // Enable flexbox
+    alignItems: 'center', // Vertically align items
+    justifyContent: 'space-between', // Even spacing between icons
+    gap: '20px', // Space between each icon
+  },
+  profileIcon: {
+    fontSize: '30px',
+    color: 'white',
+    cursor: 'pointer',
+  },
   };
  
-
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setChangePasswordLoading(true);
+    setChangePasswordSuccess('');
+    setChangePasswordError('');
+  
+    try {
+      const response = await fetch('http://localhost:8000/changePasswordAdmin', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(changePasswordData),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        setChangePasswordSuccess(data.message);
+        setChangePasswordData({
+          Username: '',
+          Email: '', // Reset Email field after successful change
+          currentPassword: '',
+          newPassword: '',
+        });
+      } else {
+        const errorData = await response.json();
+        setChangePasswordError(errorData.error || 'Failed to change password.');
+      }
+    } catch (error) {
+      setChangePasswordError('An error occurred while changing the password.');
+      console.error(error);
+    } finally {
+      setChangePasswordLoading(false);
+    }
+  };
+  
   return (
   <div>
     <h1>Admin Page</h1>
@@ -1239,15 +1406,31 @@ const unarchiveProduct = async () => {
       style={styles.notificationButton}
       onClick={handleNotificationClick}
     >
-
     </div>
+    <div style={styles.iconContainer}>
+  {/* Products Icon */}
+  <FaBox
+    size={22}
+    style={styles.profileIcon}
+    onClick={() => navigate('/products')} // Navigate to Products page
+  />
 
-    {/* Profile Icon */}
-    <FaUserCircle
-      alt="Profile Icon"
-      style={styles.profileIcon}
-      onClick={() => navigate('/adminsettings')}
-    />
+  {/* Edit Profile Icon */}
+  <ManageAccountsIcon
+    style={styles.profileIcon}
+    title="Edit Profile"
+    onClick={toggleModal} // Open modal on click
+  />
+
+  {/* Admin Settings Icon */}
+  <FaUserCircle
+    alt="Profile Icon"
+    style={styles.profileIcon}
+    onClick={() => navigate('/adminsettings')}
+  />
+</div>
+
+    
   </div>
 </header>
       <div className="sidebar">
@@ -1256,7 +1439,7 @@ const unarchiveProduct = async () => {
         <li onClick={() => navigate('/Complaints')}>Complaints</li>
         <li onClick={() => navigate('/preftags')}>Preference Tags</li>
         <li onClick={() => navigate('/docs')}>Docs</li>
-        <li onClick={() => navigate('/products')}>Products</li>
+  
       
         
         <div style={{ position: 'relative', textAlign: 'right', padding: '10px' }}>
@@ -1375,6 +1558,153 @@ const unarchiveProduct = async () => {
 ) : (
   <p style={styles.loadingText}>Fetching statistics...</p>
 )}
+
+
+  
+{/* Modal for Admin Settings */}
+{modalOpen && (
+  <div style={styles.modalOverlay}>
+    <div style={styles.modalContent}>
+      <h2 style={styles.modalContentH2}>Admin Settings</h2>
+      <HighlightOffOutlinedIcon
+        onClick={toggleModal}
+        style={styles.cancelIcon} // Apply cancel icon style
+      />
+
+      <div style={styles.modalBody}>
+        {/* Create Admin Form */}
+        <form style={styles.form} onSubmit={createAdmin}>
+          <h3 style={styles.modalContentH2}>Create Admin</h3>
+          {/* Username Input */}
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Username:</label>
+            <input
+              type="text"
+              name="Username"
+              value={formData.Username}
+              onChange={(e) =>
+                setFormData((prevData) => ({
+                  ...prevData,
+                  Username: e.target.value,
+                }))
+              }
+              style={styles.input}
+              required
+            />
+          </div>
+
+          {/* Email Input */}
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Email:</label>
+            <input
+              type="email"
+              name="Email"
+              value={formData.Email}
+              onChange={(e) =>
+                setFormData((prevData) => ({
+                  ...prevData,
+                  Email: e.target.value,
+                }))
+              }
+              style={styles.input}
+              required
+            />
+          </div>
+
+          {/* Password Input */}
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Password:</label>
+            <input
+              type="password"
+              name="Password"
+              value={formData.Password}
+              onChange={(e) =>
+                setFormData((prevData) => ({
+                  ...prevData,
+                  Password: e.target.value,
+                }))
+              }
+              style={styles.input}
+              required
+            />
+          </div>
+
+          {/* Display Success or Error Message */}
+          {createAdminSuccess && (
+            <p style={{ color: 'green', textAlign: 'center' }}>
+              {createAdminSuccess}
+            </p>
+          )}
+          {createAdminError && (
+            <p style={{ color: 'red', textAlign: 'center' }}>
+              {createAdminError}
+            </p>
+          )}
+
+          {/* Create Admin Button */}
+          <button type="submit" style={styles.submitButton}>
+            Create Admin
+          </button>
+        </form>
+
+        <hr style={{ margin: '20px 0' }} />
+
+        {/* Delete User Form */}
+        <form style={styles.form} onSubmit={(e) => { e.preventDefault(); handleDeleteUser(); }}>
+          <h3 style={styles.modalContentH2}>Delete User</h3>
+          {/* Username Input */}
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Username to Delete:</label>
+            <input
+              type="text"
+              value={usernameToDelete}
+              onChange={(e) => setUsernameToDelete(e.target.value)}
+              style={styles.input}
+              required
+            />
+          </div>
+
+          {/* User Type Dropdown */}
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Select User Type:</label>
+            <select
+              value={userType}
+              onChange={(e) => setUserType(e.target.value)}
+              style={styles.input}
+              required
+            >
+              <option value="">Select Type</option>
+              <option value="Admin">Admin</option>
+              <option value="TourismGov">Tourism Governor</option>
+              <option value="Tourist">Tourist</option>
+              <option value="Advertiser">Advertiser</option>
+              <option value="Seller">Seller</option>
+              <option value="TourGuide">Tour Guide</option>
+            </select>
+          </div>
+
+          {/* Display Success or Error Message */}
+          {successMessage && (
+            <p style={{ color: 'green', textAlign: 'center' }}>
+              {successMessage}
+            </p>
+          )}
+          {errorMessage && (
+            <p style={{ color: 'red', textAlign: 'center' }}>
+              {errorMessage}
+            </p>
+          )}
+
+          {/* Delete User Button */}
+          <button type="submit" style={styles.deleteButton}>
+            Delete User
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+)}
+
 
 
       <h2>Add Product</h2>
