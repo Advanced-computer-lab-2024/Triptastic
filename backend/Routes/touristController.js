@@ -2592,9 +2592,70 @@ const createOrder = async (req, res) => {
   }
 };
 
-module.exports = { createOrder };
+const payWithWallet = async (req, res) => {
+  const { username, amount } = req.body;
 
+  if (!username || !amount ) {
+    return res.status(400).json({ message: 'Invalid request. Please provide all required fields.' });
+  }
 
+  try {
+    // Find the tourist based on the username
+    const tourist = await touristModel.findOne({ Username: username });
+    
+    if (!tourist) {
+      return res.status(404).json({ message: 'Tourist not found.' });
+    }
+
+    // Check if the tourist has enough balance in their wallet
+    if (tourist.Wallet < amount) {
+      return res.status(400).json({ message: 'Insufficient funds in wallet.' });
+    }
+
+    // Deduct the amount from the wallet balance
+    tourist.Wallet -= amount;
+
+    // Add the booking to the tourist's bookings
+
+    // Save the changes to the tourist's profile
+    await tourist.save();
+
+    return res.status(200).json({ message: 'Payment successful', tourist });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'An error occurred during payment processing.' });
+  }
+};
+const sendConfirmationEmail = async (req,res) => {
+  const {email,amount}=req.body;
+  // Create a transport object using SMTP or another email service like SendGrid
+  const transporter = nodemailer.createTransport({
+    service: 'gmail', // You can use Gmail or another service
+    auth: {
+      user: 'malook25062003@gmail.com', // Your email here
+      pass: 'sxvo feuu woie gpfn', // Your email password or App password for Gmail
+    },
+  });
+
+  const mailOptions = {
+    from: 'malook25062003@gmail.com',
+    to: email,
+    subject: 'Payment Confirmation',
+    text: `Dear Customer,
+
+Thank you for your purchase. We have successfully processed a payment of $${(amount / 100).toFixed(2)}.
+
+Best regards,
+Triptastic`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Payment confirmation email sent');
+  } catch (error) {
+    console.error('Error sending email:', error);
+  }
+};
 
 
 
@@ -2608,4 +2669,4 @@ module.exports = { createOrder };
   ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
   shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,addToCartAndRemoveFromWishlist,
   getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,
-  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist,removeProductFromCart,requestNotification,addAddress,getAddresses};
+  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist,removeProductFromCart,requestNotification,addAddress,getAddresses,createOrder,payWithWallet,sendConfirmationEmail};

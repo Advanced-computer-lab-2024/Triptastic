@@ -1,20 +1,25 @@
-import React, { useState ,useEffect} from 'react';
-
-import { useLocation,useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import axios from 'axios';
-import { FaLock, FaDollarSign, FaCreditCard } from 'react-icons/fa';
+import { FaLock, FaDollarSign, FaCreditCard, FaWallet } from 'react-icons/fa';
+
 const PaymentPage = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const amount = parseInt(queryParams.get('amount'), 10); // Amount in cents
   console.log(amount); // Debugging step to ensure amount is being sent correctly
   const Username = localStorage.getItem('Username');
+  const userEmail=localStorage.getItem('Email')
+  console.log(Username);
+  console.log(userEmail);
+
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState('credit_card'); // Default to credit card
   const stripe = useStripe();
   const elements = useElements();
-  const navigate = useNavigate(); 
-
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Save the previous page (from) in localStorage
@@ -25,43 +30,71 @@ const PaymentPage = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setError(null); // Reset error
     if (!stripe || !elements) return; // Stripe.js not loaded yet
-
+  
     setLoading(true);
-
+  
     try {
-      // 1. Call the backend to create a payment intent
-      const { data } = await axios.post(`http://localhost:8000/create-payment-intent?amount=${amount}`);
-
-      console.log(data);
-
-      // 2. Confirm the payment using Stripe.js
-      const { clientSecret } = data;
-      const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: elements.getElement(CardElement),
-          billing_details: {
-            name:Username, // Dynamically update based on logged-in user
+      let paymentSuccess = false;
+  
+      if (paymentMethod === 'credit_card') {
+        // 1. Call the backend to create a payment intent for Stripe
+        const { data } = await axios.post(`http://localhost:8000/create-payment-intent?amount=${amount}&payment_method=${paymentMethod}`);
+        const { clientSecret } = data;
+  
+        // 2. Confirm the payment using Stripe.js
+        const result = await stripe.confirmCardPayment(clientSecret, {
+          payment_method: {
+            card: elements.getElement(CardElement),
+            billing_details: {
+              name: Username, // Dynamically update based on logged-in user
+              email: userEmail, // Including user's email in the billing details
+            },
           },
-        },
-      });
+        });
+  
+        if (result.error) {
+          setError(`Payment failed: ${result.error.message}`);
+        } else if (result.paymentIntent.status === 'succeeded') {
+          paymentSuccess = true;
+        }
+      } else if (paymentMethod === 'wallet') {
+        const { data } = await axios.patch('http://localhost:8000/payWithWallet', {
+          username: Username,
+          amount: amount,
+        });
+        console.log(data);
+  
+        if (data) {
+          paymentSuccess = true;
+        } else {
+          setError('Wallet payment failed. Please try again.');
+        }
+      }
+  
+      if (paymentSuccess) {
+        // Trigger email sending after payment success
+        alert('Payment succeeded using wallet! Thank you for your purchase.');
 
-      if (result.error) {
-        alert(`Payment failed: ${result.error.message}`);
-      } else if (result.paymentIntent.status === 'succeeded') {
-        alert('Payment succeeded! Thank you for your purchase.');
-    // Retrieve the previous page from localStorage
-    const previousPage = localStorage.getItem('previousPage');
-    console.log('Redirecting to previous page:', previousPage); // Debugging log
-    navigate(previousPage || '/'); // Redirect to the previous page or default to '/'
+        const previousPage = localStorage.getItem('previousPage');
+        navigate(previousPage || '/');
+        const response = await axios.post('http://localhost:8000/sendPaymentEmail', {
+          email: userEmail,
+          amount: amount,
+        });
+
+  
+
       }
     } catch (error) {
       console.error(error);
-      alert('An error occurred during the payment process.');
+      setError('An error occurred during the payment process.');
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div style={styles.container}>
@@ -73,9 +106,7 @@ const PaymentPage = () => {
       </div>
 
       {/* Progress Indicator */}
-      <div style={styles.progress}>
-        Step 2 of 2: Payment
-      </div>
+      <div style={styles.progress}>Step 2 of 2: Payment</div>
 
       {/* Payment Summary */}
       <div style={styles.summary}>
@@ -93,39 +124,53 @@ const PaymentPage = () => {
         </p>
       </div>
 
+      {/* Payment Method Selector */}
+      <div style={styles.paymentMethodSelector}>
+        <button
+          onClick={() => setPaymentMethod('credit_card')}
+          style={paymentMethod === 'credit_card' ? styles.selectedButton : styles.button}
+        >
+          <FaCreditCard /> Credit Card
+        </button>
+        <button
+          onClick={() => setPaymentMethod('wallet')}
+          style={paymentMethod === 'wallet' ? styles.selectedButton : styles.button}
+        >
+          <FaWallet /> Wallet
+        </button>
+      </div>
+
       {/* Payment Form */}
       <div style={styles.card}>
         <h1 style={styles.title}>
-          <FaCreditCard style={styles.icon} /> Enter Your Card Details
+          {paymentMethod === 'credit_card' ? (
+            <FaCreditCard style={styles.icon} />
+          ) : (
+            <FaWallet style={styles.icon} />
+          )}
+          {paymentMethod === 'credit_card' ? 'Enter Your Card Details' : 'Proceed with Wallet'}
         </h1>
         <form onSubmit={handleSubmit} style={styles.form}>
-          <div style={styles.cardElementContainer}>
-            <CardElement options={cardStyle} />
-          </div>
+          {paymentMethod === 'credit_card' && (
+            <div style={styles.cardElementContainer}>
+              <CardElement options={cardStyle} />
+            </div>
+          )}
           <button
             type="submit"
-            disabled={loading || !stripe}
+            disabled={loading || (!stripe && paymentMethod === 'credit_card')}
             style={{
               ...styles.button,
-              backgroundColor: loading || !stripe ? '#ccc' : '#0F5132',
-            }}
-            onMouseEnter={(e) => {
-              if (!loading && stripe) {
-                e.target.style.transform = 'scale(1.05)';
-                e.target.style.backgroundColor = '#0F5132';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!loading && stripe) {
-                e.target.style.transform = 'scale(1)';
-                e.target.style.backgroundColor = '#0F5132';
-              }
+              backgroundColor: loading || (!stripe && paymentMethod === 'credit_card') ? '#ccc' : '#0F5132',
             }}
           >
             {loading ? 'Processing...' : `Pay $${(amount / 100).toFixed(2)}`}
           </button>
         </form>
       </div>
+
+      {/* Error Message */}
+      {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
     </div>
   );
 };
@@ -232,23 +277,32 @@ const styles = {
     color: '#fff',
     border: 'none',
     cursor: 'pointer',
-    textAlign: 'center',
-    transition: 'background-color 0.3s ease, transform 0.2s ease',
+    transition: 'background-color 0.3s',
+    marginTop: '20px',
+  },
+  selectedButton: {
+    backgroundColor: '#0F5132',
+  },
+  paymentMethodSelector: {
+    marginTop: '20px',
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '10px',
   },
 };
 
-// Stripe Card Element Styling
 const cardStyle = {
   style: {
     base: {
+      iconColor: '#6a6a6a',
+      color: '#6a6a6a',
+      lineHeight: '24px',
+      fontWeight: 400,
+      fontFamily: 'Arial, sans-serif',
       fontSize: '16px',
-      color: '#333',
       '::placeholder': {
-        color: '#888',
+        color: '#a3a3a3',
       },
-    },
-    invalid: {
-      color: '#e5424d',
     },
   },
 };
