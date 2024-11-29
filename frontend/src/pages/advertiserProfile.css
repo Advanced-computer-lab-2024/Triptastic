@@ -12,7 +12,7 @@
 .profile-title,
 .activities-title {
   font-size: 2rem;
-  color: #4CAF50;
+  color: #0F5132;
   text-align: center;
   margin-bottom: 20px;
 }
@@ -69,7 +69,7 @@
 .delete-button,
 .password-button,
 .create-transport-button {
-  background-color: #4CAF50;
+  background-color: #0F5132;
   color: #fff;
   padding: 10px;
   border: none;
@@ -84,7 +84,7 @@
 .delete-button:hover,
 .password-button:hover,
 .create-transport-button:hover {
-  background-color: #45a049;
+  background-color: #0F5132;
 }
 
 /* Password Section */
@@ -129,7 +129,7 @@
 }
 
 .sidebar ul li:hover {
-  color: #4CAF50;
+  color: #0F5132;
 }
 
 /* Transportation Form */
@@ -141,9 +141,173 @@
 
 .transportation-form input,
 .transportation-form select {
+
   width: 100%;
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-bottom: 10px;
 }
+.activities-title {
+  font-size: 1.8em;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.activities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 10px;
+}
+
+.activity-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.activity-card:hover {
+  transform: scale(1.02);
+}
+
+.activity-info {
+  margin-bottom: 10px;
+
+}
+
+.activity-name {
+  font-size: 1.2em;
+  color: #333;
+}
+
+.flag-yes {
+  color: red;
+  font-weight: bold;
+}
+
+.flag-no {
+  color: #0F5132;
+  font-weight: bold;
+}
+
+.toggle-report-button {
+  background-color: #0F5132;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.toggle-report-button:hover {
+  background-color: #0F5132;
+}
+
+
+.activity-detail {
+  font-size: 1.1em; /* Smaller font size for all details */
+  line-height: 1.4; /* Slightly reduced line spacing */
+  color: #555; /* Softer color for better aesthetics */
+}
+
+
+
+.activity-detail strong {
+  color: #333; /* Make the labels slightly darker for emphasis */
+}
+
+
+
+.no-activities {
+  text-align: center;
+  font-size: 1.2em;
+  color: #666;
+}
+.report-section {
+  max-width: 100%; /* Ensures the report fits within the card */
+  overflow-x: auto; /* Adds horizontal scrolling if the content overflows */
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 10px;
+}
+
+.report-title {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.report-table {
+  width: 100%; /* Makes the table fit within the container */
+  border-collapse: collapse;
+  font-size: 0.8em; /* Smaller font size for compactness */
+  margin-top: 10px;
+  background: #fff;
+}
+
+.report-table th,
+.report-table td {
+  border: 1px solid #ddd;
+  padding: 4px; /* Reduced padding for compactness */
+  text-align: left;
+  white-space: nowrap; /* Prevents text from wrapping */
+}
+
+.report-table th {
+  background: #f1f1f1;
+  font-weight: bold;
+}
+
+.report-table tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+.report-table tr:hover {
+  background: #f1f1f1;
+}
+
+.no-tourists {
+  text-align: center;
+  color: #999;
+}
+
+
+
+
+.tourist-section {
+  margin-top: 15px;
+}
+
+
+
+.tourist-title {
+  font-size: 1.0em;
+  margin-bottom: 10px;
+  color: #555;
+}
+
+.tourist-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tourist-item {
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+
