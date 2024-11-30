@@ -1,5 +1,12 @@
 import React, { useState, useEffect} from 'react';
+import image from '../images/image.png';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+import { FaBell,FaSearch, FaBox, FaLandmark, FaUniversity, FaMap, FaRunning, FaPlane, FaHotel, FaClipboardList, FaStar, FaBus } from 'react-icons/fa';
+import { MdNotificationImportant } from 'react-icons/md';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
+import LockResetIcon from '@mui/icons-material/LockReset';
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 function TourGuideProfile() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -644,10 +651,29 @@ const handleViewReport = async (itineraryId) => {
 
 
   return (
-  
-    
-      <div>
-        <h2>Tour Guide Profile</h2>
+    <div style={styles.container}>
+{/* Header */}
+<header style={styles.header}>
+<div style={styles.logoContainer}>
+  <img src={image} alt="Logo" style={styles.logo} />
+</div>
+<h1 style={styles.title}>Tour Guide Profile</h1>
+
+
+ <LockResetIcon
+    alt="Profile Icon"
+    style={{cursor: 'pointer', color: 'white', marginRight: '-490px' }}
+    onClick={handleViewReport}
+  />
+
+
+{/* Profile Icon */}
+<ManageAccountsIcon
+  style={styles.profileIcon}
+  title="Edit Profile"
+  onClick={handleViewReport} // Open modal on click
+/>
+</header>
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         {tourGuideInfo?.flaggedItineraries.length > 0 ? (
           <div>
@@ -1204,6 +1230,131 @@ const handleViewReport = async (itineraryId) => {
   )         
 }
 
+const styles = {
+  container: {
+    marginTop:'150px',
+    margin: '90px auto',
+    maxWidth: '1000px',
+    padding: '20px',
+    backgroundColor: '#f9f9f9',
+    borderRadius: '10px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  },
+  header: {
+    position: 'fixed',
+    height: '60px',
+    top: 0,
+    left: 0,
+    width: '100%',
+    backgroundColor: '#0F5132',
+    color: 'white',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '10px 20px',
+    zIndex: 1000,
+  },
+  logoContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  logo: {
+    height: '60px',
+    width: '70px',
+    borderRadius: '10px',
+  },
+  title: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    marginLeft:'90px'
+  },
+  profileIcon: {
+    fontSize: '30px',
+    color: 'white',
+    cursor: 'pointer',
+  },
+  modalOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
+    background: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  modalContent: {
+    background: 'white',
+    padding: '20px',
+    borderRadius: '10px',
+    width: '50%',
+    maxWidth: '600px',
+    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '15px',
+    maxHeight: '80vh',
+    overflowY: 'auto',
+  },
+  modalContentH2: {
+    fontSize: '22px',
+    textAlign: 'center',
+    color: '#333',
+  },
+  modalContentLabel: {
+    fontWeight: 'bold',
+    marginBottom: '5px',
+    display: 'flex', alignItems: 'center', gap: '5px',
+    color: '#555',
+  },
+  modalContentInput: {
+    width: '100%',
+    padding: '10px',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
+    fontSize: '14px',
+  },
+  modalContentTextarea: {
+    width: '100%',
+    padding: '10px',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
+    fontSize: '14px',
+    resize: 'vertical',
+  },
+  modalContentButton: {
+    padding: '10px 20px',
+    border: 'none',
+    background: '#0F5132',
+    color: 'white',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '14px',
+  },
+  passwordSection: {
+    borderTop: '1px solid #ddd',
+    marginTop: '20px',
+    paddingTop: '15px',
+  },
+  cancelIcon: {
+    color: '#0F5132', // Set the color of the icon
+    fontSize: '30px', // Adjust the size as needed
+    cursor: 'pointer', // Ensure it acts as a button
+    position: 'absolute', // Position it correctly in the modal
+    right: '500px', // Adjust placement
+    top: '100px', // Adjust placement
+  },
+  cancelpasswordIcon: {
+    color: '#0F5132', // Set the color of the icon
+    fontSize: '30px', // Adjust the size as needed
+    cursor: 'pointer', // Ensure it acts as a button
+    position: 'absolute', // Position it correctly in the modal
+    right: '490px', // Adjust placement
+    top: '280px', // Adjust placement
+  }
+}
 export default TourGuideProfile;
 
 
