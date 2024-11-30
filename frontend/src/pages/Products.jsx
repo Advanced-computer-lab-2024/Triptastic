@@ -6,6 +6,7 @@ import logo from '../images/image.png'; // Replace with your logo path
 import { FaUserCircle,FaShoppingCart,FaRegFileAlt, FaDollarSign, FaStar, FaComments, FaWarehouse, FaChartBar,FaBars} from 'react-icons/fa';
 import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel,
   FaClipboardList } from "react-icons/fa";
+  import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
 const Products = () => {
   const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
   const [products, setProducts] = useState([]);
