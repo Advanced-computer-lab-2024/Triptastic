@@ -11,6 +11,7 @@ const complaintModel = require('../Models/Complaint.js'); // Adjust the path bas
 const TourGuideModel = require('../Models/tourGuide.js'); // Adjust path as needed
 const requestModel = require('../Models/Request.js'); // Adjust path as needed
 const ItinBookingModel = require('../Models/itinbookings.js'); 
+const ActBookingModel = require('../Models/actBooking.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
@@ -1205,7 +1206,7 @@ const bookActivity = async (req, res) => {
     // Update activity sales
     activity.sales += activity.price;
     await activity.save();
-
+    const booking=await ActBookingModel.create({activityId:activity._id})
     res.status(200).json({
       message: 'Activity booked successfully!',
       tourist,
