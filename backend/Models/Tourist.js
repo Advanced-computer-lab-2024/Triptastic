@@ -125,6 +125,10 @@ const touristSchema = new Schema({
       },
     }
   ],
+  showIntro: {
+    type: Boolean,
+    default: true, // Set to true for new users
+  },
 }, 
 
 { timestamps: true });

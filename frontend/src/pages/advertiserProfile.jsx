@@ -218,8 +218,9 @@ const [filteredActivities, setFilteredActivities] = useState([]);
           },
         }));
       } else {
+        alert('No tourists booked this activity yet.');
         const errorData = await response.json();
-        setErrorMessage(errorData.message || 'Failed to fetch report');
+        //setErrorMessage(errorData.message || 'Failed to fetch report');
       }
     } catch (error) {
       console.error('An error occurred while fetching the report:', error);
@@ -611,6 +612,7 @@ const [filteredActivities, setFilteredActivities] = useState([]);
     <option value="11">November</option>
     <option value="12">December</option>
   </select>
+  <button onClick={()=>navigate('/AdvertiserReport')} style={{marginLeft:'20px'}}>View Report</button>
 </div>
      {/* Activities Section */}
 <h3 className="activities-title"> Activity Reports</h3>

@@ -5,6 +5,7 @@ const PreferenceTagsModel = require('../Models/PreferenceTags.js');
 const RequestModel = require('../Models/Request.js');
 const TransportationModel = require('../Models/Transportation.js');
 const touristModel = require('../Models/Tourist.js');
+const ActBookingModel=require('../Models/actBooking.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { default: mongoose } = require('mongoose');
@@ -518,9 +519,60 @@ const settleDocsAdvertiser = async (req, res) => {
       res.status(500).json({ error: "Error filtering activities by month" });
     }
   };
+  const filterByActivity = async (req, res) => {
+    const { activityId } = req.query;
+    try{
+      const x=await ActBookingModel.find({activityId:activityId});
+      const r= x.map(x=> x.createdAt);
+      res.status(200).json(r);
+    }
+    catch(error){
+       res.status(400).json({error: error.message});
+    }
+  };
+  const getFilteredActivities = async (req, res) => { //filtered by date
+    const { date, Username } = req.query;
   
+    if (!date || !Username) {
+      return res.status(400).json({ error: 'Date and Username are required' });
+    }
+  
+    try {
+      // Parse the input date string
+      const startDate = new Date(date);
+      const endDate = new Date(date);
+  
+      // Check if the date parsing was successful
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        return res.status(400).json({ error: 'Invalid date format' });
+      }
+  
+      // Set the time for the start of the day
+      startDate.setUTCHours(0, 0, 0, 0);
+  
+      // Set the time for the end of the day
+      endDate.setUTCHours(23, 59, 59, 999);
+  
+      // Query for bookings within the date range and populate the itineraryID field
+      const bookings = await ActBookingModel.find({
+        createdAt: {
+          $gte: startDate,
+          $lte: endDate
+        }
+      }).populate('activityId');
+  
+      // Extract itineraries from the populated bookings and filter by TourGuide
+      const activities = bookings
+        .map(booking => booking.activityId)
+        .filter(activity => activity.Advertiser === Username);
+  
+      res.status(200).json(activities);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  };
 
  module.exports = {changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,
    getActivity,
    updateActivity,
-   deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser,getTouristReportForActivity,filterActivitiesByMonth,loginAdvertiser};
+   deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser,getTouristReportForActivity,filterActivitiesByMonth,loginAdvertiser,filterByActivity,getFilteredActivities};

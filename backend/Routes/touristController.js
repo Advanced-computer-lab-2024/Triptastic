@@ -11,12 +11,13 @@ const complaintModel = require('../Models/Complaint.js'); // Adjust the path bas
 const TourGuideModel = require('../Models/tourGuide.js'); // Adjust path as needed
 const requestModel = require('../Models/Request.js'); // Adjust path as needed
 const ItinBookingModel = require('../Models/itinbookings.js'); 
+const ActBookingModel = require('../Models/actBooking.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const cron = require('node-cron');
-const PromoCode = require('../Models/PromoCode.js');
+const PromoCodeModel = require('../Models/PromoCode.js');
 const Order = require('../Models/Orders.js'); 
 
 
@@ -56,7 +57,7 @@ const getCurrencyRates = async (req, res) => {
 
 
 const createTourist = async (req, res) => {
-  const { Username, Email, Password, Nationality, DOB, Occupation } = req.body;
+  const { Username, Email, Password, Nationality, DOB, Occupation,showIntro } = req.body;
 
   try {
     // Hash the password
@@ -70,6 +71,7 @@ const createTourist = async (req, res) => {
       Nationality,
       DOB,
       Occupation,
+      showIntro
     });
 
     res.status(200).json({
@@ -80,6 +82,27 @@ const createTourist = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+const getTouristIntroStatus = async (req, res) => {
+  const { Username } = req.query; // Get the user ID from request parameters
+
+  try {
+    // Find the tourist by ID
+    const tourist = await touristModel.findOne({ Username: Username });
+
+    if (!tourist) {
+      return res.status(404).json({ error: 'Tourist not found' });
+    }
+
+    // Respond with the showIntro status
+    res.status(200).json({
+      message: 'Intro status retrieved successfully',
+      showIntro: tourist.showIntro, // Include the status in the response
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to retrieve intro status' });
+  }
+};
+
 
 
 
@@ -98,6 +121,15 @@ const loginTourist = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+      // Check and update the showIntro field
+      if (tourist.showIntro) {
+        // Update showIntro to false
+        await touristModel.findByIdAndUpdate(
+          tourist._id,
+          { showIntro: false },
+          { new: true }
+        );
+      }
 
     // Check if it's the tourist's birthday
     const today = new Date();
@@ -1205,7 +1237,7 @@ const bookActivity = async (req, res) => {
     // Update activity sales
     activity.sales += activity.price;
     await activity.save();
-
+    const booking=await ActBookingModel.create({activityId:activity._id})
     res.status(200).json({
       message: 'Activity booked successfully!',
       tourist,
@@ -2657,11 +2689,71 @@ Triptastic`,
     console.error('Error sending email:', error);
   }
 };
+const applyPromoCode = async (req, res) => {
+  const { code, amount } = req.body; // code from frontend and the amount in cents
+
+  try {
+    // Find the promo code in the database
+    const promo = await PromoCodeModel.findOne({ code: code });
+
+    // If promo code doesn't exist
+    if (!promo) {
+      return res.status(400).json({ success: false, message: 'Invalid promo code' });
+    }
+
+    // Check if the promo code is still active and not expired
+    const currentDate = new Date();
+    if (!promo.active || promo.expirationDate < currentDate) {
+      return res.status(400).json({ success: false, message: 'Promo code is expired or inactive' });
+    }
+
+    // Ensure that the promo code hasn't been used too many times
+    if (promo.usageCount >= promo.maxUsage) {
+      return res.status(400).json({ success: false, message: 'Promo code usage limit reached' });
+    }
+
+    // Calculate the discount (flat or percentage)
+    let discountAmount = 0;
+    if (promo.isPercentage) {
+      discountAmount = Math.floor((promo.discount / 100) * amount); // Percentage of the total amount
+    } else {
+      discountAmount = promo.discount; // Flat discount in cents
+    }
+
+    // Ensure discount does not exceed the total amount
+    if (discountAmount > amount) {
+      return res.status(400).json({
+        success: false,
+        message: 'Discount cannot exceed the total amount',
+      });
+    }
+
+    // Apply the discount
+    const discountedAmount = amount - discountAmount;
+
+    // Update the promo code usage count
+    await PromoCodeModel.updateOne(
+      { code: code },
+      { $inc: { usageCount: 1 } } // Increment the usage count by 1
+    );
+
+    // Return the discount and the discounted amount
+    return res.status(200).json({
+      success: true,
+      discount: discountAmount,
+      discountedAmount,
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: 'Server error while applying promo code' });
+  }
+};
 
 
 
 
- module.exports = {sendItineraryReminders,sendActivityReminders,getNotifications,markNotificationsRead,updateProductQuantityInCart,bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+ module.exports = {getTouristIntroStatus,sendItineraryReminders,sendActivityReminders,getNotifications,markNotificationsRead,updateProductQuantityInCart,bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
@@ -2670,4 +2762,4 @@ Triptastic`,
   ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
   shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,addToCartAndRemoveFromWishlist,
   getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,
-  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist,removeProductFromCart,requestNotification,addAddress,getAddresses,createOrder,payWithWallet,sendConfirmationEmail};
+  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist,removeProductFromCart,requestNotification,addAddress,getAddresses,createOrder,payWithWallet,sendConfirmationEmail,applyPromoCode};

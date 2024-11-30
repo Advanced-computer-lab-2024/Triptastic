@@ -20,14 +20,14 @@ const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActi
 
 
 //Tourist
-const {sendItineraryReminders,sendActivityReminders,getNotifications,markNotificationsRead,requestNotification,updateProductQuantityInCart,removeProductFromCart,bookmarkEvent,addToCartAndRemoveFromWishlist,removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,changepasswordTourist,createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
+const {getTouristIntroStatus,sendItineraryReminders,sendActivityReminders,getNotifications,markNotificationsRead,requestNotification,updateProductQuantityInCart,removeProductFromCart,bookmarkEvent,addToCartAndRemoveFromWishlist,removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,changepasswordTourist,createTourist,gethistoricalLocationByName,filterActivities,getProductTourist,createProductTourist,viewProductsTourist,viewAllUpcomingActivitiesTourist
   ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,
   sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,
   getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity,
-  fileComplaint,getComplaintsByTourist,shareActivity,shareHistorical,shareMuseum,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,getBookedActivities,getActivityToShare,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,getWishlist,removeProductFromWishlist,addAddress,getAddresses,createOrder,payWithWallet,sendConfirmationEmail} = require("./Routes/touristController");
+  fileComplaint,getComplaintsByTourist,shareActivity,shareHistorical,shareMuseum,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,getBookedActivities,getActivityToShare,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,getWishlist,removeProductFromWishlist,addAddress,getAddresses,createOrder,payWithWallet,sendConfirmationEmail,applyPromoCode} = require("./Routes/touristController");
 
 //Advertiser
-const{changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser,getTouristReportForActivity,filterActivitiesByMonth,loginAdvertiser}=require("./Routes/advertiserController");
+const{changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser,getTouristReportForActivity,filterActivitiesByMonth,loginAdvertiser,filterByActivity,getFilteredActivities}=require("./Routes/advertiserController");
 
 //Seller
 const{viewMyProducts,deleteAllNotifications,getNotificationsForAdmin,checkAndNotifyOutOfStockAdmin,getNotificationsForSeller,checkAndNotifyOutOfStockSeller,changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller}=require("./Routes/sellerController");
@@ -188,6 +188,7 @@ app.post("/sendItineraryReminders", sendItineraryReminders);
 app.post('/createOrder',createOrder);
 app.patch('/payWithWallet',payWithWallet);
 app.post('/sendPaymentEmail',sendConfirmationEmail);
+app.patch('/applyPromoCode',applyPromoCode);app.get("/getTouristIntroStatus", getTouristIntroStatus);
 
 
 
@@ -235,6 +236,8 @@ app.post('/createTransportation',createTransportation);
 app.patch('/settleDocsAdvertiser',settleDocsAdvertiser);
 app.get('/filterActivitiesByMonth', filterActivitiesByMonth);
 app.post('/loginAdvertiser',loginAdvertiser);
+app.get('/filterByActivity',filterByActivity);
+app.get('/getFilteredActivities',getFilteredActivities);
 //Seller
 app.post('/createSeller', upload.fields([{ name: 'Id', maxCount: 1 }, { name: 'TaxationRegistryCard', maxCount: 1 } ]), createSeller);
 app.patch('/updateSeller', upload.single('Logo'),updateSeller);
