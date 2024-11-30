@@ -747,8 +747,48 @@ const addTourismGov = async (e) => {
         console.error('Error rejecting request:', error);
       }
     };
-  
+    
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
+  const handleCurrentPasswordChange = (e) => setCurrentPassword(e.target.value);
 
+  const handleNewPasswordChange = (e) => setNewPassword(e.target.value);
+    const handlePasswordChange = async (e) => {
+      e.preventDefault();
+      setChangePasswordLoading(true);
+      setChangePasswordSuccess('');
+      setChangePasswordError('');
+    
+      try {
+        const response = await fetch('http://localhost:8000/changePasswordAdmin', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(changePasswordData),
+        });
+    
+        if (response.ok) {
+          const data = await response.json();
+          setChangePasswordSuccess(data.message);
+          setChangePasswordData({
+            Username: '',
+            Email: '', // Reset Email field after successful change
+            currentPassword: '',
+            newPassword: '',
+          });
+        } else {
+          const errorData = await response.json();
+          setChangePasswordError(errorData.error || 'Failed to change password.');
+        }
+      } catch (error) {
+        setChangePasswordError('An error occurred while changing the password.');
+        console.error(error);
+      } finally {
+        setChangePasswordLoading(false);
+      }
+    };
+    
 
     const styles = {
       container: {
@@ -762,6 +802,7 @@ const addTourismGov = async (e) => {
         color: '#333',
         paddingTop: '100px', // Avoid overlap with the header
       },
+  
       heading: {
         fontSize: "24px",
         fontWeight: "bold",
@@ -1067,6 +1108,14 @@ const addTourismGov = async (e) => {
     fontSize: '24px',
     color: '#dc3545',
     cursor: 'pointer',
+  },
+  cancelpasswordIcon: {
+    color: '#0F5132', // Set the color of the icon
+    fontSize: '30px', // Adjust the size as needed
+    cursor: 'pointer', // Ensure it acts as a button
+    position: 'absolute', // Position it correctly in the modal
+    right: '50px', // Adjust placement
+    top: '25px', // Adjust placement
   },
  
   modalContentH2: {
@@ -1380,20 +1429,20 @@ const addTourismGov = async (e) => {
     style={styles.profileIcon}
     onClick={() => navigate('/products')} // Navigate to Products page
   />
+         <LockResetIcon title="Change Password"
+            alt="Profile Icon"
+            style={styles.profileIcon}
+            onClick={togglePasswordModal}
+          />
 
   {/* Edit Profile Icon */}
   <ManageAccountsIcon
-    style={styles.profileIcon}s
+    style={styles.profileIcon}
     title="Edit Profile"
     onClick={toggleModal} // Open modal on click
   />
 
-  {/* Admin Settings Icon */}
-  <FaUserCircle
-    alt="Profile Icon"
-    style={styles.profileIcon}
-    onClick={() => navigate('/adminsettings')}
-  />
+
 </div>
 
     
@@ -1833,7 +1882,7 @@ const addTourismGov = async (e) => {
    {/* Search Product Section */}
 <div style={styles.card}>
   <h3 style={styles.cardTitle}>
-    Search Product by Name <FaSearch style={styles.icon} />
+  Search Product to Archive<FaSearch style={styles.icon} />
   </h3>
   <form onSubmit={getProductByName} style={styles.form}>
     <div style={styles.formGroup}>
@@ -1992,6 +2041,119 @@ const addTourismGov = async (e) => {
     )}
   </div>
 </div>
+
+      {/* Password Modal */}
+{showPasswordModal && (
+  <div style={styles.modalOverlay}>
+    <div style={styles.modalContent}>
+      <h2 style={styles.modalContentH2}>Change Password</h2>
+
+      {/* Close Icon */}
+      <HighlightOffOutlinedIcon
+        onClick={togglePasswordModal}
+        style={styles.cancelpasswordIcon}
+      />
+
+      {/* Success and Error Messages */}
+      {changePasswordSuccess && (
+        <p style={{ color: 'green', marginBottom: '15px' }}>
+          {changePasswordSuccess}
+        </p>
+      )}
+      {changePasswordError && (
+        <p style={{ color: 'red', marginBottom: '15px' }}>
+          {changePasswordError}
+        </p>
+      )}
+
+      {/* Change Password Form */}
+      <form onSubmit={handlePasswordChange} style={styles.form}>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Username</label>
+          <input
+            type="text"
+            placeholder="Enter Username"
+            value={changePasswordData.Username}
+            onChange={(e) =>
+              setChangePasswordData((prevData) => ({
+                ...prevData,
+                Username: e.target.value,
+              }))
+            }
+            style={styles.modalContentInput}
+            required
+          />
+        </div>
+
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Email</label>
+          <input
+            type="email"
+            placeholder="Enter Email"
+            value={changePasswordData.Email}
+            onChange={(e) =>
+              setChangePasswordData((prevData) => ({
+                ...prevData,
+                Email: e.target.value,
+              }))
+            }
+            style={styles.modalContentInput}
+            required
+          />
+        </div>
+
+        <div style={styles.formGroup}>
+          <label style={styles.label}>Current Password</label>
+          <input
+            type="password"
+            placeholder="Enter Current Password"
+            value={changePasswordData.currentPassword}
+            onChange={(e) =>
+              setChangePasswordData((prevData) => ({
+                ...prevData,
+                currentPassword: e.target.value,
+              }))
+            }
+            style={styles.modalContentInput}
+            required
+          />
+        </div>
+
+        <div style={styles.formGroup}>
+          <label style={styles.label}>New Password</label>
+          <input
+            type="password"
+            placeholder="Enter New Password"
+            value={changePasswordData.newPassword}
+            onChange={(e) =>
+              setChangePasswordData((prevData) => ({
+                ...prevData,
+                newPassword: e.target.value,
+              }))
+            }
+            style={styles.modalContentInput}
+            required
+          />
+        </div>
+
+        {/* Submit Button */}
+        <div style={styles.modalButtonsContainer}>
+          <button
+            type="submit"
+            style={{
+              ...styles.modalContentButton,
+              backgroundColor: '#0F5132',
+            }}
+            disabled={changePasswordLoading}
+          >
+            {changePasswordLoading ? 'Changing Password...' : 'Change Password'}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
 
       <h2 style={styles.heading}>Pending Account Deletion Requests</h2>
 {requests.length === 0 ? (

@@ -360,6 +360,7 @@ const handleUpdate = async () => {
 
 
   };
+  
   const handlePasswordChange = async () => {
     setChangingPassword(true);
     const Username = localStorage.getItem('Username');
@@ -550,6 +551,10 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
         <div style={styles.logoContainer}>
           <img src={image} alt="Logo" style={styles.logo} />
         </div>
+
+
+
+
         <h1 style={styles.title}>Seller Profile</h1>
   
         {/* Products Icon */}
@@ -926,6 +931,8 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
           </div>
         </div>
       )}
+
+
        {/* Password Modal */}
        {showPasswordModal && (
         
@@ -979,6 +986,7 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
              <Tooltip id="amenities-tooltip" place="top" />
 
     </div>
+
   );
   
   
