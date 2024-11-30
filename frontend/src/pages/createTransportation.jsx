@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import './advertiserProfile.css';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
 import { FaBell,FaUserCircle} from 'react-icons/fa';
@@ -127,7 +126,7 @@ const [filteredActivities, setFilteredActivities] = useState([]);
   const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
 
   return (
-    <div className="advertiser-profile">
+    <div    style={styles.background} >
 
     <div>
     {/* Header Section */}
@@ -158,10 +157,11 @@ const [filteredActivities, setFilteredActivities] = useState([]);
 
 
    
-
+     
       {/* Transportation Creation */}
     
-      <div className="transportation-form" style={styles.transportform}>
+      <div className="transportation-form"   style={{ marginTop: '66px' }}
+ >
       <h3>Create Transportation</h3>
         <label>Type:</label>
         <select name="type" value={transportFormData.type} onChange={handleTransportInputChange}>
@@ -191,6 +191,7 @@ const [filteredActivities, setFilteredActivities] = useState([]);
         <button onClick={handleCreateTransportation} className="create-transport-button">Create Transportation</button>
       </div>
     </div>
+
     </div>
 
   );
@@ -198,11 +199,20 @@ const [filteredActivities, setFilteredActivities] = useState([]);
 };
 
 const styles = {
-    transportform:{
-        marginTop: '90px',
+  background: {
+  backgroundColor: '#f9f9f9', // Correct property name
+},
 
+transportform: {
+  marginTop: '120px', // Increase margin top for better spacing
+  maxWidth: '500px', // Reduce the width
+  margin: '0 auto', // Center the form horizontally
+  padding: '20px',
+  border: '1px solid #ccc',
+  borderRadius: '10px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+},
 
-    },
   sidebar:{
     marginTop: '60px',
 

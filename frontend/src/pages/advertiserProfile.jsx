@@ -8,6 +8,12 @@ import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHo
   FaStar, FaDollarSign,FaSearch} from "react-icons/fa";
   import LockResetIcon from '@mui/icons-material/LockReset';
   import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+  import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
+
+
+
+
+
 const AdvertiserProfile = () => {
   const [advertiserInfo, setAdvertiserInfo] = useState(null);
   const [activities, setActivities] = useState([]);
@@ -24,6 +30,8 @@ const [filteredActivities, setFilteredActivities] = useState([]);
   const [activityReports, setActivityReports] = useState({});
   const [showModal, setShowModal] = useState(false); // State for modal visibility
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [activityDetails, setActivityDetails] = useState({}); // Tracks visibility of details for each activity
+
 
 
     const [formData, setFormData] = useState({
@@ -515,12 +523,11 @@ const [filteredActivities, setFilteredActivities] = useState([]);
 
 
             
-            <button
+            <HighlightOffOutlinedIcon
               onClick={toggleModal}
-              style={styles.modalContentButton}
-            >
-              Cancel
-            </button>
+              style={styles.cancelIcon}
+           
+            />
           </div>
         </div>
       )}
@@ -557,16 +564,15 @@ const [filteredActivities, setFilteredActivities] = useState([]);
               >
                 Change Password
               </button>
-
-              <button
+           
+              <HighlightOffOutlinedIcon
                 onClick={togglePasswordModal}
                 style={{
-                  ...styles.modalContentButton,
-                  backgroundColor: '#0F5132',
+                  ...styles.cancelpasswordIcon,
                 }}
-              >
-                Cancel
-              </button>
+              
+                
+              />
             </div>
           </div>
         </div>
@@ -687,6 +693,22 @@ const [filteredActivities, setFilteredActivities] = useState([]);
 };
 
 const styles = {
+  cancelIcon: {
+    color: '#0F5132', // Set the color of the icon
+    fontSize: '30px', // Adjust the size as needed
+    cursor: 'pointer', // Ensure it acts as a button
+    position: 'absolute', // Position it correctly in the modal
+    right: '500px', // Adjust placement
+    top: '100px', // Adjust placement
+  },
+  cancelpasswordIcon: {
+    color: '#0F5132', // Set the color of the icon
+    fontSize: '30px', // Adjust the size as needed
+    cursor: 'pointer', // Ensure it acts as a button
+    position: 'absolute', // Position it correctly in the modal
+    right: '490px', // Adjust placement
+    top: '240px', // Adjust placement
+  },
   sidebar  :{
     marginTop: '60px',
 

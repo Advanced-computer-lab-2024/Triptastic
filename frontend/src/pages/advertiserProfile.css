@@ -1,6 +1,5 @@
 /* General Container */
 .advertiser-profile {
-  max-width: 800px;
   margin: 0 auto;
   padding: 20px;
   background-color: #f9f9f9;
@@ -131,16 +130,29 @@
 .sidebar ul li:hover {
   color: #0F5132;
 }
+.transportation-form {
+  margin-top: 100px; /* Adjust this value for desired spacing */
+  max-width: 500px; /* Keep the form width consistent */
+  margin: 0 auto; /* Center the form horizontally */
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 
 /* Transportation Form */
 .transportation-form label {
   display: block;
   margin-top: 10px;
   font-weight: bold;
+
 }
+
 
 .transportation-form input,
 .transportation-form select {
+
 
   width: 100%;
   padding: 8px;
