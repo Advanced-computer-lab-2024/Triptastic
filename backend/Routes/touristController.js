@@ -57,7 +57,7 @@ const getCurrencyRates = async (req, res) => {
 
 
 const createTourist = async (req, res) => {
-  const { Username, Email, Password, Nationality, DOB, Occupation } = req.body;
+  const { Username, Email, Password, Nationality, DOB, Occupation,showIntro } = req.body;
 
   try {
     // Hash the password
@@ -71,6 +71,7 @@ const createTourist = async (req, res) => {
       Nationality,
       DOB,
       Occupation,
+      showIntro
     });
 
     res.status(200).json({
@@ -81,6 +82,27 @@ const createTourist = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+const getTouristIntroStatus = async (req, res) => {
+  const { Username } = req.query; // Get the user ID from request parameters
+
+  try {
+    // Find the tourist by ID
+    const tourist = await touristModel.findOne({ Username: Username });
+
+    if (!tourist) {
+      return res.status(404).json({ error: 'Tourist not found' });
+    }
+
+    // Respond with the showIntro status
+    res.status(200).json({
+      message: 'Intro status retrieved successfully',
+      showIntro: tourist.showIntro, // Include the status in the response
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to retrieve intro status' });
+  }
+};
+
 
 
 
@@ -99,6 +121,15 @@ const loginTourist = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+      // Check and update the showIntro field
+      if (tourist.showIntro) {
+        // Update showIntro to false
+        await touristModel.findByIdAndUpdate(
+          tourist._id,
+          { showIntro: false },
+          { new: true }
+        );
+      }
 
     // Check if it's the tourist's birthday
     const today = new Date();
@@ -2662,7 +2693,7 @@ Triptastic`,
 
 
 
- module.exports = {sendItineraryReminders,sendActivityReminders,getNotifications,markNotificationsRead,updateProductQuantityInCart,bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
+ module.exports = {getTouristIntroStatus,sendItineraryReminders,sendActivityReminders,getNotifications,markNotificationsRead,updateProductQuantityInCart,bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
   ,getActivityByCategory,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,
   sortProductsByRatingTourist,sortItinPDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist
