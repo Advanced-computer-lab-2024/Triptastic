@@ -2587,8 +2587,8 @@ const createOrder = async (req, res) => {
     }
 
     // Find the tourist and product by their IDs
-    const tourist = await Tourist.findById(touristId);
-    const product = await Product.findById(productId);
+    const tourist = await touristModel.findById(touristId);
+    const product = await productModel.findById(productId);
 
     if (!tourist) {
       return res.status(404).json({ message: 'Tourist not found' });
@@ -2615,6 +2615,8 @@ const createOrder = async (req, res) => {
 
     // Save the new order to the database
     await newOrder.save();
+    product.sales+= totalPrice;
+    await product.save();
 
     // Return the created order
     res.status(201).json({ message: 'Order created successfully', order: newOrder });

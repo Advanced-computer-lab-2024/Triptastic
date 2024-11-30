@@ -799,6 +799,7 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
         Search
       </button>
     </form>
+    <button onClick={()=>navigate('/sellerReport')} >Sales report</button>
     {errorMessage && <p style={styles.errorMessage}>{errorMessage}</p>}
     {successMessage && (
       <p style={styles.successMessage}>{successMessage}</p>
