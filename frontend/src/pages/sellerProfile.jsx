@@ -6,8 +6,14 @@ import { MdNotificationImportant } from 'react-icons/md';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 import LockResetIcon from '@mui/icons-material/LockReset';
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import Inventory2Icon from '@mui/icons-material/Inventory2';
+import { Tooltip } from 'react-tooltip'; // Updated import
 
 const SellerProfile = () => {
+  const [sellerProducts, setSellerProducts] = useState([]);
+  const [error, setError] = useState('');
+  const [seller, setSeller] = useState(localStorage.getItem('Username') || ''); // Default to logged-in user
   const [sellerInfo, setSellerInfo] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -84,6 +90,8 @@ const SellerProfile = () => {
     fetchSellerInfo();
     checkoutOfStock(); // Automatically call checkoutOfStock when profile is opened
     fetchNotifications();
+    fetchSellerProducts();
+
   }, []);
   const fetchNotifications = async () => {
     const Username = localStorage.getItem('Username');
@@ -417,6 +425,42 @@ const handleUpdate = async () => {
       setLoading(false);
     }
   };
+
+  const fetchSellerProducts = async () => {
+    if (!seller) {
+      setError('Seller username is required.');
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch(`http://localhost:8000/viewMyProducts?seller=${seller}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+      const products = await response.json();
+      setSellerProducts(products);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSellerProducts();
+  }, []);
+
+  if (loading) {
+    return <div>Loading products...</div>;
+  }
+
+  if (error) {
+    return <div style={{ color: 'red' }}>Error: {error}</div>;
+  }
   
 const archiveProduct = async () => {
   if (!productNameToArchive) {
@@ -509,29 +553,29 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
         <h1 style={styles.title}>Seller Profile</h1>
   
         {/* Products Icon */}
-        <FaBox
+        <FaBox title=" View Products"
           size={22}
-          style={{ cursor: 'pointer', color: 'white', marginRight: '-530px' }}
+          style={{ cursor: 'pointer', color: 'white', marginRight: '-490px' }}
           onClick={() => navigate('/products')} // Navigate to Products page
         />
   
         {/* Notification Bell */}
-        <FaBell
+        <FaBell title="Notifications"
           size={22}
-          style={{ cursor: 'pointer', color: 'white', marginRight: '-530px' }}
+          style={{ cursor: 'pointer', color: 'white', marginRight: '-490px' }}
           onClick={handleNotificationClick}
         />
-         <LockResetIcon
+         <LockResetIcon title="Change Password"
             alt="Profile Icon"
-            style={{cursor: 'pointer', color: 'white', marginRight: '-530px' }}
+            style={{cursor: 'pointer', color: 'white', marginRight: '-490px' }}
             onClick={togglePasswordModal}
           />
         
   
         {/* Profile Icon */}
-        <ManageAccountsIcon
+        <ManageAccountsIcon title="Edit Profile"
+
           style={styles.profileIcon}
-          title="Edit Profile"
           onClick={toggleModal} // Open modal on click
         />
       </header>
@@ -641,7 +685,7 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
 
    {/* Add Product Section */}
    <div style={styles.card}>
-    <h3 style={styles.cardTitle}>Add Product</h3>
+    <h3 style={styles.cardTitle}>Add Product <Inventory2Icon/></h3>
     <form onSubmit={handleProductSubmit} style={styles.form}>
       <input
         type="text"
@@ -680,8 +724,10 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
       />
       <div style={styles.fileUploadContainer}>
         <label style={styles.fileLabel}>
-          <strong>Upload Image</strong>
-        </label>
+        <strong style={{ color: '#0F5132', display: 'flex', alignItems: 'center', gap: '5px' }}>
+  Upload Product Image <AddPhotoAlternateIcon style={{ color: '#0F5132' }} />
+</strong>        </label>
+
         <input
           type="file"
           accept="image/*"
@@ -689,6 +735,7 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
           required
           style={styles.fileInput}
         />
+
       </div>
       {imagePreview && (
         <img
@@ -700,13 +747,45 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
       <button type="submit" style={styles.submitButton}>
         Submit Product
       </button>
+
     </form>
+  </div>
+  <div style={styles.card}>
+  <h1 style={styles.cardTitle}>My Products</h1>
+      {loading && <p>Loading...</p>}
+      {error && <p style={styles.error}>{error}</p>}
+      {sellerProducts.length === 0 && !loading ? (
+        <p>No products found.</p>
+      ) : (
+        <table style={styles.table}>
+          <thead>
+            <tr>
+              <th style={styles.th}>Product Name</th>
+              <th style={styles.th}>Description</th>
+              <th style={styles.th}>Price</th>
+              <th style={styles.th}>Stock</th>
+              <th style={styles.th}>Rating</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sellerProducts.map((product) => (
+              <tr key={product._id} style={styles.tr}>
+                <td style={styles.td}>{product.productName}</td>
+                <td style={styles.td}>{product.description}</td>
+                <td style={styles.td}>${product.price}</td>
+                <td style={styles.td}>{product.stock}</td>
+                <td style={styles.td}>{product.rating}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
   </div>
 
   {/* Search Product Section */}
   <div style={styles.card}>
     <h3 style={styles.cardTitle}>Search Product to Archive</h3>
-    <form onSubmit={getProductByName} style={styles.form}>
+    <form onSubmit={getProductByName} style={styles.formSearch}>
       <input
         type="text"
         placeholder="Enter Product Name"
@@ -715,12 +794,7 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
         required
         style={styles.input}
       />
-      <button
-        type="submit"
-        style={styles.searchButton}
-        disabled={loading}
-        
-      >
+      <button type="submit" style={styles.searchButton} disabled={loading}>
         <FaSearch style={{ marginRight: '5px' }} />
         Search
       </button>
@@ -811,7 +885,7 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
                 />
            
           
-              <label style={styles.modalContentLabel}>Upload Logo</label>
+              <label style={styles.modalContentLabel}> Logo <AddPhotoAlternateIcon style={{ color: '#0F5132' }} /></label>
               <input
                 type="file"
                 accept="image/*"
@@ -901,6 +975,8 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
           </div>
         </div>
       )}
+             <Tooltip id="amenities-tooltip" place="top" />
+
     </div>
   );
   
@@ -943,6 +1019,7 @@ const styles = {
   title: {
     fontSize: '24px',
     fontWeight: 'bold',
+    marginLeft:'90px'
   },
   profileIcon: {
     fontSize: '30px',
@@ -982,6 +1059,7 @@ const styles = {
   modalContentLabel: {
     fontWeight: 'bold',
     marginBottom: '5px',
+    display: 'flex', alignItems: 'center', gap: '5px',
     color: '#555',
   },
   modalContentInput: {
@@ -1039,6 +1117,7 @@ const styles = {
     fontSize: '20px',
     fontWeight: 'bold',
     marginBottom: '15px',
+    display: 'flex', alignItems: 'center', gap: '5px',
     color: '#0F5132',
   },
   form: {
@@ -1065,12 +1144,13 @@ const styles = {
     resize: 'none',
   },
   fileUploadContainer: {
+    marginRight:'400px',
     display: 'flex',
     flexDirection: 'column',
     gap: '5px',
   },
   fileLabel: {
-    right:'80px',
+    right:'10px',
     fontWeight: 'bold',
   },
   fileInput: {
@@ -1079,6 +1159,7 @@ const styles = {
   imagePreview: {
     width: '150px',
     height: '150px',
+    marginRight:'550px',
     objectFit: 'cover',
     borderRadius: '10px',
     marginTop: '10px',
@@ -1090,19 +1171,33 @@ const styles = {
     border: 'none',
     borderRadius: '5px',
     cursor: 'pointer',
-    fontSize: '16px',
+    fontSize: '14px',
+    bottom:'50px'
+  },
+  formSearch: {
+    position: 'relative', // Set the parent element's position
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '15px',
+    width: '40%', // Maintain consistent form width
+    alignItems: 'center', // Center-align the form
+    marginLeft: '60px', // Center the form on the page
   },
   searchButton: {
     backgroundColor: '#0F5132',
     color: 'white',
-    padding: '10px 15px',
+    padding: '10px 10px',
     border: 'none',
     borderRadius: '5px',
     cursor: 'pointer',
-    fontSize: '16px',
-    display: 'flex',
+    fontSize: '14px',
+    position: 'absolute', // Make the button positioned relative to the parent
+right:'-100px' ,   display: 'flex',
+bottom:'-17px',
     alignItems: 'center',
+    marginBottom:'20px'
   },
+  
   errorMessage: {
     color: 'red',
     fontWeight: 'bold',
@@ -1142,6 +1237,30 @@ const styles = {
     cursor: 'pointer',
     marginTop: '10px',
     marginLeft: '10px',
+  },
+  table: {
+    width: '100%',
+    borderCollapse: 'collapse',
+    marginTop: '20px',
+  },
+  th: {
+    textAlign: 'left',
+    backgroundColor: '#0F5132',
+    color: 'white',
+    padding: '10px',
+    border: '1px solid #ddd',
+  },
+  td: {
+    padding: '10px',
+    border: '1px solid #ddd',
+    textAlign: 'left',
+  },
+  tr: {
+    backgroundColor: '#fff',
+  },
+  error: {
+    color: 'red',
+    textAlign: 'center',
   },
 };
 
