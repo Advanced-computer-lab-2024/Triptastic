@@ -616,6 +616,14 @@ return (
             {activities.map((activity) => (
               <div key={activity._id} style={styles.activityCard}>
                  <div style={{ position: 'relative', display: 'inline-block'}}>
+
+
+      
+
+
+
+
+
   {/* Share Button */}
    <button
     onClick={() => handleShareMode(activity)}
@@ -623,6 +631,9 @@ return (
   >
     <IosShareIcon />
   </button>
+           
+
+  
 
   <button
     onClick={() => handleShareMode(activity)}
@@ -673,8 +684,9 @@ return (
 </div>
   
                 
-                <h4>{activity.name}</h4>
-                
+                <h4>{activity.name}</h4>    {/* Display Average Rating */}
+              
+             
                 <p>
                   <strong><FaDollarSign /> Price:</strong> {(activity.price * conversionRate).toFixed(2)}{' '}
                   {selectedCurrency}
@@ -739,13 +751,41 @@ return (
                     <p><strong><FaUserCircle /> Advertiser:</strong> {activity.Advertiser}</p>
                   </div>
                 )}
+                  {/* Display Average Rating */}
+            <div style={styles.ratingContainer}>
+      <span style={styles.stars}>
+      {'★'.repeat(Math.floor(activity.rating || 0)) + '☆'.repeat(5 - Math.floor(activity.rating || 0))}
+      </span>
+    </div>
+                  {/* Display Existing Comments */}
+    <div style={styles.commentsSection}>
+          
+    <h5 style={{ fontSize: '12px' }}>Comments:</h5>
+    {activity.comments.length > 0 ? (
+        activity.comments.map((comment, index) => (
+          <div key={index} style={styles.commentItem}>
+            <p>
+              <strong>{comment.Username}:</strong> {comment.comment}
+            </p>
+            <span style={styles.commentDate}>
+              {new Date(comment.commentedAt).toLocaleDateString()}
+            </span>
+          </div>
+        ))
+      ) : (
+        <p>No comments yet</p>
+      )}
+    </div>
               </div>
+              
             ))}
           </div>
+          
         ) : (
           <p>No activities found.</p>
         )}
       </>
+      
     )}
   </div>
   </div>
@@ -1083,5 +1123,55 @@ button: {
   borderRadius: '5px',
   cursor: 'pointer',
 },
+
+topSection: {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  position: 'relative', // To allow absolute positioning of share button
+},
+ratingContainer: {
+  display: 'flex',
+  flexDirection: 'row', // Align stars and label horizontally
+  alignItems: 'center', // Center vertically with the share button
+  marginBottom: '10px', // Add space between rating and share button
+},
+stars: {
+ 
+  fontSize: '34px', // Adjust size for better visibility
+  color: '#FFD700',
+  marginRight: '8px', // Space between stars and the rating text
+},
+ratingLabel: {
+  fontSize: '14px',
+  fontWeight: 'bold',
+},
+
+
+commentsSection: {
+  marginTop: '13px',
+},
+commentsContainer: {
+  maxHeight: '120px',
+  overflowY: 'auto',
+  border: '1px solid #eee',
+  borderRadius: '4px',
+  padding: '1px',
+  backgroundColor: '#f9f9f9',
+},
+commentItem: {
+
+  marginBottom: '10px',
+},
+commentDate: {
+  fontSize: '12px',
+  color: '#888',
+},
+buttonGroup: {
+  display: 'flex',
+  gap: '10px',
+  marginTop: '15px',
+},
+
 };
 export default Activities;
