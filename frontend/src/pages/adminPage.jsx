@@ -6,8 +6,9 @@ import logo from '../images/image.png'; // Adjust the path based on your folder 
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 import LockResetIcon from '@mui/icons-material/LockReset';
-import { FaTag, FaInfoCircle, FaDollarSign, FaStar, FaImage } from "react-icons/fa";
-
+import { FaTag, FaInfoCircle, FaDollarSign, FaStar, FaImage ,FaSearch} from "react-icons/fa";
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import Inventory2Icon from '@mui/icons-material/Inventory2';
 
 const AdminPage = () => {
   const [formData, setFormData] = useState({
@@ -69,7 +70,16 @@ const AdminPage = () => {
   const [changingPassword, setChangingPassword] = useState(false);
 
   
+  const [imagePreview, setImagePreview] = useState(null);
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setProductFormData((prevData) => ({
+      ...prevData,
+      image: file,
+    }));
+    setImagePreview(file ? URL.createObjectURL(file) : null);
+  };
   const [productFormData, setProductFormData] = useState({
     productName: '',
     description: '',
@@ -498,120 +508,134 @@ const handleAddProduct = () => {
   };
 
 
-//getproduct
-const getProductByName = async (e) => {
-  e.preventDefault();
-  console.log("Search function triggered");
 
+  // For getProductByName
+  const [getProductErrorMessage, setGetProductErrorMessage] = useState('');
+  const [getProductSuccessMessage, setGetProductSuccessMessage] = useState('');
+  
+  // For archiveProduct
+  const [archiveProductErrorMessage, setArchiveProductErrorMessage] = useState('');
+  const [archiveProductSuccessMessage, setArchiveProductSuccessMessage] = useState('');
+  
+  // For unarchiveProduct
+  const [unarchiveProductErrorMessage, setUnarchiveProductErrorMessage] = useState('');
+  const [unarchiveProductSuccessMessage, setUnarchiveProductSuccessMessage] = useState('');
+  
+  // Shared state
 
-  setLoading(true);
-  setErrorMessage('');
-  setSuccessMessage('');
-  setProductSearchResult(null);
-
-  try {
-    const response = await fetch(`http://localhost:8000/getProduct?productName=${productNameToSearch}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (response.ok) {
-      const product = await response.json();
-      console.log(productSearchResult);
-      setProductSearchResult(product);
-      setProductNameToArchive(product.productName); // Store product name for archiving
-      setSuccessMessage(`Product found successfully!: ${JSON.stringify(product.productName)}`);
-    } else {
-      const errorData = await response.json();
-      setErrorMessage(errorData.error || 'Product not found.');
+  const getProductByName = async (e) => {
+    e.preventDefault();
+    console.log("Search function triggered");
+  
+    setLoading(true);
+    setGetProductErrorMessage(''); // Unique error message for `getProductByName`
+    setGetProductSuccessMessage(''); // Unique success message for `getProductByName`
+    setProductSearchResult(null);
+  
+    try {
+      const response = await fetch(`http://localhost:8000/getProduct?productName=${productNameToSearch}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const product = await response.json();
+        console.log(productSearchResult);
+        setProductSearchResult(product);
+        setProductNameToArchive(product.productName); // Store product name for archiving
+        setGetProductSuccessMessage(`Product "${product.productName}" found successfully!`);
+      } else {
+        const errorData = await response.json();
+        setGetProductErrorMessage(errorData.error || 'Product not found.');
+      }
+    } catch (error) {
+      setGetProductErrorMessage('An error occurred while searching for the product.');
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    setErrorMessage('An error occurred while searching for the product.');
-    console.error(error);
-  } finally {
-    setLoading(false);
-  }
-};
-
-const archiveProduct = async () => {
-  if (!productNameToArchive) {
-    setErrorMessage('No product selected to archive.');
-    return;
-  }
-
-  setLoading(true);
-  setErrorMessage('');
-  setSuccessMessage('');
-
-  try {
-    const response = await fetch(`http://localhost:8000/archiveProduct/${productNameToArchive}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (response.ok) {
-      const result = await response.json();
-      setSuccessMessage(`Product "${productNameToArchive}" archived successfully.`);
-
-      // Update the productSearchResult state to reflect the new archived status
-      setProductSearchResult(prevProduct => ({
-        ...prevProduct,
-        archived: result.product.archived, // Ensure this matches the response structure
-      }));
-    } else {
-      const errorData = await response.json();
-      setErrorMessage(errorData.error || 'Failed to archive product.');
+  };
+  
+  const archiveProduct = async () => {
+    if (!productNameToArchive) {
+      setArchiveProductErrorMessage('No product selected to archive.'); // Unique error message for `archiveProduct`
+      return;
     }
-  } catch (error) {
-    setErrorMessage('An error occurred while archiving the product.');
-    console.error(error);
-  } finally {
-    setLoading(false);
-  }
-};
-const unarchiveProduct = async () => {
-  if (!productNameToArchive) {
-    setErrorMessage('No product selected to unarchive.');
-    return;
-  }
-
-  setLoading(true);
-  setErrorMessage('');
-  setSuccessMessage('');
-
-  try {
-    const response = await fetch(`http://localhost:8000/unarchiveProduct/${productNameToArchive}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (response.ok) {
-      const result = await response.json();
-      setSuccessMessage(`Product "${productNameToArchive}" unarchived successfully.`);
-
-      // Update the productSearchResult state to reflect the new archived status
-      setProductSearchResult(prevProduct => ({
-        ...prevProduct,
-        archived: result.product.archived, // Ensure this matches the response structure
-      }));
-    } else {
-      const errorData = await response.json();
-      setErrorMessage(errorData.error || 'Failed to unarchive product.');
+  
+    setLoading(true);
+    setArchiveProductErrorMessage(''); // Reset error message for `archiveProduct`
+    setArchiveProductSuccessMessage(''); // Reset success message for `archiveProduct`
+  
+    try {
+      const response = await fetch(`http://localhost:8000/archiveProduct/${productNameToArchive}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const result = await response.json();
+        setArchiveProductSuccessMessage(`Product "${productNameToArchive}" archived successfully.`);
+  
+        // Update the productSearchResult state to reflect the new archived status
+        setProductSearchResult((prevProduct) => ({
+          ...prevProduct,
+          archived: result.product.archived, // Ensure this matches the response structure
+        }));
+      } else {
+        const errorData = await response.json();
+        setArchiveProductErrorMessage(errorData.error || 'Failed to archive product.');
+      }
+    } catch (error) {
+      setArchiveProductErrorMessage('An error occurred while archiving the product.');
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    setErrorMessage('An error occurred while unarchiving the product.');
-    console.error(error);
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
+  
+  const unarchiveProduct = async () => {
+    if (!productNameToArchive) {
+      setUnarchiveProductErrorMessage('No product selected to unarchive.'); // Unique error message for `unarchiveProduct`
+      return;
+    }
+  
+    setLoading(true);
+    setUnarchiveProductErrorMessage(''); // Reset error message for `unarchiveProduct`
+    setUnarchiveProductSuccessMessage(''); // Reset success message for `unarchiveProduct`
+  
+    try {
+      const response = await fetch(`http://localhost:8000/unarchiveProduct/${productNameToArchive}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const result = await response.json();
+        setUnarchiveProductSuccessMessage(`Product "${productNameToArchive}" unarchived successfully.`);
+  
+        // Update the productSearchResult state to reflect the new archived status
+        setProductSearchResult((prevProduct) => ({
+          ...prevProduct,
+          archived: result.product.archived, // Ensure this matches the response structure
+        }));
+      } else {
+        const errorData = await response.json();
+        setUnarchiveProductErrorMessage(errorData.error || 'Failed to unarchive product.');
+      }
+    } catch (error) {
+      setUnarchiveProductErrorMessage('An error occurred while unarchiving the product.');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 const [addTourismGovError, setAddTourismGovError] = useState('');
 const [addTourismGovSuccess, setAddTourismGovSuccess] = useState('');
 
@@ -1211,6 +1235,91 @@ const addTourismGov = async (e) => {
     padding: '20px',
     flexWrap: 'wrap', // Wrap if screen size is too small
   },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: '10px',
+    padding: '20px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+  },
+  cardTitle: {
+    fontSize: '18px',
+    fontWeight: 'bold',
+    color: '#0F5132',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    marginBottom: '15px',
+  },
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '15px',
+  },
+  formGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  label: {
+    fontSize: '14px',
+    fontWeight: 'bold',
+    marginBottom: '5px',
+  },
+  icon: {
+    marginRight: '5px',
+    color: '#0F5132',
+  },
+  input: {
+    padding: '10px',
+    fontSize: '14px',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
+  },
+  textarea: {
+    padding: '10px',
+    fontSize: '14px',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
+    minHeight: '80px',
+  },
+  fileUploadContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
+  },
+  uploadLabel: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '5px',
+    color: '#0F5132',
+    fontWeight: 'bold',
+  },
+  fileInput: {
+    border: '1px solid #ccc',
+    borderRadius: '5px',
+    padding: '5px',
+  },
+  imagePreview: {
+    maxWidth: '100%',
+    borderRadius: '10px',
+    marginTop: '10px',
+  },
+  submitButton: {
+    backgroundColor: '#0F5132',
+    color: '#fff',
+    padding: '10px',
+    fontSize: '16px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+  error: {
+    color: 'red',
+    marginTop: '10px',
+  },
+  success: {
+    color: 'green',
+    marginTop: '10px',
+  },
   };
  
   const handleChangePassword = async (e) => {
@@ -1612,135 +1721,197 @@ const addTourismGov = async (e) => {
 
 
 <div style={styles.container}>
-      <h2 style={styles.heading}>Add Product</h2>
-      <form onSubmit={handleProductSubmit} style={styles.form}>
-        <div style={styles.formGroup}>
-          <label style={styles.label}>
-            <FaTag style={styles.icon} /> Product Name:
-          </label>
-          <input
-            type="text"
-            name="productName"
-            value={productFormData.productName}
-            onChange={handleProductInputChange}
-            required
-            style={styles.input}
-          />
-        </div>
+      <div style={styles.card}>
+        <h3 style={styles.cardTitle}>
+          Add Product <Inventory2Icon style={styles.icon} />
+        </h3>
+        <form onSubmit={handleProductSubmit} style={styles.form}>
+          {/* Product Name */}
+          <div style={styles.formGroup}>
+            <label style={styles.label}>
+              <FaTag style={styles.icon} /> Product Name:
+            </label>
+            <input
+              type="text"
+              name="productName"
+              value={productFormData.productName}
+              onChange={handleProductInputChange}
+              required
+              style={styles.input}
+              placeholder="Enter product name"
+            />
+          </div>
 
-        <div style={styles.formGroup}>
-          <label style={styles.label}>
-            <FaInfoCircle style={styles.icon} /> Description:
-          </label>
-          <input
-            type="text"
-            name="description"
-            value={productFormData.description}
-            onChange={handleProductInputChange}
-            required
-            style={styles.input}
-          />
-        </div>
+          {/* Description */}
+          <div style={styles.formGroup}>
+            <label style={styles.label}>
+              <FaInfoCircle style={styles.icon} /> Description:
+            </label>
+            <textarea
+              name="description"
+              value={productFormData.description}
+              onChange={handleProductInputChange}
+              required
+              style={styles.textarea}
+              placeholder="Enter product description"
+            />
+          </div>
 
-        <div style={styles.formGroup}>
-          <label style={styles.label}>
-            <FaDollarSign style={styles.icon} /> Price:
-          </label>
-          <input
-            type="number"
-            name="price"
-            value={productFormData.price}
-            onChange={handleProductInputChange}
-            required
-            style={styles.input}
-          />
-        </div>
+          {/* Price */}
+          <div style={styles.formGroup}>
+            <label style={styles.label}>
+              <FaDollarSign style={styles.icon} /> Price:
+            </label>
+            <input
+              type="number"
+              name="price"
+              value={productFormData.price}
+              onChange={handleProductInputChange}
+              required
+              style={styles.input}
+              placeholder="Enter product price"
+            />
+          </div>
 
-        <div style={styles.formGroup}>
-          <label style={styles.label}>
-            <FaStar style={styles.icon} /> Rating:
-          </label>
-          <input
-            type="number"
-            name="rating"
-            value={productFormData.rating}
-            onChange={handleProductInputChange}
-            required
-            style={styles.input}
-          />
-        </div>
+          {/* Stock */}
+          <div style={styles.formGroup}>
+            <label style={styles.label}>
+              <FaBox style={styles.icon} /> Stock:
+            </label>
+            <input
+              type="number"
+              name="stock"
+              value={productFormData.stock}
+              onChange={handleProductInputChange}
+              required
+              style={styles.input}
+              placeholder="Enter product stock"
+            />
+          </div>
 
-        <div style={styles.formGroup}>
-          <label style={styles.label}>
-            <FaBox style={styles.icon} /> Stock:
-          </label>
-          <input
-            type="number"
-            name="stock"
-            value={productFormData.stock}
-            onChange={handleProductInputChange}
-            required
-            style={styles.input}
-          />
-        </div>
+         {/* Image Upload */}
+         <div style={styles.formGroup}>
+            <label style={styles.label}>
+              <FaImage style={styles.icon} /> Image:
+            </label>
+            <div style={styles.fileUploadContainer}>
+              <strong style={styles.uploadLabel}>
+                Upload Product Image <AddPhotoAlternateIcon />
+              </strong>
+              <input
+                type="file"
+                id="file-input"
+                accept="image/*"
+                onChange={handleImageChange}
+                required
+                style={styles.fileInput}
+              />
+            </div>
+          </div>
 
-        <div style={styles.formGroup}>
-          <label style={styles.label}>
-            <FaImage style={styles.icon} /> Image:
-          </label>
-          <input
-            type="file"
-            name="image"
-            accept="image/*"
-            onChange={(e) =>
-              setProductFormData((prevData) => ({
-                ...prevData,
-                image: e.target.files[0],
-              }))
-            }
-            required
-            style={styles.input}
-          />
-        </div>
+          {/* Image Preview */}
+          {imagePreview && (
+            <img
+              src={imagePreview}
+              alt="Product Preview"
+              style={styles.imagePreview}
+            />
+          )}
+          
+          {/* Submit Button */}
+          <button type="submit" style={styles.submitButton}>
+            Add Product
+          </button>
+        </form>
 
-        <button type="submit" style={styles.button}>Add Product</button>
-      </form>
-
-      {errorMessage && <p style={styles.error}>{errorMessage}</p>}
-      {successMessage && <p style={styles.success}>{successMessage}</p>}
+        {/* Success and Error Messages */}
+        {errorMessage && <p style={styles.error}>{errorMessage}</p>}
+        {successMessage && <p style={styles.success}>{successMessage}</p>}
+      </div>
     </div>
 
+   {/* Search Product Section */}
+<div style={styles.card}>
+  <h3 style={styles.cardTitle}>
+    Search Product by Name <FaSearch style={styles.icon} />
+  </h3>
+  <form onSubmit={getProductByName} style={styles.form}>
+    <div style={styles.formGroup}>
+      <label style={styles.label}>
+        <FaTag style={styles.icon} /> Product Name:
+      </label>
+      <input
+        type="text"
+        value={productNameToSearch}
+        onChange={(e) => setProductNameToSearch(e.target.value)}
+        required
+        style={styles.input}
+        placeholder="Enter Product Name"
+      />
+    </div>
+    <button type="submit" style={styles.searchButton} disabled={loading}>
+      <FaSearch style={{ marginRight: '5px' }} />
+      Search Product
+    </button>
+  </form>
 
-      <h2>Search Product by Name</h2>
-      <form onSubmit={getProductByName}>
-        <div>
-          <label>Product Name:</label>
-          <input
-            type="text"
-            value={productNameToSearch}
-            onChange={(e) => setProductNameToSearch(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading}>Search Product</button>
-      </form>
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-      {productSearchResult && (
-        <div>
-          <h3>Product Details</h3>
-          <p>Name: {productSearchResult.productName}</p>
-          <p>Description: {productSearchResult.description}</p>
-          <p>Price: {productSearchResult.price}</p>
-          <p>Rating: {productSearchResult.rating}</p>
-          <p>Seller: {productSearchResult.seller}</p>
-          <p>Archived: {productSearchResult.archived !== undefined ? productSearchResult.archived.toString() : 'N/A'}</p>
-          <button onClick={archiveProduct} disabled={loading}>Archive Product</button>
-          <button onClick={unarchiveProduct} disabled={loading || !productSearchResult.archived}>Unarchive Product</button>
+  {/* Error and Success Messages for Search */}
+  {getProductErrorMessage && <p style={styles.error}>{getProductErrorMessage}</p>}
 
-          {/* Add more product details as needed */}
-        </div>
-      )}
+
+  {/* Product Search Result */}
+  {productSearchResult && (
+    <div style={styles.searchResult}>
+      <h4 style={styles.resultTitle}>Product Details</h4>
+      <p>
+        <strong>Name:</strong> {productSearchResult.productName}
+      </p>
+      <p>
+        <strong>Description:</strong> {productSearchResult.description}
+      </p>
+      <p>
+        <strong>Price:</strong> ${productSearchResult.price}
+      </p>
+      <p>
+        <strong>Rating:</strong> {productSearchResult.rating}
+      </p>
+      <p>
+        <strong>Seller:</strong> {productSearchResult.seller}
+      </p>
+      <p>
+        <strong>Archived:</strong>{' '}
+        {productSearchResult.archived !== undefined
+          ? productSearchResult.archived.toString()
+          : 'N/A'}
+      </p>
+      <div style={styles.buttonGroup}>
+        <button
+          onClick={archiveProduct}
+          disabled={loading}
+          style={styles.archiveButton}
+        >
+          Archive Product
+        </button>
+        <button
+          onClick={unarchiveProduct}
+          disabled={loading || !productSearchResult.archived}
+          style={styles.unarchiveButton}
+        >
+          Unarchive Product
+        </button>
+      </div>
+    </div>
+  )}
+
+  {/* Error and Success Messages for Archive */}
+  {archiveProductErrorMessage && <p style={styles.error}>{archiveProductErrorMessage}</p>}
+  {archiveProductSuccessMessage && <p style={styles.success}>{archiveProductSuccessMessage}</p>}
+
+  {/* Error and Success Messages for Unarchive */}
+  {unarchiveProductErrorMessage && <p style={styles.error}>{unarchiveProductErrorMessage}</p>}
+  {unarchiveProductSuccessMessage && <p style={styles.success}>{unarchiveProductSuccessMessage}</p>}
+</div>
+
 
 <div style={styles.container2}>
   {/* Itineraries Section */}
