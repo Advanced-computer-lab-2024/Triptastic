@@ -6,6 +6,7 @@ import logo from '../images/image.png'; // Adjust the path based on your folder 
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 import LockResetIcon from '@mui/icons-material/LockReset';
+import { FaTag, FaInfoCircle, FaDollarSign, FaStar, FaImage } from "react-icons/fa";
 
 
 const AdminPage = () => {
@@ -497,62 +498,6 @@ const handleAddProduct = () => {
   };
 
 
-  const fetchPrefTag = async () => {
-    try {
-        const response = await fetch(`http://localhost:8000/getPrefTag?PrefTagName=${prefTagName}`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch preference tag');
-        }
-        const data = await response.json();
-        setPrefTag(data.PrefTagName);
-    } catch (err) {
-        setError(err.message);
-    }
-};
-
-const deletePrefTag = async () => {
-  try {
-      const response = await fetch('http://localhost:8000/deletePreftag', {
-          method: 'DELETE',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ PrefTagName: prefTagName }),
-      });
-
-      if (!response.ok) {
-          throw new Error('Failed to delete preference tag');
-      }
-      const data = await response.json();
-      setMessage(data.msg); // Set success message
-      setError('');
-  } catch (err) {
-      setError(err.message); // Set error message
-      setMessage('');
-  }
-};
-const updatePrefTag = async () => {
-  try {
-      const response = await fetch('http://localhost:8000/updatePreftag', {
-          method: 'PATCH',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ PrefTagName: prefTagName, newPrefTagName }),
-      });
-
-      if (!response.ok) {
-          throw new Error('Failed to update preference tag');
-      }
-      const data = await response.json();
-      setMessage(`Preference tag updated: ${JSON.stringify(data.PrefTagName)}`);
-      setError('');
-  } catch (err) {
-      setError(err.message);
-      setMessage('');
-  }
-};
-
 //getproduct
 const getProductByName = async (e) => {
   e.preventDefault();
@@ -589,6 +534,7 @@ const getProductByName = async (e) => {
     setLoading(false);
   }
 };
+
 const archiveProduct = async () => {
   if (!productNameToArchive) {
     setErrorMessage('No product selected to archive.');
@@ -666,70 +612,7 @@ const unarchiveProduct = async () => {
   }
 };
 
-
-
-  const createCategory = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setErrorMessage('');
-    setSuccessMessage('');
-
-    try {
-      const response = await fetch('http://localhost:8000/createCategory', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ Name: createCategoryName })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setSuccessMessage(`Category "${data.Name}" created successfully!`);
-        setCreateCategoryName('');
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(errorData.error || 'Failed to create category.');
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while creating the category.');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGetCategory = async () => {
-    setLoading(true);
-    setErrorMessage('');
-    setSuccessMessage('');
-    setCategorySearchResult(null);
-
-    try {
-      const response = await fetch(`http://localhost:8000/getCategory?Name=${searchCategoryName}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setCategorySearchResult(data);
-        setSuccessMessage(`Category ${data.Name} found!`);
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(errorData.error || 'Category not found.');
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while fetching the category.');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const [addTourismGovError, setAddTourismGovError] = useState('');
+const [addTourismGovError, setAddTourismGovError] = useState('');
 const [addTourismGovSuccess, setAddTourismGovSuccess] = useState('');
 
 const addTourismGov = async (e) => {
@@ -763,7 +646,6 @@ const addTourismGov = async (e) => {
   }
 };
 
-  
 
   const handleTourismGovChange = (e) => {
     const { name, value } = e.target;
@@ -772,171 +654,7 @@ const addTourismGov = async (e) => {
       [name]: value
     }));
   };
-  // Function to handle updating the category
-  const handleUpdateCategory = async (e) => {
-    e.preventDefault();
-    setErrorMessage('');
-    setSuccessMessage('');
-    setLoading(true);
-
-    const { currentName, newName } = updateCategoryData;
-
-    try {
-      const response = await fetch('http://localhost:8000/updateCategory', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ Name: currentName, newName }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setSuccessMessage(`Category "${data.Name}" updated successfully!`);
-        setUpdateCategoryData({ currentName: '', newName: '' });
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(errorData.error || 'Failed to update category.');
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while updating the category.');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleUpdateCategoryChange = (e) => {
-    const { name, value } = e.target;
-    setUpdateCategoryData((prevData) => ({
-      ...prevData,
-      [name]: value
-    }));
-  };
-
-
-  const deleteCategory = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setErrorMessage('');
-    setSuccessMessage('');
-
-    try {
-      const response = await fetch('http://localhost:8000/deleteCategory', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ Name: deleteCategoryName }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setSuccessMessage(data.msg);
-        setDeleteCategoryName('');
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(errorData.error || 'Failed to delete category.');
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while deleting the category.');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const createPrefTag = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setCreatePrefTagMessage('');
-
-    try {
-      const response = await fetch('http://localhost:8000/createPrefTag', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ PrefTagName: prefTagName }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setCreatePrefTagMessage(`Preference Tag "${data.PrefTagName}" created successfully!`);
-        setPrefTagName(''); // Reset the input field after successful creation
-      } else {
-        const errorData = await response.json();
-        setCreatePrefTagMessage(`Error: ${errorData.error}`);
-      }
-    } catch (error) {
-      setCreatePrefTagMessage('An error occurred while creating the preference tag.');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-
-  const fetchComplaintDetails = async (e) => {
-    e.preventDefault();
-    setComplaintLoading(true);
-    setComplaintError('');
-    setComplaintDetails(null);
-  
-    try {
-      const response = await fetch(`http://localhost:8000/getComplaintDetails/${complaintIdToSearch.trim()}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
-        setComplaintDetails(data); // Store the fetched complaint details
-      } else {
-        const errorData = await response.json();
-        setComplaintError(errorData.error || 'Complaint not found.');
-      }
-    } catch (error) {
-      setComplaintError('An error occurred while fetching the complaint details.');
-      console.error(error);
-    } finally {
-      setComplaintLoading(false);
-    }
-  };
-  
-  const updateComplaintStatus = async (e) => {
-    e.preventDefault();
-    setUpdateStatusLoading(true);
-    setUpdateStatusError('');
-    setUpdateStatusMessage('');
-  
-    try {
-      const response = await fetch(`http://localhost:8000/updateComplaintStatus/${complaintIdToUpdate.trim()}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: complaintStatus }),
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
-        setUpdateStatusMessage(data.message || 'Complaint status updated successfully.');
-      } else {
-        const errorData = await response.json();
-        setUpdateStatusError(errorData.error || 'Failed to update complaint status.');
-      }
-    } catch (error) {
-      setUpdateStatusError('An error occurred while updating the complaint status.');
-      console.error(error);
-    } finally {
-      setUpdateStatusLoading(false);
-    }
-  };
  
-    
   const fetchStatistics = async () => {
     setStatsLoading(true);
     setStatsError("");
@@ -1373,7 +1091,126 @@ const addTourismGov = async (e) => {
   deleteButton:{
     backgroundColor: loading ? '#ccc' : '#dc3545', // Red for delete
 
-  }
+  },
+  container: {
+    maxWidth: '1300px',
+    margin: '20px auto',
+    padding: '10px',
+    fontFamily: 'Arial, sans-serif',
+    backgroundColor: '#f8f9fa',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+  },
+  heading: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: '20px',
+    color: '#0F5132',
+  },
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px', // Reduced gap between elements
+  },
+  formGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    marginBottom: '3px', // Reduced margin between groups
+  },
+  label: {
+    fontSize: '14px',
+    fontWeight: 'bold',
+    marginBottom: '4px', // Less space below labels
+    color: '#555',
+  },
+  input: {
+    padding: '2px', // Reduced padding for inputs
+    fontSize: '14px',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
+  },
+  button: {
+    padding: '10px',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#fff',
+    backgroundColor: '#0F5132',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease',
+  },
+  buttonHover: {
+    backgroundColor: '#0C3E27',
+  },
+  errorMessage: {
+    marginTop: '10px',
+    color: 'red',
+    fontSize: '14px',
+    textAlign: 'center',
+  },
+  successMessage: {
+    marginTop: '10px',
+    color: 'green',
+    fontSize: '14px',
+    textAlign: 'center',
+  },
+  section: {
+    flex: '1 1 30%', // Responsive sections
+    minWidth: '250px', // Ensure minimum width
+    maxWidth: '300px', // Prevent overly large sections
+    backgroundColor: '#f8f9fa',
+    borderRadius: '10px',
+    padding: '15px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+  },
+  button: {
+    display: 'block',
+    width: '100%',
+    padding: '10px',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#fff',
+    backgroundColor: '#0F5132',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    marginBottom: '10px',
+  },
+  content: {
+    marginTop: '10px',
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: '8px',
+    padding: '10px',
+    marginBottom: '10px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  },
+
+  text: {
+    fontSize: '14px',
+    margin: '5px 0',
+    color: '#555',
+  },
+  flagButton: {
+    padding: '8px',
+    fontSize: '14px',
+    color: '#fff',
+    backgroundColor: '#d9534f',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    marginTop: '10px',
+  },
+    container2: {
+    display: 'flex',
+    gap: '20px', // Space between sections
+    justifyContent: 'space-around',
+    padding: '20px',
+    flexWrap: 'wrap', // Wrap if screen size is too small
+  },
   };
  
   const handleChangePassword = async (e) => {
@@ -1414,7 +1251,7 @@ const addTourismGov = async (e) => {
   
   return (
   <div>
-    <h1>Admin Page</h1>
+    <h1>--</h1>
     <header style={styles.header}>
   <div style={styles.logoContainer}>
     <img src={logo} alt="Logo" style={styles.logo} />
@@ -1437,7 +1274,7 @@ const addTourismGov = async (e) => {
 
   {/* Edit Profile Icon */}
   <ManageAccountsIcon
-    style={styles.profileIcon}
+    style={styles.profileIcon}s
     title="Edit Profile"
     onClick={toggleModal} // Open modal on click
   />
@@ -1459,6 +1296,8 @@ const addTourismGov = async (e) => {
         <li onClick={() => navigate('/Complaints')}>Complaints</li>
         <li onClick={() => navigate('/preftags')}>Preference Tags</li>
         <li onClick={() => navigate('/docs')}>Docs</li>
+        <li onClick={() => navigate('/category')}>Categories</li>
+
   
       
         
@@ -1585,7 +1424,7 @@ const addTourismGov = async (e) => {
 {modalOpen && (
   <div style={styles.modalOverlay}>
     <div style={styles.modalContent}>
-      <h2 style={styles.modalContentH2}>Admin Settings</h2>
+      <h2 style={styles.modalContentH2}>Admin Control</h2>
       <HighlightOffOutlinedIcon
         onClick={toggleModal}
         style={styles.cancelIcon} // Apply cancel icon style
@@ -1772,142 +1611,106 @@ const addTourismGov = async (e) => {
 
 
 
-      <h2>Add Product</h2>
-      <form onSubmit={handleProductSubmit}>
-        <div>
-          <label>Product Name:</label>
+<div style={styles.container}>
+      <h2 style={styles.heading}>Add Product</h2>
+      <form onSubmit={handleProductSubmit} style={styles.form}>
+        <div style={styles.formGroup}>
+          <label style={styles.label}>
+            <FaTag style={styles.icon} /> Product Name:
+          </label>
           <input
             type="text"
             name="productName"
             value={productFormData.productName}
             onChange={handleProductInputChange}
             required
+            style={styles.input}
           />
         </div>
-        <div>
-          <label>Description:</label>
+
+        <div style={styles.formGroup}>
+          <label style={styles.label}>
+            <FaInfoCircle style={styles.icon} /> Description:
+          </label>
           <input
             type="text"
             name="description"
             value={productFormData.description}
             onChange={handleProductInputChange}
             required
+            style={styles.input}
           />
         </div>
-        <div>
-          <label>Price:</label>
+
+        <div style={styles.formGroup}>
+          <label style={styles.label}>
+            <FaDollarSign style={styles.icon} /> Price:
+          </label>
           <input
             type="number"
             name="price"
             value={productFormData.price}
             onChange={handleProductInputChange}
             required
+            style={styles.input}
           />
         </div>
-        <div>
-          <label>Rating:</label>
+
+        <div style={styles.formGroup}>
+          <label style={styles.label}>
+            <FaStar style={styles.icon} /> Rating:
+          </label>
           <input
             type="number"
             name="rating"
             value={productFormData.rating}
             onChange={handleProductInputChange}
             required
+            style={styles.input}
           />
         </div>
-        <div>
-          <label>Stock:</label>
+
+        <div style={styles.formGroup}>
+          <label style={styles.label}>
+            <FaBox style={styles.icon} /> Stock:
+          </label>
           <input
             type="number"
             name="stock"
             value={productFormData.stock}
             onChange={handleProductInputChange}
             required
+            style={styles.input}
           />
         </div>
-        <div>
-  <label>Image:</label>
-  <input
-    type="file"
-    name="image"
-    accept="image/*" // Allow only image files
-    onChange={(e) => setProductFormData((prevData) => ({
-      ...prevData,
-      image: e.target.files[0] // Store the selected file
-    }))}
-    required
-  />
-</div>
-        <button type="submit">Add Product</button>
+
+        <div style={styles.formGroup}>
+          <label style={styles.label}>
+            <FaImage style={styles.icon} /> Image:
+          </label>
+          <input
+            type="file"
+            name="image"
+            accept="image/*"
+            onChange={(e) =>
+              setProductFormData((prevData) => ({
+                ...prevData,
+                image: e.target.files[0],
+              }))
+            }
+            required
+            style={styles.input}
+          />
+        </div>
+
+        <button type="submit" style={styles.button}>Add Product</button>
       </form>
 
-      <h2>Create Category</h2>
-      <form onSubmit={createCategory}>
-        <div>
-          <label>Category Name:</label>
-          <input
-            type="text"
-            value={createCategoryName}
-            onChange={(e) => setCreateCategoryName(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading}>Create Category</button>
-      </form>
-      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-
-    
-      <h2>Update Category</h2>
-      <form onSubmit={handleUpdateCategory}>
-        <div>
-          <label>Current Category Name:</label>
-          <input
-            type="text"
-            name="currentName"
-            value={updateCategoryData.currentName}
-            onChange={handleUpdateCategoryChange}
-            required
-          />
-        </div>
-        <div>
-          <label>New Category Name:</label>
-          <input
-            type="text"
-            name="newName"
-            value={updateCategoryData.newName}
-            onChange={handleUpdateCategoryChange}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading}>Update Category</button>
-        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-        {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-      </form>
-       
-        {/* Delete Category Section */}
-        <h2>Delete Category</h2>
-      <form onSubmit={deleteCategory}>
-        <div>
-          <label>Category Name to Delete:</label>
-          <input
-            type="text"
-            value={deleteCategoryName}
-            onChange={(e) => setDeleteCategoryName(e.target.value)}
-            required
-          />
-        </div>
+      {errorMessage && <p style={styles.error}>{errorMessage}</p>}
+      {successMessage && <p style={styles.success}>{successMessage}</p>}
+    </div>
 
 
-
-              {/* Get Product by Name Section */}
-
-
-
-
-
-        <button type="submit" disabled={loading}>Delete Category</button>
-      </form>
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
       <h2>Search Product by Name</h2>
       <form onSubmit={getProductByName}>
         <div>
@@ -1939,72 +1742,86 @@ const addTourismGov = async (e) => {
         </div>
       )}
 
-      <h2>Search Category</h2>
-      <div>
-        <label>Category Name:</label>
-        <input
-          type="text"
-          value={searchCategoryName}
-          onChange={(e) => setSearchCategoryName(e.target.value)}
-          required
-        />
-        <button onClick={handleGetCategory} disabled={loading}>Search Category</button>
-        {categorySearchResult && <p>Category Found: {categorySearchResult.Name}</p>}
-      </div>
-      <div>
-        <button onClick={handleViewItineraries}> {showingItineraries ? 'Hide Itineraries' : 'Show Itineraries'}</button>
-        { showingItineraries && (
-           <div>
-           {Itineraries.length > 0 ? (
-             Itineraries.map((itinerary) => (
-               <div key={itinerary._id}>
-                 <h4>Locations: {itinerary.Locations.join(', ')}</h4>
-                 <p>Dates: {itinerary.DatesTimes}</p>
-                 <button onClick={() => handleFlagItinerary(itinerary._id)}>Flag itinerary</button>
-               </div>
-             ))
-           ) : (
-             <p>No itineraries found.</p>
-           )}
-         </div>
+<div style={styles.container2}>
+  {/* Itineraries Section */}
+  <div style={styles.section}>
+    <button style={styles.button} onClick={handleViewItineraries}>
+      {showingItineraries ? 'Hide Itineraries' : 'Show Itineraries'}
+    </button>
+    {showingItineraries && (
+      <div style={styles.content}>
+        {Itineraries.length > 0 ? (
+          Itineraries.map((itinerary) => (
+            <div key={itinerary._id} style={styles.card}>
+              <h4 style={styles.title}>Locations:</h4>
+              <p style={styles.text}>{itinerary.Locations.join(', ')}</p>
+              <p style={styles.text}>Dates: {itinerary.DatesTimes}</p>
+              <button style={styles.flagButton} onClick={() => handleFlagItinerary(itinerary._id)}>
+                Flag Itinerary
+              </button>
+            </div>
+          ))
+        ) : (
+          <p style={styles.text}>No itineraries found.</p>
         )}
       </div>
-      <div>
-        <button onClick={handleViewActivities}> {showingActivities ? 'Hide activities' : 'Show activities'}</button>
-        { showingActivities && (
-           <div>
-           {Activities.length > 0 ? (
-             Activities.map((activity) => (
-               <div key={activity._id}>
-                 <h4>Name: {activity.Name}</h4>
-                 <p>Category: {activity.Category}</p>
-                 <button onClick={() => handleFlagActivity(activity._id)}>Flag activity</button>
-               </div>
-             ))
-           ) : (
-             <p>No activities found.</p>
-           )}
-         </div>
+    )}
+  </div>
+
+  {/* Activities Section */}
+  <div style={styles.section}>
+    <button style={styles.button} onClick={handleViewActivities}>
+      {showingActivities ? 'Hide Activities' : 'Show Activities'}
+    </button>
+    {showingActivities && (
+      <div style={styles.content}>
+        {Activities.length > 0 ? (
+          Activities.map((activity) => (
+            <div key={activity._id} style={styles.card}>
+              <h4 style={styles.title}>Name:</h4>
+              <p style={styles.text}>{activity.Name}</p>
+              <p style={styles.text}>Category: {activity.Category}</p>
+              <button style={styles.flagButton} onClick={() => handleFlagActivity(activity._id)}>
+                Flag Activity
+              </button>
+            </div>
+          ))
+        ) : (
+          <p style={styles.text}>No activities found.</p>
         )}
       </div>
-      <div>
-        <button onClick={handleViewTouristItineraries}> {showingTouristItineraries ? 'Hide tourist itineraries' : 'Show tourist itineraries'}</button>
-        { showingTouristItineraries && (
-           <div>
-           {touristItineraries.length > 0 ? (
-             touristItineraries.map((touristItinerary) => (
-               <div key={touristItinerary._id}>
-                 <h4>Activities: {touristItinerary.Activities.join(', ')}</h4>
-                 <p>Locations: {touristItinerary.Locations.join(', ')}</p>
-                 <button onClick={() => handleFlagTouristItinerary(touristItinerary._id)}>Flag tourist itinerary</button>
-               </div>
-             ))
-           ) : (
-             <p>No tourist itineraries found.</p>
-           )}
-         </div>
+    )}
+  </div>
+
+  {/* Tourist Itineraries Section */}
+  <div style={styles.section}>
+    <button style={styles.button} onClick={handleViewTouristItineraries}>
+      {showingTouristItineraries ? 'Hide Tourist Itineraries' : 'Show Tourist Itineraries'}
+    </button>
+    {showingTouristItineraries && (
+      <div style={styles.content}>
+        {touristItineraries.length > 0 ? (
+          touristItineraries.map((touristItinerary) => (
+            <div key={touristItinerary._id} style={styles.card}>
+              <h4 style={styles.title}>Activities:</h4>
+              <p style={styles.text}>{touristItinerary.Activities.join(', ')}</p>
+              <p style={styles.text}>Locations: {touristItinerary.Locations.join(', ')}</p>
+              <button
+                style={styles.flagButton}
+                onClick={() => handleFlagTouristItinerary(touristItinerary._id)}
+              >
+                Flag Tourist Itinerary
+              </button>
+            </div>
+          ))
+        ) : (
+          <p style={styles.text}>No tourist itineraries found.</p>
         )}
       </div>
+    )}
+  </div>
+</div>
+
       <h2 style={styles.heading}>Pending Account Deletion Requests</h2>
 {requests.length === 0 ? (
   <p style={styles.noRequestsMessage}>No pending requests.</p>
