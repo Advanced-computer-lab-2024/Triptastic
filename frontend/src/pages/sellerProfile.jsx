@@ -8,6 +8,7 @@ import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 import LockResetIcon from '@mui/icons-material/LockReset';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
+import { Tooltip } from 'react-tooltip'; // Updated import
 
 const SellerProfile = () => {
   const [sellerProducts, setSellerProducts] = useState([]);
@@ -552,19 +553,19 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
         <h1 style={styles.title}>Seller Profile</h1>
   
         {/* Products Icon */}
-        <FaBox
+        <FaBox title=" View Products"
           size={22}
           style={{ cursor: 'pointer', color: 'white', marginRight: '-490px' }}
           onClick={() => navigate('/products')} // Navigate to Products page
         />
   
         {/* Notification Bell */}
-        <FaBell
+        <FaBell title="Notifications"
           size={22}
           style={{ cursor: 'pointer', color: 'white', marginRight: '-490px' }}
           onClick={handleNotificationClick}
         />
-         <LockResetIcon
+         <LockResetIcon title="Change Password"
             alt="Profile Icon"
             style={{cursor: 'pointer', color: 'white', marginRight: '-490px' }}
             onClick={togglePasswordModal}
@@ -572,9 +573,9 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
         
   
         {/* Profile Icon */}
-        <ManageAccountsIcon
+        <ManageAccountsIcon title="Edit Profile"
+
           style={styles.profileIcon}
-          title="Edit Profile"
           onClick={toggleModal} // Open modal on click
         />
       </header>
@@ -974,6 +975,8 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
           </div>
         </div>
       )}
+             <Tooltip id="amenities-tooltip" place="top" />
+
     </div>
   );
   

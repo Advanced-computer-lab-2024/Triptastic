@@ -545,12 +545,12 @@ const BookHotels = () => {
 </div>
 
 
-<div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-  <FaStar style={{ color: '#FFD700' }} />
-  <span style={{ fontSize: '14px', color: '#555' }}>
-    {hotel.hotel.userRating ? `${hotel.hotel.userRating} / 5` : 'No ratings available'}
-  </span>
-</div>
+                      <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                           <FaStar style={{ color: '#FFD700' }} />
+                             <span style={{ fontSize: '14px', color: '#555' }}>
+                                  {hotel.hotel.userRating ? `${hotel.hotel.userRating} / 5` : 'No ratings available'}
+                                       </span>
+                          </div>
           </div>
           {bookedHotels[index] ? (
             <p
