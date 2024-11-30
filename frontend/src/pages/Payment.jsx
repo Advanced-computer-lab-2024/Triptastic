@@ -10,13 +10,16 @@ const PaymentPage = () => {
   const amount = parseInt(queryParams.get('amount'), 10); // Amount in cents
   console.log(amount); // Debugging step to ensure amount is being sent correctly
   const Username = localStorage.getItem('Username');
-  const userEmail=localStorage.getItem('Email')
+  const userEmail = localStorage.getItem('Email');
   console.log(Username);
   console.log(userEmail);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('credit_card'); // Default to credit card
+  const [promoCode, setPromoCode] = useState('');
+  const [discount, setDiscount] = useState(0); // Store discount amount
+  const [discountedAmount, setDiscountedAmount] = useState(amount); // Store updated amount after discount
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
@@ -28,64 +31,102 @@ const PaymentPage = () => {
     console.log('Stored previous page:', fromPage); // Debugging log
   }, [location]);
 
+  // Handle promo code change
+  const handlePromoCodeChange = (e) => {
+    setPromoCode(e.target.value);
+    console.log(promoCode);
+  };
+
+  // Apply promo code
+  const applyPromoCode = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/applyPromoCode', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ amount: amount, code: promoCode }),
+      });
+  
+      const data = await response.json();
+  
+      if (data.success) {
+        const discount = data.discount;
+        setDiscount(discount);
+        const newAmount = amount - discount;
+        setDiscountedAmount(newAmount);
+  
+        // Update the URL with the new amount
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.set('amount', newAmount); // Update the amount in the query params
+        window.history.pushState({}, '', newUrl); // Update the browser URL
+  
+        alert(`Promo code applied! You saved $${(discount / 100).toFixed(2)}`);
+      } else {
+        alert('Invalid promo code');
+      }
+    } catch (error) {
+      console.error('Error applying promo code:', error);
+      alert('Error applying promo code');
+    }
+  };
+  
+  
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError(null); // Reset error
     if (!stripe || !elements) return; // Stripe.js not loaded yet
-  
+
     setLoading(true);
-  
+
     try {
       let paymentSuccess = false;
-  
+
       if (paymentMethod === 'credit_card') {
-        // 1. Call the backend to create a payment intent for Stripe
-        const { data } = await axios.post(`http://localhost:8000/create-payment-intent?amount=${amount}&payment_method=${paymentMethod}`);
+        // Call the backend to create a payment intent with the discounted amount
+        const { data } = await axios.post(`http://localhost:8000/create-payment-intent?amount=${discountedAmount}&payment_method=${paymentMethod}`);
         const { clientSecret } = data;
-  
-        // 2. Confirm the payment using Stripe.js
+
+        // Confirm the payment using Stripe.js
         const result = await stripe.confirmCardPayment(clientSecret, {
           payment_method: {
             card: elements.getElement(CardElement),
             billing_details: {
-              name: Username, // Dynamically update based on logged-in user
-              email: userEmail, // Including user's email in the billing details
+              name: Username,
+              email: userEmail,
             },
           },
         });
-  
+
         if (result.error) {
           setError(`Payment failed: ${result.error.message}`);
         } else if (result.paymentIntent.status === 'succeeded') {
           paymentSuccess = true;
         }
       } else if (paymentMethod === 'wallet') {
+        // Handle wallet payment with the discounted amount
         const { data } = await axios.patch('http://localhost:8000/payWithWallet', {
           username: Username,
-          amount: amount,
+          amount: discountedAmount,
         });
-        console.log(data);
-  
+
         if (data) {
           paymentSuccess = true;
         } else {
           setError('Wallet payment failed. Please try again.');
         }
       }
-  
+
       if (paymentSuccess) {
-        // Trigger email sending after payment success
-        alert('Payment succeeded using wallet! Thank you for your purchase.');
+        alert('Payment succeeded! Thank you for your purchase.');
 
         const previousPage = localStorage.getItem('previousPage');
         navigate(previousPage || '/');
-        const response = await axios.post('http://localhost:8000/sendPaymentEmail', {
+        await axios.post('http://localhost:8000/sendPaymentEmail', {
           email: userEmail,
-          amount: amount,
+          amount: discountedAmount,
         });
-
-  
-
       }
     } catch (error) {
       console.error(error);
@@ -94,7 +135,6 @@ const PaymentPage = () => {
       setLoading(false);
     }
   };
-  
 
   return (
     <div style={styles.container}>
@@ -114,7 +154,7 @@ const PaymentPage = () => {
           <FaDollarSign style={styles.icon} /> Payment Summary
         </h3>
         <p style={styles.summaryText}>
-          <strong>Amount:</strong> ${(amount / 100).toFixed(2)}
+          <strong>Amount:</strong> ${(discountedAmount / 100).toFixed(2)}
         </p>
         <p style={styles.summaryText}>
           <strong>Description:</strong> Service Purchase
@@ -122,6 +162,23 @@ const PaymentPage = () => {
         <p style={styles.summaryText}>
           <strong>User:</strong> {Username}
         </p>
+      </div>
+
+      {/* Promo Code */}
+      <div style={styles.promoCodeSection}>
+        <input
+          type="text"
+          value={promoCode}
+          onChange={handlePromoCodeChange}
+          placeholder="Enter promo code"
+          style={styles.promoCodeInput}
+        />
+        <button
+          onClick={applyPromoCode}
+          style={styles.button}
+        >
+          Apply Promo Code
+        </button>
       </div>
 
       {/* Payment Method Selector */}
@@ -164,7 +221,7 @@ const PaymentPage = () => {
               backgroundColor: loading || (!stripe && paymentMethod === 'credit_card') ? '#ccc' : '#0F5132',
             }}
           >
-            {loading ? 'Processing...' : `Pay $${(amount / 100).toFixed(2)}`}
+            {loading ? 'Processing...' : `Pay $${(discountedAmount / 100).toFixed(2)}`}
           </button>
         </form>
       </div>
@@ -229,79 +286,86 @@ const styles = {
   summaryTitle: {
     fontSize: '18px',
     fontWeight: 'bold',
-    marginBottom: '10px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
+    color: '#0F5132',
   },
   summaryText: {
     fontSize: '14px',
     color: '#555',
-    marginBottom: '5px',
   },
-  icon: {
-    fontSize: '18px',
-    color: '#333',
+  promoCodeSection: {
+    width: '100%',
+    maxWidth: '400px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
+  },
+  promoCodeInput: {
+    padding: '10px',
+    fontSize: '16px',
+    borderRadius: '6px',
+    border: '1px solid #ddd',
+  },
+  button: {
+    padding: '10px 20px',
+    backgroundColor: '#0F5132',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontSize: '16px',
+  },
+  selectedButton: {
+    padding: '10px 20px',
+    backgroundColor: '#2b8a3e',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontSize: '16px',
+  },
+  paymentMethodSelector: {
+    display: 'flex',
+    justifyContent: 'space-evenly',
+    width: '100%',
+    maxWidth: '400px',
+    marginBottom: '20px',
   },
   card: {
-    width: '90%',
+    width: '100%',
     maxWidth: '400px',
     padding: '20px',
-    borderRadius: '10px',
     backgroundColor: '#fff',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-    textAlign: 'center',
+    borderRadius: '6px',
+    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
   },
   title: {
-    fontSize: '24px',
-    fontWeight: 'bold',
+    fontSize: '22px',
+    textAlign: 'center',
     color: '#333',
-    marginBottom: '20px',
+  },
+  icon: {
+    fontSize: '28px',
+    marginRight: '10px',
   },
   form: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '20px',
+    gap: '15px',
   },
   cardElementContainer: {
-    border: '1px solid #ddd',
-    borderRadius: '6px',
     padding: '10px',
-    backgroundColor: '#f8f8f8',
-  },
-  button: {
-    padding: '12px',
+    backgroundColor: '#f1f1f1',
     borderRadius: '6px',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: '#fff',
-    border: 'none',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s',
-    marginTop: '20px',
-  },
-  selectedButton: {
-    backgroundColor: '#0F5132',
-  },
-  paymentMethodSelector: {
-    marginTop: '20px',
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '10px',
   },
 };
 
 const cardStyle = {
   style: {
     base: {
-      iconColor: '#6a6a6a',
-      color: '#6a6a6a',
-      lineHeight: '24px',
-      fontWeight: 400,
-      fontFamily: 'Arial, sans-serif',
       fontSize: '16px',
+      color: '#333',
       '::placeholder': {
-        color: '#a3a3a3',
+        color: '#aaa',
       },
     },
   },
