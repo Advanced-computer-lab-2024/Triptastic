@@ -419,10 +419,11 @@ const handleUpdate = async (e) => {
 
           <div style={{ display: "grid", gap: "15px" }}>
             <div>
-              <label><strong>Name:</strong></label>
+   
               <input
                 type="text"
                 name="name"
+                placeholder='Name'
                 value={formData.name}
                 onChange={handleInputChange}
                 style={{
@@ -434,10 +435,11 @@ const handleUpdate = async (e) => {
                 }}              />
             </div>
             <div>
-              <label><strong>Date:</strong></label>
+            
               <input
                 type="date"
                 name="date"
+                placeholder='Date'
                 value={formData.date}
                 onChange={handleInputChange}
                 style={{ width: "40%",
@@ -445,42 +447,41 @@ const handleUpdate = async (e) => {
               />
             </div>
             <div>
-              <label><strong>Time:</strong></label>
               <input
                 type="time"
                 name="time"
+                placeholder='Time'
                 value={formData.time}
                 onChange={handleInputChange}
                 style={{ width: "40%", padding: "8px", borderRadius: "5px", border: "1px solid #ccc" }}
               />
             </div>
             <div>
-              <label><strong>Price:</strong></label>
               <input
                 type="number"
                 name="price"
+                placeholder='Price'
                 value={formData.price}
                 onChange={handleInputChange}
                 style={{ width: "40%", padding: "8px", borderRadius: "5px", border: "1px solid #ccc" }}
               />
             </div>
             <div>
-              <label><strong>Category:</strong></label>
               <input
                 type="text"
                 name="Category"
+                placeholder='Category'
                 value={formData.Category}
                 onChange={handleInputChange}
                 style={{ width: "40%", padding: "8px", borderRadius: "5px", border: "1px solid #ccc" }}
               />
             </div>
             <div style={{ position: "relative" }}>
-  <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
-    Tags:
-  </label>
+
   <Select
     isMulti
     name="tags"
+    placeholder='Tags'
     options={availableTags}
     className="basic-multi-select"
     classNamePrefix="select"
@@ -511,26 +512,16 @@ const handleUpdate = async (e) => {
 </div>
 
             <div>
-              <label><strong>Special Discounts:</strong></label>
               <input
                 type="text"
+                placeholder='Special Discounts'
                 name="specialDiscounts"
                 value={formData.specialDiscounts}
                 onChange={handleInputChange}
                 style={{ width: "40%", padding: "8px", borderRadius: "5px", border: "1px solid #ccc" }}
               />
             </div>
-            <div>
-            <label><strong>Rating:</strong></label>
-            <input
-              type="Number"
-              name="rating"
-              value={formData.rating}
-              onChange={handleInputChange}
-              style={{ width: "40%", padding: "8px", borderRadius: "5px", border: "1px solid #ccc" }}
-
-            />
-          </div>
+            
 
           <div>
             <label><strong>Booking Open:</strong></label>
