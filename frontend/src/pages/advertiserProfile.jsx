@@ -611,6 +611,7 @@ const [filteredActivities, setFilteredActivities] = useState([]);
     <option value="11">November</option>
     <option value="12">December</option>
   </select>
+  <button onClick={()=>navigate('/AdvertiserReport')} style={{marginLeft:'20px'}}>View Report</button>
 </div>
      {/* Activities Section */}
 <h3 className="activities-title"> Activity Reports</h3>
