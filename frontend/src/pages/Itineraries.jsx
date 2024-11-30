@@ -174,10 +174,12 @@ const Itineraries = () => {
         Username: username,
       });
 
-      if (response.status === 200) {
-        const result = response.data;
-         alert(result.message);
-        fetchASCItineraries(); // Refresh the itineraries to reflect the booking
+      if (response.data.Price) {
+        // Navigate to the payment page with price as the query parameter
+        navigate(`/payment?amount=${response.data.Price}`,{ state: { from: '/itineraries' } });
+        setErrorMessage(''); // Clear any previous error messages
+      } else {
+        throw new Error('Invalid response from server');
       }
     } catch (error) {
       console.error('Error booking itinerary:', error);

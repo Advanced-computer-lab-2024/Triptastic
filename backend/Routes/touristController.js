@@ -1268,6 +1268,7 @@ const bookItinerary = async (req, res) => {
       newlyEarnedPoints,
       bonusCash,
       updatedWallet: tourist.Wallet,
+      Price: itinerary.Price,
     },);
  
   } catch (error) {

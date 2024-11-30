@@ -51,6 +51,7 @@ import AdminSettings from './pages/adminsettings';
 import AttendedActivitiesPage from './pages/AttendedActivities';
 import Preftags from './pages/preftags';
 import CreateTransportation from './pages/createTransportation';
+import Category from './pages/category';
 
 
 
@@ -146,7 +147,7 @@ function App() {
             <Route path="/adminsettings" element={<AdminSettings />} />
             <Route path="/preftags" element={<Preftags />} />
             <Route path="/createTransportation" element={<CreateTransportation />} />
-
+            <Route path="/category" element={<Category />} />
 
 
           </Routes>

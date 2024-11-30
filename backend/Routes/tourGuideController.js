@@ -502,11 +502,20 @@ const settleDocsTourGuide = async (req, res) => {
      res.status(500).json({ error: "Error filtering itineraries by month" });
    }
  };
- 
- 
+ const filterByItinerary = async (req, res) => {
+    const { itineraryId } = req.query;
+    try{
+      const x=await ItinBookingModel.find({itineraryId:itineraryId});
+      const r= x.map(x=> x.createdAt);
+      res.status(200).json(r);
+    }
+    catch(error){
+       res.status(400).json({error: error.message});
+    }
+  };
  
  
  
  module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG
-   ,changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide,deactivateItinrary,activateItinrary,getTouristReportForItinerary,filterItinerariesByMonth,loginTourGuide,getFilteredItineraries};
+   ,changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide,deactivateItinrary,activateItinrary,getTouristReportForItinerary,filterItinerariesByMonth,loginTourGuide,getFilteredItineraries,filterByItinerary};
  
