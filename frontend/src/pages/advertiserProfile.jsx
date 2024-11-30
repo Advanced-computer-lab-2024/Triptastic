@@ -218,8 +218,9 @@ const [filteredActivities, setFilteredActivities] = useState([]);
           },
         }));
       } else {
+        alert('No tourists booked this activity yet.');
         const errorData = await response.json();
-        setErrorMessage(errorData.message || 'Failed to fetch report');
+        //setErrorMessage(errorData.message || 'Failed to fetch report');
       }
     } catch (error) {
       console.error('An error occurred while fetching the report:', error);
