@@ -15,6 +15,10 @@ const [mostSold, setMostSold] = useState();
 const [leastSold, setLeastSold] = useState();
 const [date, setDate] = useState('');
 const [filteredD,setFilteredD]=useState(false);
+const [filterI, setFilterI] = useState(null); //itinerary chosen in drop down menu
+const [dates, setDates] = useState([]); // dates of the chosen itinerary
+const [count,setCount]=useState(0);// count of the chosen itinerary
+const [filteredI, setFilteredI] = useState(false); //is it filtered by itinerary
 const navigate = useNavigate(); // Initialize useNavigate for navigation
 
 const handleProfileRedirect = () => {
@@ -53,6 +57,23 @@ const fetchItineraries = async () => {
       }
     }
   };
+const filterByItinerary = async (itineraryId) => {
+  try{
+    const response = await fetch(`http://localhost:8000/filterByItinerary?itineraryId=${itineraryId}`);
+    if (response.ok) {
+      const data = await response.json();
+      setDates(data);
+      setCount(data.length);
+    }
+    else {
+      console.error('Failed to fetch data');
+    }
+  }
+    catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
 const fetchFilteredItineraries = async (date) => {
     const Username = localStorage.getItem('Username');
     setIsLoading(true);
@@ -106,6 +127,17 @@ const fetchFilteredItineraries = async (date) => {
     findMostSold(Itineraries);
     findLeastSold(Itineraries);
   }, [refresh]);
+  const handleFilterChange = (event) => {
+    const selectedItinerary = Itineraries.find(itinerary => itinerary._id === event.target.value);
+    if (selectedItinerary) {
+      filterByItinerary(selectedItinerary._id);
+      setFilteredI(true);
+      setFilterI(selectedItinerary);
+    }
+    else {
+      setFilteredI(false);
+    }
+  };
   return (
     <div>
   <header style={styles.header}>
@@ -144,9 +176,25 @@ const fetchFilteredItineraries = async (date) => {
     <button onClick={() => handleFilterD()}>
       {filteredD ? 'Clear filter' : 'Filter'}
     </button>
-    {!filteredD && (<h2>Total profit from sales: {totalSales}</h2>)}
-    {!filteredD && (<h3>Most sold itinerary</h3>)}
-    {!filteredD && !isLoading && mostSold && (
+    <div>
+        <label htmlFor="itineraryDropdown">Filter by Itinerary:</label>
+        <select
+          id="itineraryDropdown"
+          value={filterI ? filterI._id : ''}
+          onChange={handleFilterChange}
+          style={{ marginLeft: '10px' }}
+        >
+          <option value="">Select an itinerary</option>
+          {Itineraries.map((itinerary) => (
+            <option key={itinerary._id} value={itinerary._id}>
+              {itinerary.Locations.join(', ')}
+            </option>
+          ))}
+        </select>
+      </div>
+    {!filteredI && !filteredD && (<h2>Total profit from sales: {totalSales}</h2>)}
+    {!filteredI && !filteredD && (<h3>Most sold itinerary</h3>)}
+    {!filteredI && !filteredD && !isLoading && mostSold && (
       <div>
         <p>Locations: {mostSold.Locations.join(', ')}</p>
         <p>Price: {mostSold.Price}</p>
@@ -156,8 +204,8 @@ const fetchFilteredItineraries = async (date) => {
         </p>
       </div>
     )}
-   {!filteredD && ( <h3>Least sold itinerary</h3>)}
-    {!filteredD && !isLoading && leastSold && (
+   {!filteredI && !filteredD && ( <h3>Least sold itinerary</h3>)}
+    {!filteredI && !filteredD && !isLoading && leastSold && (
       <div>
         <p>Locations: {leastSold.Locations.join(', ')}</p>
         <p>Price: {leastSold.Price}</p>
@@ -169,9 +217,26 @@ const fetchFilteredItineraries = async (date) => {
     )}
   </div>
   <div>
-    <h3>All itineraries</h3>
+  {filteredI && (
+    <div>
+      <h2>Selected itinerary</h2>
+      <p>Location:{filterI.Locations}</p>
+      <p>Price: {filterI.Price}</p>
+      <p>Sales: {filterI.sales}</p>
+      <p>Times booked: {count}</p>
+      <ul>
+      {dates.map((date,index) => (
+         <li key={index}>{date}</li>
+      ))}
+      </ul>
+      <p>Times cancelled:{count-(filterI.sales/filterI.Price)}</p>
+      </div>
+    )}
+  </div>
+  <div>
+   { !filteredI && (<h3>All itineraries</h3>)}
     {isLoading && <p>Loading...</p>}
-    {!isLoading && Itineraries.length > 0 ? (
+    {!filteredI && !isLoading && Itineraries.length > 0 ? (
       Itineraries.map((Itinerary) => (
         <div key={Itinerary._id}>
           <p>Locations: {Itinerary.Locations.join(', ')}</p>
@@ -182,7 +247,7 @@ const fetchFilteredItineraries = async (date) => {
           </p>
         </div>
       ))
-    ) : (
+    ) :!filteredI && (
       <p>No itineraries found.</p>
     )}
   </div>
