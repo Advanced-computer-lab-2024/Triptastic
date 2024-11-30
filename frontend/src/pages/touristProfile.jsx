@@ -13,6 +13,8 @@ import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHo
   FaStar, FaDollarSign,FaSearch} from "react-icons/fa";
 import { FaBell,FaUserCircle} from 'react-icons/fa';
 import { MdNotificationImportant } from 'react-icons/md';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+
 
 const TouristProfile = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -721,7 +723,7 @@ return (
     </div>
 
     {/* Profile Icon */}
-    <FaUserCircle
+    <ManageAccountsIcon
       alt="Profile Icon"
       style={styles.profileIcon}
       onClick={() => navigate('/touristSettings')}
