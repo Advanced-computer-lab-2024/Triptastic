@@ -41,6 +41,22 @@ const Guest = () => {
             element: document.querySelector(".activities"),
             intro: "Explore exciting activities by clicking here.",
           },
+          {
+            element: document.querySelector(".flights"),
+            intro: "Looking for flights ? by clicking here.",
+          },
+          {
+            element: document.querySelector(".hotels"),
+            intro: "Best Hotels with cheapest prices by clicking here.",
+          },
+          {
+            element: document.querySelector(".transportation"),
+            intro: "Want to go anywhere by clicking here.",
+          },
+          {
+            element: document.querySelector(".products"),
+            intro: "You can by anything you wish for  by clicking here.",
+          },
         ],
       })
       .start();

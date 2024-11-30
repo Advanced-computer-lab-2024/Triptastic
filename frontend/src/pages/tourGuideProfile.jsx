@@ -6,13 +6,17 @@ import { MdNotificationImportant } from 'react-icons/md';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 import LockResetIcon from '@mui/icons-material/LockReset';
-import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+
 function TourGuideProfile() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [passwordChangeMessage, setPasswordChangeMessage] = useState('');
   const [passwordChangeError, setPasswordChangeError] = useState('');
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+
   const handlePasswordChange = async (e) => {
     e.preventDefault();
     setIsChangingPassword(true);
@@ -100,6 +104,10 @@ function TourGuideProfile() {
   const [isCreatingTouristItinerary, setIsCreatingTouristItinerary] = useState(false);
   const [isEditingTouristItinerary, setIsEditingTouristItinerary] = useState(false);
 
+  const toggleModal = () => {
+    setModalOpen((prev) => !prev);
+  }; 
+  const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
   useEffect(() => {
     fetchTourGuideData();
     fetchItineraries();
@@ -107,67 +115,47 @@ function TourGuideProfile() {
     fetchTouristItineraries();
   }, []);
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const photoURL = URL.createObjectURL(file);
-      setPhoto(photoURL); 
-      setFormData((prevData) => ({
-        ...prevData,
-        photo: file,
-      }));
+      setPhoto(URL.createObjectURL(file));
+      setFormData((prevData) => ({ ...prevData, photo: file }));
     }
   };
   const fetchTourGuideData = async () => {
     const Username = localStorage.getItem('Username');
-
-    if (Username) {
-      try {
-        const response = await fetch(`http://localhost:8000/getTourGuide?Username=${Username}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data) {
-            setTourGuideInfo(data);
-            setFormData(data);
-            setErrorMessage('');
-
-            if (data.photo) {
-              setPhoto(data.photo);
-              localStorage.setItem('photo', data.photo); // Store photo URL in local storage
-            }
-          } else {
-            setErrorMessage('No tour guide information found.');
-          }
-        } else {
-          throw new Error('Failed to fetch tour guide information');
-        }
-      } catch (error) {
-        setErrorMessage('An error occurred while fetching tour guide information');
-        console.error(error);
+    try {
+      const response = await fetch(`http://localhost:8000/getTourGuide?Username=${Username}`);
+      if (response.ok) {
+        const data = await response.json();
+        setTourGuideInfo(data); // Ensure all fields are preserved
+        setFormData(data);
+        if (data.photo) setPhoto(data.photo);
+        setErrorMessage('');
+      } else {
+        throw new Error('Failed to fetch tour guide information');
       }
-    } else {
-      setErrorMessage('No tour guide information found.');
+    } catch (error) {
+      setErrorMessage('An error occurred while fetching tour guide information');
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const Username = localStorage.getItem('Username');
+  
+    if (!Username) {
+      alert('Username is not available. Please log in again.');
+      return;
+    }
   
     const formDataToSend = new FormData();
     formDataToSend.append('Username', Username);
@@ -176,7 +164,10 @@ function TourGuideProfile() {
     if (formData.mobileNumber) formDataToSend.append('mobileNumber', formData.mobileNumber);
     if (formData.yearsOfExperience) formDataToSend.append('yearsOfExperience', formData.yearsOfExperience);
     if (formData.previousWork) formDataToSend.append('previousWork', formData.previousWork);
-    if (formData.photo) formDataToSend.append('photo', formData.photo);
+    if (formData.photo instanceof File) {
+      formDataToSend.append('photo', formData.photo); // Append the photo only if it's a file
+    }
+  
     try {
       const response = await fetch(`http://localhost:8000/updateTourGuide/${Username}`, {
         method: 'PATCH',
@@ -184,24 +175,20 @@ function TourGuideProfile() {
       });
   
       if (response.ok) {
-        await fetchTourGuideData(); // Refresh the data after update
-        setErrorMessage('');
-        setIsEditing(false);
-  
-        // Update the photo in local storage if it was uploaded
-        if (formData.photo) {
-          const photoURL = URL.createObjectURL(formData.photo);
-          setPhoto(photoURL);
-          localStorage.setItem('photo', photoURL); // Update photo URL in local storage
-        }
+        const data = await response.json();
+        alert('Profile updated successfully!');
+        await fetchTourGuideData(); // Refresh the data after the update
       } else {
-        throw new Error('Failed to update tour guide information');
+        const errorData = await response.json();
+        console.error('Update failed:', errorData);
+        alert(`Error updating profile: ${errorData.error || 'Unknown error occurred'}`);
       }
     } catch (error) {
-      setErrorMessage('An error occurred while updating tour guide information');
-      console.error(error);
+      console.error('Error updating profile:', error);
+      alert('An error occurred while updating the profile.');
     }
   };
+  
   
   const fetchItineraries = async () => {
     const Username = localStorage.getItem('Username');
@@ -652,240 +639,337 @@ const handleViewReport = async (itineraryId) => {
 
   return (
     <div style={styles.container}>
-{/* Header */}
-<header style={styles.header}>
-<div style={styles.logoContainer}>
-  <img src={image} alt="Logo" style={styles.logo} />
-</div>
-<h1 style={styles.title}>Tour Guide Profile</h1>
+    {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+    {/* Header */}
+    <header style={styles.header}>
+      <div style={styles.logoContainer}>
+        <img src={image} alt="Logo" style={styles.logo} />
+      </div>
+      <h1 style={styles.title}>Tour Guide Profile</h1>
 
+      <AssessmentIcon
+        alt="View Report"
+        style={{ cursor: 'pointer', color: 'white', marginRight: '-490px' }}
+        onClick={() => navigate('/guideReport')}
+      />
 
- <LockResetIcon
-    alt="Profile Icon"
-    style={{cursor: 'pointer', color: 'white', marginRight: '-490px' }}
-    onClick={handleViewReport}
-  />
+      <LockResetIcon
+        alt="Profile Icon"
+        style={{ cursor: 'pointer', color: 'white', marginRight: '-490px' }}
+        onClick={togglePasswordModal}
+      />
 
+      {/* Profile Icon */}
+      <ManageAccountsIcon
+        style={styles.profileIcon}
+        title="Edit Profile"
+        onClick={toggleModal} // Open modal on click
+      />
+    </header>
 
-{/* Profile Icon */}
-<ManageAccountsIcon
-  style={styles.profileIcon}
-  title="Edit Profile"
-  onClick={handleViewReport} // Open modal on click
-/>
-</header>
-        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-        {tourGuideInfo?.flaggedItineraries.length > 0 ? (
-          <div>
-                <h3>Flagged Itineraries</h3>
-                <ul>
-                  {tourGuideInfo.flaggedItineraries.map((itinerary) => (
-                    <li key={itinerary._id}>
-                      <p><strong>Locations:</strong> {itinerary.Locations.join(', ')}</p>
-                      <p><strong>Dates:</strong> {itinerary.DatesTimes}</p>
-                    </li>
-                  ))}
-                </ul>
-          </div>
-              ) : (
-                <p>No flagged itineraries.</p>
-              )}
-        {loading ? (
-          <p>Loading tour guide information...</p>
-        ) : (
-          <>
-          <button onClick={handleDeleteRequest} disabled={waiting || requestSent}>
-              {waiting ? 'Waiting to be deleted...' : requestSent ? 'Request Sent' : 'Delete Account'}
-            </button>
-            
-            <button onClick={toggleProfileDetails}>{isVisible ? 'Hide' : 'Show'} Profile Details</button>
-            {isVisible && (
-              <div>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                {photo && <img src={`http://localhost:8000/${photo.replace(/\\/g, '/')}`} alt="Tour Guide Photo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
-                <p><strong>Username:</strong> {tourGuideInfo?.Username}</p> </div>
-                <div>
-                <p><strong>Email:</strong> {tourGuideInfo?.Email}</p> 
-                <p><strong>Mobile Number:</strong> {tourGuideInfo?.mobileNumber}</p> 
-               <p><strong>Years of Experience:</strong> {tourGuideInfo?.yearsOfExperience}</p> 
-               <p><strong>Previous Work:</strong> {tourGuideInfo?.previousWork}</p> 
-               
-      <p>Feedback</p>
-      {tourGuideInfo.feedback.length === 0 ? (
-        <p>No feedback yet.</p>
-      ) : (
-        tourGuideInfo.feedback.map((feedback, index) => (
-          <div key={index}>
-            <p><strong>{feedback.touristUsername}:</strong></p>
-            <p>Rating: {feedback.rating}/5 and commented:</p>
-            <p>{feedback.comment}</p>
-          </div>
-        ))
-      )}
-                <button onClick={handleEditToggle}>{isEditing ? 'Cancel Edit' : 'Edit Data'}</button>
+    {/* Edit Profile Modal */}
+    {modalOpen && (
+      <div style={styles.modalOverlay}>
+        <div style={styles.modalContent}>
+          <h2 style={styles.modalContentH2}>Edit Profile</h2>
+          <HighlightOffOutlinedIcon
+            style={styles.cancelIcon}
+            onClick={() => setModalOpen(false)} // Close modal on click
+          />
+          {loading ? (
+            <p>Loading profile...</p>
+          ) : (
+            <form style={styles.profileForm} onSubmit={handleSubmit}>
+              <div style={styles.photoSection}>
+                {photo && (
+                  <img
+                    src={`http://localhost:8000/${photo.replace(/\\/g, '/')}`}
+                    alt="Tour Guide"
+                    style={styles.profilePhoto}
+                  />
+                )}
+                <label style={styles.photoLabel}>
+                  Update Photo
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoChange}
+                    style={styles.fileInput}
+                  />
+                </label>
               </div>
+              <div style={styles.formGroup}>
+                <label>Username</label>
+                <input
+                  type="text"
+                  name="Username"
+                  value={formData.Username}
+                  disabled
+                  style={styles.disabledInput}
+                />
               </div>
-            )}
-    
-            {isEditing && (
-              <form onSubmit={handleSubmit}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                {photo && <img src={`http://localhost:8000/${photo.replace(/\\/g, '/')}`} alt="photo" style={{ width: '50px', height: '50px', borderRadius: '50%', marginRight: '10px' }} />}
-                  <label>Username:</label>
-                  <p> {tourGuideInfo?.Username}</p> 
-                </div>
-                <div>
-                  <label>Email:</label>
-                  <input
-                    type="email"
-                    name="Email"
-                    value={formData.Email}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <label>Mobile Number:</label>
-                  <input
-                    type="text"
-                    name="mobileNumber"
-                    value={formData.mobileNumber}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-                  <label>Years of Experience:</label>
-                  <input
-                    type="number"
-                    name="yearsOfExperience"
-                    value={formData.yearsOfExperience}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-                  <label>Previous Work:</label>
-                  <input
-                    type="text"
-                    name="previousWork"
-                    value={formData.previousWork}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-              <label><strong>Photo:</strong></label>
-              <input
-                type="file"
-                accept="image/*" // Accept any image type
-                onChange={handleLogoChange}
-              />
+              <div style={styles.formGroup}>
+                <label>Email</label>
+                <input
+                  type="email"
+                  name="Email"
+                  value={formData.Email}
+                  onChange={handleChange}
+                  style={styles.input}
+                />
+              </div>
+              <div style={styles.formGroup}>
+                <label>Mobile Number</label>
+                <input
+                  type="text"
+                  name="mobileNumber"
+                  value={formData.mobileNumber}
+                  onChange={handleChange}
+                  style={styles.input}
+                />
+              </div>
+              <div style={styles.formGroup}>
+                <label>Years of Experience</label>
+                <input
+                  type="number"
+                  name="yearsOfExperience"
+                  value={formData.yearsOfExperience}
+                  onChange={handleChange}
+                  style={styles.input}
+                />
+              </div>
+              <div style={styles.formGroup}>
+                <label>Previous Work</label>
+                <textarea
+                  name="previousWork"
+                  value={formData.previousWork}
+                  onChange={handleChange}
+                  style={styles.textarea}
+                />
+              </div>
+              <div style={styles.buttonContainer}>
+                <button type="submit" style={styles.submitButton}>
+                  Save Changes
+                </button>
+                <button
+                  type="button"
+                  style={styles.deleteButton}
+                  onClick={handleDeleteRequest} // Trigger the delete account action
+                  disabled={waiting || requestSent}
+                >
+                  {waiting
+                    ? 'Processing...'
+                    : requestSent
+                    ? 'Request Sent'
+                    : 'Delete Account'}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+    )}
+
+    {/* Change Password Modal */}
+    {showPasswordModal && (
+      <div style={styles.modalOverlay}>
+        <div style={styles.modalContent}>
+          <h2 style={styles.modalContentH2}>Change Password</h2>
+          <HighlightOffOutlinedIcon
+            onClick={() => setShowPasswordModal(false)}
+            style={styles.cancelpasswordIcon}
+          />
+          <form onSubmit={handlePasswordChange}>
+            <input
+              type="password"
+              placeholder="Enter Current Password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              required
+              style={styles.modalContentInput}
+            />
+            <input
+              type="password"
+              placeholder="Enter New Password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+              style={styles.modalContentInput}
+            />
+
+            <div style={styles.buttonContainer}>
+              <button
+                type="submit"
+                disabled={isChangingPassword}
+                style={styles.submitButton}
+              >
+                {isChangingPassword ? 'Changing Password...' : 'Change Password'}
+              </button>
             </div>
-                <button type="submit">Update Data</button>
-              </form>
-            )}
-            
-            
-    
-            <h3>Itineraries</h3>
-            <button onClick={() => setIsCreatingItinerary((prev) => !prev)}>
-              {isCreatingItinerary ? 'Cancel Creating Itinerary' : 'Create Itinerary'}
-            </button>
-    
-            {isCreatingItinerary && (
-              <form onSubmit={handleItinerarySubmit}>
-                <div>
-                  <label>Activities:</label>
-                  <input
-                    type="text"
-                    name="Activities"
-                    value={itineraryData.Activities}
-                    onChange={handleItineraryChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <label>Locations:</label>
-                  <input
-                    type="text"
-                    name="Locations"
-                    value={itineraryData.Locations}
-                    onChange={handleItineraryChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <label>Timeline:</label>
-                  <input
-                    type="text"
-                    name="Timeline"
-                    value={itineraryData.Timeline}
-                    onChange={handleItineraryChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <label>Duration Of Activity:</label>
-                  <input
-                    type="text"
-                    name="DurationOfActivity"
-                    value={itineraryData.DurationOfActivity}
-                    onChange={handleItineraryChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <label>Language:</label>
-                  <input
-                    type="text"
-                    name="Language"
-                    value={itineraryData.Language}
-                    onChange={handleItineraryChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <label>Price:</label>
-                  <input
-                    type="number"
-                    name="Price"
-                    value={itineraryData.Price}
-                    onChange={handleItineraryChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <label>Dates/Times 'YYYY-MM-DD':</label>
-                  <input
-                    type="text"
-                    name="DatesTimes"
-                    value={itineraryData.DatesTimes}
-                    onChange={handleItineraryChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <label>Accessibility:</label>
-                  <input
-                    type="text"
-                    name="Accesibility"
-                    value={itineraryData.Accesibility}
-                    onChange={handleItineraryChange}
-                    required
-                  />
-                </div>
-                <div>
-                  <label>Pick Up/Drop Off:</label>
-                  <input
-                    type="text"
-                    name="pickUpDropOff"
-                    value={itineraryData.pickUpDropOff}
-                    onChange={handleItineraryChange}
-                    required
-                  />
-                </div>
-                <button type="submit">Add Itinerary</button>
-              </form>
-            )}
+          </form>
+          {passwordChangeMessage && (
+            <p style={{ color: 'green', marginTop: '10px' }}>
+              {passwordChangeMessage}
+            </p>
+          )}
+          {passwordChangeError && (
+            <p style={{ color: 'red', marginTop: '10px' }}>
+              {passwordChangeError}
+            </p>
+          )}
+        </div>
+      </div>
+    )}
 
+    {/* Flagged Itineraries */}
+    {tourGuideInfo?.flaggedItineraries?.length > 0 ? (
+      <div style={styles.section}>
+        <h3 style={styles.sectionTitle}>Flagged Itineraries</h3>
+        <ul style={styles.list}>
+          {tourGuideInfo.flaggedItineraries.map((itinerary) => (
+            <li key={itinerary._id} style={styles.listItem}>
+              <p>
+                <strong>Locations:</strong> {itinerary.Locations.join(', ')}
+              </p>
+              <p>
+                <strong>Dates:</strong> {itinerary.DatesTimes}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ) : (
+      <p>No flagged itineraries.</p>
+    )}
+
+    {/* Feedback */}
+    <div style={styles.section}>
+      <h3 style={styles.sectionTitle}>Feedback</h3>
+      {tourGuideInfo?.feedback?.length > 0 ? (
+        <ul style={styles.feedbackList}>
+          {tourGuideInfo.feedback.map((feedback, index) => (
+            <li key={index} style={styles.feedbackItem}>
+              <p>
+                <strong>Date:</strong> {feedback.date}
+              </p>
+              <p>
+                <strong>{feedback.touristUsername}:</strong> {feedback.rating}/5
+              </p>
+              <p>
+                <strong>Comment:</strong> {feedback.comment}
+              </p>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No feedback available.</p>
+      )}
+    </div>
+
+    {/* Itineraries Section */}
+<h3>Itineraries</h3>
+<button onClick={() => setIsCreatingItinerary((prev) => !prev)}>
+  {isCreatingItinerary ? 'Cancel Creating Itinerary' : 'Create Itinerary'}
+</button>
+
+{/* Create Itinerary Form */}
+{isCreatingItinerary && (
+  <form onSubmit={handleItinerarySubmit}>
+    <div>
+      <label>Activities:</label>
+      <input
+        type="text"
+        name="Activities"
+        value={itineraryData.Activities}
+        onChange={handleItineraryChange}
+        required
+      />
+    </div>
+    <div>
+      <label>Locations:</label>
+      <input
+        type="text"
+        name="Locations"
+        value={itineraryData.Locations}
+        onChange={handleItineraryChange}
+        required
+      />
+    </div>
+    <div>
+      <label>Timeline:</label>
+      <input
+        type="text"
+        name="Timeline"
+        value={itineraryData.Timeline}
+        onChange={handleItineraryChange}
+        required
+      />
+    </div>
+    <div>
+      <label>Duration Of Activity:</label>
+      <input
+        type="text"
+        name="DurationOfActivity"
+        value={itineraryData.DurationOfActivity}
+        onChange={handleItineraryChange}
+        required
+      />
+    </div>
+    <div>
+      <label>Language:</label>
+      <input
+        type="text"
+        name="Language"
+        value={itineraryData.Language}
+        onChange={handleItineraryChange}
+        required
+      />
+    </div>
+    <div>
+      <label>Price:</label>
+      <input
+        type="number"
+        name="Price"
+        value={itineraryData.Price}
+        onChange={handleItineraryChange}
+        required
+      />
+    </div>
+    <div>
+      <label>Dates/Times 'YYYY-MM-DD':</label>
+      <input
+        type="text"
+        name="DatesTimes"
+        value={itineraryData.DatesTimes}
+        onChange={handleItineraryChange}
+        required
+      />
+    </div>
+    <div>
+      <label>Accessibility:</label>
+      <input
+        type="text"
+        name="Accesibility"
+        value={itineraryData.Accesibility}
+        onChange={handleItineraryChange}
+        required
+      />
+    </div>
+    <div>
+      <label>Pick Up/Drop Off:</label>
+      <input
+        type="text"
+        name="pickUpDropOff"
+        value={itineraryData.pickUpDropOff}
+        onChange={handleItineraryChange}
+        required
+      />
+    </div>
+    <button type="submit">Add Itinerary</button>
+  </form>
+)}
+
+{/* Filter Itineraries */}
 <div>
   <h3>Filter Itineraries by Month</h3>
   <select
@@ -900,17 +984,42 @@ const handleViewReport = async (itineraryId) => {
     ))}
   </select>
 </div>
-    
+
+{/* Itineraries List */}
 {filteredItineraries.length > 0 ? (
   filteredItineraries.map((itinerary) => (
-    <div key={itinerary._id}>
+    <div key={itinerary._id} style={styles.listItem}>
       <h4>Locations: {itinerary.Locations.join(", ")}</h4>
       <p>Dates: {itinerary.DatesTimes}</p>
+      <p>Timeline: {itinerary.Timeline}</p>
+      <button onClick={() => handleViewItinerary(itinerary)}>
+        {selectedItinerary === itinerary && isIVisible ? "Hide Details" : "View Details"}
+      </button>
       <button onClick={() => handleViewReport(itinerary._id)}>
         {itineraryReports[itinerary._id]?.visible ? "Hide Report" : "View Report"}
       </button>
 
-      {/* Display the report for this itinerary if visible */}
+      {/* Itinerary Details */}
+      {selectedItinerary === itinerary && isIVisible && (
+        <div style={styles.section}>
+          <p><strong>Activities:</strong> {itinerary.Activities.join(', ')}</p>
+          <p><strong>Timeline:</strong> {itinerary.Timeline}</p>
+          <p><strong>Duration of Activity:</strong> {itinerary.DurationOfActivity}</p>
+          <p><strong>Language:</strong> {itinerary.Language}</p>
+          <p><strong>Price:</strong> ${itinerary.Price}</p>
+          <p><strong>Accessibility:</strong> {itinerary.Accesibility}</p>
+          <p><strong>Pick Up/Drop Off:</strong> {itinerary.pickUpDropOff}</p>
+          <p><strong>Booked:</strong> {itinerary.Booked ? "Yes" : "No"}</p>
+          <p><strong>Tour Guide:</strong> {itinerary.TourGuide}</p>
+          <p><strong>Active:</strong> {itinerary.active ? "Yes" : "No"}</p>
+          <div>
+            <button onClick={() => handleEditItinerary(itinerary)}>Edit</button>
+            <button onClick={() => handleDeleteItinerary(itinerary._id)}>Delete</button>
+          </div>
+        </div>
+      )}
+
+      {/* Report Details */}
       {itineraryReports[itinerary._id]?.visible && (
         <div className="report-section">
           <h4>Report</h4>
@@ -926,314 +1035,117 @@ const handleViewReport = async (itineraryId) => {
           )}
         </div>
       )}
+
+      {/* Edit Itinerary Form */}
+      {selectedItinerary === itinerary && isEditingItinerary && (
+        <form onSubmit={handleUpdateItinerary} style={styles.section}>
+          <div>
+            <label>Activities:</label>
+            <input
+              type="text"
+              name="Activities"
+              value={itineraryData.Activities}
+              onChange={handleItineraryChange}
+              required
+            />
+          </div>
+          <div>
+            <label>Locations:</label>
+            <input
+              type="text"
+              name="Locations"
+              value={itineraryData.Locations}
+              onChange={handleItineraryChange}
+              required
+            />
+          </div>
+          <div>
+            <label>Timeline:</label>
+            <input
+              type="text"
+              name="Timeline"
+              value={itineraryData.Timeline}
+              onChange={handleItineraryChange}
+              required
+            />
+          </div>
+          <div>
+            <label>Duration Of Activity:</label>
+            <input
+              type="text"
+              name="DurationOfActivity"
+              value={itineraryData.DurationOfActivity}
+              onChange={handleItineraryChange}
+              required
+            />
+          </div>
+          <div>
+            <label>Language:</label>
+            <input
+              type="text"
+              name="Language"
+              value={itineraryData.Language}
+              onChange={handleItineraryChange}
+              required
+            />
+          </div>
+          <div>
+            <label>Price:</label>
+            <input
+              type="number"
+              name="Price"
+              value={itineraryData.Price}
+              onChange={handleItineraryChange}
+              required
+            />
+          </div>
+          <div>
+            <label>Dates/Times 'YYYY-MM-DD':</label>
+            <input
+              type="text"
+              name="DatesTimes"
+              value={itineraryData.DatesTimes}
+              onChange={handleItineraryChange}
+              required
+            />
+          </div>
+          <div>
+            <label>Accessibility:</label>
+            <input
+              type="text"
+              name="Accesibility"
+              value={itineraryData.Accesibility}
+              onChange={handleItineraryChange}
+              required
+            />
+          </div>
+          <div>
+            <label>Pick Up/Drop Off:</label>
+            <input
+              type="text"
+              name="pickUpDropOff"
+              value={itineraryData.pickUpDropOff}
+              onChange={handleItineraryChange}
+              required
+            />
+          </div>
+          <button type="submit">Save Changes</button>
+          <button type="button" onClick={() => setIsEditingItinerary(false)}>Cancel</button>
+        </form>
+      )}
     </div>
   ))
 ) : (
   <p>No itineraries found.</p>
 )}
-
-            {selectedItinerary && !isEditingItinerary && isIVisible &&(
-              <div>
-              <p><strong>Locations:</strong> {selectedItinerary.Locations.join(', ')}</p>
-              <p><strong>Timeline:</strong> {selectedItinerary.Timeline}</p>
-              <p><strong>Duration of Activity:</strong> {selectedItinerary.DurationOfActivity}</p>
-              <p><strong>Language:</strong> {selectedItinerary.Language}</p>
-              <p><strong>Accessibility:</strong> {selectedItinerary.Accesibility}</p>
-              <p><strong>Pick Up/Drop Off:</strong> {selectedItinerary.pickUpDropOff}</p>
-              <p><strong>Booked:</strong> {selectedItinerary.Booked ? 'Yes' : 'No'}</p>
-              <p><strong>Tour Guide:</strong> {selectedItinerary.TourGuide}</p>
-              <p><strong>Active:</strong> {selectedItinerary.active ? "Yes" : "No"}</p>
-            </div>
-            )}
-            {selectedItinerary && isEditingItinerary && (
-              <div>
-                <h3>Edit Itinerary</h3>
-                <form onSubmit={handleUpdateItinerary}>
-                  <div>
-                    <label>Activities:</label>
-                    <input
-                      type="text"
-                      name="Activities"
-                      value={itineraryData.Activities}
-                      onChange={handleItineraryChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label>Locations:</label>
-                    <input
-                      type="text"
-                      name="Locations"
-                      value={itineraryData.Locations}
-                      onChange={handleItineraryChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label>Timeline:</label>
-                    <input
-                      type="text"
-                      name="Timeline"
-                      value={itineraryData.Timeline}
-                      onChange={handleItineraryChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label>Duration Of Activity:</label>
-                    <input
-                      type="text"
-                      name="DurationOfActivity"
-                      value={itineraryData.DurationOfActivity}
-                      onChange={handleItineraryChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label>Language:</label>
-                    <input
-                      type="text"
-                      name="Language"
-                      value={itineraryData.Language}
-                      onChange={handleItineraryChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label>Price:</label>
-                    <input
-                      type="number"
-                      name="Price"
-                      value={itineraryData.Price}
-                      onChange={handleItineraryChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label>Dates/Times 'YYYY-MM-DD':</label>
-                    <input
-                      type="text"
-                      name="DatesTimes"
-                      value={itineraryData.DatesTimes}
-                      onChange={handleItineraryChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label>Accessibility:</label>
-                    <input
-                      type="text"
-                      name="Accesibility"
-                      value={itineraryData.Accesibility}
-                      onChange={handleItineraryChange}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label>Pick Up/Drop Off:</label>
-                    <input
-                      type="text"
-                      name="pickUpDropOff"
-                      value={itineraryData.pickUpDropOff}
-                      onChange={handleItineraryChange}
-                      required
-                    />
-                  </div>
-                  <button type="submit">Update Itinerary</button>
-                  <button type="button" onClick={() => setIsEditingItinerary(false)}>Cancel</button>
-                </form>
-              </div>
-            )}
-          </>
-        )}
-        <h3>Tourist itineraries</h3>
-        <button onClick={() => setIsCreatingTouristItinerary((prev) => !prev)}>
-          {isCreatingTouristItinerary ? 'Cancel Creating Tourist Itinerary' : 'Create Tourist Itinerary'}
-        </button>
-    
-        {isCreatingTouristItinerary && (
-          <form onSubmit={handleTouristItinerarySubmit}>
-            <div>
-              <label>Activities:</label>
-              <input
-                type="text"
-                name="Activities"
-                value={touristItineraryData.Activities}
-                onChange={handleTouristItineraryChange}
-                required
-              />
-            </div>
-            <div>
-              <label>Locations:</label>
-              <input
-                type="text"
-                name="Locations"
-                value={touristItineraryData.Locations}
-                onChange={handleTouristItineraryChange}
-                required
-              />
-            </div>
-            <div>
-              <label>start date:</label>
-              <input
-                type="text"
-                name="startDate"
-                value={touristItineraryData.startDate}
-                onChange={handleTouristItineraryChange}
-                required
-              />
-            </div>
-            <div>
-              <label>End date:</label>
-              <input
-                type="text"
-                name="endDate"
-                value={touristItineraryData.endDate}
-                onChange={handleTouristItineraryChange}
-                required
-              />
-            </div>
-            <div>
-              <label>Tags:</label>
-              <input
-                type="text"
-                name="Tags"
-                value={touristItineraryData.Language}
-                onChange={handleTouristItineraryChange}
-                required
-              />
-            </div>
-            <button type="submit">Add Tourist Itinerary</button>
-          </form>
-        )}
-        
-    
-        {touristItineraries.length > 0 ? (
-          touristItineraries.map((touristItinerary) => (
-            <div key={touristItinerary._id}>
-              <h4>Locations: {touristItinerary.Locations.join(', ')}</h4>
-              <p>Start date: {touristItinerary.startDate}</p>
-              <button onClick={() => handleViewTouristItinerary(touristItinerary)}>View Details</button>
-              <button onClick={() => handleEditTouristItinerary(touristItinerary)}>Edit Tourist Itinerary</button>
-              <button onClick={() => handleDeleteTouristItinerary(touristItinerary._id)}>Delete Tourist Itinerary</button>
-            </div>
-          ))
-        ) : (
-          <p>No tourist itineraries found.</p>
-        )}
-        {selectedTouristItinerary && !isEditingTouristItinerary&& isTIVisible &&(
-              <div>
-              <p><strong>Activities:</strong> {selectedTouristItinerary.Activities.join(', ')}</p>
-              <p><strong>Locations:</strong> {selectedTouristItinerary.Locations}</p>
-              <p><strong>Start date:</strong> {selectedTouristItinerary.startDate}</p>
-              <p><strong>End date:</strong> {selectedTouristItinerary.endDate}</p>
-              <p><strong>Tags:</strong> {selectedTouristItinerary.Tags}</p>
-              <p><strong>Tour Guide:</strong> {selectedTouristItinerary.tourGuide}</p>
-            </div>
-            )}
-        {selectedTouristItinerary && isEditingTouristItinerary && (
-          <div>
-            <h3>Edit Tourist Itinerary</h3>
-            <form onSubmit={handleUpdateTouristItinerary}>
-              <div>
-                <label>Activities:</label>
-                <input
-                  type="text"
-                  name="Activities"
-                  value={touristItineraryData.Activities}
-                  onChange={handleTouristItineraryChange}
-                  required
-                />
-              </div>
-              <div>
-                <label>Locations:</label>
-                <input
-                  type="text"
-                  name="Locations"
-                  value={touristItineraryData.Locations}
-                  onChange={handleTouristItineraryChange}
-                  required
-                />
-              </div>
-              <div>
-                <label>Start date:</label>
-                <input
-                  type="text"
-                  name="startDate"
-                  value={touristItineraryData.startDate}
-                  onChange={handleTouristItineraryChange}
-                  required
-                />
-              </div>
-              <div>
-                <label>End date:</label>
-                <input
-                  type="text"
-                  name="endDate"
-                  value={touristItineraryData.endDate}
-                  onChange={handleTouristItineraryChange}
-                  required
-                />
-              </div>
-              <div>
-                <label>Tags:</label>
-                <input
-                  type="text"
-                  name="Tags"
-                  value={touristItineraryData.Tags}
-                  onChange={handleTouristItineraryChange}
-                  required
-                />
-              </div>
-              <button type="submit">Update Tourist Itinerary</button>
-              <button type="button" onClick={() => setIsEditingTouristItinerary(false)}>Cancel</button>
-            </form>
-          </div>
-        )}
-        <div>
-  <h3>Change Password</h3>
-  <form onSubmit={handlePasswordChange}>
-    <div>
-      <label>Current Password:</label>
-      <input
-        type="password"
-        value={currentPassword}
-        onChange={(e) => setCurrentPassword(e.target.value)}
-        required
-      />
-    </div>
-    <div>
-      <label>New Password:</label>
-      <input
-        type="password"
-        value={newPassword}
-        onChange={(e) => setNewPassword(e.target.value)}
-        required
-      />
-    </div>
-    <button type="submit" disabled={isChangingPassword}>
-      {isChangingPassword ? 'Changing Password...' : 'Change Password'}
-    </button>
-  </form>
-
-  {passwordChangeMessage && <p style={{ color: 'green' }}>{passwordChangeMessage}</p>}
-  {passwordChangeError && <p style={{ color: 'red' }}>{passwordChangeError}</p>}
 </div>
-<div>
-  <button onClick={()=> navigate('/guideReport')} >View Report</button>
-</div>
-
-      </div>
-      
-   
-     
-  )         
-}
+    );
+  }
 
 const styles = {
   container: {
-    marginTop:'150px',
-    margin: '90px auto',
+    top:'-50px',
+        margin: '90px auto',
     maxWidth: '1000px',
     padding: '20px',
     backgroundColor: '#f9f9f9',
@@ -1352,8 +1264,120 @@ const styles = {
     cursor: 'pointer', // Ensure it acts as a button
     position: 'absolute', // Position it correctly in the modal
     right: '490px', // Adjust placement
-    top: '280px', // Adjust placement
-  }
+    top: '290px', // Adjust placement
+  },
+  profileForm: {
+    marginTop: '10px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '15px',
+  },
+  photoSection: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '10px',
+  },
+  profilePhoto: {
+    width: '100px',
+    height: '100px',
+    borderRadius: '50%',
+    objectFit: 'cover',
+  },
+  photoLabel: {
+    cursor: 'pointer',
+    color: '#0F5132',
+    fontWeight: 'bold',
+    display: 'flex',
+    alignItems: 'center',
+  },
+  fileInput: {
+    display: 'none',
+  },
+  formGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '5px',
+  },
+  input: {
+    padding: '10px',
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+  },
+  disabledInput: {
+    padding: '10px',
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+    backgroundColor: '#f0f0f0',
+    cursor: 'not-allowed',
+  },
+  textarea: {
+    padding: '10px',
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+    resize: 'vertical',
+  },
+  buttonContainer: {
+    display: 'flex',
+    justifyContent: 'left', // Center align the buttons
+    gap: '5px', // Add spacing between the buttons
+    //marginTop: '20px',
+  },
+  submitButton: {
+    backgroundColor: '#0F5132',
+    color: 'white',
+    padding: '10px 20px',
+    borderRadius: '5px',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '14px',
+  },
+  deleteButton: {
+    backgroundColor: '#dc3545', // Red color
+    color: 'white',
+    padding: '10px 20px',
+    borderRadius: '5px',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '14px',
+  },
+  section: {
+    top:'-50px',
+    padding: '20px',
+    backgroundColor: '#f9f9f9',
+    borderRadius: '10px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  },
+  sectionTitle: {
+    fontSize: '20px',
+    fontWeight: 'bold',
+    marginBottom: '15px',
+    color: '#333',
+  },
+  list: {
+    listStyleType: 'none',
+    padding: 0,
+    margin: 0,
+  },
+  listItem: {
+    padding: '10px',
+    backgroundColor: '#fff',
+    borderRadius: '5px',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+    marginBottom: '10px',
+  },
+  feedbackList: {
+    listStyleType: 'none',
+    padding: 0,
+    margin: 0,
+  },
+  feedbackItem: {
+    padding: '15px',
+    backgroundColor: '#e8f5e9',
+    borderRadius: '5px',
+    marginBottom: '10px',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+  },
 }
 export default TourGuideProfile;
 

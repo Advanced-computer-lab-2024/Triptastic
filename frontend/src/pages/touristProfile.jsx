@@ -14,6 +14,9 @@ import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHo
 import { FaBell,FaUserCircle} from 'react-icons/fa';
 import { MdNotificationImportant } from 'react-icons/md';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import "intro.js/introjs.css"; // Import Intro.js styles
+import introJs from "intro.js";
+
 
 
 const TouristProfile = () => {
@@ -107,7 +110,103 @@ const TouristProfile = () => {
           console.error('Error fetching notifications:', error);
         }
       };
-    
+      useEffect(() => {
+        const checkIntroStatus = async () => {
+          const Username = localStorage.getItem('Username');
+      
+          
+      
+          try {
+            // Fetch the intro status from the backend
+            const response = await fetch(
+              `http://localhost:8000/getTouristIntroStatus?Username=${Username}`
+            );
+            const data = await response.json();
+      
+            if (response.ok && data.showIntro) {
+              // Show the Intro.js tutorial
+              startIntro();
+            }
+          } catch (error) {
+            console.error('Failed to fetch intro status:', error);
+          }
+        };
+      
+        checkIntroStatus();
+      }, []); // Add an empty dependency array to ensure it runs only on mount
+      
+      const startIntro = () => {        // Check if the intro has already been shown
+          introJs()
+            .setOptions({
+              steps: [
+                {
+                  element: document.querySelector(".guest-header h1"),
+                  intro: "Welcome to our vacation planning platform! Let us show you around.",
+                },
+                {
+                  element: document.querySelector(".museums"),
+                  intro: "You can start exploring museums by clicking here.",
+                 
+                  position: "top",
+                },
+                {
+                  element: document.querySelector(".historical"),
+                  intro: "Interested in historical locations? This button will take you there.",
+                  position: "top",
+
+                },
+                {
+                  element: document.querySelector(".itineraries"),
+                  intro: "Looking for itineraries? Click here to find various vacation plans.",
+                  position: "top",
+
+                },
+                {
+                  element: document.querySelector(".activities"),
+                  intro: "Explore exciting activities by clicking here.",
+                  position: "top",
+
+                },
+                {
+                  element: document.querySelector(".flights"),
+                  intro: "Looking for flights? Click here to find options.",
+                  position: "top",
+
+                },
+                {
+                  element: document.querySelector(".hotels"),
+                  intro: "Find the best hotels at great prices here.",
+                  position: "top",
+
+                },
+                {
+                  element: document.querySelector(".transportation"),
+                  intro: "Need transportation? Explore your options here.",
+                  position: "top",
+
+                },
+                {
+                  element: document.querySelector(".products"),
+                  intro: "Shop for anything you need by clicking here.",
+                  position: "top",
+
+                },
+              ],
+            
+            })
+            .oncomplete(() => {
+              // Mark intro as completed
+              localStorage.setItem("introShown", "true");
+            })
+            .onexit(() => {
+              // Mark intro as completed even if user exits
+              localStorage.setItem("introShown", "true");
+            })
+            .start();
+          
+        
+          };
+      
       // Mark notifications as read
       const markNotificationsAsRead = async () => {
         const username = localStorage.getItem('Username');
@@ -697,8 +796,7 @@ const TouristProfile = () => {
   };
 
 
-
-  
+ 
 
 
 };
@@ -798,49 +896,49 @@ return (
           );
         }}
       >
-        <div style={styles.item} onClick={() => navigate('/historical-locations')}>
+        <div  class="historical" style={styles.item} onClick={() => navigate('/historical-locations')}>
           <FaLandmark style={styles.icon} />
           <span className="label" style={styles.label}>
             Historical Loc
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/museums')}>
+        <div  class="museums" style={styles.item} onClick={() => navigate('/museums')}>
           <FaUniversity style={styles.icon} />
           <span className="label" style={styles.label}>
             Museums
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/products')}>
+        <div  class="products"style={styles.item} onClick={() => navigate('/products')}>
           <FaBox style={styles.icon} />
           <span className="label" style={styles.label}>
             Products
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/itineraries')}>
+        <div  class="itineraries"style={styles.item} onClick={() => navigate('/itineraries')}>
           <FaMap style={styles.icon} />
           <span className="label" style={styles.label}>
             Itineraries
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/activities')}>
+        <div  class="activities"style={styles.item} onClick={() => navigate('/activities')}>
           <FaRunning style={styles.icon} />
           <span className="label" style={styles.label}>
             Activities
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/book-flights')}>
+        <div  class="flights"style={styles.item} onClick={() => navigate('/book-flights')}>
           <FaPlane style={styles.icon} />
           <span className="label" style={styles.label}>
             Book Flights
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/book-hotels')}>
+        <div  class="hotels"style={styles.item} onClick={() => navigate('/book-hotels')}>
           <FaHotel style={styles.icon} />
           <span className="label" style={styles.label}>
             Book a Hotel
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/book-transportation')}>
+        <div  class="transportation"style={styles.item} onClick={() => navigate('/book-transportation')}>
           <FaBus style={styles.icon} />
           <span className="label" style={styles.label}>
            Transportation
@@ -1330,6 +1428,8 @@ return (
 
 };
 const styles = {
+
+  
   card: {
     backgroundColor: "#fff",
     padding: "20px",
