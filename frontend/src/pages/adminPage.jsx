@@ -108,6 +108,7 @@ const AdminPage = () => {
   const handleViewActivities=()=>{
     setShowingActivities( prev=>!prev);
   }
+
   const handleViewTouristItineraries=()=>{
     setShowingTouristItineraries( prev=>!prev);
   }
@@ -233,8 +234,12 @@ const AdminPage = () => {
   
   
   
-  const handleFlagActivity= async(id)=>{
-    try{
+  const [flagMessage, setFlagMessage] = useState(''); // State to store flagging messages
+
+  const handleFlagActivity = async (id) => {
+    setFlagMessage(''); // Reset the message state
+  
+    try {
       const response = await fetch(`http://localhost:8000/flagActivity/${id}`, {
         method: 'PATCH',
         headers: {
@@ -244,24 +249,31 @@ const AdminPage = () => {
   
       if (response.ok) {
         const data = await response.json();
-        console.log(data.msg); 
+        setFlagMessage('Activity flagged successfully!'); // Success message
+        console.log(data.msg);
       } else {
         const errorData = await response.json();
+        setFlagMessage(errorData.error || 'Failed to flag activity.'); // Error message from server
         console.error('Error:', errorData.error);
       }
+    } catch (error) {
+      setFlagMessage('An error occurred while flagging the activity.'); // Catch unexpected errors
+      console.error(error);
     }
-    catch (error) {
-      console.log(error);
-    }
-  }
+  };
+  
 
 
   
 
   
   
-  const handleFlagItinerary= async(id)=>{
-    try{
+  const [flagItineraryMessage, setFlagItineraryMessage] = useState(''); // State for flagging messages
+
+  const handleFlagItinerary = async (id) => {
+    setFlagItineraryMessage(''); // Reset the message
+  
+    try {
       const response = await fetch(`http://localhost:8000/flagItinerary/${id}`, {
         method: 'PATCH',
         headers: {
@@ -271,18 +283,23 @@ const AdminPage = () => {
   
       if (response.ok) {
         const data = await response.json();
-        console.log(data.msg); 
+        setFlagItineraryMessage('Itinerary flagged successfully!'); // Success message
+        console.log(data.msg);
       } else {
         const errorData = await response.json();
+        setFlagItineraryMessage(errorData.error || 'Failed to flag itinerary.'); // Error message from server
         console.error('Error:', errorData.error);
       }
+    } catch (error) {
+      setFlagItineraryMessage('An error occurred while flagging the itinerary.'); // Catch unexpected errors
+      console.error(error);
     }
-    catch (error) {
-      console.log(error);
-    }
-  }
-  const handleFlagTouristItinerary= async(id)=>{
-    try{
+  };
+  
+  const [flagTouristItineraryMessage, setFlagTouristItineraryMessage] = useState('');
+
+  const handleFlagTouristItinerary = async (id) => {
+    try {
       const response = await fetch(`http://localhost:8000/flagTouristItinerary/${id}`, {
         method: 'PATCH',
         headers: {
@@ -292,16 +309,26 @@ const AdminPage = () => {
   
       if (response.ok) {
         const data = await response.json();
-        console.log(data.msg); 
+        console.log(data.msg);
+        // Display success message
+        setFlagTouristItineraryMessage(`Successfully flagged tourist itinerary: ${data.msg}`);
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData.error);
+        // Display error message
+        setFlagTouristItineraryMessage(
+          errorData.error || 'Failed to flag the tourist itinerary.'
+        );
       }
+    } catch (error) {
+      console.error('Error:', error);
+      // Display generic error message
+      setFlagTouristItineraryMessage('An error occurred while flagging the tourist itinerary.');
     }
-    catch (error) {
-      console.log(error);
-    }
-  }
+  };
+  
+
+
 const getItineraries= async ()=>{
   try{
     const response = await fetch(`http://localhost:8000/getAllItineraries`, {
@@ -789,7 +816,7 @@ const addTourismGov = async (e) => {
       }
     };
     
-
+ 
     const styles = {
       container: {
         maxWidth: '800px',
@@ -1961,86 +1988,168 @@ const addTourismGov = async (e) => {
   {unarchiveProductSuccessMessage && <p style={styles.success}>{unarchiveProductSuccessMessage}</p>}
 </div>
 
-
-<div style={styles.container2}>
+<div
+  style={{
+    display: 'flex',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: '20px',
+    marginBottom: '40px',
+    marginTop: '50px', // This pushes it lower
+  }}
+>
   {/* Itineraries Section */}
-  <div style={styles.section}>
+  <div style={{ ...styles.section, flex: '1 1 calc(30% - 20px)' }}>
     <button style={styles.button} onClick={handleViewItineraries}>
       {showingItineraries ? 'Hide Itineraries' : 'Show Itineraries'}
     </button>
+
+    {/* Modal for Itineraries */}
     {showingItineraries && (
-      <div style={styles.content}>
-        {Itineraries.length > 0 ? (
-          Itineraries.map((itinerary) => (
-            <div key={itinerary._id} style={styles.card}>
-              <h4 style={styles.title}>Locations:</h4>
-              <p style={styles.text}>{itinerary.Locations.join(', ')}</p>
-              <p style={styles.text}>Dates: {itinerary.DatesTimes}</p>
-              <button style={styles.flagButton} onClick={() => handleFlagItinerary(itinerary._id)}>
-                Flag Itinerary
-              </button>
-            </div>
-          ))
-        ) : (
-          <p style={styles.text}>No itineraries found.</p>
-        )}
+      <div style={styles.modalOverlay}>
+        <div style={styles.modalContent}>
+          <h2 style={styles.modalTitle}>Itineraries</h2>
+          <button onClick={() => setShowingItineraries(false)} style={styles.modalCloseButton}>
+            Close
+          </button>
+
+          <div style={styles.modalBody}>
+            {Itineraries.length > 0 ? (
+              Itineraries.map((itinerary) => (
+                <div key={itinerary._id} style={styles.card}>
+                  <h4 style={styles.title}>Locations:</h4>
+                  <p style={styles.text}>{itinerary.Locations.join(', ')}</p>
+                  <p style={styles.text}>Dates: {itinerary.DatesTimes}</p>
+                  <button
+                    style={styles.flagButton}
+                    onClick={() => handleFlagItinerary(itinerary._id)}
+                  >
+                    Flag Itinerary
+                  </button>
+                </div>
+              ))
+            ) : (
+              <p style={styles.text}>No itineraries found.</p>
+            )}
+          </div>
+          {flagItineraryMessage && (
+            <p
+              style={{
+                color: flagItineraryMessage.includes('successfully') ? 'green' : 'red',
+                textAlign: 'center',
+                marginTop: '10px',
+              }}
+            >
+              {flagItineraryMessage}
+            </p>
+          )}
+        </div>
       </div>
     )}
   </div>
 
   {/* Activities Section */}
-  <div style={styles.section}>
+  <div style={{ ...styles.section, flex: '1 1 calc(30% - 20px)' }}>
     <button style={styles.button} onClick={handleViewActivities}>
       {showingActivities ? 'Hide Activities' : 'Show Activities'}
     </button>
+
+    {/* Modal for Activities */}
     {showingActivities && (
-      <div style={styles.content}>
-        {Activities.length > 0 ? (
-          Activities.map((activity) => (
-            <div key={activity._id} style={styles.card}>
-              <h4 style={styles.title}>Name:</h4>
-              <p style={styles.text}>{activity.Name}</p>
-              <p style={styles.text}>Category: {activity.Category}</p>
-              <button style={styles.flagButton} onClick={() => handleFlagActivity(activity._id)}>
-                Flag Activity
-              </button>
-            </div>
-          ))
-        ) : (
-          <p style={styles.text}>No activities found.</p>
-        )}
+      <div style={styles.modalOverlay}>
+        <div style={styles.modalContent}>
+          <h2 style={styles.modalTitle}>Activities</h2>
+          <button onClick={() => setShowingActivities(false)} style={styles.modalCloseButton}>
+            Close
+          </button>
+
+          <div style={styles.modalBody}>
+            {Activities.length > 0 ? (
+              Activities.map((activity) => (
+                <div key={activity._id} style={styles.card}>
+                  <h4 style={styles.title}>Name:</h4>
+                  <p style={styles.text}>{activity.Name}</p>
+                  <p style={styles.text}>Category: {activity.Category}</p>
+                  <button
+                    style={styles.flagButton}
+                    onClick={() => handleFlagActivity(activity._id)}
+                  >
+                    Flag Activity
+                  </button>
+                </div>
+              ))
+            ) : (
+              <p style={styles.text}>No activities found.</p>
+            )}
+          </div>
+          {flagMessage && (
+            <p
+              style={{
+                color: flagMessage.includes('successfully') ? 'green' : 'red',
+                textAlign: 'center',
+                marginTop: '15px',
+              }}
+            >
+              {flagMessage}
+            </p>
+          )}
+        </div>
       </div>
     )}
   </div>
 
   {/* Tourist Itineraries Section */}
-  <div style={styles.section}>
+  <div style={{ ...styles.section, flex: '1 1 calc(30% - 20px)' }}>
     <button style={styles.button} onClick={handleViewTouristItineraries}>
       {showingTouristItineraries ? 'Hide Tourist Itineraries' : 'Show Tourist Itineraries'}
     </button>
+
+    {/* Modal for Tourist Itineraries */}
     {showingTouristItineraries && (
-      <div style={styles.content}>
-        {touristItineraries.length > 0 ? (
-          touristItineraries.map((touristItinerary) => (
-            <div key={touristItinerary._id} style={styles.card}>
-              <h4 style={styles.title}>Activities:</h4>
-              <p style={styles.text}>{touristItinerary.Activities.join(', ')}</p>
-              <p style={styles.text}>Locations: {touristItinerary.Locations.join(', ')}</p>
-              <button
-                style={styles.flagButton}
-                onClick={() => handleFlagTouristItinerary(touristItinerary._id)}
-              >
-                Flag Tourist Itinerary
-              </button>
-            </div>
-          ))
-        ) : (
-          <p style={styles.text}>No tourist itineraries found.</p>
-        )}
+      <div style={styles.modalOverlay}>
+        <div style={styles.modalContent}>
+          <h2 style={styles.modalTitle}>Tourist Itineraries</h2>
+          <button
+            onClick={() => setShowingTouristItineraries(false)}
+            style={styles.modalCloseButton}
+          >
+            Close
+          </button>
+
+          <div style={styles.modalBody}>
+            {touristItineraries.length > 0 ? (
+              touristItineraries.map((touristItinerary) => (
+                <div key={touristItinerary._id} style={styles.card}>
+                  <h4 style={styles.title}>Activities:</h4>
+                  <p style={styles.text}>{touristItinerary.Activities.join(', ')}</p>
+                  <p style={styles.text}>Locations: {touristItinerary.Locations.join(', ')}</p>
+                  <button
+                    style={styles.flagButton}
+                    onClick={() => handleFlagTouristItinerary(touristItinerary._id)}
+                  >
+                    Flag Tourist Itinerary
+                  </button>
+                </div>
+              ))
+            ) : (
+              <p style={styles.text}>No tourist itineraries found.</p>
+            )}
+          </div>
+          {flagTouristItineraryMessage && (
+            <p
+              style={{
+                color: flagTouristItineraryMessage.includes('Successfully') ? 'green' : 'red',
+              }}
+            >
+              {flagTouristItineraryMessage}
+            </p>
+          )}
+        </div>
       </div>
     )}
   </div>
 </div>
+
 
       {/* Password Modal */}
 {showPasswordModal && (

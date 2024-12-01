@@ -49,7 +49,6 @@ import AdvertiserReport from './pages/advertiserReport';
 import SellerReport from './pages/sellerReport';
 import { Elements } from '@stripe/react-stripe-js'; // Import Elements from Stripe
 import { loadStripe } from '@stripe/stripe-js'; // Import loadStripe
-import AdminSettings from './pages/adminsettings';
 import AttendedActivitiesPage from './pages/AttendedActivities';
 import Preftags from './pages/preftags';
 import CreateTransportation from './pages/createTransportation';
@@ -146,7 +145,6 @@ function App() {
             <Route path="/payment" element={<PaymentPage />} />
             <Route path="/GuideReport" element={<GuideReport />} />
             <Route path="/checkout" element={<Checkout />} />
-            <Route path="/adminsettings" element={<AdminSettings />} />
             <Route path="/preftags" element={<Preftags />} />
             <Route path="/createTransportation" element={<CreateTransportation />} />
             <Route path="/category" element={<Category />} />
