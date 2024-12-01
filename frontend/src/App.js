@@ -60,25 +60,54 @@ import Category from './pages/category';
 const stripePromise = loadStripe('pk_test_51QPR4CHmIrhpZsCUkNDleRBlZDavN3bJ0zSGja0odQdTv8F6suSp02Cyx2sOVDyTbxi4J7Yqrnj7kQMwlu2LbwaU00pnINWNUs');
 stripePromise.then((stripe) => console.log('Stripe initialized:', stripe));
 
+
+
 function Home() {
+  const [animatedText, setAnimatedText] = useState('');
+  const fullText = 'Triptastic'; // The full word to display
   const navigate = useNavigate();
-  
+
+  useEffect(() => {
+    let index = 0;
+    const interval = setInterval(() => {
+      if (index < fullText.length) {
+        setAnimatedText((prev) => prev + fullText[index]);
+        index++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 200); // Delay for each letter (200ms)
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="App">
       <header className="App-header">
-        <div className="header-container">
-          <button className="header-button" onClick={() => navigate('/adminLogin')}>Login as Admin</button>
-          <button className="header-button" onClick={() => navigate('/tgov-login')}>Login as Tourism Governor</button>
-        </div>
+        {/* Animated Welcome Message */}
+        <h1>Welcome to <span style={{ color: '#FF5733' }}>{animatedText}</span></h1>
 
-        <h1>Welcome to Triptastic!</h1>
-        <p>Please register as one of the following:</p>
-        <div className="registration-options">
-          <button onClick={() => navigate('/tourist-register')}>Register as Tourist</button>
-          <button onClick={() => navigate('/tour-guide-register')}>Register as Tour Guide</button>
-          <button onClick={() => navigate('/advertiser-register')}>Register as Advertiser</button>
-          <button onClick={() => navigate('/seller-register')}>Register as Seller</button>
+        {/* Dropdown List for Roles */}
+        <div>
+          <p>Select your role to get started:</p>
+          <select
+            onChange={(e) => navigate(e.target.value)} // Navigate to the selected page
+            style={{
+              padding: '10px',
+              fontSize: '16px',
+              borderRadius: '5px',
+              marginTop: '20px',
+            }}
+          >
+            <option value="">-- Choose a Role --</option>
+            <option value="/tourist-register">Tourist</option>
+            <option value="/seller-register">Seller</option>
+            <option value="/advertiser-register">Advertiser</option>
+            <option value="/adminLogin">Admin</option>
+            <option value="/tgov-login">Tourism Governor</option>
+            <option value="/tour-guide-register">Tour Guide</option>
+          </select>
           <button onClick={() => navigate('/Guest')}>Continue as Guest</button>
+
         </div>
       </header>
     </div>
