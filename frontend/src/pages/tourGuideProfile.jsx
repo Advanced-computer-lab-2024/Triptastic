@@ -666,6 +666,20 @@ const handleViewReport = async (itineraryId) => {
         onClick={toggleModal} // Open modal on click
       />
     </header>
+      {/* Sidebar */}
+   <div className="sidebar"style={styles.sidebar}>
+      
+      <ul>
+      <li 
+  onClick={() => navigate('/my-itineraries')} 
+  style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', paddingLeft: '10px' }}
+>
+  <FaMap style={{ marginRight: '8px' }} />
+  View My Itineraries
+</li>
+
+      </ul> 
+    </div>
 
     {/* Edit Profile Modal */}
     {modalOpen && (
@@ -1144,9 +1158,9 @@ const handleViewReport = async (itineraryId) => {
 
 const styles = {
   container: {
-    top:'-50px',
-        margin: '90px auto',
-    maxWidth: '1000px',
+    top:'-90px',
+     margin: '90px auto',
+    maxWidth: '1200px',
     padding: '20px',
     backgroundColor: '#f9f9f9',
     borderRadius: '10px',
@@ -1178,12 +1192,20 @@ const styles = {
   title: {
     fontSize: '24px',
     fontWeight: 'bold',
+    margin: 0,
     marginLeft:'90px'
   },
   profileIcon: {
     fontSize: '30px',
     color: 'white',
     cursor: 'pointer',
+  },
+  sidebar  :{
+    marginTop: '20px',
+  display: 'flex',       // Enables flexbox layout
+  justifyContent: 'center', // Horizontally centers the content
+  alignItems: 'center',  // Vertically centers the content
+  textAlign: 'center',
   },
   modalOverlay: {
     position: 'fixed',

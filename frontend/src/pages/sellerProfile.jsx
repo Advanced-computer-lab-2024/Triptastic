@@ -1018,6 +1018,7 @@ const styles = {
   },
   title: {
     fontSize: '24px',
+    margin: 0,
     fontWeight: 'bold',
     marginLeft:'90px'
   },
