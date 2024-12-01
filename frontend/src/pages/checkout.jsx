@@ -14,6 +14,7 @@ const Checkout = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [total,setTotal]=useState(0);
 
   const handleAddressSelect = (address) => {
     setSelectedAddress(address); // Set the selected address
@@ -239,17 +240,22 @@ const Checkout = () => {
 
   // Proceed to payment
   const handleProceedToPayment = () => {
+    const total=cartItems.reduce((total, item) => total + (item.price * item.quantity), 0)
+
     if (!selectedAddress) {
-      alert('Please select a delivery address');
+      setErrorMessage('Please select an address');
       return;
     }
     // Navigate to payment page or process order
-    navigate('/Payment', { 
-      state: { 
-        cartItems, 
-        selectedAddress 
-      } 
-    });
+    navigate(`/payment?amount=${total}`,{ state: { from: '/Checkout',cartItems, 
+      selectedAddress  } });
+        setErrorMessage(''); // Clear any previous error messages
+    // navigate('/payment', { 
+    //   state: { 
+    //     cartItems, 
+    //     selectedAddress 
+    //   } 
+    // });
   };
 
   useEffect(() => {
@@ -359,7 +365,7 @@ const Checkout = () => {
   
       <div style={styles.container}>
         <h1 style={styles.cartContent}>Checkout</h1>
-  
+        <h3>{errorMessage}</h3>
         {/* Cart Items Section */}
         <div style={styles.cartContent}>
   {cartItems.length === 0 ? (
@@ -456,12 +462,13 @@ const Checkout = () => {
         {/* Proceed to Payment Button */}
         <div style={styles.cartContent}>
           <button
-            onClick={handleProceedToPayment}
+            onClick={()=>handleProceedToPayment()}
             style={styles.button}
             disabled={cartItems.length === 0 || !selectedAddress}
           >
             Proceed to Payment
           </button>
+          <button style={styles.cartContent}>Cash on delivery</button>
         </div>
       </div>
     </div>
