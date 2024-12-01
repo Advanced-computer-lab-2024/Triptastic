@@ -898,49 +898,49 @@ return (
       >
         <div  class="historical" style={styles.item} onClick={() => navigate('/historical-locations')}>
           <FaLandmark style={styles.icon} />
-          <span className="historical" style={styles.label}>
+          <span className="label" style={styles.label}>
             Historical Loc
           </span>
         </div>
         <div  class="museums" style={styles.item} onClick={() => navigate('/museums')}>
           <FaUniversity style={styles.icon} />
-          <span className="museums" style={styles.label}>
+          <span className="label" style={styles.label}>
             Museums
           </span>
         </div>
         <div  class="products"style={styles.item} onClick={() => navigate('/products')}>
           <FaBox style={styles.icon} />
-          <span className="products" style={styles.label}>
+          <span className="label" style={styles.label}>
             Products
           </span>
         </div>
         <div  class="itineraries"style={styles.item} onClick={() => navigate('/itineraries')}>
           <FaMap style={styles.icon} />
-          <span className="itineraries" style={styles.label}>
+          <span className="label" style={styles.label}>
             Itineraries
           </span>
         </div>
         <div  class="activities"style={styles.item} onClick={() => navigate('/activities')}>
           <FaRunning style={styles.icon} />
-          <span className="activities" style={styles.label}>
+          <span className="label" style={styles.label}>
             Activities
           </span>
         </div>
         <div  class="flights"style={styles.item} onClick={() => navigate('/book-flights')}>
           <FaPlane style={styles.icon} />
-          <span className="flights" style={styles.label}>
+          <span className="label" style={styles.label}>
             Book Flights
           </span>
         </div>
         <div  class="hotels"style={styles.item} onClick={() => navigate('/book-hotels')}>
           <FaHotel style={styles.icon} />
-          <span className="hotels" style={styles.label}>
+          <span className="label" style={styles.label}>
             Book a Hotel
           </span>
         </div>
         <div  class="transportation"style={styles.item} onClick={() => navigate('/book-transportation')}>
           <FaBus style={styles.icon} />
-          <span className="transportation" style={styles.label}>
+          <span className="label" style={styles.label}>
            Transportation
           </span>
         </div>

@@ -4,6 +4,7 @@ const requestModel= require('../Models/Request.js');
 const productModel= require('../Models/Product.js');
 const adminModel = require('../Models/Admin.js');
 const notificationModel = require('../Models/Notification.js');
+const OrdersModel = require('../Models/Orders.js');
 
 const cartModel = require('../Models/Cart.js'); // Import the Cart model
 const { default: mongoose } = require('mongoose');
@@ -564,7 +565,56 @@ const viewMyProducts = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+const filterByProduct = async (req, res) => {
+  const { productId } = req.query;
+  try{
+    const x=await OrdersModel.find({product: productId});
+    const r= x.map(x=> ({ createdAt: x.createdAt, quantity: x.quantity }));
+    res.status(200).json(r);
+  }
+  catch(error){
+     res.status(400).json({error: error.message});
+  }
+};
+const getFilteredProducts = async (req, res) => { //filtered by date
+  const { date, Username } = req.query;
 
+  if (!date || !Username) {
+    return res.status(400).json({ error: 'Date and Username are required' });
+  }
 
+  try {
+    // Parse the input date string
+    const startDate = new Date(date);
+    const endDate = new Date(date);
 
- module.exports = {viewMyProducts,deleteAllNotifications,getNotificationsForAdmin,checkAndNotifyOutOfStockAdmin,getNotificationsForSeller,checkAndNotifyOutOfStockSeller,incrementProductSales,viewProductSales ,changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller};
+    // Check if the date parsing was successful
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      return res.status(400).json({ error: 'Invalid date format' });
+    }
+
+    // Set the time for the start of the day
+    startDate.setUTCHours(0, 0, 0, 0);
+
+    // Set the time for the end of the day
+    endDate.setUTCHours(23, 59, 59, 999);
+
+    // Query for bookings within the date range and populate the itineraryID field
+    const orders = await OrdersModel.find({
+      createdAt: {
+        $gte: startDate,
+        $lte: endDate
+      }
+    }).populate('product');
+
+    // Extract itineraries from the populated bookings and filter by TourGuide
+     const productsQuantity = orders
+      .map(order => ({product: order.product, quantity: order.quantity}))
+      .filter(item => item.product.seller === Username);
+    res.status(200).json(productsQuantity);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+ module.exports = {viewMyProducts,deleteAllNotifications,getNotificationsForAdmin,checkAndNotifyOutOfStockAdmin,getNotificationsForSeller,checkAndNotifyOutOfStockSeller,incrementProductSales,viewProductSales ,changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller,filterByProduct,getFilteredProducts};
