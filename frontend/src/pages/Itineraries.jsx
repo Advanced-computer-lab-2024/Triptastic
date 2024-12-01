@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { CurrencyContext } from '../pages/CurrencyContext';
 import { FaUserCircle,FaCalendar,FaDollarSign ,FaMapMarkerAlt,FaClock,FaLanguage,FaWheelchair,FaShuttleVan} from 'react-icons/fa';
-import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
+import { FaBell,FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
   FaClipboardList,
   FaStar, } from "react-icons/fa";
 import logo from '../images/image.png';
@@ -16,6 +16,7 @@ const Itineraries = () => {
   const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(true);
+  const [notificationRequested, setNotificationRequested] = useState({});
   const [shareableLink, setShareableLink] = useState('');
   const [filters, setFilters] = useState({
     minBudget: '',
@@ -239,6 +240,30 @@ const Itineraries = () => {
         navigate('/'); // Fallback to home
       }
     };
+    const handleNotificationRequest = async (itineraryId) => {
+      try {
+        const response = await fetch('http://localhost:8000/requestNotificationItinerary', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: localStorage.getItem('Username'),
+            itineraryId,
+          }),
+        });
+    
+        if (response.ok) {
+          alert('You will be notified when bookings open!');
+          setNotificationRequested((prev) => ({ ...prev, [itineraryId]: true })); // Mark as requested
+        } else {
+          const errorData = await response.json();
+          alert(errorData.message || 'Failed to request notification.');
+        }
+      } catch (error) {
+        console.error('Error requesting notification:', error);
+        alert('An error occurred. Please try again.');
+      }
+    };
+    
     return (
       <div>
   <div style={styles.container2}>
@@ -429,6 +454,15 @@ const Itineraries = () => {
                     <strong><FaCalendar /></strong> {itinerary.DatesTimes} <br />
                     <strong><FaMapMarkerAlt /></strong> {itinerary.Locations.join(', ')}<br />
                     <strong><FaUserCircle/></strong> {itinerary.TourGuide}<br/>
+                  <strong>Booking Open:</strong> {itinerary.bookingOpen ? 'Yes' : 'No'}
+                  {!itinerary.bookingOpen && (
+                    <FaBell
+                      style={styles.bellIcon}
+                      onClick={() => handleNotificationRequest(itinerary._id)}
+                    />
+                  )}
+                <br/>
+                <div style={styles.buttonGroup}></div>
                     <button
                       style={styles.button}
                       onClick={() => toggleItineraryDetails(itinerary._id)}

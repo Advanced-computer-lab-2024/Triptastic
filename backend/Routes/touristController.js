@@ -1262,6 +1262,10 @@ const bookItinerary = async (req, res) => {
     if (!itinerary) {
       return res.status(404).json({ error: 'Itinerary not found' });
     }
+     // Check if the activity is open for booking
+     if (!itinerary.bookingOpen) {
+      return res.status(400).json({ error: 'This itinerary is not open for booking' });
+    }
 
     const tourist = await touristModel.findOne({ Username: Username });
     console.log('Tourist:', tourist);
@@ -2284,6 +2288,39 @@ const requestNotification = async (req, res) => {
   }
 };
 
+const requestNotificationItinerary = async (req, res) => {
+  const { username, itineraryId } = req.body;
+
+  try {
+    const itinerary = await itineraryModel.findById(itineraryId);
+
+    if (!itinerary) {
+      return res.status(404).json({ message: 'Itinerary not found.' });
+    }
+
+    if (itinerary.bookingOpen) {
+      return res.status(400).json({ message: 'Bookings are already open for this itinerary.' });
+    }
+
+    const existingRequest = itinerary.notificationRequests.find(
+      (request) => request.username === username
+    );
+
+    if (existingRequest) {
+      return res.status(400).json({ message: 'You have already requested a notification for this itinerary.' });
+    }
+
+    itinerary.notificationRequests.push({ username });
+    await itinerary.save();
+
+    res.status(200).json({ message: 'Notification request added successfully.' });
+  } catch (error) {
+    console.error('Error requesting notification:', error.message);
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+
 
 const getNotifications = async (req, res) => {
   const { username } = req.query;
@@ -2764,4 +2801,4 @@ const applyPromoCode = async (req, res) => {
   ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
   shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,addToCartAndRemoveFromWishlist,
   getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,
-  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist,removeProductFromCart,requestNotification,addAddress,getAddresses,createOrder,payWithWallet,sendConfirmationEmail,applyPromoCode};
+  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist,removeProductFromCart,requestNotification,requestNotificationItinerary,addAddress,getAddresses,createOrder,payWithWallet,sendConfirmationEmail,applyPromoCode};

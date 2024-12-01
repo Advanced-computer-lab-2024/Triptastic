@@ -129,9 +129,9 @@ const createTourGuideInfo = async (req, res) => {
  }
 
  const createItinerary=async(req,res)=>{
-   const{Activities,Locations,Timeline,DurationOfActivity,Language,Price,DatesTimes,Accesibility,pickUpDropOff,TourGuide}=req.body;
+   const{Activities,Locations,Timeline,DurationOfActivity,Language,Price,DatesTimes,Accesibility,pickUpDropOff,bookingOpen,TourGuide}=req.body;
    try{
-      const itinerary=await itineraryModel.create({Activities,Locations,Timeline,DurationOfActivity,Language,Price,DatesTimes,Accesibility,pickUpDropOff,TourGuide});
+      const itinerary=await itineraryModel.create({Activities,Locations,Timeline,DurationOfActivity,Language,Price,DatesTimes,Accesibility,pickUpDropOff,bookingOpen,TourGuide});
       res.status(200).json(itinerary);
    }
    catch(error){
@@ -153,18 +153,75 @@ const createTourGuideInfo = async (req, res) => {
      res.status(400).json({ error: error.message });
    }
  };
+
+ const sendNotificationsForItinerary = async (itinerary) => {
+  try {
+    if (!itinerary.notificationRequests || itinerary.notificationRequests.length === 0) {
+      console.log('No users to notify.');
+      return;
+    }
+
+    const message = `The itinerary "${itinerary.name}" is now open for bookings!`;
+    const now = new Date();
+
+    for (const { username } of itinerary.notificationRequests) {
+      const tourist = await touristModel.findOne({ Username: username }); // Find tourist by username
+      if (tourist) {
+        // Add the notification to the tourist's notifications array
+        tourist.notifications.push({ message, date: now });
+        await tourist.save();
+        console.log(`Notification sent to user: ${username}`);
+      } else {
+        console.log(`User with username ${username} not found.`);
+      }
+    }
+
+    // Clear the notificationRequests array in the itinerary
+    itinerary.notificationRequests = [];
+    await itinerary.save();
+
+    console.log('Notifications sent to all tourists for the itinerary.');
+  } catch (error) {
+    console.error('Error sending notifications for itinerary:', error.message);
+    throw error; // Ensure error is re-thrown for proper handling
+  }
+};
+
+
+
  
- const updateItinerary= async(req,res)=>{
-   const {id}=req.params;
-   const update= req.body;
-   try{
-      await itineraryModel.findByIdAndUpdate(id,{$set: update});
-      res.status(200).json({msg:" Itinerary is updated"});
-   }
-   catch (error){
-      res.status(400).json({error: error.message});
-   }
- }
+const updateItinerary = async (req, res) => {
+  const { id } = req.params;
+  const update = req.body;
+
+  try {
+    // Find the existing itinerary
+    const existingItinerary = await itineraryModel.findById(id);
+    if (!existingItinerary) {
+      return res.status(404).json({ error: 'Itinerary not found.' });
+    }
+
+    // Check if bookingOpen is being updated from false to true
+    const wasBookingClosed = existingItinerary.bookingOpen === false;
+    const isBookingNowOpen = update.bookingOpen === true;
+
+    // Update the itinerary
+    Object.assign(existingItinerary, update);
+    await existingItinerary.save();
+
+    // If bookingOpen changed from false to true, send notifications
+    if (wasBookingClosed && isBookingNowOpen) {
+      await sendNotificationsForItinerary(existingItinerary);
+    }
+
+    res.status(200).json({ msg: 'Itinerary updated successfully.' });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+
+
  const deleteItinerary = async (req, res) => {
    const id=req.params.id;
    try {

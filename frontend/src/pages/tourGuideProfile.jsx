@@ -97,6 +97,7 @@ function TourGuideProfile() {
     DatesTimes: '',
     Accesibility: '',
     pickUpDropOff: '',
+    bookingOpen: false,
   });
   
   const [isCreatingItinerary, setIsCreatingItinerary] = useState(false);
@@ -322,6 +323,8 @@ function TourGuideProfile() {
           DatesTimes: '',
           Accesibility: '',
           pickUpDropOff: '',
+          bookingOpen: false,
+
         });
       } else {
         const errorData = await response.json();
@@ -402,6 +405,8 @@ function TourGuideProfile() {
       DatesTimes: itinerary.DatesTimes,
       Accesibility: itinerary.Accesibility,
       pickUpDropOff: itinerary.pickUpDropOff,
+      bookingOpen: itinerary.bookingOpen,
+
     });
     setSelectedItinerary(itinerary);
     setIsEditingItinerary(true); // Set editing state to true
@@ -979,6 +984,23 @@ const handleViewReport = async (itineraryId) => {
         required
       />
     </div>
+    <div>
+      <label>Booking Open:</label>
+      <input
+        type="checkbox"
+        name="bookingOpen"
+        value={itineraryData.bookingOpen}
+        onChange={(e) =>
+          setItineraryData((prevData) => ({ ...prevData, bookingOpen: e.target.checked }))
+        }
+        style={{
+          width: "100%",
+          padding: "8px",
+          borderRadius: "5px",
+          border: "1px solid #ccc",
+        }}
+      />
+    </div>
     <button type="submit">Add Itinerary</button>
   </form>
 )}
@@ -1023,6 +1045,7 @@ const handleViewReport = async (itineraryId) => {
           <p><strong>Price:</strong> ${itinerary.Price}</p>
           <p><strong>Accessibility:</strong> {itinerary.Accesibility}</p>
           <p><strong>Pick Up/Drop Off:</strong> {itinerary.pickUpDropOff}</p>
+          <p><strong>Booking Open:</strong> {itinerary.bookingOpen ? 'Yes' : 'No'}</p>
           <p><strong>Booked:</strong> {itinerary.Booked ? "Yes" : "No"}</p>
           <p><strong>Tour Guide:</strong> {itinerary.TourGuide}</p>
           <p><strong>Active:</strong> {itinerary.active ? "Yes" : "No"}</p>
@@ -1143,6 +1166,23 @@ const handleViewReport = async (itineraryId) => {
               required
             />
           </div>
+          <div>
+      <label>Booking Open:</label>
+      <input
+        type="checkbox"
+        name="bookingOpen"
+        value={itineraryData.bookingOpen}
+        onChange={(e) =>
+          setItineraryData((prevData) => ({ ...prevData, bookingOpen: e.target.checked }))
+        }
+        style={{
+          width: "100%",
+          padding: "8px",
+          borderRadius: "5px",
+          border: "1px solid #ccc",
+        }}
+      />
+    </div>
           <button type="submit">Save Changes</button>
           <button type="button" onClick={() => setIsEditingItinerary(false)}>Cancel</button>
         </form>

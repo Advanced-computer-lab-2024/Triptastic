@@ -29,6 +29,10 @@ const itinerarySchema = new Schema({
     pickUpDropOff:{
         type: String, required: true
     },
+    bookingOpen: {
+      type: Boolean,
+      default: true // Default to open for booking
+  },
     Booked:{
         type: Boolean,
         default: false
@@ -77,6 +81,14 @@ const itinerarySchema = new Schema({
           date: {
             type: Date,
             default: Date.now,
+          },
+        },
+      ],
+      notificationRequests: [
+        {
+          username: {
+            type: String,
+            required: true,
           },
         },
       ],
