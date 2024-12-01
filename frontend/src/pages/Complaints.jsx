@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Complaints.css'; // Import the CSS file
+import {FaArrowLeft} from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const Complaints = () => {
   const [complaints, setComplaints] = useState([]);
@@ -16,6 +18,7 @@ const Complaints = () => {
   const [updateStatusMessage, setUpdateStatusMessage] = useState('');
   const [updateStatusError, setUpdateStatusError] = useState('');
   const [updateStatusLoading, setUpdateStatusLoading] = useState(false);
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
@@ -127,6 +130,14 @@ const Complaints = () => {
   
   return (
     <div className="complaints-container">
+        <FaArrowLeft 
+    onClick={() => navigate('/adminPage')}
+    style={{
+      cursor: 'pointer', 
+      fontSize: '24px', 
+      color: '#0F5132' // Match your theme
+    }} 
+  />
       <h2 className="page-heading">Complaints Management</h2>
  {/* View Complaint Details Section */}
  <div className="complaint-card">

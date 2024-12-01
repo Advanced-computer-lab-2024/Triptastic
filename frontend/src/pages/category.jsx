@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import {FaArrowLeft} from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+
 
 const Category = () => {
     const [createCategoryName, setCreateCategoryName] = useState('');
@@ -17,6 +20,8 @@ const [getCategorySuccess, setGetCategorySuccess] = useState('');
 
 const [updateCategoryError, setUpdateCategoryError] = useState('');
 const [updateCategorySuccess, setUpdateCategorySuccess] = useState('');
+const navigate = useNavigate(); // Initialize useNavigate for navigation
+
 
 const [deleteCategoryError, setDeleteCategoryError] = useState('');
 const [deleteCategorySuccess, setDeleteCategorySuccess] = useState('');
@@ -157,6 +162,14 @@ const createCategory = async (e) => {
   
   return (
     <div style={styles.container}>
+                    <FaArrowLeft 
+    onClick={() => navigate('/adminPage')}
+    style={{
+      cursor: 'pointer', 
+      fontSize: '24px', 
+      color: '#0F5132' // Match your theme
+    }} 
+  />
       <h2 style={styles.heading}>Category Management</h2>
       <div className="complaint-card">
   <h3 style={styles.cardHeading}>Create Category</h3>
