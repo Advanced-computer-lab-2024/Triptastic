@@ -59,12 +59,25 @@ function TourGuideReg() {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const [loginData, setLoginData] = useState({
+    Email: '',
+    Password: '',
+  });
   const navigate = useNavigate();
 
   // Handle input changes for text inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  // Handle login form input changes
+  const handleLoginChange = (e) => {
+    const { name, value } = e.target;
+    setLoginData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
@@ -84,7 +97,7 @@ function TourGuideReg() {
     setAcceptTerms(e.target.checked);
   };
 
-  // Handle form submission
+  // Handle form submission for registration
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -134,11 +147,38 @@ function TourGuideReg() {
     }
   };
 
+  // Handle form submission for login
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('http://localhost:8000/loginTourGuide', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(loginData),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        localStorage.setItem('token', responseData.token); // Save the JWT token
+        navigate('/tour-guide-profile'); // Redirect to dashboard after successful login
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Login failed');
+      }
+    } catch (error) {
+      setErrorMessage('Something went wrong. Please try again later.');
+    }
+  };
+
   return (
     <div>
       <h2>Tour Guide Registration</h2>
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
       {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+
+      {/* Registration Form */}
       <form onSubmit={handleSubmit}>
         <div>
           <label>Username:</label>
@@ -207,6 +247,32 @@ function TourGuideReg() {
 
       {/* Modal for Terms and Conditions */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+
+      {/* Login Form */}
+      <h3>Login as Tour Guide</h3>
+      <form onSubmit={handleLoginSubmit}>
+        <div>
+          <label>Email:</label>
+          <input
+            type="email"
+            name="Email"
+            value={loginData.Email}
+            onChange={handleLoginChange}
+            required
+          />
+        </div>
+        <div>
+          <label>Password:</label>
+          <input
+            type="password"
+            name="Password"
+            value={loginData.Password}
+            onChange={handleLoginChange}
+            required
+          />
+        </div>
+        <button type="submit">Login</button>
+      </form>
     </div>
   );
 }

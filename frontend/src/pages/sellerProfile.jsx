@@ -13,7 +13,8 @@ import { Tooltip } from 'react-tooltip'; // Updated import
 const SellerProfile = () => {
   const [sellerProducts, setSellerProducts] = useState([]);
   const [error, setError] = useState('');
-  const [seller, setSeller] = useState(localStorage.getItem('Username') || ''); // Default to logged-in user
+  const [seller, setSeller] = useState(localStorage.getItem('Username') || '');
+  console.log(localStorage.getItem('Username')); // Default to logged-in user
   const [sellerInfo, setSellerInfo] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);

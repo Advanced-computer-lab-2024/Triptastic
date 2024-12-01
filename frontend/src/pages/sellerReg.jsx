@@ -10,7 +10,6 @@ const Modal = ({ isOpen, onClose }) => {
       <div style={modalStyle}>
         <h3>Terms and Conditions</h3>
         <p>
-          {/* Add your terms and conditions text here */}
           These are the terms and conditions for registering as a seller. Please read them carefully.
           <br />
           1. You must be over 18 years of age.
@@ -59,6 +58,10 @@ function SellerReg() {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const [loginData, setLoginData] = useState({
+    loginEmail: '',
+    loginPassword: '',
+  }); // State for login form
   const navigate = useNavigate();
 
   // Handle input changes
@@ -84,11 +87,10 @@ function SellerReg() {
     setAcceptTerms(e.target.checked);
   };
 
-  // Handle form submission
+  // Handle form submission for Seller Registration
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if terms and conditions are accepted
     if (!acceptTerms) {
       setErrorMessage('You must accept the terms and conditions to register.');
       setSuccessMessage('');
@@ -117,7 +119,6 @@ function SellerReg() {
         localStorage.setItem('context', 'seller');
         setSuccessMessage('Seller registered successfully!');
         setErrorMessage('');
-        // Optionally, reset form data
         setFormData({
           Username: '',
           Email: '',
@@ -130,6 +131,33 @@ function SellerReg() {
         const errorData = await response.json();
         setErrorMessage(errorData.error || 'Registration failed');
         setSuccessMessage('');
+      }
+    } catch (error) {
+      setErrorMessage('Something went wrong. Please try again later.');
+    }
+  };
+
+  // Handle form submission for login
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch('http://localhost:8000/loginSeller', {
+        method: 'POST',
+        body: JSON.stringify({
+          Email: loginData.loginEmail,
+          Password: loginData.loginPassword,
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('Email', loginData.loginEmail);
+        localStorage.setItem('context', 'seller'); // You can adjust this context based on your requirements
+        navigate('/seller-profile');
+      } else {
+        setErrorMessage('Invalid login credentials');
       }
     } catch (error) {
       setErrorMessage('Something went wrong. Please try again later.');
@@ -205,6 +233,31 @@ function SellerReg() {
           </label>
         </div>
         <button type="submit">Register as Seller</button>
+      </form>
+
+      <h2>Login</h2>
+      <form onSubmit={handleLoginSubmit}>
+        <div>
+          <label>Email:</label>
+          <input
+            type="email"
+            name="loginEmail"
+            value={loginData.loginEmail}
+            onChange={(e) => setLoginData({ ...loginData, loginEmail: e.target.value })}
+            required
+          />
+        </div>
+        <div>
+          <label>Password:</label>
+          <input
+            type="password"
+            name="loginPassword"
+            value={loginData.loginPassword}
+            onChange={(e) => setLoginData({ ...loginData, loginPassword: e.target.value })}
+            required
+          />
+        </div>
+        <button type="submit">Login</button>
       </form>
 
       {/* Modal for Terms and Conditions */}

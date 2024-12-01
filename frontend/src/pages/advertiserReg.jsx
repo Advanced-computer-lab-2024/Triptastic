@@ -59,6 +59,10 @@ function AdvertiserReg() {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const [loginData, setLoginData] = useState({
+    email: '',
+    password: ''
+  }); // State for login form
   const navigate = useNavigate();
 
   // Handle input changes for text inputs
@@ -82,6 +86,15 @@ function AdvertiserReg() {
   // Handle checkbox change
   const handleTermsChange = (e) => {
     setAcceptTerms(e.target.checked);
+  };
+
+  // Handle login form input changes
+  const handleLoginChange = (e) => {
+    const { name, value } = e.target;
+    setLoginData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
   };
 
   // Handle form submission
@@ -115,7 +128,6 @@ function AdvertiserReg() {
         localStorage.setItem('Password', formData.Password);
         setSuccessMessage('Advertiser registered successfully!');
         setErrorMessage('');
-        // Optionally, reset form data
         setFormData({
           Username: '',
           Email: '',
@@ -134,11 +146,42 @@ function AdvertiserReg() {
     }
   };
 
+  // Handle login form submission
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch('http://localhost:8000/loginAdvertiser', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          Email: loginData.email,
+          Password: loginData.password,
+        }),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        localStorage.setItem('token', responseData.token);
+        setSuccessMessage('Login successful!');
+        setErrorMessage('');
+        navigate('/advertiser-profile'); // Redirect to dashboard or another page
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Login failed');
+        setSuccessMessage('');
+      }
+    } catch (error) {
+      setErrorMessage('Something went wrong. Please try again later.');
+    }
+  };
+
   return (
     <div>
       <h2>Advertiser Registration</h2>
       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
       {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+
       <form onSubmit={handleSubmit}>
         <div>
           <label>Username:</label>
@@ -207,6 +250,32 @@ function AdvertiserReg() {
 
       {/* Modal for Terms and Conditions */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+
+      {/* Login Form */}
+      <h2>Advertiser Login</h2>
+      <form onSubmit={handleLoginSubmit}>
+        <div>
+          <label>Email:</label>
+          <input
+            type="email"
+            name="email"
+            value={loginData.email}
+            onChange={handleLoginChange}
+            required
+          />
+        </div>
+        <div>
+          <label>Password:</label>
+          <input
+            type="password"
+            name="password"
+            value={loginData.password}
+            onChange={handleLoginChange}
+            required
+          />
+        </div>
+        <button type="submit">Login</button>
+      </form>
     </div>
   );
 }
