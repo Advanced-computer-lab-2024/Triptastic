@@ -429,15 +429,24 @@ const [filteredActivities, setFilteredActivities] = useState([]);
           <div style={styles.modalContent}>
             <h2 style={styles.modalContentH2}>Edit Profile</h2>
 
-            <div style={styles.infoHeader}>
+            <div style={styles.photoSection}>
               {Logo && (
                 <img
                   src={`http://localhost:8000/${Logo.replace(/\\/g, '/')}`}
                   alt="Advertiser Logo"
                   className="logo"
-                  style={styles.logo}
+                  style={styles.profilePhoto}
                 />
               )}
+              <label style={styles.photoLabel}>
+                  Update Photo
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoChange}
+                    style={styles.fileInput}
+                  />
+                </label>
               <h3>{advertiserInfo.Username}</h3>
             </div>
 
@@ -446,15 +455,6 @@ const [filteredActivities, setFilteredActivities] = useState([]);
               type="email"
               name="Email"
               value={formData.Email}
-              onChange={handleInputChange}
-              style={styles.modalContentInput}
-            />
-
-            <label style={styles.modalContentLabel}>Password:</label>
-            <input
-              type="password"
-              name="Password"
-              value={formData.Password}
               onChange={handleInputChange}
               style={styles.modalContentInput}
             />
@@ -484,17 +484,6 @@ const [filteredActivities, setFilteredActivities] = useState([]);
               onChange={handleInputChange}
               style={styles.modalContentTextarea}
             ></textarea>
-
-
-
-            <label style={styles.modalContentLabel}>Logo:</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleLogoChange}
-              style={styles.modalContentInput}
-            />
-
             <div style={styles.modalButtonsContainer}>
               <button
                 onClick={handleUpdate}
@@ -695,6 +684,28 @@ const [filteredActivities, setFilteredActivities] = useState([]);
 };
 
 const styles = {
+  photoSection : {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '10px',
+  },
+  profilePhoto: {
+    width: '100px',
+    height: '100px',
+    borderRadius: '50%',
+    objectFit: 'cover',
+  },
+  photoLabel: {
+    cursor: 'pointer',
+    color: '#0F5132',
+    fontWeight: 'bold',
+    display: 'flex',
+    alignItems: 'center',
+  },
+  fileInput: {
+    display: 'none',
+  },
   cancelIcon: {
     color: '#0F5132', // Set the color of the icon
     fontSize: '30px', // Adjust the size as needed

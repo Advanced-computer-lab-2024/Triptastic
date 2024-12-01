@@ -852,18 +852,27 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
           style={styles.cancelIcon} // Apply cancel icon style
         />
       
-          <div style={styles.infoHeader}>
+          <div style={styles.photoSection}>
             
               {logo && (
                 <img
                   src={`http://localhost:8000/${logo.replace(/\\/g, '/')}`}
                   alt="Seller Logo"
                   className="logo"
-                  style={styles.logo}
+                  style={styles.profilePhoto}
                 />
               )}
+              <label style={styles.photoLabel}>
+                  Update Photo
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoChange}
+                    style={styles.fileInput}
+                  />
+                </label>
               <h3>{sellerInfo.Username}</h3>
-            </div>
+        </div>
             
               <label style={styles.modalContentLabel}>Email</label>
               <input
@@ -890,14 +899,7 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
                 onChange={handleInputChange}
                 style={styles.modalContentInput}
                 />
-           
           
-              <label style={styles.modalContentLabel}> Logo <AddPhotoAlternateIcon style={{ color: '#0F5132' }} /></label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleLogoChange}
-                style={styles.modalContentTextarea}              />
             
             <div style={styles.modalButtonsContainer}>
               <button
@@ -995,6 +997,25 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
 };
 
 const styles = {
+  photoSection : {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '10px',
+  },
+  profilePhoto: {
+    width: '100px',
+    height: '100px',
+    borderRadius: '50%',
+    objectFit: 'cover',
+  },
+  photoLabel: {
+    cursor: 'pointer',
+    color: '#0F5132',
+    fontWeight: 'bold',
+    display: 'flex',
+    alignItems: 'center',
+  },
   container: {
     margin: '90px auto',
     maxWidth: '1000px',
@@ -1165,7 +1186,7 @@ const styles = {
     fontWeight: 'bold',
   },
   fileInput: {
-    border: 'none',
+    display: 'none',
   },
   imagePreview: {
     width: '150px',

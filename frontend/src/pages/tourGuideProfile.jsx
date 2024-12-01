@@ -716,17 +716,9 @@ const handleViewReport = async (itineraryId) => {
                     style={styles.fileInput}
                   />
                 </label>
+                <h3>{formData.Username}</h3>
               </div>
-              <div style={styles.formGroup}>
-                <label>Username</label>
-                <input
-                  type="text"
-                  name="Username"
-                  value={formData.Username}
-                  disabled
-                  style={styles.disabledInput}
-                />
-              </div>
+
               <div style={styles.formGroup}>
                 <label>Email</label>
                 <input
@@ -1334,7 +1326,7 @@ const styles = {
     flexDirection: 'column',
     gap: '15px',
   },
-  photoSection: {
+ photoSection : {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',

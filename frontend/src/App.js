@@ -92,16 +92,16 @@ function Home() {
 
         {/* Dropdown List for Roles */}
         <div style={styles.content}>
-          <p style={styles.description}>Select your role to get started:</p>
+          <p style={styles.description}>Select your role to start your Adventure!</p>
           <select
             onChange={(e) => navigate(e.target.value)} // Navigate to the selected page
             style={styles.dropdown}
           >
             <option value="">-- Choose a Role --</option>
-            <option value="/tourist-register">Tourist</option>
-            <option value="/seller-register">Seller</option>
-            <option value="/advertiser-register">Advertiser</option>
             <option value="/adminLogin">Admin</option>
+            <option value="/advertiser-register">Advertiser</option>
+            <option value="/seller-register">Seller</option>
+            <option value="/tourist-register">Tourist</option>
             <option value="/tgov-login">Tourism Governor</option>
             <option value="/tour-guide-register">Tour Guide</option>
           </select>
