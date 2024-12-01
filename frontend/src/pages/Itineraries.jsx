@@ -698,6 +698,12 @@ const Itineraries = () => {
     sidebarExpanded: {
       width: '200px', // Width when expanded
     },
+    bellIcon: {
+      fontSize: '20px',
+      color: '#0F5132',
+      cursor: 'pointer',
+      marginLeft: '10px',
+    },
     iconContainer: {
       display: 'flex',
       alignItems: 'center',

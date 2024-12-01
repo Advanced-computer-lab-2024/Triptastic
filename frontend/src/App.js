@@ -53,6 +53,7 @@ import AttendedActivitiesPage from './pages/AttendedActivities';
 import Preftags from './pages/preftags';
 import CreateTransportation from './pages/createTransportation';
 import Category from './pages/category';
+import background from './images/back.webp'; // Replace with the path to your image
 
 
 
@@ -64,13 +65,13 @@ stripePromise.then((stripe) => console.log('Stripe initialized:', stripe));
 
 function Home() {
   const [animatedText, setAnimatedText] = useState('');
-  const fullText = 'Triptastic'; // The full word to display
+  const fullText = 'Trriptastic'; // The full word to display
   const navigate = useNavigate();
 
   useEffect(() => {
     let index = 0;
     const interval = setInterval(() => {
-      if (index < fullText.length) {
+      if (index < fullText.length-1) {
         setAnimatedText((prev) => prev + fullText[index]);
         index++;
       } else {
@@ -81,22 +82,20 @@ function Home() {
   }, []);
 
   return (
-    <div className="App">
-      <header className="App-header">
+    <div style={styles.container}>
+      <div style={styles.overlay}></div>
+      <header style={styles.header}>
         {/* Animated Welcome Message */}
-        <h1>Welcome to <span style={{ color: '#FF5733' }}>{animatedText}</span></h1>
+        <h1 style={styles.title}>
+          Welcome to <span style={styles.highlight}>{animatedText}</span>
+        </h1>
 
         {/* Dropdown List for Roles */}
-        <div>
-          <p>Select your role to get started:</p>
+        <div style={styles.content}>
+          <p style={styles.description}>Select your role to get started:</p>
           <select
             onChange={(e) => navigate(e.target.value)} // Navigate to the selected page
-            style={{
-              padding: '10px',
-              fontSize: '16px',
-              borderRadius: '5px',
-              marginTop: '20px',
-            }}
+            style={styles.dropdown}
           >
             <option value="">-- Choose a Role --</option>
             <option value="/tourist-register">Tourist</option>
@@ -106,13 +105,15 @@ function Home() {
             <option value="/tgov-login">Tourism Governor</option>
             <option value="/tour-guide-register">Tour Guide</option>
           </select>
-          <button onClick={() => navigate('/Guest')}>Continue as Guest</button>
-
+          <button style={styles.button} onClick={() => navigate('/Guest')}>
+            Continue as Guest
+          </button>
         </div>
       </header>
     </div>
   );
-}
+};
+
 
 function App() {
   const [isStripeLoaded, setIsStripeLoaded] = useState(false);
@@ -186,5 +187,69 @@ function App() {
     </CurrencyProvider>
   );
 }
+
+const styles = {
+  container: {
+    position: 'relative',
+    width: '100%',
+    height: '100vh',
+    backgroundImage: `url(${background})`, // Replace with your image path
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)', // Dark overlay for contrast
+    zIndex: 1,
+  },
+  header: {
+    position: 'relative',
+    zIndex: 2,
+    textAlign: 'center',
+    color: '#fff',
+  },
+  title: {
+    fontSize: '3rem',
+    fontWeight: 'bold',
+    marginBottom: '20px',
+    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)',
+  },
+  highlight: {
+    color: '#197B4D',
+  },
+  content: {
+    marginTop: '20px',
+  },
+  description: {
+    color:'white',
+    fontSize: '1.2rem',
+    marginBottom: '10px',
+  },
+  dropdown: {
+    padding: '10px',
+    fontSize: '16px',
+    borderRadius: '5px',
+    marginBottom: '20px',
+    border: '1px solid #ccc',
+  },
+  button: {
+    padding: '10px 20px',
+    fontSize: '16px',
+    color: '#fff',
+    backgroundColor: '#197B4D',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    marginTop: '10px',
+    transition: 'background-color 0.3s',
+  },
+};
 
 export default App;
