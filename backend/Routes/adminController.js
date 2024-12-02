@@ -15,7 +15,9 @@ const complaintsModel=require('../Models/Complaint.js');
 const requestModel=require('../Models/Request.js');
 const nodemailer = require('nodemailer');
 const PromoCode = require('../Models/PromoCode'); // Adjust the path as necessary
-
+const OrdersModel = require('../Models/Orders'); // Adjust the path as necessary
+const itinBookingModel = require('../Models/itinbookings'); // Adjust the path as necessary
+const actBookingModel = require('../Models/actBooking'); // Adjust the path as necessary
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -792,9 +794,79 @@ const getPromoCodes = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+const getFilteredP = async (req, res) => { //filtered by date
+  const { date } = req.query;
 
+  if (!date) {
+    return res.status(400).json({ error: 'Date is required' });
+  }
 
+  try {
+    // Parse the input date string
+    const startDate = new Date(date);
+    const endDate = new Date(date);
 
+    // Check if the date parsing was successful
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+      return res.status(400).json({ error: 'Invalid date format' });
+    }
+
+    // Set the time for the start of the day
+    startDate.setUTCHours(0, 0, 0, 0);
+
+    // Set the time for the end of the day
+    endDate.setUTCHours(23, 59, 59, 999);
+
+    // Query for bookings within the date range and populate the itineraryID field
+    const orders = await OrdersModel.find({
+      createdAt: {
+        $gte: startDate,
+        $lte: endDate
+      }
+    }).populate('product');
+
+    // Extract itineraries from the populated bookings and filter by TourGuide
+     const productsQuantity = orders
+      .map(order => ({product: order.product, quantity: order.quantity}))
+    res.status(200).json(productsQuantity);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+const viewAllProducts = async (req, res) => {
+
+  try {
+    const products = await productModel.find(); // Find all products by seller
+    res.status(200).json(products); // Return the list of products
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+const itinProfits = async (req, res) => {
+  try {
+    const itinBookings = await itinBookingModel.find().populate('itineraryId');
+    const itineraries = itinBookings.map(booking => booking.itineraryId);
+    //sum the .Price field of every itinerary and get product
+    const totalProfit = itineraries.reduce((acc, itinerary) => acc + itinerary.Price, 0);
+    res.status(200).json(totalProfit );
+  }
+  catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+const actProfits = async (req, res) => {
+  try {
+    const actBookings = await actBookingModel.find().populate('activityId');
+    const activities = actBookings.map(booking => booking.activityId);
+    const totalProfit = activities.reduce((acc, activity) => acc + activity.price, 0);
+    res.status(200).json(totalProfit);
+  }
+  catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
+
+    
 module.exports = {getPromoCodes,createPromoCode,getUserStatistics,replyToComplaint,getPendingDeletionRequests,acceptDeletionRequest,rejectDeletionRequest,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
     ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin,viewAllPrefTag,deleteAdmin
-    ,flagItinerary,flagTouristItinerary,flagActivity,getallItineraries,getallActivities,getallTouristItineraries,getComplaints,archiveProduct,unarchiveProduct};
+    ,flagItinerary,flagTouristItinerary,flagActivity,getallItineraries,getallActivities,getallTouristItineraries,getComplaints,archiveProduct,unarchiveProduct,getFilteredP,viewAllProducts,actProfits,itinProfits};

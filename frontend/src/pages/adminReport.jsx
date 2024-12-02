@@ -6,7 +6,7 @@ import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHo
   import { FaHeart } from 'react-icons/fa';
   import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 
-const SellerReport = () => {
+const AdminReport = () => {
     const [Products, setProducts] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [totalSales, setTotalSales] = useState(0);
@@ -20,6 +20,8 @@ const SellerReport = () => {
     const [count,setCount]=useState(0);// count of the chosen product
     const [filteredP, setFilteredP] = useState(false); //is it filtered by product
     const [productQuantity, setProductQuantity] = useState([]);
+    const [itinProfits, setItinProfits] = useState(0);
+    const [actProfits, setActProfits] = useState(0);
     const navigate = useNavigate(); // Initialize useNavigate for navigation
     const handleProfileRedirect = () => {
         const context = localStorage.getItem('context');
@@ -44,7 +46,7 @@ const SellerReport = () => {
         setIsLoading(true);
         if (Username) {
           try {
-            const response = await fetch(`http://localhost:8000/viewMyProducts?seller=${Username}`);
+            const response = await fetch(`http://localhost:8000/viewAllProducts`);
             if (response.ok) {
               const data = await response.json();
               setProducts(data);
@@ -54,6 +56,42 @@ const SellerReport = () => {
             }
           } catch (error) {
             console.error('Error fetching products:', error);
+          }
+        }
+      };
+      const fetchItinProfits= async () => {
+        const Username = localStorage.getItem('Username');
+        setIsLoading(true);
+        if (Username) {
+          try {
+            const response = await fetch(`http://localhost:8000/itinProfits`);
+            if (response.ok) {
+              const data = await response.json();
+              setItinProfits(data);
+              setIsLoading(false);
+            } else {
+              throw new Error('Failed to fetch itinerary profits');
+            }
+          } catch (error) {
+            console.error('Error fetching itinerary profits:', error);
+          }
+        }
+      };
+      const fetchActProfits= async () => {
+        const Username = localStorage.getItem('Username');
+        setIsLoading(true);
+        if (Username) {
+          try {
+            const response = await fetch(`http://localhost:8000/actProfits`);
+            if (response.ok) {
+              const data = await response.json();
+              setActProfits(data);
+              setIsLoading(false);
+            } else {
+              throw new Error('Failed to fetch activities profits');
+            }
+          } catch (error) {
+            console.error('Error fetching activities profits:', error);
           }
         }
       };
@@ -79,10 +117,10 @@ const SellerReport = () => {
           }
         };
         const fetchFilteredProducts = async (date) => {// returns object of {product, quantity}
-            const Username = localStorage.getItem('Username');
+            
             setIsLoading(true);
             try{
-            const response = await fetch(`http://localhost:8000/getFilteredProducts?Username=${Username}&date=${date}`);
+            const response = await fetch(`http://localhost:8000/getFilteredP?date=${date}`);
             if (response.ok) {
                 const data = await response.json();
                 setProductQuantity(data);
@@ -138,6 +176,8 @@ const SellerReport = () => {
                 calculateTotalSales(Products);
                 findMostSold(Products);
                 findLeastSold(Products);
+                fetchItinProfits();
+                fetchActProfits();
               }, [refresh]);
             const handleFilterChange = (event) => {
                 const selectedProduct = Products.find(product => product._id === event.target.value);
@@ -156,7 +196,7 @@ const SellerReport = () => {
           <div style={styles.logoContainer}>
             <img src={logo} alt="Logo" style={styles.logo} />
           </div>
-          <h1 style={styles.title}>Seller Report</h1>
+          <h1 style={styles.title}>Admin Report</h1>
           <div style={styles.headerIcons}>
             {/* Profile Icon */}
             <FaUserCircle
@@ -177,6 +217,7 @@ const SellerReport = () => {
       
       
       </div>
+       
           <h1>{localStorage.getItem('Username')}'s sales report</h1>
           <button onClick={() => setRefresh(!refresh)}>Refresh</button>
           <input
@@ -204,11 +245,13 @@ const SellerReport = () => {
                 ))}
               </select>
             </div>
+                 <h1>Total Itinerary Profits: ${itinProfits}</h1>
+                 <h1>Total Activities Profits: ${actProfits}</h1>
           {!filteredP && !filteredD && (<h2>Total profit from sales: {totalSales}</h2>)}
           {!filteredP && !filteredD && (<h3>Most sold product</h3>)}
           {!filteredP && !filteredD && !isLoading && mostSold && (
             <div>
-              <p>Product: {mostSold.productName}</p>
+              <h3>Product: {mostSold.productName}</h3>
               <p>Price: {mostSold.price}</p>
               <p>Sales: {mostSold.sales}</p>
               <p>
@@ -219,7 +262,7 @@ const SellerReport = () => {
          {!filteredP && !filteredD && ( <h3>Least sold product</h3>)}
           {!filteredP && !filteredD && !isLoading && leastSold && (
             <div>
-              <p>Product: {leastSold.productName}</p>
+              <h3>Product: {leastSold.productName}</h3>
               <p>Price: {leastSold.price}</p>
               <p>Sales: {leastSold.sales}</p>
               <p>
@@ -284,7 +327,7 @@ const SellerReport = () => {
           {!filteredP && !filteredD && !isLoading && Products.length > 0 ? (
             Products.map((Product) => (
               <div key={Product._id}>
-                <p>Product: {Product.productName}</p>
+                <h3>Product: {Product.productName}</h3>
                 <p>Price: {Product.price}</p>
                 <p>Sales: {Product.sales}</p>
                 <p>
@@ -542,4 +585,4 @@ const styles = {
       opacity: 1, // Fully visible when expanded
     },
   };
-export default SellerReport;
+export default AdminReport;

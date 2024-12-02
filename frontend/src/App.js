@@ -47,6 +47,7 @@ import PaymentPage from './pages/Payment';
 import GuideReport from './pages/guideReport';
 import AdvertiserReport from './pages/advertiserReport';
 import SellerReport from './pages/sellerReport';
+import AdminReport from './pages/adminReport';
 import { Elements } from '@stripe/react-stripe-js'; // Import Elements from Stripe
 import { loadStripe } from '@stripe/stripe-js'; // Import loadStripe
 import AttendedActivitiesPage from './pages/AttendedActivities';
@@ -182,6 +183,7 @@ function App() {
             <Route path="/dvertiserReport" element={<AdvertiserReport />} />
             <Route path="/sellerReport" element={<SellerReport />} />
             <Route path="/my-itineraries" element={<TourGItinerary />} />
+            <Route path="/adminReport" element={<AdminReport />} />
 
           </Routes>
         </Router>
