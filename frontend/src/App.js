@@ -53,6 +53,7 @@ import AttendedActivitiesPage from './pages/AttendedActivities';
 import Preftags from './pages/preftags';
 import CreateTransportation from './pages/createTransportation';
 import Category from './pages/category';
+import TourGItinerary from './pages/TourGItinerary';
 import background from './images/back.webp'; // Replace with the path to your image
 
 
@@ -106,7 +107,7 @@ function Home() {
             <option value="/tour-guide-register">Tour Guide</option>
           </select>
           <button style={styles.button} onClick={() => navigate('/Guest')}>
-            Continue as Guest
+           or Continue as Guest
           </button>
         </div>
       </header>
@@ -180,6 +181,7 @@ function App() {
             <Route path="/category" element={<Category />} />
             <Route path="/dvertiserReport" element={<AdvertiserReport />} />
             <Route path="/sellerReport" element={<SellerReport />} />
+            <Route path="/my-itineraries" element={<TourGItinerary />} />
 
           </Routes>
         </Router>

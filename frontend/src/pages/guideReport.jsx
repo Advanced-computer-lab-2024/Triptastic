@@ -21,24 +21,6 @@ const [count,setCount]=useState(0);// count of the chosen itinerary
 const [filteredI, setFilteredI] = useState(false); //is it filtered by itinerary
 const navigate = useNavigate(); // Initialize useNavigate for navigation
 
-const handleProfileRedirect = () => {
-  const context = localStorage.getItem('context');
-
-  if (context === 'tourist') {
-    navigate('/tourist-profile');
-  } else if (context === 'seller') {
-    navigate('/seller-profile');
-  } else if (context === 'admin') {
-    navigate('/adminPage');
-   } else if (context === 'tourGuide') {
-      navigate('/tour-guide-profile');
-  } else if (context === 'guest') {
-    navigate('/Guest');
-} else {
-    console.error('Unknown context');
-    navigate('/'); // Fallback to home
-  }
-};
 const fetchItineraries = async () => {
     const Username = localStorage.getItem('Username');
     setIsLoading(true);
@@ -150,7 +132,7 @@ const fetchFilteredItineraries = async (date) => {
       <FaUserCircle
         alt="Profile Icon"
         style={styles.profileIcon}
-        onClick={handleProfileRedirect} // Navigate to profile
+        onClick={() => navigate("/tour-guide-profile")} // Navigate to profile
       />
     </div>
   </header>
