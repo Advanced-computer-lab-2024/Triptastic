@@ -2,8 +2,12 @@ import React, { useState, useEffect} from 'react';
 import image from '../images/image.png';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import { FaUserCircle } from 'react-icons/fa';
-import { FaList, FaMapMarkerAlt, FaClock, FaHourglass, FaLanguage, FaDollarSign, FaCalendarAlt, FaWheelchair, FaCar } from "react-icons/fa";
+import { FaList,FaListAlt,FaHourglassHalf,FaBus,FaCheck, FaMapMarkerAlt, FaClock, FaLanguage, FaDollarSign, FaCalendarAlt, FaWheelchair, FaCar } from "react-icons/fa";
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
+import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
+import EventOutlinedIcon from '@mui/icons-material/EventOutlined';
 
 function TourGItinerary() {
     const [itineraries, setItineraries] = useState([]);
@@ -465,7 +469,7 @@ const [touristItineraryData, setTouristItineraryData] = useState({
       />
     </div>
     <div style={styles.inputGroup}>
-      <FaHourglass style={styles.inputIcon} />
+      <FaHourglassHalf style={styles.inputIcon} />
       <span style={styles.inputLabel}>Duration:</span>
       <input
         type="text"
@@ -563,111 +567,134 @@ const [touristItineraryData, setTouristItineraryData] = useState({
   </form>
 </div>
   
-      {/* Itineraries List Section */}
-      <div style={styles.itinerariesSection}>
-                {filteredItineraries.length > 0 ? (
-          <ul style={styles.list}>
-            {filteredItineraries.map((itinerary) => (
-              <li key={itinerary._id} style={styles.listItem}>
-                <div>
-                  <p style={styles.listText}>
-                    <strong>Locations:</strong> {itinerary.Locations.join(", ")}
-                  </p>
-                  <p style={styles.listText}>
-                    <strong>Dates:</strong> {itinerary.DatesTimes}
-                  </p>
-                  <p style={styles.listText}>
-                    <strong>Status:</strong>{" "}
-                    {itinerary.active ? "Active" : "Inactive"}
-                  </p>
-                </div>
-                <div style={styles.actions}>
-                  <button
-                    style={styles.viewButton}
-                    onClick={() => handleViewItinerary(itinerary)}
-                  >
-                    {selectedItinerary === itinerary && isIVisible
-                      ? "Hide Details"
-                      : "View Details"}
-                  </button>
-                  <button
-                  style={styles.editButton}
-                  onClick={() => {
-                    setItineraryData({
-                      Activities: itinerary.Activities.join(", "),
-                      Locations: itinerary.Locations.join(", "),
-                      Timeline: itinerary.Timeline,
-                      DurationOfActivity: itinerary.DurationOfActivity,
-                      Language: itinerary.Language,
-                      Price: itinerary.Price,
-                      DatesTimes: itinerary.DatesTimes,
-                      Accesibility: itinerary.Accesibility,
-                      pickUpDropOff: itinerary.pickUpDropOff,
-                      bookingOpen: itinerary.bookingOpen,
-                    }); // Prefill modal data
-                    setSelectedItinerary(itinerary);
-                    setModalOpen(true); // Open the modal
-                  }}
-                >
-                  Edit
-                </button>
-                  <button
-                    style={styles.toggleButton}
-                    onClick={() =>
-                      itinerary.active
-                        ? deactivateItinerary(itinerary._id)
-                        : activateItinerary(itinerary._id)
-                    }
-                  >
-                    {itinerary.active ? "Deactivate" : "Activate"}
-                  </button>
-                  <button
-                    style={styles.deleteButton}
-                    onClick={() => handleDeleteItinerary(itinerary._id)}
-                  >
-                    Delete
-                  </button>
-                </div>
-  
-                {/* Itinerary Details */}
-                {selectedItinerary === itinerary && isIVisible && (
-                  <div style={styles.details}>
-                    <p>
-                      <strong>Activities:</strong>{" "}
-                      {itinerary.Activities.join(", ")}
-                    </p>
-                    <p>
-                      <strong>Timeline:</strong> {itinerary.Timeline}
-                    </p>
-                    <p>
-                      <strong>Duration:</strong> {itinerary.DurationOfActivity}
-                    </p>
-                    <p>
-                      <strong>Language:</strong> {itinerary.Language}
-                    </p>
-                    <p>
-                      <strong>Price:</strong> ${itinerary.Price}
-                    </p>
-                    <p>
-                      <strong>Accessibility:</strong> {itinerary.Accesibility}
-                    </p>
-                    <p>
-                      <strong>Pick Up/Drop Off:</strong>{" "}
-                      {itinerary.pickUpDropOff}
-                    </p>
-                    <p>
-                      <strong>Booking Open:</strong>{" "}
-                      {itinerary.bookingOpen ? "Yes" : "No"}
-                    </p>
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No itineraries found.</p>
-        )}
-      </div>
+ {/* Itineraries List Section */}
+<div style={styles.itinerariesSection}>
+  <h2 style={styles.sectionTitle}>Your Itineraries</h2>
+  {filteredItineraries.length > 0 ? (
+    <ul style={styles.list}>
+      {filteredItineraries.map((itinerary) => (
+        <li key={itinerary._id} style={styles.listItem}>
+          <div style={styles.itineraryInfo}>
+            <p style={styles.listText}>
+              <FaMapMarkerAlt style={styles.icon} />
+              <strong>Locations:</strong> {itinerary.Locations.join(", ")}
+            </p>
+            <p style={styles.listText}>
+              <EventOutlinedIcon style={styles.icon} />
+              <strong>Dates:</strong> {itinerary.DatesTimes}
+            </p>
+            <p style={styles.listText}>
+              <CheckCircleOutlineOutlinedIcon style={styles.icon} />
+              <strong>Status:</strong>{" "}
+              <span
+                style={{
+                  color: itinerary.active ? "#0F5132" : "#dc3545",
+                  fontWeight: "bold",
+                }}
+              >
+                {itinerary.active ? "Active" : "Inactive"}
+              </span>
+            </p>
+          </div>
+          <div style={styles.actions}>
+            <button
+              style={styles.viewButton}
+              onClick={() => handleViewItinerary(itinerary)}
+            >
+              <InfoOutlinedIcon style={styles.icon} />
+              {selectedItinerary === itinerary && isIVisible
+                ? "Hide Details"
+                : "View Details"}
+            </button>
+            <button
+              style={styles.editButton}
+              onClick={() => {
+                setItineraryData({
+                  Activities: itinerary.Activities.join(", "),
+                  Locations: itinerary.Locations.join(", "),
+                  Timeline: itinerary.Timeline,
+                  DurationOfActivity: itinerary.DurationOfActivity,
+                  Language: itinerary.Language,
+                  Price: itinerary.Price,
+                  DatesTimes: itinerary.DatesTimes,
+                  Accesibility: itinerary.Accesibility,
+                  pickUpDropOff: itinerary.pickUpDropOff,
+                  bookingOpen: itinerary.bookingOpen,
+                });
+                setSelectedItinerary(itinerary);
+                setModalOpen(true);
+              }}
+            >
+              <BorderColorOutlinedIcon style={styles.icon} />
+              Edit
+            </button>
+            <button
+              style={{
+                ...styles.toggleButton,
+                backgroundColor: itinerary.active ? "#dc3545" : "#0F5132",
+              }}
+              onClick={() =>
+                itinerary.active
+                  ? deactivateItinerary(itinerary._id)
+                  : activateItinerary(itinerary._id)
+              }
+            >
+              {itinerary.active ? "Deactivate" : "Activate"}
+            </button>
+            <HighlightOffOutlinedIcon
+              style={styles.deleteIcon}
+              onClick={() => handleDeleteItinerary(itinerary._id)}
+              titleAccess="Delete Itinerary"
+            />
+          </div>
+
+          {selectedItinerary === itinerary && isIVisible && (
+  <div style={styles.detailsContainer}>
+    <ul style={styles.detailsList}>
+      <li style={styles.detailsItem}>
+        <FaListAlt style={styles.detailsIcon} />
+        <span><strong>Activities:</strong> {itinerary.Activities.join(", ")}</span>
+      </li>
+      <li style={styles.detailsItem}>
+        <FaClock style={styles.detailsIcon} />
+        <span><strong>Timeline:</strong> {itinerary.Timeline}</span>
+      </li>
+      <li style={styles.detailsItem}>
+        <FaHourglassHalf style={styles.detailsIcon} />
+        <span><strong>Duration:</strong> {itinerary.DurationOfActivity}</span>
+      </li>
+      <li style={styles.detailsItem}>
+        <FaLanguage style={styles.detailsIcon} />
+        <span><strong>Language:</strong> {itinerary.Language}</span>
+      </li>
+      <li style={styles.detailsItem}>
+        <FaDollarSign style={styles.detailsIcon} />
+        <span><strong>Price:</strong> ${itinerary.Price}</span>
+      </li>
+      <li style={styles.detailsItem}>
+        <FaWheelchair style={styles.detailsIcon} />
+        <span><strong>Accessibility:</strong> {itinerary.Accesibility}</span>
+      </li>
+      <li style={styles.detailsItem}>
+        <FaBus style={styles.detailsIcon} />
+        <span><strong>Pick Up/Drop Off:</strong> {itinerary.pickUpDropOff}</span>
+      </li>
+      <li style={styles.detailsItem}>
+        <FaCheck style={styles.detailsIcon} />
+        <span>
+          <strong>Booking Open:</strong> {itinerary.bookingOpen ? "Yes" : "No"}
+        </span>
+      </li>
+    </ul>
+  </div>
+          )}
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p style={styles.noData}>No itineraries found.</p>
+  )}
+</div>
   
       {/* Edit Itinerary Modal */}
       {modalOpen && (
@@ -863,13 +890,6 @@ const styles = {
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
     maxWidth: "600px",
   },
-  sectionTitle: {
-    fontSize: "20px",
-    fontWeight: "bold",
-    color: "#0F5132",
-    marginBottom: "15px",
-    textAlign: "center",
-  },
   form: {
     display: "flex",
     flexDirection: "column",
@@ -923,14 +943,128 @@ const styles = {
   buttonIcon: {
     fontSize: "16px",
   },
-  deleteButton: {
-    backgroundColor: '#dc3545', // Red color
-    color: 'white',
-    padding: '10px 20px',
-    borderRadius: '5px',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '14px',
+  itinerariesSection: {
+    marginTop: "20px",
+  },
+  list: {
+    listStyleType: "none",
+    padding: 0,
+  },
+  listItem: {
+    position: "relative", // Enable positioning for child elements
+    padding: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    marginBottom: "10px",
+    backgroundColor: "#fff", // Clean background for visibility
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)", // Subtle shadow
+    display: "flex",
+    flexDirection: "column",
+  },
+  deleteIcon: {
+    position: "absolute", // Position in the top-right
+    top: "5px", // Adjust as needed
+    right: "5px", // Adjust as needed
+    fontSize: "25px", // Moderate size
+    color: "#dc3545",
+    cursor: "pointer",
+    transition: "transform 0.2s",
+    ":hover": {
+      transform: "scale(1.2)", // Slightly enlarge on hover
+    },
+  },
+  itineraryInfo: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "5px",
+  },
+  listText: {
+    fontSize: "14px",
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+    margin: 0,
+  },
+  actions: {
+    display: "flex",
+    gap: "10px",
+    justifyContent: "flex-start",
+  },
+  icon: {
+    fontSize: "18px",
+    color: "grey",
+  },
+  viewButton: {
+    padding: "5px 10px", // Smaller padding
+    backgroundColor: "#0F5132",
+    color: "white",
+    borderRadius: "5px", // Smaller border radius
+    cursor: "pointer",
+    fontSize: "14px", // Smaller font size
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+  },
+  editButton: {
+    padding: "4px 10px",
+    backgroundColor: "#0F5132",
+    color: "white",
+    borderRadius: "5px",
+    cursor: "pointer",
+    fontSize: "14px",
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+  },
+  toggleButton: {
+    padding: "5px 10px",
+    color: "white",
+    borderRadius: "5px",
+    cursor: "pointer",
+    fontSize: "14px",
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+  },
+  sectionTitle: {
+    fontSize: "20px",
+    fontWeight: "600",
+    color: "#0F5132", // Matches the theme
+    marginBottom: "15px",
+    textAlign: "center", // Center-align the title
+    borderBottom: "2px solid #0F5132", // Adds a subtle underline
+    paddingBottom: "10px", // Adds spacing below the text
+    letterSpacing: "1px", // Slightly spaced-out letters for readability
+    textTransform: "uppercase", // Capitalizes all letters for emphasis
+  },
+  detailsContainer: {
+    marginTop: "10px",
+    padding: "10px",
+    backgroundColor: "#f9f9f9",
+    borderRadius: "8px",
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+  },
+  detailsList: {
+    listStyleType: "none",
+    padding: 0,
+    margin: 0,
+  },
+  detailsItem: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    fontSize: "14px", // Smaller text size
+    color: "#333",
+    marginBottom: "8px",
+  },
+  detailsIcon: {
+    fontSize: "16px", // Icon size
+    color: "#0F5132", // Consistent green color for icons
+  },
+  noData: {
+    textAlign: "center",
+    color: "#555",
+    marginTop: "20px",
   },
   
 }

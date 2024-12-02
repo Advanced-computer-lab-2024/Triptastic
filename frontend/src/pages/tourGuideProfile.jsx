@@ -919,10 +919,11 @@ const handleViewReport = async (itineraryId) => {
 {/* Flagged Itineraries */}
 {tourGuideInfo?.flaggedItineraries?.length > 0 ? (
   <div style={styles.section}>
- <h3 style={styles.sectionTitle}>
-    <span style={styles.titleText}>Flagged Itineraries</span>
-    <AssistantPhotoIcon style={styles.flagIcon} />
-  </h3>    <ul style={styles.list}>
+    <h3 style={styles.sectionTitle}>
+      <span style={styles.titleText}>Flagged Itineraries</span>
+      <AssistantPhotoIcon style={styles.sectionIcon} />
+    </h3>
+    <ul style={styles.list}>
       {Array.from(
         new Set(tourGuideInfo.flaggedItineraries.map((itinerary) => itinerary._id))
       ).map((uniqueId) => {
@@ -931,48 +932,55 @@ const handleViewReport = async (itineraryId) => {
         );
         return (
           <li key={itinerary._id} style={styles.listItem}>
-          <p style={styles.listText}>
-            <strong><LocationOnIcon/>Locations:</strong> {itinerary.Locations.join(', ')}
-          </p>
-          <p style={styles.listText}>
-            <strong><CalendarMonthIcon/>Dates:</strong> {itinerary.DatesTimes}
-          </p>
-        </li>
+            <div style={styles.itineraryInfo}>
+              <p style={styles.listText}>
+                <LocationOnIcon style={styles.icon} />
+                <strong>Locations:</strong> {itinerary.Locations.join(', ')}
+              </p>
+              <p style={styles.listText}>
+                <CalendarMonthIcon style={styles.icon} />
+                <strong>Dates:</strong> {itinerary.DatesTimes}
+              </p>
+            </div>
+          </li>
         );
       })}
     </ul>
   </div>
 ) : (
-  <p>No flagged itineraries.</p>
+  <p style={styles.noData}>No flagged itineraries.</p>
 )}
 
-
-    {/* Feedback */}
-    <div style={styles.section}>
-    <h3 style={styles.sectionTitle}>
+{/* Feedback */}
+<div style={styles.section}>
+  <h3 style={styles.sectionTitle}>
     <span style={styles.titleText}>Feedback</span>
-    <FeedbackIcon style={styles.flagIcon} />
+    <FeedbackIcon style={styles.sectionIcon} />
   </h3>
-      {tourGuideInfo?.feedback?.length > 0 ? (
-        <ul style={styles.feedbackList}>
-          {tourGuideInfo.feedback.map((feedback, index) => (
-            <li key={index} style={styles.feedbackItem}>
-              <p style={styles.listText}>
-                <strong><CalendarMonthIcon/>Date:</strong> {feedback.date}
-              </p>
-              <p style={styles.listText}>
-                <strong><FaUserCircle/>{feedback.touristUsername}:</strong> {feedback.rating}/5
-              </p>
-              <p style={styles.listText}>
-                <strong><CommentIcon/>Comment:</strong> {feedback.comment}
-              </p>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No feedback available.</p>
-      )}
-    </div>
+  {tourGuideInfo?.feedback?.length > 0 ? (
+    <ul style={styles.feedbackList}>
+      {tourGuideInfo.feedback.map((feedback, index) => (
+        <li key={index} style={styles.feedbackItem}>
+          <h4 style={styles.feedbackUser}>
+            <FaUserCircle style={styles.icon} />
+            {feedback.touristUsername}
+          </h4>
+          <p style={styles.listText}>
+            <strong>Rating:</strong> {feedback.rating}/5
+          </p>
+          <p style={styles.listText}>
+            <strong>Commented:</strong> {feedback.comment}
+          </p>
+          <p style={styles.feedbackDate}>
+            <CalendarMonthIcon style={styles.icon} /> {feedback.date}
+          </p>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p style={styles.noData}>No feedback available.</p>
+  )}
+</div>
 
 </div>
     );
@@ -1231,8 +1239,9 @@ const styles = {
     gap: "10px",
   },
   titleText: {
-    fontWeight: "bold",
+    color: '#0F5132', // Green shade for the title
   },
+
   flagIcon: {
     fontSize: "18px",
     color: "#0F5132",
@@ -1316,67 +1325,87 @@ const styles = {
     textAlign: "center",
   },
   section: {
-    textAlign: 'center', // Center aligns the entire section
-    color: '#0F5132', // Sets the shade of green for all text
-    padding: '20px',
-    backgroundColor: '#f9f9f9', // Optional: Add a subtle background if needed
-    borderRadius: '10px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Optional: Add shadow for better appearance
+    marginTop: "20px",
+    backgroundColor: "#fff",
+    padding: "15px",
+    borderRadius: "10px",
+    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
   },
   sectionTitle: {
-    fontSize: '20px',
-    fontWeight: 'bold',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center', // Centers both text and icon
-    gap: '10px', // Adds spacing between the text and icon
-    marginBottom: '20px',
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    fontSize: "18px",
+    fontWeight: "bold",
+    color: "#0F5132",
+    marginBottom: "10px",
   },
-  titleText: {
-    color: '#0F5132', // Green shade for the title
-  },
-  flagIcon: {
-    fontSize: '28px',
-    color: '#0F5132', // Green shade for the icon
-  },
-  listText: {
-    textAlign: 'left', // Aligns the list items to the left
-
-    fontSize: '18px', // Smaller font size for the flagged itineraries
-    margin: '5px 0', // Reduced margin for compact layout
+  sectionIcon: {
+    fontSize: "20px",
+    color: "#0F5132",
   },
   list: {
-    fontSize: '18px',
-
-    listStyleType: 'none',
-    padding: 0,
-    textAlign: 'left', // Aligns the list items to the left
-  },
-  listItem: {
-    fontSize: '18px',
-
-    backgroundColor: '#e8f5e9',
-    padding: '15px',
-    borderRadius: '10px',
-    marginBottom: '10px',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Adds a subtle shadow
-    color: '#0F5132', // Green shade for list items
-  },
-  feedbackList: {
-    listStyleType: 'none',
+    listStyleType: "none",
     padding: 0,
     margin: 0,
-    textAlign: 'left', // Aligns the list items to the left
-
+  },
+  listItem: {
+    padding: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    marginBottom: "10px",
+    backgroundColor: "#f9f9f9",
+    position: "relative",
+  },
+  itineraryInfo: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "5px",
+  },
+  listText: {
+    fontSize: "15px",
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+  },
+  icon: {
+    fontSize: "16px",
+  },
+  noData: {
+    fontSize: "14px",
+    color: "#777",
+    textAlign: "center",
+  },
+  feedbackList: {
+    listStyleType: "none",
+    padding: 0,
+    margin: 0,
   },
   feedbackItem: {
-    padding: '15px',
-    fontSize: '18px',
-    backgroundColor: '#e8f5e9',
-    borderRadius: '5px',
-    marginBottom: '10px',
-    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+    padding: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    marginBottom: "10px",
+    backgroundColor: "#f9f9f9",
+    position: "relative",
+    display: "flex",
+    flexDirection: "column",
+    gap: "5px",
   },
+  feedbackUser: {
+    fontSize: "16px",
+    fontWeight: "bold",
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+  },
+  feedbackDate: {
+    fontSize: "12px",
+    color: "#777",
+    textAlign: "right",
+    marginTop: "5px",
+  },
+  
 }
 export default TourGuideProfile;
 
