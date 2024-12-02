@@ -518,7 +518,7 @@ const styles = {
     fontSize: '16px',
     borderRadius: '50px', // Make the button rounded
     border: 'none',
-    backgroundColor: '#0F5132', // Set a vibrant green color
+    backgroundColor: 'transparent', // Set a vibrant green color
     color: '#fff', // White text color
     cursor: 'pointer',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Add a soft shadow
