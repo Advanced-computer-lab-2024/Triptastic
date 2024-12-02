@@ -521,13 +521,12 @@ const styles = {
     backgroundColor: 'transparent', // Set a vibrant green color
     color: '#fff', // White text color
     cursor: 'pointer',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Add a soft shadow
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
   },
   searchIcon: {
-    fontSize: '18px', // Adjust icon size
+    fontSize: '25px', // Adjust icon size
   },
   
   container: {
