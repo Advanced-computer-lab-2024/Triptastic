@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import {FaArrowLeft} from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+
 
 const Docs = () => {
   const [activeSection, setActiveSection] = useState('');
@@ -7,6 +10,8 @@ const Docs = () => {
   const [advertisers, setAdvertisers] = useState([]);
   const [viewingDocsId, setViewingDocsId] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate(); // Initialize useNavigate for navigation
+
 
   const fetchData = async (endpoint, setter, errorMsg) => {
     try {
@@ -159,19 +164,34 @@ const Docs = () => {
 
   return (
     <div style={{ fontFamily: 'Arial, sans-serif', padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-      {/* Header */}
-      <header
-        style={{
-          backgroundColor: '#0F5132',
-          color: '#fff',
-          padding: '15px',
-          textAlign: 'center',
-          borderRadius: '10px',
-          marginBottom: '30px',
-        }}
-      >
-        <h1 style={{ margin: 0, fontSize: '2em' }}>Document Approval Dashboard</h1>
-      </header>
+
+{/* Header */}
+<header
+  style={{
+    backgroundColor: '#0F5132',
+    color: '#fff',
+    padding: '15px',
+    borderRadius: '10px',
+    marginBottom: '30px',
+    display: 'flex', // Use flexbox
+    alignItems: 'center', // Vertically align items
+    justifyContent: 'space-between', // Distribute space
+  }}
+>
+  <FaArrowLeft
+    onClick={() => navigate('/adminPage')}
+    style={{
+      cursor: 'pointer',
+      fontSize: '24px',
+      color: '#FFF', // Match your theme
+    }}
+  />
+
+  <h1 style={{ margin: 0, fontSize: '2em', textAlign: 'center', flex: 1 }}>
+    Document Approval Dashboard
+  </h1>
+</header>
+
 
       {/* Navigation Buttons */}
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>

@@ -102,6 +102,16 @@
     margin-left: -350px; /* Adjust horizontal spacing */
     transform: translateY(3px); /* Move it down slightly */
   }
+
+  
+  .promo-section img {
+    transition: transform 0.2s ease;
+  }
+  
+  .promo-section img:hover {
+    transform: scale(1.1); /* Slight zoom effect on hover */
+  }
+  
   
  
 
