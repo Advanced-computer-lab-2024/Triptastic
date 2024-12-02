@@ -16,6 +16,11 @@ import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHo
 import { FaPercentage, FaCalendarAlt, FaTag ,FaUserCircle} from 'react-icons/fa';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 
+import { FaBell ,FaCalendar,FaDollarSign ,FaClock,FaTags,FaPercent} from 'react-icons/fa'; // Import icons
+import { FaSearch,
+  } from "react-icons/fa";
+  import museum from '../images/museum.jpg'; 
+
 
 
 
@@ -117,6 +122,8 @@ const Museums = () => {
 
   // Use effect to fetch historical periods when the component mounts
   useEffect(() => {
+    handleViewAllMuseums();
+
     fetchHistoricalPeriods();
   }, []);
   const handleShare = async (museumName, shareMethod) => {
@@ -171,45 +178,52 @@ const Museums = () => {
     }
   };
   return (
-    <div style={styles.container}>
-      {/* Header Section */}
-    <header style={styles.header}>
-  <div style={styles.logoContainer}>
-    <img src={logo} alt="Logo" style={styles.logo} />
-  </div>
-  <h1 style={styles.title}>Museums</h1>  <FaUserCircle
-    alt="Profile Icon"
-    style={styles.profileIcon}
-    onClick={handleProfileRedirect} // Navigate to profile
-  />
-
-</header>
-      
-      <button onClick={handleViewAllMuseums} style={styles.buttonsearch}>
-        View All Museums
+    <div style={styles.container2}>
+    {/* Background Section */}
+    <div style={styles.background}>
+      {/* Search Section */}
+      <div style={styles.searchSection}>
+      <input
+        type="text"
+        placeholder="Search museums..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={styles.searchForm1}
+      />
+      <select
+        value={selectedPeriod}
+        onChange={(e) => setSelectedPeriod(e.target.value)} // Update selected historical period
+        style={styles.searchSelect} // Rounded dropdown style
+      >
+        <option value="" disabled>
+          Select a historical period
+        </option>
+        {historicalPeriods.map((period) => (
+          <option key={period.name} value={period.name}>
+            {period.name}
+          </option>
+        ))}
+      </select>
+        
+    
+      <button
+      onClick={() => {
+        if (searchTerm) {
+          handleSearchMuseums(searchTerm); // Call search logic
+        } else if (selectedPeriod) {
+          handleFilterMuseums(selectedPeriod); // Call filter logic
+        }
+      }}
+        disabled={!searchTerm && !selectedPeriod} // Enable if either input is filled
+        style={styles.searchButton}
+      >
+        <FaSearch style={styles.searchIcon} />
       </button>
 
-      <div style={{ margin: '20px 0', textAlign: 'center' }}>
-        <input
-          type="text"
-          placeholder="Search museums..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={styles.searchInput}
-        />
-        <button onClick={handleSearchMuseums} disabled={!searchTerm} style={styles.button}>
-          Search
-        </button>
-      </div>
-
-      {viewMuseums && (
+    
+  {viewMuseums && (
         <>
-          <button
-            onClick={() => setFilterVisible((prev) => !prev)}
-            style={{ ...styles.button, marginBottom: '20px' }}
-          >
-            Filter Museums
-          </button>
+          
 
           {filterVisible && (
             <div style={{ marginBottom: '20px', textAlign: 'center' }}>
@@ -242,6 +256,109 @@ const Museums = () => {
           )}
         </>
       )}
+
+</div>
+
+    </div>
+
+   
+
+
+    <div style={styles.container}>
+      {/* Header Section */}
+    <header style={styles.header}>
+  <div style={styles.logoContainer}>
+    <img src={logo} alt="Logo" style={styles.logo} />
+  </div>
+  <h1 style={{fontSize:'24px',margintop:'20px'}}>Museums</h1>  <FaUserCircle
+    alt="Profile Icon"
+    style={styles.profileIcon}
+    onClick={handleProfileRedirect} // Navigate to profile
+  />
+
+</header>
+
+ {/* Sidebar */}
+ <div
+        style={styles.sidebar}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.width = '200px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '1')
+          );
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.width = '60px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '0')
+          );
+        }}
+      >
+        <div style={styles.item} onClick={() => navigate('/historical-locations')}>
+          <FaLandmark style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Historical Loc
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/museums')}>
+          <FaUniversity style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Museums
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/products')}>
+          <FaBox style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Products
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/itineraries')}>
+          <FaMap style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Itineraries
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/activities')}>
+          <FaRunning style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Activities
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-flights')}>
+          <FaPlane style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Book Flights
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-hotels')}>
+          <FaHotel style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Book a Hotel
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-transportation')}>
+          <FaBus style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Transportation
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
+          <FaClipboardList style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Past Orders
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
+          <FaStar style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Review Activities
+          </span>
+        </div>
+      </div>
+      
+     
+
+     
 
       {loading ? (
         <p style={{ textAlign: 'center', fontSize: '1.2rem' }}>Loading...</p>
@@ -330,10 +447,88 @@ const Museums = () => {
       </div>
     )}
   </div>
+    </div>
+
 );
   
 };
 const styles = {
+  container2: {
+    marginTop:'60px',
+    fontFamily: 'Arial, sans-serif',
+  },
+  background: {
+    position: 'relative',
+    backgroundImage:  `url(${museum})`, // Replace with your image path
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    height: '400px', // Adjust height as needed
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: 'white',
+  },
+  title: {
+    fontSize: '2.5rem',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: '20px',
+    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)',
+  },
+  searchSection: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '10px', // Add spacing between elements
+    marginTop: '20px',
+  },
+  searchForm: {
+    padding: '12px 20px',
+    fontSize: '16px',
+    borderRadius: '50px', // Make the input rounded
+    border: '1px solid #ccc',
+    outline: 'none',
+    width: '500px', // Adjust width
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Add a soft shadow
+  },
+  searchForm1: {
+    padding: '12px 20px',
+    fontSize: '16px',
+    height:'50px',
+    borderRadius: '50px', // Make the input rounded
+    border: '1px solid #ccc',
+    outline: 'none',
+    width: '500px', // Adjust width
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Add a soft shadow
+  },
+  searchSelect: {
+    padding: '12px 20px',
+    fontSize: '14px',
+    borderRadius: '50px', // Make the dropdown rounded
+    border: '1px solid #ccc',
+    outline: 'none',
+    backgroundColor: '#fff', // Ensure consistent background
+    cursor: 'pointer',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Add a soft shadow
+    width:'250px'
+  },
+  searchButton: {
+    padding: '12px 20px',
+    fontSize: '16px',
+    borderRadius: '50px', // Make the button rounded
+    border: 'none',
+    backgroundColor: 'transparent', // Set a vibrant green color
+    color: '#fff', // White text color
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  searchIcon: {
+    fontSize: '25px', // Adjust icon size
+  },
+  
   container: {
     maxWidth: '1200px',
     margin: '0 auto',
@@ -354,6 +549,54 @@ const styles = {
     padding: '10px 20px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for depth
     zIndex: '1000', // Ensure it appears above other content
+  },
+  sidebar: {
+    position: 'fixed',
+    top: '60px',
+    left: 0,
+    height: '100vh',
+    width: '50px', // Default width when collapsed
+    backgroundColor: 'rgba(15, 81, 50, 0.85)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start', // Ensure alignment starts from the left
+    padding: '10px 0',
+    overflowX: 'hidden',
+    transition: 'width 0.3s ease',
+    zIndex: 1000,
+  },
+  sidebarExpanded: {
+    width: '200px', // Width when expanded
+  },
+  iconContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start', // Align items to the left
+    padding: '10px',
+    width: '100%', // Take full width of the sidebar
+    color: '#fff',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease',
+  },
+  iconContainerHover: {
+    backgroundColor: '#084B24', // Background on hover
+  },
+  icon: {
+    fontSize: '24px',
+    marginLeft: '15px', // Move icons slightly to the right
+    color: '#fff', // Icons are always white
+  },
+  label: {
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#fff',
+    opacity: 0, // Initially hidden
+    whiteSpace: 'nowrap', // Prevent label text from wrapping
+    transition: 'opacity 0.3s ease',
+  },
+  labelVisible: {
+    opacity: 1, // Fully visible when expanded
   },
   logoContainer: {
     display: 'flex',

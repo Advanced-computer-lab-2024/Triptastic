@@ -818,18 +818,6 @@ const addTourismGov = async (e) => {
     
  
     const styles = {
-      container: {
-        maxWidth: '800px',
-        margin: '0 auto',
-        padding: '20px',
-        backgroundColor: '#0F5132',
-        borderRadius: '12px',
-        boxShadow: '0 6px 10px rgba(0, 0, 0, 0.1)',
-        fontFamily: 'Arial, sans-serif',
-        color: '#333',
-        paddingTop: '100px', // Avoid overlap with the header
-      },
-  
       heading: {
         fontSize: "24px",
         fontWeight: "bold",
@@ -1192,8 +1180,8 @@ const addTourismGov = async (e) => {
     backgroundColor: loading ? '#ccc' : '#dc3545', // Red for delete
 
   },
-  container: {
-    maxWidth: '1300px',
+  container2: {
+    maxWidth: '1200px',
     margin: '20px auto',
     padding: '10px',
     fontFamily: 'Arial, sans-serif',
@@ -1281,13 +1269,6 @@ const addTourismGov = async (e) => {
   content: {
     marginTop: '10px',
   },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: '8px',
-    padding: '10px',
-    marginBottom: '10px',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-  },
 
   text: {
     fontSize: '14px',
@@ -1304,17 +1285,15 @@ const addTourismGov = async (e) => {
     cursor: 'pointer',
     marginTop: '10px',
   },
-    container2: {
-    display: 'flex',
-    gap: '20px', // Space between sections
-    justifyContent: 'space-around',
-    padding: '20px',
-    flexWrap: 'wrap', // Wrap if screen size is too small
-  },
-  card: {
+  card2: {
     backgroundColor: '#fff',
     borderRadius: '10px',
-    padding: '20px',
+    maxWidth: '1200px',
+    margin: '20px auto',
+    padding: '10px',
+    fontFamily: 'Arial, sans-serif',
+    backgroundColor: '#f8f9fa',
+    borderRadius: '10px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
   },
   cardTitle: {
@@ -1796,7 +1775,7 @@ const addTourismGov = async (e) => {
 
 
 
-<div style={styles.container}>
+<div style={styles.container2}>
       <div style={styles.card}>
         <h3 style={styles.cardTitle}>
           Add Product <Inventory2Icon style={styles.icon} />
@@ -1907,7 +1886,7 @@ const addTourismGov = async (e) => {
     </div>
 
    {/* Search Product Section */}
-<div style={styles.card}>
+<div style={styles.card2}>
   <h3 style={styles.cardTitle}>
   Search Product to Archive<FaSearch style={styles.icon} />
   </h3>

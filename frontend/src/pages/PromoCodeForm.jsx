@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './promoCodeForm.css';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
-import { FaPercentage, FaCalendarAlt, FaTag ,FaUserCircle} from 'react-icons/fa';
+import { FaPercentage, FaCalendarAlt, FaTag ,FaArrowLeft} from 'react-icons/fa';
 import { MdDiscount } from 'react-icons/md';
 import logo from '../images/image.png'; // Replace with your logo path
 
@@ -14,6 +14,7 @@ const PromoCodeForm = () => {
     expirationDate: '',
     maxUsage: 1,
   });
+
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [promoCodes, setPromoCodes] = useState([]); // State to store fetched promo codes
@@ -92,6 +93,14 @@ const PromoCodeForm = () => {
 
   return (
     <div style={styles.container}>
+  <FaArrowLeft 
+    onClick={() =>  navigate('/adminPage')}
+    style={{
+      cursor: 'pointer', 
+      fontSize: '24px', 
+      color: '#0F5132' // Match your theme
+    }} 
+  />
       <h2 style={styles.heading}>Promo Code Management</h2>
     <div className="promo-container">
       

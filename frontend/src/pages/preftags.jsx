@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import {FaArrowLeft} from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+
 
 const Preftags = () => {
   const [createPrefTagMessage, setCreatePrefTagMessage] = useState('');
@@ -11,6 +14,7 @@ const Preftags = () => {
   const [getError, setGetError] = useState('');
   const [updateError, setUpdateError] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const createPrefTag = async (e) => {
     e.preventDefault();
@@ -87,6 +91,14 @@ const Preftags = () => {
 
   return (
     <div style={styles.container}>
+              <FaArrowLeft 
+    onClick={() =>  navigate('/adminPage')}
+    style={{
+      cursor: 'pointer', 
+      fontSize: '24px', 
+      color: '#0F5132' // Match your theme
+    }} 
+  />
       <h2 style={styles.heading}>Preference Tag Management</h2>
 
       {/* Create Preference Tag Section */}
