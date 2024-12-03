@@ -9,20 +9,14 @@ const orderSchema = new Schema({
     unique: true,  // Ensure order numbers are unique
   },
   tourist: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Tourist', // Reference to the Tourist model
+    type: String,  // Change from ObjectId to String to store the username
     required: true,
   },
-  product: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product', // Reference to the Product model
+  products: [{  // Change to an array of product names (strings)
+    type: String,
     required: true,
-  },
-  quantity: {
-    type: Number,
-    required: true,
-    min: 1, // Ensure that the quantity is at least 1
-  },
+  }],
+ 
   totalPrice: {
     type: Number,
     required: true,

@@ -5,7 +5,6 @@ import { FaUserCircle,FaShoppingCart,FaRegFileAlt, FaDollarSign, FaStar, FaComme
 import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel,
   FaClipboardList } from "react-icons/fa";
   import { FaHeart } from 'react-icons/fa';
-
 const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
   const [addresses, setAddresses] = useState([]);
@@ -239,24 +238,88 @@ const Checkout = () => {
   };
 
   // Proceed to payment
-  const handleProceedToPayment = () => {
-    const total=cartItems.reduce((total, item) => total + (item.price * item.quantity), 0)
-
+  const handleProceedToPayment = async () => {
     if (!selectedAddress) {
       setErrorMessage('Please select an address');
       return;
     }
-    // Navigate to payment page or process order
-    navigate(`/payment?amount=${total}`,{ state: { from: '/Checkout',cartItems, 
-      selectedAddress  } });
+  
+    const total = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+  
+    const touristUsername = localStorage.getItem('Username'); // Assuming the tourist username is stored in localStorage
+    console.log(cartItems.map(item => item.name))
+    try {
+      const response = await fetch('http://localhost:8000/createOrder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          touristUsername:touristUsername, // Send the username instead of touristId
+          products: cartItems.map(item => item.productName), // Send the product names instead of IDs
+          shippingAddress: selectedAddress,
+          totalPrice:total
+        }),
+      
+      });
+      console.log(response.body);
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        // Order created successfully, proceed to payment
+        navigate(`/payment?amount=${total}`, {
+          state: { from: '/Checkout', cartItems, selectedAddress }
+        });
         setErrorMessage(''); // Clear any previous error messages
-    // navigate('/payment', { 
-    //   state: { 
-    //     cartItems, 
-    //     selectedAddress 
-    //   } 
-    // });
+      } else {
+        setErrorMessage(data.message || 'Failed to create order');
+      }
+    } catch (error) {
+      setErrorMessage('Error creating order');
+      console.error(error);
+    }
   };
+  
+  const handleCashOnDelivery = async () => {
+    if (!selectedAddress) {
+      setErrorMessage('Please select an address');
+      return;
+    }
+  
+    const total = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+  
+    const touristUsername = localStorage.getItem('Username'); // Assuming the tourist username is stored in localStorage
+    console.log(cartItems.map(item => item.productName))
+
+    try {
+      const response = await fetch('http://localhost:8000/createOrder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          touristUsername, // Send the username instead of touristId
+          products: cartItems.map(item => item.productName), // Send the product names instead of IDs
+          shippingAddress: selectedAddress,
+          totalPrice:total
+          // Set payment method as 'cashOnDelivery'
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        // Order created successfully, show order confirmation or navigate
+        alert('Order created successfully with COD!');
+        setErrorMessage(''); // Clear any previous error messages
+      } else {
+        setErrorMessage(data.message || 'Failed to create order');
+      }
+    } catch (error) {
+      setErrorMessage('Error creating order');
+      console.error(error);
+    }
+  };
+  
+  
+  
 
   useEffect(() => {
     fetchCart();
@@ -468,7 +531,7 @@ const Checkout = () => {
           >
             Proceed to Payment
           </button>
-          <button style={styles.cartContent}>Cash on delivery</button>
+          <button onClick={handleCashOnDelivery} style={styles.cartContent}>Cash on delivery</button>
         </div>
       </div>
     </div>

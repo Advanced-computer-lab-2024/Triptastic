@@ -2616,44 +2616,43 @@ const sendItineraryReminders = async (req, res) => {
 // Function to create a new order
 const createOrder = async (req, res) => {
   try {
-    const { touristId, productId, quantity, shippingAddress } = req.body;
+    const { touristUsername, products,  shippingAddress,totalPrice } = req.body;
 
     // Validate input data
-    if (!touristId || !productId || !quantity || !shippingAddress) {
+    if (!touristUsername || !products  || !shippingAddress) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    // Find the tourist and product by their IDs
-    const tourist = await touristModel.findById(touristId);
-    const product = await productModel.findById(productId);
+   
 
-    if (!tourist) {
-      return res.status(404).json({ message: 'Tourist not found' });
+    // Fetch the product details (name and price) for each product name
+    const fetchedProducts = await productModel.find({ productName: { $in: products } });
+    if (fetchedProducts.length !== products.length) {
+      return res.status(404).json({ message: 'Some products were not found' });
     }
 
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
+    // Create a map of product names to their prices
+    const productMap = fetchedProducts.reduce((acc, product) => {
+      acc[product.productName] = product.price;
+      return acc;
+    }, {});
 
-    // Calculate the total price (assuming product price * quantity)
-    const totalPrice = product.price * quantity;
+    // Calculate the total price
+ 
 
     // Create the order
     const newOrder = new Order({
       orderNumber: `ORD${Date.now()}`, // Generate a unique order number
-      tourist: tourist._id,
-      product: product._id,
-      quantity,
+      tourist: touristUsername, // Store the tourist's username
+      products: products, // Store product names
       totalPrice,
       shippingAddress,
-      status: 'pending', // Default status
-      paymentStatus: 'pending', // Default payment status
+      status: 'pending',
+      paymentStatus: 'pending', // Initially set to pending
     });
 
     // Save the new order to the database
     await newOrder.save();
-    product.sales+= totalPrice;
-    await product.save();
 
     // Return the created order
     res.status(201).json({ message: 'Order created successfully', order: newOrder });
@@ -2663,6 +2662,9 @@ const createOrder = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+
+
 
 const payWithWallet = async (req, res) => {
   const { username, amount } = req.body;
