@@ -1,12 +1,26 @@
 import React, { useState, useEffect } from "react";
 import logo from "../images/image.png";
-import { FaUserCircle, FaList,FaCalendarDay, FaMapMarkerAlt, FaStar, FaComments, FaEdit } from "react-icons/fa";
+import {
+  FaUserCircle,
+  FaList,
+  FaCalendarDay,
+  FaMapMarkerAlt,
+  FaComments,
+  FaStar
+} from "react-icons/fa";
+import {
+  SentimentVeryDissatisfiedOutlined,
+  SentimentDissatisfiedOutlined,
+  SentimentNeutralOutlined,
+  SentimentSatisfiedOutlined,
+  SentimentVerySatisfiedOutlined,
+} from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 const AttendedActivitiesPage = () => {
   const [attendedActivities, setAttendedActivities] = useState([]);
   const [username] = useState(localStorage.getItem("Username") || "");
-  const [rating, setRating] = useState("");
+  const [rating, setRating] = useState(null);
   const [comment, setComment] = useState("");
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
@@ -35,6 +49,10 @@ const AttendedActivitiesPage = () => {
   };
 
   const handleRateActivity = async (activityName) => {
+    if (!rating) {
+      setErrorMessage("Please select a rating before submitting.");
+      return;
+    }
     try {
       const response = await fetch(
         `http://localhost:8000/rateActivity?Username=${username}`,
@@ -43,13 +61,13 @@ const AttendedActivitiesPage = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ name: activityName, rating: parseInt(rating, 10) }),
+          body: JSON.stringify({ name: activityName, rating }),
         }
       );
       const data = await response.json();
       if (response.ok) {
         setSuccessMessage("Rating submitted successfully");
-        setRating("");
+        setRating(null);
         fetchAttendedActivities(); // Refresh activities to see the new rating
       } else {
         setErrorMessage(data.error || "Failed to submit rating");
@@ -84,9 +102,29 @@ const AttendedActivitiesPage = () => {
     }
   };
 
+  const SmileyRating = ({ onRate }) => (
+    <div style={styles.smileyContainer}>
+      {[1, 2, 3, 4, 5].map((rate) => (
+        <div
+          key={rate}
+          style={rate === rating ? styles.selectedSmiley : styles.smiley}
+          onClick={() => {
+            setRating(rate);
+            onRate(rate);
+          }}
+        >
+          {rate === 1 && <SentimentVeryDissatisfiedOutlined />}
+          {rate === 2 && <SentimentDissatisfiedOutlined />}
+          {rate === 3 && <SentimentNeutralOutlined />}
+          {rate === 4 && <SentimentSatisfiedOutlined />}
+          {rate === 5 && <SentimentVerySatisfiedOutlined />}
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <div style={styles.container}>
-      {/* Header */}
       <header style={styles.header}>
         <div style={styles.logoContainer}>
           <img src={logo} alt="Logo" style={styles.logo} />
@@ -98,7 +136,6 @@ const AttendedActivitiesPage = () => {
         />
       </header>
 
-      {/* Main Content */}
       <div style={styles.content}>
         {errorMessage && <p style={styles.error}>{errorMessage}</p>}
         {successMessage && <p style={styles.success}>{successMessage}</p>}
@@ -108,48 +145,42 @@ const AttendedActivitiesPage = () => {
         ) : (
           attendedActivities.map((activity) => (
             <div key={activity._id} style={styles.activityCard}>
-              <h4 style={styles.activityTitle}>
-                {activity.name} <FaEdit style={styles.icon} />
-              </h4>
-              <p>
-                <FaCalendarDay style={styles.icon} />{" "}
-                <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
-              </p>
-              <p>
-                <FaMapMarkerAlt style={styles.icon} />{" "}
-                <strong>Location:</strong> {activity.location}
-              </p>
-              <p>
-                <FaList style={styles.icon} />{" "}
-                <strong>Category:</strong> {activity.Category}
-              </p>
-              <p>
-                <FaStar style={styles.icon} />{" "}
-                <strong>Average Rating:</strong>{" "}
-                {activity.ratings && activity.ratings.length > 0
-                  ? (
-                      activity.ratings.reduce((sum, r) => sum + r.rating, 0) /
-                      activity.ratings.length
-                    ).toFixed(1)
-                  : "No ratings yet"}
-              </p>
-
-              {/* Rating Section */}
-              <div style={styles.rateSection}>
-                <label>
-                  <strong>Rate this activity (1-5):</strong>
-                </label>
-                <input
-                  type="number"
-                  value={selectedActivity === activity.name ? rating : ""}
-                  onChange={(e) => {
-                    setSelectedActivity(activity.name);
-                    setRating(e.target.value);
-                  }}
-                  min="1"
-                  max="5"
-                  style={styles.input}
-                />
+              <h4 style={styles.activityTitle}>{activity.name}</h4>
+              <div style={styles.detailsContainer}>
+  <div style={styles.detailItem}>
+    <FaCalendarDay style={styles.icon} />
+    <span style={styles.detailText}>
+      <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
+    </span>
+  </div>
+  <div style={styles.detailItem}>
+    <FaMapMarkerAlt style={styles.icon} />
+    <span style={styles.detailText}>
+      <strong>Location:</strong> {activity.location}
+    </span>
+  </div>
+  <div style={styles.detailItem}>
+    <FaList style={styles.icon} />
+    <span style={styles.detailText}>
+      <strong>Category:</strong> {activity.Category}
+    </span>
+  </div>
+  <div style={styles.detailItem}>
+    <FaStar style={styles.icon} />
+    <span style={styles.detailText}>
+      <strong>Average Rating:</strong>{" "}
+      {activity.ratings && activity.ratings.length > 0
+        ? (
+            activity.ratings.reduce((sum, r) => sum + r.rating, 0) /
+            activity.ratings.length
+          ).toFixed(1)
+        : "No ratings yet"}
+    </span>
+  </div>
+</div>
+              <div>
+                <h5>Rate this activity(1-5):</h5>
+                <SmileyRating onRate={(rating) => setRating(rating)} />
                 <button
                   onClick={() => handleRateActivity(activity.name)}
                   style={styles.button}
@@ -158,11 +189,8 @@ const AttendedActivitiesPage = () => {
                 </button>
               </div>
 
-              {/* Comment Section */}
               <div style={styles.commentSection}>
-                <label>
-                  <strong>Comment:</strong>
-                </label>
+              <h5>Leave a comment:</h5>
                 <textarea
                   value={selectedActivity === activity.name ? comment : ""}
                   onChange={(e) => {
@@ -179,28 +207,30 @@ const AttendedActivitiesPage = () => {
                 </button>
               </div>
 
-              {/* Comments */}
-              <div>
-                <h5 style={styles.commentsTitle}>
-                  <FaComments style={styles.icon} /> Comments:
-                </h5>
-                {activity.comments && activity.comments.length > 0 ? (
-                  <ul style={styles.commentList}>
-                    {activity.comments.map((comm, index) => (
-                      <li key={index}>
-                        <p>
-                          <strong>{comm.Username}:</strong> {comm.comment}
-                        </p>
-                        <p>
-                          <em>Date: {new Date(comm.commentedAt).toLocaleDateString()}</em>
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No comments yet.</p>
-                )}
-              </div>
+              <div style={styles.commentsSection}>
+  <h5 style={styles.commentsTitle}>
+    <FaComments style={styles.icon} /> Comments
+  </h5>
+  {activity.comments && activity.comments.length > 0 ? (
+    <ul style={styles.commentList}>
+      {activity.comments.map((comm, index) => (
+        <li key={index} style={styles.commentItem}>
+          <div style={styles.commentHeader}>
+          <span style={styles.commentUser}>
+              <FaUserCircle style={styles.userIcon} /> <strong>{comm.Username}</strong>
+            </span>
+            <span style={styles.commentDate}>
+              {new Date(comm.commentedAt).toLocaleDateString()}
+            </span>
+          </div>
+          <p style={styles.commentText}>{comm.comment}</p>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p style={styles.noCommentsText}>No comments yet.</p>
+  )}
+</div>
             </div>
           ))
         )}
@@ -219,38 +249,38 @@ const styles = {
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
   },
   header: {
-    position: 'fixed',
-    height: '60px',
+    position: "fixed",
+    height: "60px",
     top: 0,
     left: 0,
-    width: '100%',
-    backgroundColor: '#0F5132',
-    color: 'white',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '10px 20px',
+    width: "100%",
+    backgroundColor: "#0F5132",
+    color: "white",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "10px 20px",
     zIndex: 1000,
   },
   logoContainer: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
   },
   logo: {
-    height: '60px',
-    width: '70px',
-    borderRadius: '10px',
+    height: "60px",
+    width: "70px",
+    borderRadius: "10px",
   },
   title: {
-    fontSize: '24px',
+    fontSize: "24px",
     margin: 0,
-    fontWeight: 'bold',
-    marginLeft:'30px'
+    fontWeight: "bold",
+    marginLeft: "30px",
   },
   profileIcon: {
-    fontSize: '30px',
-    color: 'white',
-    cursor: 'pointer',
+    fontSize: "30px",
+    color: "white",
+    cursor: "pointer",
   },
   content: {
     marginTop: "80px",
@@ -263,27 +293,41 @@ const styles = {
     marginBottom: "20px",
   },
   activityTitle: {
-    fontSize: "18px",
+    fontSize: "22px", // Slightly larger font size for prominence
     fontWeight: "bold",
-    marginBottom: "10px",
+    marginBottom: "12px", // Slightly increased spacing
+    color: "#0F5132", // Green shade for consistency
+    textAlign: "left", // Align text to the left
+    borderBottom: "2px solid #0F5132", // Add an underline for emphasis
+    paddingBottom: "5px", // Add spacing below the text
+    display: "inline-block", // Ensure underline fits the text length
+  },
+  detailsContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px", // Space between each detail item
+    marginTop: "10px",
+    marginBottom: "15px",
+  },
+  detailItem: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px", // Space between the icon and the text
+  },
+  detailText: {
+    fontSize: "18px", // Smaller font for details
+    color: "#333", // Neutral color for text
+    lineHeight: "1.5",
   },
   icon: {
-    marginLeft: "5px",
-    fontSize: "14px",
-    color: "#0F5132",
+    fontSize: "18px", // Smaller icon size for a cleaner look
+    color: "#0F5132", // Green color for icons
   },
   rateSection: {
     marginTop: "10px",
   },
   commentSection: {
     marginTop: "10px",
-  },
-  input: {
-    padding: "8px",
-    borderRadius: "5px",
-    border: "1px solid #ddd",
-    marginRight: "10px",
-    fontSize:"10px"
   },
   textarea: {
     width: "100%",
@@ -299,14 +343,78 @@ const styles = {
     borderRadius: "5px",
     border: "none",
     cursor: "pointer",
-    fontSize:'13px'
+    fontSize: "13px",
+  },
+  smileyContainer: {
+    display: "flex",
+    gap: "8px",
+    cursor: "pointer",
+  },
+  smiley: {
+    fontSize: "24px",
+    color: "#ccc",
+  },
+  selectedSmiley: {
+    fontSize: "24px",
+    color: "#0F5132",
+  },
+  commentsSection: {
+    marginTop: "15px",
+    padding: "10px",
+    backgroundColor: "#f9f9f9",
+    borderRadius: "8px",
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
   },
   commentsTitle: {
-    marginTop: "10px",
+    fontSize: "16px",
+    fontWeight: "bold",
+    color: "#0F5132",
+    marginBottom: "10px",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
   },
   commentList: {
     listStyleType: "none",
     padding: "0",
+    margin: "0",
+  },
+  commentItem: {
+    marginBottom: "15px",
+    padding: "10px",
+    backgroundColor: "#fff",
+    borderRadius: "6px",
+    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+  },
+  commentHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: "5px",
+    alignItems: "center",
+  },
+  commentUser: {
+    fontSize: "14px",
+    fontWeight: "bold",
+    color: "#333",
+  },
+  userIcon: {
+    fontSize: "16px",
+    color: "#0F5132",
+  },
+  commentDate: {
+    fontSize: "12px",
+    color: "#777",
+  },
+  commentText: {
+    fontSize: "14px",
+    color: "#555",
+    lineHeight: "1.5",
+    margin: "0",
+  },
+  noCommentsText: {
+    fontSize: "14px",
+    color: "#777",
+    textAlign: "center",
   },
   error: {
     color: "red",
