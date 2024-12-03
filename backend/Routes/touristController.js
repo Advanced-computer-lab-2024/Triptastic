@@ -2790,6 +2790,24 @@ const applyPromoCode = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Server error while applying promo code' });
   }
 };
+const getTouristOrders = async (req, res) => {
+  try {
+    const { tourist } = req.query; // Get the tourist username from URL parameters
+
+    // Find all orders for the given tourist
+    const orders = await Order.find({ tourist });
+
+    if (orders.length === 0) {
+      return res.status(404).json({ message: 'No orders found for this tourist.' });
+    }
+
+    // Return the found orders
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error('Error retrieving orders:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
 
 
 
@@ -2803,4 +2821,4 @@ const applyPromoCode = async (req, res) => {
   ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
   shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,addToCartAndRemoveFromWishlist,
   getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,
-  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist,removeProductFromCart,requestNotification,requestNotificationItinerary,addAddress,getAddresses,createOrder,payWithWallet,sendConfirmationEmail,applyPromoCode};
+  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist,removeProductFromCart,requestNotification,requestNotificationItinerary,addAddress,getAddresses,createOrder,payWithWallet,sendConfirmationEmail,applyPromoCode,getTouristOrders};
