@@ -1461,6 +1461,7 @@ const addTourismGov = async (e) => {
         <li onClick={() => navigate('/preftags')}>Preference Tags</li>
         <li onClick={() => navigate('/docs')}>Docs</li>
         <li onClick={() => navigate('/category')}>Categories</li>
+        <li onClick={() => navigate('/adminReport')}>Sales Report</li>
 
   
       

@@ -40,7 +40,7 @@ const{getPromoCodes,createPromoCode,getUserStatistics,replyToComplaint,rejectDel
 ,createPrefTag,updatePreftag,deletePreftag,getPrefTag,
 viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,
 tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,
-flagActivity,getallActivities,getallTouristItineraries,getallItineraries,getComplaints,archiveProduct,unarchiveProduct}=require("./Routes/adminController");
+flagActivity,getallActivities,getallTouristItineraries,getallItineraries,getComplaints,archiveProduct,unarchiveProduct,getFilteredP,viewAllProducts,actProfits,itinProfits}=require("./Routes/adminController");
 
 
 
@@ -306,8 +306,10 @@ app.patch("/unarchiveProduct/:productName",unarchiveProduct);
 app.get("/getUserStatistics",getUserStatistics);
 app.post("/createPromoCode",createPromoCode);
 app.get('/getPromoCodes',getPromoCodes);
-
-
+app.get('/getFilteredP',getFilteredP)
+app.get('/viewAllProducts',viewAllProducts);
+app.get('/actProfits',actProfits);
+app.get('/itinProfits',itinProfits);
 
 
 //TourismGoverner

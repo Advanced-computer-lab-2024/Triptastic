@@ -1,12 +1,18 @@
 import React, { useState, useEffect} from 'react';
 import image from '../images/image.png';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
-import { FaBell,FaSearch, FaBox, FaLandmark, FaUniversity, FaMap, FaRunning, FaPlane, FaHotel, FaClipboardList, FaStar, FaBus } from 'react-icons/fa';
+import { FaBell,FaSearch,FaUserCircle, FaBox, FaLandmark, FaUniversity, FaMap, FaRunning, FaPlane, FaHotel, FaClipboardList, FaStar, FaBus } from 'react-icons/fa';
 import { MdNotificationImportant } from 'react-icons/md';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 import LockResetIcon from '@mui/icons-material/LockReset';
 import AssessmentIcon from '@mui/icons-material/Assessment';
+import AssistantPhotoIcon from '@mui/icons-material/AssistantPhoto';
+import FeedbackIcon from '@mui/icons-material/Feedback';
+import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import CommentIcon from '@mui/icons-material/Comment';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 function TourGuideProfile() {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -832,358 +838,150 @@ const handleViewReport = async (itineraryId) => {
       </div>
     )}
 
-    {/* Flagged Itineraries */}
-    {tourGuideInfo?.flaggedItineraries?.length > 0 ? (
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Flagged Itineraries</h3>
-        <ul style={styles.list}>
-          {tourGuideInfo.flaggedItineraries.map((itinerary) => (
-            <li key={itinerary._id} style={styles.listItem}>
-              <p>
-                <strong>Locations:</strong> {itinerary.Locations.join(', ')}
-              </p>
-              <p>
-                <strong>Dates:</strong> {itinerary.DatesTimes}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </div>
-    ) : (
-      <p>No flagged itineraries.</p>
-    )}
 
-    {/* Feedback */}
-    <div style={styles.section}>
-      <h3 style={styles.sectionTitle}>Feedback</h3>
-      {tourGuideInfo?.feedback?.length > 0 ? (
-        <ul style={styles.feedbackList}>
-          {tourGuideInfo.feedback.map((feedback, index) => (
-            <li key={index} style={styles.feedbackItem}>
-              <p>
-                <strong>Date:</strong> {feedback.date}
-              </p>
-              <p>
-                <strong>{feedback.touristUsername}:</strong> {feedback.rating}/5
-              </p>
-              <p>
-                <strong>Comment:</strong> {feedback.comment}
-              </p>
-            </li>
-          ))}
-        </ul>
+
+<div style={styles.mainContainer}>
+  {/* Filter Section */}
+  <div style={styles.filterContainer}>
+    <h3 style={styles.filterTitle}>
+      <DisplaySettingsIcon style={styles.filterIcon} /> Filter Itineraries
+    </h3>
+    <select
+      onChange={(e) => handleMonthFilter(e.target.value)}
+      value={selectedMonth}
+      style={styles.filterDropdown}
+    >
+      <option value="">All Months</option>
+      {Array.from({ length: 12 }, (_, i) => (
+        <option key={i + 1} value={i + 1}>
+          {new Date(0, i).toLocaleString("default", { month: "long" })}
+        </option>
+      ))}
+    </select>
+  </div>
+  {/* Itinerary Reports Section */}
+  <div style={styles.reportsSection}>
+    <h3 style={styles.sectionTitle}>
+      <span style={styles.titleText}>Itinerary Reports</span>
+      <AssessmentIcon style={styles.flagIcon} />
+    </h3>
+    <div style={styles.gridContainer}>
+      {filteredItineraries.length > 0 ? (
+        filteredItineraries.map((itinerary) => (
+          <div key={itinerary._id} style={styles.box}>
+            <h4 style={styles.listText}>
+              Locations: {itinerary.Locations.join(", ")}
+            </h4>
+            <p style={styles.listText}>Dates: {itinerary.DatesTimes}</p>
+            <p style={styles.listText}>Timeline: {itinerary.Timeline}</p>
+            <button
+              style={styles.button}
+              onClick={() => handleViewReport(itinerary._id)}
+            >
+              {itineraryReports[itinerary._id]?.visible
+                ? "Hide Report"
+                : "View Report"}
+            </button>
+
+            {/* Report Table */}
+            {itineraryReports[itinerary._id]?.visible && (
+              <div style={styles.reportSection}>
+              <table style={styles.table}>
+                <thead style={styles.tableHead}>
+                  <tr>
+                    <th style={styles.tableHeadCell}>Tourist</th>
+                    <th style={styles.tableHeadCell}>Email</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {itineraryReports[itinerary._id].tourists.map((tourist, index) => (
+                    <tr
+                      key={index}
+                      style={index % 2 === 0 ? styles.tableRow : styles.tableRowAlt} // Alternating row colors
+                    >
+                      <td style={styles.tableCell}>{tourist.Username}</td>
+                      <td style={styles.tableCell}>{tourist.Email}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            )}
+          </div>
+        ))
       ) : (
-        <p>No feedback available.</p>
+        <p style={styles.noData}>No itineraries found.</p>
       )}
     </div>
-
-    {/* Itineraries Section */}
-<h3>Itineraries</h3>
-<button onClick={() => setIsCreatingItinerary((prev) => !prev)}>
-  {isCreatingItinerary ? 'Cancel Creating Itinerary' : 'Create Itinerary'}
-</button>
-
-{/* Create Itinerary Form */}
-{isCreatingItinerary && (
-  <form onSubmit={handleItinerarySubmit}>
-    <div>
-      <label>Activities:</label>
-      <input
-        type="text"
-        name="Activities"
-        value={itineraryData.Activities}
-        onChange={handleItineraryChange}
-        required
-      />
-    </div>
-    <div>
-      <label>Locations:</label>
-      <input
-        type="text"
-        name="Locations"
-        value={itineraryData.Locations}
-        onChange={handleItineraryChange}
-        required
-      />
-    </div>
-    <div>
-      <label>Timeline:</label>
-      <input
-        type="text"
-        name="Timeline"
-        value={itineraryData.Timeline}
-        onChange={handleItineraryChange}
-        required
-      />
-    </div>
-    <div>
-      <label>Duration Of Activity:</label>
-      <input
-        type="text"
-        name="DurationOfActivity"
-        value={itineraryData.DurationOfActivity}
-        onChange={handleItineraryChange}
-        required
-      />
-    </div>
-    <div>
-      <label>Language:</label>
-      <input
-        type="text"
-        name="Language"
-        value={itineraryData.Language}
-        onChange={handleItineraryChange}
-        required
-      />
-    </div>
-    <div>
-      <label>Price:</label>
-      <input
-        type="number"
-        name="Price"
-        value={itineraryData.Price}
-        onChange={handleItineraryChange}
-        required
-      />
-    </div>
-    <div>
-      <label>Dates/Times 'YYYY-MM-DD':</label>
-      <input
-        type="text"
-        name="DatesTimes"
-        value={itineraryData.DatesTimes}
-        onChange={handleItineraryChange}
-        required
-      />
-    </div>
-    <div>
-      <label>Accessibility:</label>
-      <input
-        type="text"
-        name="Accesibility"
-        value={itineraryData.Accesibility}
-        onChange={handleItineraryChange}
-        required
-      />
-    </div>
-    <div>
-      <label>Pick Up/Drop Off:</label>
-      <input
-        type="text"
-        name="pickUpDropOff"
-        value={itineraryData.pickUpDropOff}
-        onChange={handleItineraryChange}
-        required
-      />
-    </div>
-    <div>
-      <label>Booking Open:</label>
-      <input
-        type="checkbox"
-        name="bookingOpen"
-        value={itineraryData.bookingOpen}
-        onChange={(e) =>
-          setItineraryData((prevData) => ({ ...prevData, bookingOpen: e.target.checked }))
-        }
-        style={{
-          width: "100%",
-          padding: "8px",
-          borderRadius: "5px",
-          border: "1px solid #ccc",
-        }}
-      />
-    </div>
-    <button type="submit">Add Itinerary</button>
-  </form>
-)}
-
-{/* Filter Itineraries */}
-<div>
-  <h3>Filter Itineraries by Month</h3>
-  <select
-    onChange={(e) => handleMonthFilter(e.target.value)}
-    value={selectedMonth}
-  >
-    <option value="">All Months</option>
-    {Array.from({ length: 12 }, (_, i) => (
-      <option key={i + 1} value={i + 1}>
-        {new Date(0, i).toLocaleString("default", { month: "long" })}
-      </option>
-    ))}
-  </select>
+  </div>
 </div>
 
-{/* Itineraries List */}
-{filteredItineraries.length > 0 ? (
-  filteredItineraries.map((itinerary) => (
-    <div key={itinerary._id} style={styles.listItem}>
-      <h4>Locations: {itinerary.Locations.join(", ")}</h4>
-      <p>Dates: {itinerary.DatesTimes}</p>
-      <p>Timeline: {itinerary.Timeline}</p>
-      <button onClick={() => handleViewItinerary(itinerary)}>
-        {selectedItinerary === itinerary && isIVisible ? "Hide Details" : "View Details"}
-      </button>
-      <button onClick={() => handleViewReport(itinerary._id)}>
-        {itineraryReports[itinerary._id]?.visible ? "Hide Report" : "View Report"}
-      </button>
-
-      {/* Itinerary Details */}
-      {selectedItinerary === itinerary && isIVisible && (
-        <div style={styles.section}>
-          <p><strong>Activities:</strong> {itinerary.Activities.join(', ')}</p>
-          <p><strong>Timeline:</strong> {itinerary.Timeline}</p>
-          <p><strong>Duration of Activity:</strong> {itinerary.DurationOfActivity}</p>
-          <p><strong>Language:</strong> {itinerary.Language}</p>
-          <p><strong>Price:</strong> ${itinerary.Price}</p>
-          <p><strong>Accessibility:</strong> {itinerary.Accesibility}</p>
-          <p><strong>Pick Up/Drop Off:</strong> {itinerary.pickUpDropOff}</p>
-          <p><strong>Booking Open:</strong> {itinerary.bookingOpen ? 'Yes' : 'No'}</p>
-          <p><strong>Booked:</strong> {itinerary.Booked ? "Yes" : "No"}</p>
-          <p><strong>Tour Guide:</strong> {itinerary.TourGuide}</p>
-          <p><strong>Active:</strong> {itinerary.active ? "Yes" : "No"}</p>
-          <div>
-            <button onClick={() => handleEditItinerary(itinerary)}>Edit</button>
-            <button onClick={() => handleDeleteItinerary(itinerary._id)}>Delete</button>
-          </div>
-        </div>
-      )}
-
-      {/* Report Details */}
-      {itineraryReports[itinerary._id]?.visible && (
-        <div className="report-section">
-          <h4>Report</h4>
-          <p><strong>Total Tourists:</strong> {itineraryReports[itinerary._id].totalTourists}</p>
-          {itineraryReports[itinerary._id].tourists.length > 0 ? (
-            <ul>
-              {itineraryReports[itinerary._id].tourists.map((tourist, index) => (
-                <li key={index}>{tourist.Username} - {tourist.Email}</li>
-              ))}
-            </ul>
-          ) : (
-            <p>No tourists booked this itinerary yet.</p>
-          )}
-        </div>
-      )}
-
-      {/* Edit Itinerary Form */}
-      {selectedItinerary === itinerary && isEditingItinerary && (
-        <form onSubmit={handleUpdateItinerary} style={styles.section}>
-          <div>
-            <label>Activities:</label>
-            <input
-              type="text"
-              name="Activities"
-              value={itineraryData.Activities}
-              onChange={handleItineraryChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Locations:</label>
-            <input
-              type="text"
-              name="Locations"
-              value={itineraryData.Locations}
-              onChange={handleItineraryChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Timeline:</label>
-            <input
-              type="text"
-              name="Timeline"
-              value={itineraryData.Timeline}
-              onChange={handleItineraryChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Duration Of Activity:</label>
-            <input
-              type="text"
-              name="DurationOfActivity"
-              value={itineraryData.DurationOfActivity}
-              onChange={handleItineraryChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Language:</label>
-            <input
-              type="text"
-              name="Language"
-              value={itineraryData.Language}
-              onChange={handleItineraryChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Price:</label>
-            <input
-              type="number"
-              name="Price"
-              value={itineraryData.Price}
-              onChange={handleItineraryChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Dates/Times 'YYYY-MM-DD':</label>
-            <input
-              type="text"
-              name="DatesTimes"
-              value={itineraryData.DatesTimes}
-              onChange={handleItineraryChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Accessibility:</label>
-            <input
-              type="text"
-              name="Accesibility"
-              value={itineraryData.Accesibility}
-              onChange={handleItineraryChange}
-              required
-            />
-          </div>
-          <div>
-            <label>Pick Up/Drop Off:</label>
-            <input
-              type="text"
-              name="pickUpDropOff"
-              value={itineraryData.pickUpDropOff}
-              onChange={handleItineraryChange}
-              required
-            />
-          </div>
-          <div>
-      <label>Booking Open:</label>
-      <input
-        type="checkbox"
-        name="bookingOpen"
-        value={itineraryData.bookingOpen}
-        onChange={(e) =>
-          setItineraryData((prevData) => ({ ...prevData, bookingOpen: e.target.checked }))
-        }
-        style={{
-          width: "100%",
-          padding: "8px",
-          borderRadius: "5px",
-          border: "1px solid #ccc",
-        }}
-      />
-    </div>
-          <button type="submit">Save Changes</button>
-          <button type="button" onClick={() => setIsEditingItinerary(false)}>Cancel</button>
-        </form>
-      )}
-    </div>
-  ))
+{/* Flagged Itineraries */}
+{tourGuideInfo?.flaggedItineraries?.length > 0 ? (
+  <div style={styles.section}>
+    <h3 style={styles.sectionTitle}>
+      <span style={styles.titleText}>Flagged Itineraries</span>
+      <AssistantPhotoIcon style={styles.sectionIcon} />
+    </h3>
+    <ul style={styles.list}>
+      {Array.from(
+        new Set(tourGuideInfo.flaggedItineraries.map((itinerary) => itinerary._id))
+      ).map((uniqueId) => {
+        const itinerary = tourGuideInfo.flaggedItineraries.find(
+          (item) => item._id === uniqueId
+        );
+        return (
+          <li key={itinerary._id} style={styles.listItem}>
+            <div style={styles.itineraryInfo}>
+              <p style={styles.listText}>
+                <LocationOnIcon style={styles.icon} />
+                <strong>Locations:</strong> {itinerary.Locations.join(', ')}
+              </p>
+              <p style={styles.listText}>
+                <CalendarMonthIcon style={styles.icon} />
+                <strong>Dates:</strong> {itinerary.DatesTimes}
+              </p>
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  </div>
 ) : (
-  <p>No itineraries found.</p>
+  <p style={styles.noData}>No flagged itineraries.</p>
 )}
+
+{/* Feedback */}
+<div style={styles.section}>
+  <h3 style={styles.sectionTitle}>
+    <span style={styles.titleText}>Feedback</span>
+    <FeedbackIcon style={styles.sectionIcon} />
+  </h3>
+  {tourGuideInfo?.feedback?.length > 0 ? (
+    <ul style={styles.feedbackList}>
+      {tourGuideInfo.feedback.map((feedback, index) => (
+        <li key={index} style={styles.feedbackItem}>
+          <h4 style={styles.feedbackUser}>
+            <FaUserCircle style={styles.icon} />
+            {feedback.touristUsername}
+          </h4>
+          <p style={styles.listText}>
+            <strong>Rating:</strong> {feedback.rating}/5
+          </p>
+          <p style={styles.listText}>
+            <strong>Commented:</strong> {feedback.comment}
+          </p>
+          <p style={styles.feedbackDate}>
+            <CalendarMonthIcon style={styles.icon} /> {feedback.date}
+          </p>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p style={styles.noData}>No feedback available.</p>
+  )}
+</div>
+
 </div>
     );
   }
@@ -1395,43 +1193,219 @@ const styles = {
     cursor: 'pointer',
     fontSize: '14px',
   },
-  section: {
-    top:'-50px',
-    padding: '20px',
-    backgroundColor: '#f9f9f9',
-    borderRadius: '10px',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  mainContainer: {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: "20px",
+    marginTop: "20px",
+  },
+  filterContainer: {
+    backgroundColor: "#f9f9f9",
+    padding: "10px",
+    borderRadius: "10px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    width: "200px",
+    marginTop:'70px'
+  },
+  filterTitle: {
+    fontSize: "16px",
+    fontWeight: "bold",
+    color: "#0F5132",
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+  },
+  filterIcon: {
+    fontSize: "20px",
+    color: "#0F5132",
+  },
+  filterDropdown: {
+    width: "100%",
+    padding: "8px",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+    marginTop: "10px",
+  },
+  reportsSection: {
+    flex: "3",
   },
   sectionTitle: {
-    fontSize: '20px',
-    fontWeight: 'bold',
-    marginBottom: '15px',
-    color: '#333',
+    fontSize: "20px",
+    color: "#0F5132",
+    textAlign: "center",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "10px",
+  },
+  titleText: {
+    color: '#0F5132', // Green shade for the title
+  },
+
+  flagIcon: {
+    fontSize: "18px",
+    color: "#0F5132",
+  },
+  gridContainer: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+    gap: "20px",
+    padding: "20px 0",
+  },
+  box: {
+    backgroundColor: "#f9f9f9",
+    borderRadius: "8px",
+    padding: "15px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+  },
+  listText: {
+    fontSize: "14px",
+    color: "#333",
+    marginBottom: "10px",
+  },
+  button: {
+    padding: "8px 12px",
+    backgroundColor: "#0F5132",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    fontSize:"15px",
+    alignSelf: "flex-start",
+  },
+  reportSection: {
+    marginTop: "20px",
+    padding: "15px",
+    backgroundColor: "#f7fdf8", // Lighter green background
+    borderRadius: "10px",
+    boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
+    fontFamily: "'Arial', sans-serif",
+  },
+  table: {
+    width: "100%",
+    borderCollapse: "collapse",
+    marginTop: "15px",
+    fontSize: "14px", // Smaller font for simplicity
+    color: "#333", // Neutral text color
+  },
+  tableHead: {
+    backgroundColor: "#0F5132",
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "left",
+  },
+  tableHeadCell: {
+    padding: "12px 10px",
+    border: "1px solid #ccc",
+    fontSize: "14px",
+  },
+  tableRow: {
+    backgroundColor: "#fff", // Alternate white rows
+    textAlign: "left",
+  },
+  tableCell: {
+    padding: "10px",
+    border: "1px solid #e0e0e0", // Subtle border
+    fontSize: "13px", // Smaller font for cells
+  },
+  tableRowAlt: {
+    backgroundColor: "#f9f9f9", // Light alternate row color
+  },
+  reportTitle: {
+    fontSize: "16px",
+    fontWeight: "bold",
+    color: "#0F5132",
+    marginBottom: "10px",
+  },
+  noData: {
+    color: "#999",
+    textAlign: "center",
+  },
+  section: {
+    marginTop: "20px",
+    backgroundColor: "#fff",
+    padding: "15px",
+    borderRadius: "10px",
+    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+  },
+  sectionTitle: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    fontSize: "18px",
+    fontWeight: "bold",
+    color: "#0F5132",
+    marginBottom: "10px",
+  },
+  sectionIcon: {
+    fontSize: "20px",
+    color: "#0F5132",
   },
   list: {
-    listStyleType: 'none',
+    listStyleType: "none",
     padding: 0,
     margin: 0,
   },
   listItem: {
-    padding: '10px',
-    backgroundColor: '#fff',
-    borderRadius: '5px',
-    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-    marginBottom: '10px',
+    padding: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    marginBottom: "10px",
+    backgroundColor: "#f9f9f9",
+    position: "relative",
+  },
+  itineraryInfo: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "5px",
+  },
+  listText: {
+    fontSize: "15px",
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+  },
+  icon: {
+    fontSize: "16px",
+  },
+  noData: {
+    fontSize: "14px",
+    color: "#777",
+    textAlign: "center",
   },
   feedbackList: {
-    listStyleType: 'none',
+    listStyleType: "none",
     padding: 0,
     margin: 0,
   },
   feedbackItem: {
-    padding: '15px',
-    backgroundColor: '#e8f5e9',
-    borderRadius: '5px',
-    marginBottom: '10px',
-    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+    padding: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    marginBottom: "10px",
+    backgroundColor: "#f9f9f9",
+    position: "relative",
+    display: "flex",
+    flexDirection: "column",
+    gap: "5px",
   },
+  feedbackUser: {
+    fontSize: "16px",
+    fontWeight: "bold",
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+  },
+  feedbackDate: {
+    fontSize: "12px",
+    color: "#777",
+    textAlign: "right",
+    marginTop: "5px",
+  },
+  
 }
 export default TourGuideProfile;
 

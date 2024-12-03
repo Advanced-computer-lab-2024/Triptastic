@@ -390,12 +390,12 @@ return (
     <div className={styles.toggleContainer}>
       {!isSignUp ? (
         <div className={`${styles.togglePanel} ${styles.toggleRight}`}>
-          <h1>Hello Friend!</h1>
+          <h1>New to our website?</h1>
           <button onClick={() => setIsSignUp(true)}>Sign Up</button>
         </div>
       ) : (
         <div className={`${styles.togglePanel} ${styles.toggleLeft}`}>
-          <h1>Welcome Back!</h1>
+          <h1>Already have an account?</h1>
           <button onClick={() => setIsSignUp(false)}>Sign In</button>
         </div>
       )}

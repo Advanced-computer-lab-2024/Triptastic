@@ -554,9 +554,9 @@ const deleteAllNotifications = async () => {
 const viewMyProducts = async (req, res) => {
   const { seller } = req.query; // Extract 'seller' from query parameters
 
-  if (!seller) {
-    return res.status(400).json({ error: 'Seller username is required' });
-  }
+  // if (!seller) {
+  //   return res.status(400).json({ error: 'Seller username is required' });
+  // }
 
   try {
     const products = await productModel.find({ seller }); // Find all products by seller
@@ -579,7 +579,7 @@ const filterByProduct = async (req, res) => {
 const getFilteredProducts = async (req, res) => { //filtered by date
   const { date, Username } = req.query;
 
-  if (!date || !Username) {
+  if (!date) {
     return res.status(400).json({ error: 'Date and Username are required' });
   }
 
