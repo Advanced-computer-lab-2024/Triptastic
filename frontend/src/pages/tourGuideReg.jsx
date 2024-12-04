@@ -275,7 +275,7 @@ function TourGuideReg() {
       left: '25%', // Move the form to the left
     }}
   >
-    <h1>Create Account</h1>
+    <h2>Create Account</h2>
     {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
     {successMessage && <p className={styles.successMessage}>{successMessage}</p>}
     <form onSubmit={handleSubmit}>
@@ -439,7 +439,7 @@ function TourGuideReg() {
       right:'55%'
     }}
   >
-    <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Sign In</h1>
+    <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Sign In</h2>
     <form
       onSubmit={handleLoginSubmit}
       style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}
@@ -690,12 +690,12 @@ function TourGuideReg() {
     <div className={styles.toggleContainer}>
       {!isSignUp ? (
         <div className={`${styles.togglePanel} ${styles.toggleRight}`}>
-       <h1>New to our website?</h1>
+       <h2>New to our website?</h2>
           <button onClick={() => setIsSignUp(true)}>Sign Up</button>
         </div>
       ) : (
         <div className={`${styles.togglePanel} ${styles.toggleLeft}`}>
-          <h1>Already have an account?</h1>
+          <h2>Already have an account?</h2>
           <button onClick={() => setIsSignUp(false)}>Sign In</button>
         </div>
       )}
