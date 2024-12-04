@@ -61,6 +61,34 @@ const TouristOrders = () => {
       console.error("Error submitting review:", error);
     }
   };
+  const cancelOrder = async (orderNumber) => {
+    const touristUsername = localStorage.getItem("Username");
+    if (!touristUsername) {
+      console.error("No tourist username found");
+      return;
+    }
+  
+    try {
+      const response = await axios.patch(
+        `http://localhost:8000/cancelOrder`,
+        {
+          orderNumber,
+          username: touristUsername,
+        }
+      );
+  
+      if (response.data) {
+        alert("Order successfully canceled!");
+        window.location.reload(); // Refresh the page after the alert
+      } else {
+        alert("Failed to cancel order.");
+      }
+    } catch (error) {
+      console.error("Error canceling order:", error);
+    }
+  };
+  
+  
 
   const renderSmileyRating = () => {
     const smileys = [
@@ -121,7 +149,7 @@ const TouristOrders = () => {
                 {(order.totalPrice * conversionRate).toFixed(2)}
               </p>
               <p style={styles.orderInfo}>
-              <FaHome style={styles.icon} />Shipping Address: {order.shippingAddress}
+                <FaHome style={styles.icon} /> Shipping Address: {order.shippingAddress}
               </p>
               <div style={styles.productsContainer}>
                 <h4 style={styles.productsTitle}>Products in this Order</h4>
@@ -137,37 +165,48 @@ const TouristOrders = () => {
                   </div>
                 ))}
               </div>
+  
+              {/* Cancel Order Button */}
+              <div style={styles.buttonContainer}>
+                <button
+                  onClick={() => cancelOrder(order.orderNumber)}
+                  style={styles.cancelButton}
+                >
+                  Cancel Order
+                </button>
+              </div>
             </div>
           ))
         )}
-
-{productName && (
-  <div style={styles.reviewContainer}>
-    <h3 style={styles.reviewTitle}>
-      Submit Review for <span style={styles.productName}>{productName}</span>
-    </h3>
-    <textarea
-      style={styles.reviewInput}
-      placeholder="Write your review here"
-      value={review}
-      onChange={(e) => setReview(e.target.value)}
-    />
-    <div style={styles.ratingContainer}>
-      {renderSmileyRating()}
-    </div>
-    <div style={styles.buttonContainer}>
-      <button
-        onClick={() => submitReview(productName)}
-        style={styles.submitButton}
-      >
-        Submit Review
-      </button>
-    </div>
-  </div>
-)}
+  
+        {productName && (
+          <div style={styles.reviewContainer}>
+            <h3 style={styles.reviewTitle}>
+              Submit Review for <span style={styles.productName}>{productName}</span>
+            </h3>
+            <textarea
+              style={styles.reviewInput}
+              placeholder="Write your review here"
+              value={review}
+              onChange={(e) => setReview(e.target.value)}
+            />
+            <div style={styles.ratingContainer}>
+              {renderSmileyRating()}
+            </div>
+            <div style={styles.buttonContainer}>
+              <button
+                onClick={() => submitReview(productName)}
+                style={styles.submitButton}
+              >
+                Submit Review
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
+  
 };
 
 const styles = {
