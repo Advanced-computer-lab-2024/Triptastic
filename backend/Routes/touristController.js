@@ -389,13 +389,13 @@ const fileComplaint = async (req, res) => {
  };
 
  const addReviewToProduct = async (req, res) => {
-  const { productName, review, rating } = req.body;
+  const { productName, review } = req.body; // We'll only need the productName and review text
 
   try {
-    // Find the product by name and update its review and rating
+    // Find the product by productName and add the new review to the reviews array
     const product = await productModel.findOneAndUpdate(
       { productName },
-      { $set: { review, rating } },
+      { $push: { reviews: review } },  // Push the new review into the reviews array
       { new: true } // Return the updated document
     );
 
@@ -403,11 +403,12 @@ const fileComplaint = async (req, res) => {
       return res.status(404).json({ error: "Product not found" });
     }
 
-    res.status(200).json(product);
+    res.status(200).json(product); // Return the updated product with reviews
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 // Export this function and set up an endpoint for it
 
@@ -2839,4 +2840,4 @@ const cancelOrder = async (req, res) => {
   ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
   shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,addToCartAndRemoveFromWishlist,
   getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,
-  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist,removeProductFromCart,requestNotification,requestNotificationItinerary,addAddress,getAddresses,createOrder,payWithWallet,sendConfirmationEmail,applyPromoCode,getTouristOrders};
+  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist,removeProductFromCart,requestNotification,requestNotificationItinerary,addAddress,getAddresses,createOrder,payWithWallet,sendConfirmationEmail,applyPromoCode,getTouristOrders,cancelOrder};

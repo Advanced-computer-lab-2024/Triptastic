@@ -14,18 +14,18 @@ const productSchema = new Schema({
     type: Number,
     required: false
   },
-  rating:{
-    type:Number,
-    required:false
+  rating: {
+    type: Number,
+    required: false
   },
-  seller:{
-    type:String,
-    required:false
+  seller: {
+    type: String,
+    required: false
   },
-  review:{
-    type:String,
-    required:false
-  },
+  reviews: [{ 
+    type: String, // Array of review strings
+    required: false
+  }],
   stock: {
     type: Number,
     required: false,
@@ -34,18 +34,21 @@ const productSchema = new Schema({
   archived: {
     type: Boolean,
     required: false,
-    default:false
+    default: false
   },
   image: {  
     type: String,  
     required: false,
   },
-  sales: {  // New field for tracking sales
+  sales: {
     type: Number,
     required: false,
     default: 0
   },
-  notificationSent: { type: Boolean, default: false }, // New field
+  notificationSent: { 
+    type: Boolean, 
+    default: false 
+  },
 }, { timestamps: true });
 
 const Product = mongoose.model('Product', productSchema);
