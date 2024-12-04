@@ -2808,7 +2808,27 @@ const getTouristOrders = async (req, res) => {
 };
 
 
+const cancelOrder = async (req, res) => {
+  try {
+    const { orderNumber } = req.body; // Get orderNumber from the request body
 
+    if (!orderNumber) {
+      return res.status(400).json({ message: 'Order number is required' });
+    }
+
+    // Find and delete the order by orderNumber
+    const deletedOrder = await Order.findOneAndDelete({ orderNumber });
+
+    if (!deletedOrder) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    return res.status(200).json({ message: 'Order cancelled successfully', deletedOrder });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
 
  module.exports = {getTouristIntroStatus,sendItineraryReminders,sendActivityReminders,getNotifications,markNotificationsRead,updateProductQuantityInCart,bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
