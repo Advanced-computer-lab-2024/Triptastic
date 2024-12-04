@@ -2811,25 +2811,43 @@ const getTouristOrders = async (req, res) => {
 
 const cancelOrder = async (req, res) => {
   try {
-    const { orderNumber } = req.body; // Get orderNumber from the request body
+    const { orderNumber, username } = req.body; // Get orderNumber and username from the request body
 
-    if (!orderNumber) {
-      return res.status(400).json({ message: 'Order number is required' });
+    if (!orderNumber || !username) {
+      return res.status(400).json({ message: 'Order number and username are required' });
     }
 
     // Find and delete the order by orderNumber
-    const deletedOrder = await Order.findOneAndDelete({ orderNumber });
+    const deletedOrder = await Order.findOneAndDelete({ orderNumber:orderNumber });
 
     if (!deletedOrder) {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    return res.status(200).json({ message: 'Order cancelled successfully', deletedOrder });
+    // Find the tourist by username
+    const tourist = await touristModel.findOne({ Username: username });
+
+    if (!tourist) {
+      return res.status(404).json({ message: 'Tourist not found' });
+    }
+
+    // Update the tourist's wallet by adding the order amount
+    tourist.Wallet += deletedOrder.totalPrice;  // Assuming 'amount' is a property in the order model
+
+    // Save the updated tourist wallet
+    await tourist.save();
+
+    return res.status(200).json({
+      message: 'Order cancelled successfully',
+      deletedOrder,
+      updatedWallet: tourist.Wallet,
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Server error' });
   }
 };
+
 
  module.exports = {getTouristIntroStatus,sendItineraryReminders,sendActivityReminders,getNotifications,markNotificationsRead,updateProductQuantityInCart,bookmarkEvent, removeBookmark,getBookmarkedEvents,resetPassword,requestOTP,getCart,addProductToCart,getAttendedActivities,getCurrencyRates,getActivityToShare,changepasswordTourist,createTourist,gethistoricalLocationByName,createProductTourist,getProductTourist,filterActivities,
   viewProductsTourist,sortItinPASC,viewAllUpcomingActivitiesTourist,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist
