@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaCalendarAlt, FaMapMarkerAlt, FaTag, FaClock, FaDollarSign, FaLayerGroup, FaArrowLeft } from 'react-icons/fa';
+import defaultBackground from '../images/activity2.jpg'; // Replace with the actual path of the image
 
 const ActivityDetail = () => {
   const { name } = useParams();
@@ -34,19 +35,21 @@ const ActivityDetail = () => {
 
   return (
     <div style={styles.container}>
-      {/* Header Section */}
-      <div style={styles.header}>
+      {/* Hero Section with Background */}
+      <div style={styles.hero}>
         <FaArrowLeft
           style={styles.backButton}
           onClick={() => navigate('/activities')}
           title="Back to Activities"
         />
-        <h1 style={styles.title}>{activity.name}</h1>
+        <h1 style={styles.heroTitle}>{activity.name}</h1>
       </div>
 
+      {/* Content Section */}
       <div style={styles.content}>
-        <p style={styles.description}>{activity.description}</p>
         <div style={styles.details}>
+          <p style={styles.description}>{activity.description}</p>
+
           <div style={styles.detailItem}>
             <FaDollarSign style={styles.icon} />
             <span style={styles.detailLabel}>Price:</span>
@@ -85,63 +88,72 @@ const ActivityDetail = () => {
 
 const styles = {
   container: {
-    maxWidth: '800px',
-    margin: '20px auto',
+    maxWidth: '1200px',
+    margin: '0 auto',
     padding: '20px',
-    backgroundColor: '#ffffff',
-    borderRadius: '10px',
-    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
     fontFamily: 'Arial, sans-serif',
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#0F5132',
-    padding: '10px',
-    borderRadius: '10px',
-    color: 'white',
     position: 'relative',
+  },
+  hero: {
+    position: 'relative',
+    backgroundImage: `url(${defaultBackground})`, // Default background image
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    color: 'white',
+    padding: '40px',
+    borderRadius: '10px',
+    textAlign: 'center',
+    marginBottom: '20px',
+    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
   },
   backButton: {
     position: 'absolute',
     left: '20px',
+    top: '20px',
     fontSize: '24px',
     cursor: 'pointer',
+    color: 'white',
   },
-  title: {
-    fontSize: '24px',
+  heroTitle: {
+    fontSize: '36px',
     fontWeight: 'bold',
+    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)',
   },
   content: {
-    marginTop: '20px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '20px',
   },
   description: {
-    fontSize: '16px',
+    fontSize: '18px',
     color: '#555',
     marginBottom: '20px',
   },
   details: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '10px',
+    gap: '15px',
+    backgroundColor: '#f9f9f9',
+    padding: '20px',
+    borderRadius: '10px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   },
   detailItem: {
     display: 'flex',
     alignItems: 'center',
     gap: '10px',
     padding: '10px',
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#ffffff',
     borderRadius: '8px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
   },
   detailLabel: {
     fontWeight: 'bold',
-    color: '#0F5132',
+    color: '#333',
     flex: '1',
   },
   detailValue: {
-    color: '#333',
+    color: '#555',
     flex: '2',
   },
   icon: {
