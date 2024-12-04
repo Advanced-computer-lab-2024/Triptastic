@@ -128,8 +128,7 @@ const Complaints = () => {
   //     setComplaintLoading(false);
   //   }
   // };
-  const handleViewDetails
-  = async (id) => {
+  const handleViewDetails = async (id) => {
     if(selectedComplaintId !=id){
     setSelectedComplaintId(id);
     }else{
