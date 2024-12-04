@@ -427,25 +427,25 @@ function TourGuideReg() {
   <div
     className={`${styles.formContainer2} ${styles.signIn}`}
     style={{
-      width: '50%',
-      maxWidth: '600px',
-      margin: '0 auto',
-      padding: '20px',
+      width: '300%', // Increased width to make it larger
+      maxWidth: '1050px', // Maximum width for responsiveness
+      margin: '0 auto', // Center the form
+      padding: '50px', // Increased padding for spacing
       backgroundColor: '#fff',
       borderRadius: '10px',
       display: 'flex',
       flexDirection: 'column',
       gap: '15px',
-      right:'55%'
+left:'-12%'
     }}
   >
     <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Sign In</h2>
     <form
       onSubmit={handleLoginSubmit}
-      style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}
+      style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}
     >
       <div>
-        <label style={{ fontSize: '14px', marginBottom: '5px', display: 'block' }}>Email:</label>
+        <label style={{ fontSize: '14px', marginBottom: '10px', display: 'block' }}>Email:</label>
         <input
           type="email"
           name="Email"
@@ -462,7 +462,7 @@ function TourGuideReg() {
         />
       </div>
       <div>
-        <label style={{ fontSize: '14px', marginBottom: '5px', display: 'block' }}>Password:</label>
+        <label style={{ fontSize: '14px', marginBottom: '10px', display: 'block' }}>Password:</label>
         <input
           type="password"
           name="Password"
@@ -481,7 +481,7 @@ function TourGuideReg() {
       <button
         type="submit"
         style={{
-          width: '50%',
+          width: '20%',
           padding: '10px',
           borderRadius: '15px',
           border: 'none',
@@ -492,7 +492,7 @@ function TourGuideReg() {
           marginTop:'10px'
         }}
       >
-        Login
+        Sign in
       </button>
     </form>
     <button

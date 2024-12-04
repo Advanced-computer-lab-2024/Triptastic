@@ -345,7 +345,7 @@ return (
 
   />
   <button type="submit"  style={{
-          width: '50%',
+          width: '35%',
           padding: '10px',
           borderRadius: '15px',
           border: 'none',
