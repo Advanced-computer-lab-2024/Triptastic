@@ -21,6 +21,14 @@ const advertiserSchema = new Schema({
     type: String,
     required: true,
   },
+  otp: {
+    type: String,
+    default: null,
+  },
+  otpExpiry: {
+    type: Date,
+    default: null,
+  },
   Website_Link:
   {
     type: String,
