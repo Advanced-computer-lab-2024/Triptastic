@@ -439,7 +439,7 @@ function TourGuideReg() {
 left:'-12%'
     }}
   >
-    <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Sign In</h2>
+    <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Sign In</h1>
     <form
       onSubmit={handleLoginSubmit}
       style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}
