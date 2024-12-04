@@ -31,6 +31,14 @@ const sellerSchema = new Schema({
     type: String,
     required: false,
   },
+  otp: {
+    type: String,
+    default: null,
+  },
+  otpExpiry: {
+    type: Date,
+    default: null,
+  },
   TaxationRegistryCard: { 
     type: String,
     required: false,
