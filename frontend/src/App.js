@@ -60,6 +60,7 @@ import background from './images/back.webp'; // Replace with the path to your im
 
 
 
+
 const stripePromise = loadStripe('pk_test_51QPR4CHmIrhpZsCUkNDleRBlZDavN3bJ0zSGja0odQdTv8F6suSp02Cyx2sOVDyTbxi4J7Yqrnj7kQMwlu2LbwaU00pnINWNUs');
 stripePromise.then((stripe) => console.log('Stripe initialized:', stripe));
 

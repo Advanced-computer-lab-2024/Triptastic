@@ -41,7 +41,7 @@ const{getPromoCodes,createPromoCode,getUserStatistics,replyToComplaint,rejectDel
 ,createPrefTag,updatePreftag,deletePreftag,getPrefTag,
 viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,
 tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,
-flagActivity,getallActivities,getallTouristItineraries,getallItineraries,getComplaints,archiveProduct,unarchiveProduct,getFilteredP,viewAllProducts,actProfits,itinProfits}=require("./Routes/adminController");
+flagActivity,getallActivities,getallTouristItineraries,getallItineraries,getComplaints,archiveProduct,unarchiveProduct,getFilteredP,viewAllProducts,actProfits,itinProfits,getMyProducts}=require("./Routes/adminController");
 
 
 
@@ -328,7 +328,7 @@ app.get('/getFilteredP',getFilteredP)
 app.get('/viewAllProducts',viewAllProducts);
 app.get('/actProfits',actProfits);
 app.get('/itinProfits',itinProfits);
-
+app.get("/getMyProducts",getMyProducts);
 
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);
