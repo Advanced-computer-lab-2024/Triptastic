@@ -266,7 +266,7 @@ function SellerReg() {
       left: '25%', // Move the form to the left
     }}
   >
-    <h1>Create Account</h1>
+    <h2>Create Account</h2>
     {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
     {successMessage && <p className={styles.successMessage}>{successMessage}</p>}
     <form onSubmit={handleSubmit}>

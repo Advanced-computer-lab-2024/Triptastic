@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../images/image.png';
+import { FaLandmark, FaUniversity } from 'react-icons/fa';
+
 import LockResetIcon from '@mui/icons-material/LockReset';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 
@@ -61,6 +63,25 @@ const TourismGov = () => {
           />
                   </div>
       </header>
+    {/* Sidebar */}
+<div className="sidebar" style={styles.sidebar}>
+  <ul style={styles.sidebarList}>
+    <li 
+      onClick={handleMyLocations} 
+      style={styles.sidebarItem}
+    >
+      <FaUniversity style={styles.sidebarIcon} />
+      View My Historical Locations
+    </li>
+    <li 
+      onClick={handleMyMuseums} 
+      style={styles.sidebarItem}
+    >
+      <FaLandmark style={styles.sidebarIcon} />
+      View My Museums
+    </li>
+  </ul>
+</div>
 
       {/* Main Content */}
       <div style={styles.content}>
@@ -70,12 +91,6 @@ const TourismGov = () => {
           </button>
           <button onClick={handleCreateMuseum} style={styles.button}>
             Create Museum
-          </button>
-          <button onClick={handleMyLocations} style={styles.button}>
-            View My Historical Locations
-          </button>
-          <button onClick={handleMyMuseums} style={styles.button}>
-            View My Museums
           </button>
         </div>
       </div>
@@ -187,7 +202,35 @@ const styles = {
     fontWeight: 'bold',
     marginBottom: '15px',
   },
- 
+  sidebar  :{
+    marginTop: '20px',
+  display: 'flex',       // Enables flexbox layout
+  justifyContent: 'center', // Horizontally centers the content
+  alignItems: 'center',  // Vertically centers the content
+  textAlign: 'center',
+  },
+  sidebarList: {
+    listStyle: "none",
+    padding: 0,
+    margin: 0,
+  },
+  sidebarItem: {
+    display: "flex",
+    alignItems: "center",
+    padding: "10px 20px",
+    cursor: "pointer",
+    fontSize: "14px",
+    color: "#0F5132",
+    borderRadius: "5px",
+    transition: "background-color 0.3s",
+  },
+  sidebarItemHover: {
+    backgroundColor: "#084B24", // Darker green on hover
+  },
+  sidebarIcon: {
+    marginRight: "10px",
+    fontSize: "18px",
+  },
   modalOverlay: {
     position: 'fixed',
     top: 0,

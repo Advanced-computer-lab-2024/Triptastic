@@ -690,12 +690,12 @@ left:'-12%'
     <div className={styles.toggleContainer}>
       {!isSignUp ? (
         <div className={`${styles.togglePanel} ${styles.toggleRight}`}>
-       <h2>New to our website?</h2>
+       <h1>New to our website?</h1>
           <button onClick={() => setIsSignUp(true)}>Sign Up</button>
         </div>
       ) : (
         <div className={`${styles.togglePanel} ${styles.toggleLeft}`}>
-          <h2>Already have an account?</h2>
+          <h1>Already have an account?</h1>
           <button onClick={() => setIsSignUp(false)}>Sign In</button>
         </div>
       )}
