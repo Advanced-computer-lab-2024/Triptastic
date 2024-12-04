@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
-import { FaUserCircle,FaShoppingCart,FaRegFileAlt, FaDollarSign, FaStar, FaComments, FaWarehouse, FaChartBar,FaBars} from 'react-icons/fa';
-import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel,
-  FaClipboardList } from "react-icons/fa";
-  import { FaHeart } from 'react-icons/fa';
-  import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import { FaUserCircle,FaFilter,FaSyncAlt} from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 
 const AdminReport = () => {
     const [Products, setProducts] = useState([]);
@@ -22,25 +19,10 @@ const AdminReport = () => {
     const [productQuantity, setProductQuantity] = useState([]);
     const [itinProfits, setItinProfits] = useState(0);
     const [actProfits, setActProfits] = useState(0);
+    const [hoveredProductId, setHoveredProductId] = useState(null);
+
     const navigate = useNavigate(); // Initialize useNavigate for navigation
-    const handleProfileRedirect = () => {
-        const context = localStorage.getItem('context');
-      
-        if (context === 'tourist') {
-          navigate('/tourist-profile');
-        } else if (context === 'seller') {
-          navigate('/seller-profile');
-        } else if (context === 'admin') {
-          navigate('/adminPage');
-         } else if (context === 'tourGuide') {
-            navigate('/tour-guide-profile');
-        } else if (context === 'guest') {
-          navigate('/Guest');
-      } else {
-          console.error('Unknown context');
-          navigate('/'); // Fallback to home
-        }
-      };
+
       const fetchProducts= async () => {
         const Username = localStorage.getItem('Username');
         setIsLoading(true);
@@ -59,6 +41,7 @@ const AdminReport = () => {
           }
         }
       };
+
       const fetchItinProfits= async () => {
         const Username = localStorage.getItem('Username');
         setIsLoading(true);
@@ -77,6 +60,7 @@ const AdminReport = () => {
           }
         }
       };
+
       const fetchActProfits= async () => {
         const Username = localStorage.getItem('Username');
         setIsLoading(true);
@@ -95,6 +79,7 @@ const AdminReport = () => {
           }
         }
       };
+
       const filterByProduct = async (productId) => { //returns object {date, quantity}
         try{
           const response = await fetch(`http://localhost:8000/filterByProduct?productId=${productId}`);
@@ -116,6 +101,7 @@ const AdminReport = () => {
             console.error('Error fetching data:', error);
           }
         };
+
         const fetchFilteredProducts = async (date) => {// returns object of {product, quantity}
             
             setIsLoading(true);
@@ -132,6 +118,7 @@ const AdminReport = () => {
                 console.error('Error fetching products:', error);
             }
         };
+
         const calculateTotalSales = (x) => {
             const products = x.map((item) => {
                 return item.product ? item.product : item;
@@ -139,6 +126,7 @@ const AdminReport = () => {
             const total = products.reduce((sum, product) => sum + product.sales, 0);
             setTotalSales(total);
           };
+
           const findMostSold = (x) => {
             const products = x.map((item) => {
                 return item.product ? item.product : item;
@@ -158,6 +146,7 @@ const AdminReport = () => {
               setLeastSold(leastSoldPRoduct);
             }
           };
+
           const handleFilterD = () => {
             if(!filteredD){
                 fetchFilteredProducts(date);
@@ -171,6 +160,7 @@ const AdminReport = () => {
                 findLeastSold(Products);
             }
             };
+
             useEffect(() => {
                 fetchProducts()
                 calculateTotalSales(Products);
@@ -179,6 +169,7 @@ const AdminReport = () => {
                 fetchItinProfits();
                 fetchActProfits();
               }, [refresh]);
+              
             const handleFilterChange = (event) => {
                 const selectedProduct = Products.find(product => product._id === event.target.value);
                 if (selectedProduct) {
@@ -190,399 +181,541 @@ const AdminReport = () => {
                   setFilteredP(false);
                 }
               };
-    return(
-        <div>
+return (
+    <div>
+        {/* Header Section */}
         <header style={styles.header}>
-          <div style={styles.logoContainer}>
-            <img src={logo} alt="Logo" style={styles.logo} />
-          </div>
-          <h1 style={styles.title}>Admin Report</h1>
-          <div style={styles.headerIcons}>
-            {/* Profile Icon */}
-            <FaUserCircle
-              alt="Profile Icon"
-              style={styles.profileIcon}
-              onClick={handleProfileRedirect} // Navigate to profile
-            />
-          </div>
+            <div style={styles.logoContainer}>
+                <img src={logo} alt="Logo" style={styles.logo} />
+            </div>
+            <h1 style={styles.title}>Admin Report</h1>
+            <div style={styles.headerIcons}>
+                <FaUserCircle
+                    alt="Profile Icon"
+                    style={styles.profileIcon}
+                    onClick={() =>  navigate('/adminPage')}
+                />
+            </div>
         </header>
-      <div>
-      
-      
-      
-      </div>
-        <div>
-        <div>
-      
-      
-      
-      </div>
-       
-          <h1>{localStorage.getItem('Username')}'s sales report</h1>
-          <button onClick={() => setRefresh(!refresh)}>Refresh</button>
-          <input
+
+{/* Main Content Section */}
+<div style={styles.content}>
+    <h1 style={styles.pageTitle}>{localStorage.getItem('Username')}'s Sales Report</h1>
+
+    {/* Action Row */}
+  {/* Action Row */}
+    <div style={styles.actionRow}>
+    <FaSyncAlt 
+                style={styles.icon} 
+                onClick={() => setRefresh(!refresh)} 
+                title="Refresh" 
+            />
+        <input
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            style={{ marginLeft: '10px' }}
-          />
-          <button onClick={() => handleFilterD()}>
-            {filteredD ? 'Clear filter' : 'Filter'}
-          </button>
-          <div>
-              <label htmlFor="productDropdown">Filter by Product:</label>
-              <select
-                id="productDropdown"
-                value={filterP ? filterP._id : ''}
-                onChange={handleFilterChange}
-                style={{ marginLeft: '10px' }}
-              >
-                <option value="">Select an product</option>
-                {Products.map((product) => (
-                  <option key={product._id} value={product._id}>
+            style={styles.dateInput}
+        />
+            <FaFilter 
+                style={styles.icon} 
+                onClick={() => handleFilterD()} 
+                title={filteredD ? 'Clear Filter' : 'Filter'} 
+            />
+    </div>
+
+
+    {/* Product Filter Section */}
+    <div style={styles.filterSection}>
+        <label htmlFor="productDropdown" style={styles.filterLabel}>Filter by Product:</label>
+        <select
+            id="productDropdown"
+            value={filterP ? filterP._id : ''}
+            onChange={handleFilterChange}
+            style={styles.filterSelect}
+        >
+            <option value="">Select a product</option>
+            {Products.map((product) => (
+                <option key={product._id} value={product._id}>
                     {product.productName}
-                  </option>
-                ))}
-              </select>
-            </div>
-                 <h1>Total Itinerary Profits: ${itinProfits}</h1>
-                 <h1>Total Activities Profits: ${actProfits}</h1>
-          {!filteredP && !filteredD && (<h2>Total profit from sales: {totalSales}</h2>)}
-          {!filteredP && !filteredD && (<h3>Most sold product</h3>)}
-          {!filteredP && !filteredD && !isLoading && mostSold && (
-            <div>
-              <h3>Product: {mostSold.productName}</h3>
-              <p>Price: {mostSold.price}</p>
-              <p>Sales: {mostSold.sales}</p>
-              <p>
-                Times purchased: {mostSold.sales === 0 ? 0 : mostSold.sales / mostSold.price}
-              </p>
-            </div>
-          )}
-         {!filteredP && !filteredD && ( <h3>Least sold product</h3>)}
-          {!filteredP && !filteredD && !isLoading && leastSold && (
-            <div>
-              <h3>Product: {leastSold.productName}</h3>
-              <p>Price: {leastSold.price}</p>
-              <p>Sales: {leastSold.sales}</p>
-              <p>
-                Times purchased: {leastSold.sales === 0 ? 0 : leastSold.sales / leastSold.price}
-              </p>
-            </div>
-          )}
+                </option>
+            ))}
+        </select>
+    </div>
+
+
+
+            <div style={styles.profitSummaryContainer}>
+    <div style={styles.profitCard}>
+        <h3 style={styles.profitTitle}>Total Itinerary Profits</h3>
+        <p style={styles.profitAmount}>${itinProfits}</p>
+    </div>
+    <div style={styles.profitCard}>
+        <h3 style={styles.profitTitle}>Total Activities Profits</h3>
+        <p style={styles.profitAmount}>${actProfits}</p>
+    </div>
+</div>
+
+
+            {!filteredP && !filteredD && (
+    <>
+        <div style={styles.profitSummary}>
+            <h2>Total Profit from Sales</h2>
+            <p style={styles.profitAmount}>${totalSales}</p>
         </div>
-        <div>
-        {filteredP && (
-  <div>
-    <h2>Selected product</h2>
-    <p>Name: {filterP.productName}</p>
-    <p>Price: {filterP.price}</p>
-    <p>Sales: {filterP.sales}</p>
-    <p>Times purchased: {count}</p>
 
-    {/* Render purchase dates */}
-    <ul>
-      {DatesQuant.map((dateQuant, index) => (
-        <li key={index}>
-          {/* Accessing the `createdAt` field to display */}
-          <p>Purchased on: {new Date(dateQuant.createdAt).toLocaleDateString()}</p>
-        </li>
-      ))}
-    </ul>
+        <div style={styles.resultCard}>
+            <h3 style={styles.cardTitle}>Most Sold Product</h3>
+            {!isLoading && mostSold ? (
+                <div style={styles.productDetailsContainer}>
+                    <p style={styles.productDetail}><strong>Product Name:</strong> {mostSold.productName}</p>
+                    <p style={styles.productDetail}><strong>Price:</strong> ${mostSold.price}</p>
+                    <p style={styles.productDetail}><strong>Sales:</strong> {mostSold.sales}</p>
+                    <p style={styles.productDetail}>
+                        <strong>Times Purchased:</strong> {mostSold.sales === 0 ? 0 : mostSold.sales / mostSold.price}
+                    </p>
+                </div>
+            ) : (
+                <p style={styles.noData}>No data available</p>
+            )}
+        </div>
 
-    {/* Render dates with quantities */}
-    <ul>
-      {DatesQuant.map((dateQuant, index) => (
-        <li key={index}>
-          {/* Accessing `createdAt` and `quantity` fields */}
-          <p>Purchased at {new Date(dateQuant.createdAt).toLocaleTimeString()}: {dateQuant.quantity} times</p>
-        </li>
-      ))}
-    </ul>
-
-
-  </div>
+        <div style={styles.resultCard}>
+            <h3 style={styles.cardTitle}>Least Sold Product</h3>
+            {!isLoading && leastSold ? (
+                <div style={styles.productDetailsContainer}>
+                    <p style={styles.productDetail}><strong>Product Name:</strong> {leastSold.productName}</p>
+                    <p style={styles.productDetail}><strong>Price:</strong> ${leastSold.price}</p>
+                    <p style={styles.productDetail}><strong>Sales:</strong> {leastSold.sales}</p>
+                    <p style={styles.productDetail}>
+                        <strong>Times Purchased:</strong> {leastSold.sales === 0 ? 0 : leastSold.sales / leastSold.price}
+                    </p>
+                </div>
+            ) : (
+                <p style={styles.noData}>No data available</p>
+            )}
+        </div>
+    </>
 )}
 
-        </div>
-        <div>
-         { !filteredP && (<h3>All products</h3>)}
-          {isLoading && <p>Loading...</p>}
-          {filteredD &&(
-            <div>
-                <h3>Filtered products</h3>
-                <ul>
-                {productQuantity.map(({ product, quantity }) => (
-                 <li key={product._id}>
-                      <h2>{product.productName}</h2>
-                      <p>Price: ${product.price}</p>
-                      <p>Quantity sold on this date: {quantity}</p>
-                 </li>
-                     ))}
-                </ul>
 
-           </div>
-
-          )}
-          {!filteredP && !filteredD && !isLoading && Products.length > 0 ? (
-            Products.map((Product) => (
-              <div key={Product._id}>
-                <h3>Product: {Product.productName}</h3>
-                <p>Price: {Product.price}</p>
-                <p>Sales: {Product.sales}</p>
-                <p>
-                  Times purchased: {Product.sales === 0 ? 0 : Product.sales / Product.price}
-                </p>
-              </div>
-            ))
-          ) :!filteredP && !filteredD && (
-            <p>No products found.</p>
-          )}
+{/* Filtered Product Details */}
+{filteredP && (
+    <div style={styles.filteredProductCard}>
+        <h3 style={styles.filteredProductTitle}>Selected Product</h3>
+        <div style={styles.filteredProductContent}>
+            <p><strong>Product Name:</strong> {filterP.productName}</p>
+            <p><strong>Price:</strong> ${filterP.price}</p>
+            <p><strong>Sales:</strong> {filterP.sales}</p>
+            <p><strong>Total Quantity Sold:</strong> {count}</p>
         </div>
-      </div>
-    )
+
+        {/* Render purchase dates */}
+        <ul style={styles.dateList}>
+            {DatesQuant.map((dateQuant, index) => (
+                <li key={index} style={styles.dateListItem}>
+                    <p><strong>Date:</strong> {new Date(dateQuant.createdAt).toLocaleDateString()}</p>
+                    <p><strong>Quantity Sold:</strong> {dateQuant.quantity}</p>
+                </li>
+            ))}
+        </ul>
+    </div>
+)}
+
+{/* Filtered Date Results */}
+{filteredD && (
+    <div style={styles.filteredProductCard}>
+        <h3 style={styles.filteredProductTitle}>Filtered Products</h3>
+        <ul style={styles.dateList}>
+            {productQuantity.map(({ product, quantity }) => (
+                <li key={product._id} style={styles.dateListItem}>
+                    <p><strong>Product Name:</strong> {product.productName}</p>
+                    <p><strong>Price:</strong> ${product.price}</p>
+                    <p><strong>Quantity Sold on this Date:</strong> {quantity}</p>
+                </li>
+            ))}
+        </ul>
+    </div>
+)}
+
+
+{/* Product List */}
+ {/* Product List */}
+ {!filteredP && !filteredD && (
+                <>
+                    <h2>All Products</h2>
+                    {isLoading ? (
+                        <p style={styles.loadingSpinner}>Loading...</p>
+                    ) : Products.length > 0 ? (
+                        <div style={styles.productGrid}>
+                            {Products.map((Product) => (
+                                <div
+                                    key={Product._id}
+                                    style={{
+                                        ...styles.productCard,
+                                        ...(hoveredProductId === Product._id
+                                            ? styles.productCardHover
+                                            : {}),
+                                    }}
+                                    onMouseEnter={() => setHoveredProductId(Product._id)}
+                                    onMouseLeave={() => setHoveredProductId(null)}
+                                >
+                                    <h3
+                                        style={{
+                                            ...styles.productName,
+                                            ...(hoveredProductId === Product._id
+                                                ? styles.productNameHover
+                                                : {}),
+                                        }}
+                                    >
+                                        {Product.productName}
+                                    </h3>
+                                    <p style={styles.productDetails}>Price: ${Product.price}</p>
+                                    <p style={styles.productDetails}>Sales: {Product.sales}</p>
+                                    <p style={styles.productDetails}>
+                                        Times Purchased:{' '}
+                                        {Product.sales === 0
+                                            ? 0
+                                            : Math.round(Product.sales / Product.price)}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p style={styles.noProducts}>No products found.</p>
+                    )}
+                </>
+            )}
+
+
+        </div>
+    </div>
+);
 }
+
 const styles = {
-    container: {
-      //marginTop:'400px',
-      maxWidth: '1200px',
-      marginBottom:'20px',
-      margin: '20px auto',
-      padding: '20px',
-      backgroundColor: '#f9f9f9',
-      borderRadius: '10px',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    },
-    filterGroup: {
-      marginTop:'50px',
-      display: 'flex',
-      gap: '10px',
-      alignItems: 'center',
-      justifyContent: 'center',
-     // marginBottom: '20px',
-    },
-    filterInput: {
-      padding: '10px',
-      border: '1px solid #ddd',
-      borderRadius: '5px',
-    },
-    productCard: {
-      display: 'flex',
-      alignItems: 'center',
-      backgroundColor: '#fff',
-      borderRadius: '10px',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      marginBottom: '20px',
-      padding: '15px',
-      gap: '15px',
-    },
-    productInfo: {
-      flex: '1',
-    },
-    productActions: {
-      display: 'flex',
-      gap: '10px',
-    },
-    actionButton: {
-      fontSize:'30px',
-      padding: '10px 15px',
-      backgroundColor: 'white',
-      color: '#0F5132',
-      border: 'none',
-      borderRadius: '5px',
-      cursor: 'pointer',
-      marginLeft:"650px"
-  
-    },
-   
-    icons: {
-      fontSize: '25px', // Adjust size for the heart icon
-      color: 'red', // White icon color to contrast with the red background
-      backgroundColor:'white',
-      //marginLeft:"340px"
-    },
-   
-    
-    cartIcon: {
-      fontSize: '20px', // Adjust size
-      color: 'white',
-      cursor: 'pointer',
-    },
-    
-    wishlistButton: {
+  header: {
+      height: '60px',
+      position: 'fixed',
+      top: '0',
+      left: '0',
+      width: '100%',
       backgroundColor: '#0F5132',
-      color: '#fff',
-      padding: '10px 15px',
-      border: 'none',
-      borderRadius: '5px',
-      cursor: 'pointer',
-    },
-    header: {
-      height:'60px',
-    position: 'fixed', // Make the header fixed
-    top: '0', // Stick to the top of the viewport
-    left: '0',
-    width: '100%', // Make it span the full width of the viewport
-    backgroundColor: '#0F5132',
-    color: 'white', // White text
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '10px 10px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for depth
-    zIndex: '1000', // Ensure it appears above other content
-  },
-    logoContainer: {
+      color: 'white',
       display: 'flex',
       alignItems: 'center',
-    },
-    logo: {
+      justifyContent: 'space-between',
+      padding: '10px 10px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      zIndex: '1000',
+  },
+  logoContainer: {
+      display: 'flex',
+      alignItems: 'center',
+  },
+  logo: {
       height: '60px',
       width: '70px',
       borderRadius: '10px',
-    },
-    headerIcons: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '10px',
-    },
-    profileIcon: {
-      fontSize: '30px',
-      color: 'white',
-      cursor: 'pointer',
-      borderRadius: '20px',
-     // boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-    },
-    wishlistIcon: {
-      fontSize: '24px',
-      cursor: 'pointer',
-      padding: '10px',
-      //borderRadius: '30%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      transition: 'background-color 0.3s ease',
-    },
-    wishlistHeartIcon: {
-      fontSize: '25px',
-      color: 'white', // Red color for the heart icon
-      cursor: 'pointer'
-    },
-    cartButton: {
-      fontSize: '24px',
-      cursor: 'pointer',
-      borderRadius: '20%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      transition: 'background-color 0.3s ease',
-    },
-    cartIcon: {
-      fontSize: '25px', // Adjust size
-      color: 'white', // Green text
-    },
-    title: {
+  },
+  title: {
       fontSize: '24px',
       fontWeight: 'bold',
       color: 'white',
       margin: 0,
-    },
-  
-   
-    filterForm: {
-      margin: '20px 0',
-    },
-    filterButton: {
-      marginTop: '10px',
-      padding: '10px 20px',
-      backgroundColor: '#0F5132',
-      color: '#fff',
-      border: 'none',
-      borderRadius: '5px',
-      cursor: 'pointer',
-    },
-    productList: {
-      fontSize:'11px',
-      listStyleType: 'none',
-      padding: 0,
-    },
-    productItem: {
-      backgroundColor: '#fff',
-      padding: '20px',
-      marginBottom: '10px',
-      borderRadius: '10px',
-      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-  
-    },
-    productName: {
-      fontSize: '25px',
-      color: '#0F5132',
-      marginTop:'60px'
-  
-    },
-    productImage: {
-      width: '100%',
-      maxWidth: '300px',
-      height: '200px',
-      objectFit: 'cover',
-      borderRadius: '10px',
-    },
-    addButton: {
-      marginTop: '10px',
-      padding: '5px 10px',
-      backgroundColor: '#0F5132',
-      color: '#fff',
-      border: 'none',
-      borderRadius: '5px',
-      cursor: 'pointer',
-    },
-    sidebar: {
-      position: 'fixed',
-      top: '60px',
-      left: 0,
-      height: '100vh',
-      width: '50px', // Default width when collapsed
-      backgroundColor: 'rgba(15, 81, 50, 0.85)',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'flex-start', // Ensure alignment starts from the left
-      padding: '10px 0',
-      overflowX: 'hidden',
-      transition: 'width 0.3s ease',
-      zIndex: 1000,
-    },
-    sidebarExpanded: {
-      width: '200px', // Width when expanded
-    },
-    iconContainer: {
+  },
+  headerIcons: {
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'flex-start', // Align items to the left
-      padding: '10px',
-      width: '100%', // Take full width of the sidebar
-      color: '#fff',
+      gap: '10px',
+  },
+  profileIcon: {
+      fontSize: '30px',
+      color: 'white',
       cursor: 'pointer',
-      transition: 'background-color 0.3s ease',
-    },
-    iconContainerHover: {
-      backgroundColor: '#084B24', // Background on hover
-    },
-    icon: {
-      fontSize: '24px',
-      marginLeft: '15px', // Move icons slightly to the right
-      color: '#fff', // Icons are always white
-    },
-    label: {
-      cursor: 'pointer',
+      borderRadius: '20px',
+  },
+  content: {
+      marginTop: '80px',
+      padding: '20px',
+  },
+  profitSection: {
+      marginBottom: '20px',
+      backgroundColor: '#f9f9f9',
+      padding: '15px',
+      borderRadius: '10px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      textAlign: 'center',
+  },
+  filterSection: {
+      marginBottom: '20px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px',
+  },
+  filterLabel: {
       fontSize: '16px',
+  },
+  filterSelect: {
+      padding: '10px',
+      borderRadius: '5px',
+      border: '1px solid #ddd',
+  },
+  filteredProductDetails: {
+      marginTop: '20px',
+      backgroundColor: '#fff',
+      padding: '15px',
+      borderRadius: '10px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  },
+  dateList: {
+      listStyleType: 'none',
+      padding: 0,
+  },
+  loadingContainer: {
+      textAlign: 'center',
+      padding: '20px',
+  },
+  loadingSpinner: {
+      fontSize: '18px',
+      color: '#555',
+  },
+  productGrid: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+      gap: '20px',
+      marginTop: '20px',
+  },
+  productCard: {
+      backgroundColor: '#fff',
+      padding: '20px',
+      borderRadius: '10px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      textAlign: 'center',
+  },
+  productName: {
+      fontSize: '18px',
       fontWeight: 'bold',
-      color: '#fff',
-      opacity: 0, // Initially hidden
-      whiteSpace: 'nowrap', // Prevent label text from wrapping
-      transition: 'opacity 0.3s ease',
+      color: '#0F5132',
+  },
+  profitSummary: {
+    backgroundColor: '#f1f5f9',
+    padding: '20px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    textAlign: 'center',
+    marginBottom: '20px',
+},
+profitAmount: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: '#0F5132',
+    marginTop: '10px',
+},
+resultCard: {
+    backgroundColor: '#fff',
+    padding: '20px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    marginBottom: '20px',
+    textAlign: 'center',
+},
+cardTitle: {
+    fontSize: '20px',
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: '15px',
+},
+productDetailsContainer: {
+    textAlign: 'left',
+},
+productDetail: {
+    fontSize: '16px',
+    margin: '5px 0',
+    color: '#555',
+},
+noData: {
+    fontSize: '16px',
+    color: '#888',
+    marginTop: '10px',
+},
+profitSummaryContainer: {
+  display: 'flex',
+  gap: '20px',
+  justifyContent: 'space-between',
+  flexWrap: 'wrap',
+  marginBottom: '20px',
+},
+profitCard: {
+  flex: '1',
+  minWidth: '250px',
+  backgroundColor: '#f9f9f9',
+  padding: '20px',
+  borderRadius: '10px',
+  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  textAlign: 'center',
+},
+profitTitle: {
+  fontSize: '18px',
+  fontWeight: 'bold',
+  color: '#333',
+  marginBottom: '10px',
+},
+profitAmount: {
+  fontSize: '24px',
+  fontWeight: 'bold',
+  color: '#0F5132',
+},
+content: {
+  marginTop: '80px', // Pushes content below the fixed header
+  padding: '20px',
+  backgroundColor: '#f9f9f9',
+  borderRadius: '10px',
+  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+},
+icon: {
+  fontSize: '16px',
+  cursor: 'pointer',
+  transition: 'color 0.3s ease',
+  marginTop: '10px', // Nudges the icon downward slightly
+},
+pageTitle: {
+  fontSize: '24px',
+  fontWeight: 'bold',
+  color: '#333',
+  textAlign: 'center',
+  marginBottom: '20px',
+},
+actionRow: {
+  display: 'flex',
+  gap: '10px',
+  justifyContent: 'center',
+  marginBottom: '20px',
+},
+refreshButtonContainer: {
+  flex: '1', // Pushes the refresh button to the leftmost
+  textAlign: 'left',
+},
+refreshButton: {
+  backgroundColor: '#0F5132',
+  color: '#fff',
+  padding: '10px 15px',
+  border: 'none',
+  borderRadius: '5px',
+  cursor: 'pointer',
+  fontWeight: 'bold',
+  transition: 'background-color 0.3s ease',
+},
+dateInput: {
+  padding: '10px',
+  borderRadius: '5px',
+  border: '1px solid #ddd',
+},
+filterButton: {
+  backgroundColor: '#0F5132',
+  color: '#fff',
+  padding: '10px 15px',
+  border: 'none',
+  borderRadius: '5px',
+  cursor: 'pointer',
+  fontWeight: 'bold',
+  transition: 'background-color 0.3s ease',
+},
+filterSection: {
+  display: 'flex',
+  justifyContent: 'flex-start', // Aligns the entire section to the leftmost
+  alignItems: 'center',
+  gap: '10px', // Adds spacing between the label and dropdown
+  marginTop: '20px',
+},
+filterLabel: {
+  fontSize: '16px',
+  fontWeight: 'bold',
+},
+filterSelect: {
+  padding: '10px',
+  borderRadius: '5px',
+  border: '1px solid #ddd',
+  minWidth: '200px', // Consistent dropdown width
+},
+    productGrid: {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', // Responsive grid
+        gap: '20px',
+        marginTop: '20px',
     },
-    labelVisible: {
-      opacity: 1, // Fully visible when expanded
+    productCard: {
+        backgroundColor: '#fff',
+        padding: '20px',
+        borderRadius: '10px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        textAlign: 'center',
+        transition: 'transform 0.3s ease, box-shadow 0.3s ease', // Smooth hover effect
     },
-  };
+    productCardHover: {
+        transform: 'translateY(-10px)', // Moves the card upward slightly
+        boxShadow: '0 8px 12px rgba(0, 0, 0, 0.2)', // Stronger shadow on hover
+    },
+    productName: {
+        fontSize: '18px',
+        fontWeight: 'bold',
+        color: '#0F5132',
+        transition: 'color 0.3s ease', // Smooth color transition
+    },
+    productNameHover: {
+        color: '#084B24', // Darker green on hover
+    },
+    productDetails: {
+        fontSize: '16px',
+        color: '#555',
+    },
+    noProducts: {
+        textAlign: 'center',
+        fontSize: '18px',
+        color: '#888',
+        marginTop: '20px',
+    },
+    loadingSpinner: {
+        textAlign: 'center',
+        fontSize: '18px',
+        color: '#888',
+    },
+        filteredProductCard: {
+        backgroundColor: '#fff',
+        padding: '20px',
+        borderRadius: '10px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        marginBottom: '20px',
+        maxWidth: '600px', // Limits the width for better readability
+        margin: '20px auto', // Centers the card on the page
+    },
+    filteredProductTitle: {
+        fontSize: '20px',
+        fontWeight: 'bold',
+        color: '#0F5132', // Professional green shade
+        marginBottom: '15px',
+    },
+    filteredProductContent: {
+        marginBottom: '20px',
+        lineHeight: '1.6',
+        fontSize: '16px',
+        color: '#333',
+    },
+    dateList: {
+        listStyleType: 'none',
+        padding: 0,
+        margin: 0,
+    },
+    dateListItem: {
+        backgroundColor: '#f9f9f9',
+        padding: '10px',
+        marginBottom: '10px',
+        borderRadius: '5px',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Subtle shadow for list items
+        fontSize: '16px',
+        lineHeight: '1.4',
+        color: '#555',
+    },
+
+};
+
 export default AdminReport;
