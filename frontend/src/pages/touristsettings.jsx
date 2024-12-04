@@ -716,6 +716,7 @@ const [newAddress, setNewAddress] = useState({
      />
      
      <input
+     type="number"
        style={{
          width: '100%',
          padding: '10px',
@@ -745,6 +746,7 @@ const [newAddress, setNewAddress] = useState({
      />
      
      <input
+     type="number"
        style={{
          width: '100%',
          padding: '10px',
