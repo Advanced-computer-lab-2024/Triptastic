@@ -491,7 +491,7 @@ const TouristProfile = () => {
         throw new Error('Failed to fetch complaints');
       }
     } catch (error) {
-      setErrorMessage('An error occurred while fetching complaints');
+      setErrorMessage('');
       console.error(error);
     }
     setLoading(false);
@@ -677,6 +677,17 @@ const TouristProfile = () => {
   
     console.log("Submitting feedback for itinerary:", Itinerary);
   
+    // Check if the itinerary is in the past
+    const itineraryEndDate = new Date(Itinerary.DatesTimes);
+    const currentDate = new Date();
+  
+    // If the itinerary end date is in the future, prevent feedback submission
+    if (itineraryEndDate > currentDate) {
+      setErrorMessage('You cannot submit feedback for an upcoming itinerary.');
+      setSuccessMessage('');
+      return;
+    }
+  
     try {
       const response = await axios.post(`http://localhost:8000/submitFeedbackItinerary?username=${username}`, {
         Itinerary: Itinerary, // Send the itinerary ID
@@ -693,19 +704,27 @@ const TouristProfile = () => {
         setErrorMessage('');
       }
     } catch (err) {
-
       setErrorMessage(err.response?.data?.message || 'Failed to submit feedback');
       setSuccessMessage('');
     }
   };
-  
   const submitFeedback = async (Itinerary) => {
     const tourGuideUsername = Itinerary.TourGuide;
     const username = localStorage.getItem('Username');
-
+  
     console.log("Submitting feedback for itinerary:", Itinerary);
-
-
+  
+    // Check if the itinerary is in the past
+    const itineraryEndDate = new Date(Itinerary.DatesTimes);
+    const currentDate = new Date();
+  
+    // If the itinerary end date is in the future, prevent feedback submission
+    if (itineraryEndDate > currentDate) {
+      setErrorMessage('You cannot submit feedback for an upcoming itinerary.');
+      setSuccessMessage('');
+      return;
+    }
+  
     try {
       const response = await axios.post(`http://localhost:8000/submitFeedback?username=${username}`, {
         Itinerary: Itinerary,
@@ -716,13 +735,12 @@ const TouristProfile = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
-
+  
       if (response.status === 200) {
         setSuccessMessage('Feedback submitted successfully!');
         setErrorMessage('');
       }
     } catch (err) {
-     
       setErrorMessage(err.response?.data?.message || 'Failed to submit feedback');
       setSuccessMessage('');
     }

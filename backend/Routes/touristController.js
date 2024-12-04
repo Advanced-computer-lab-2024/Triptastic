@@ -1425,9 +1425,7 @@ const submitFeedback = async (req, res) => {
     
     res.status(200).json({ message: 'Feedback submitted successfully!' });
   } catch (error) {
-    console.log(comment);
-    console.log(rating);
-    console.log(foundTourGuide);
+ 
 
         res.status(500).json({ message: 'Server error while submitting feedback' });
   }
