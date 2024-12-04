@@ -78,6 +78,80 @@ const loginSeller = async (req, res) => {
       res.status(500).json({ error: 'Something went wrong. Please try again later.' });
   }
 };
+const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
+
+
+
+
+const requestOTPS = async (req, res) => {
+  const { Email } = req.body;
+
+  try {
+    const tourist = await sellerModel.findOne({ Email });
+    if (!tourist) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const otp = generateOTP();
+
+    // Save the OTP and expiration in the database
+    tourist.otp = otp;
+    tourist.otpExpiry = Date.now() + 10 * 60 * 1000; // Valid for 10 minutes
+    await tourist.save();
+
+    // Send OTP to email
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'malook25062003@gmail.com',
+        pass: 'sxvo feuu woie gpfn',
+      },
+    });
+
+    const mailOptions = {
+      from: 'malook25062003@gmail.com',
+      to: Email,
+      subject: 'Your OTP for Password Reset',
+      text: `Your OTP is ${otp}. It is valid for 10 minutes.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: 'OTP sent to email' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to send OTP' });
+  }
+};
+
+const resetPasswordS = async (req, res) => {
+  const { Email, otp, newPassword } = req.body;
+
+  try {
+    const tourist = await sellerModel.findOne({ Email });
+    if (!tourist) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (tourist.otp !== otp || Date.now() > tourist.otpExpiry) {
+      return res.status(400).json({ error: 'Invalid or expired OTP' });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the password and clear the OTP fields
+    tourist.Password = hashedPassword;
+    tourist.otp = null;
+    tourist.otpExpiry = null;
+    await tourist.save();
+
+    res.status(200).json({ message: 'Password reset successful' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to reset password' });
+  }
+};
 
 
  const updateSeller = async(req,res) => {
@@ -617,4 +691,4 @@ const getFilteredProducts = async (req, res) => { //filtered by date
   }
 };
 
- module.exports = {viewMyProducts,deleteAllNotifications,getNotificationsForAdmin,checkAndNotifyOutOfStockAdmin,getNotificationsForSeller,checkAndNotifyOutOfStockSeller,incrementProductSales,viewProductSales ,changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller,filterByProduct,getFilteredProducts};
+ module.exports = {resetPasswordS,requestOTPS,viewMyProducts,deleteAllNotifications,getNotificationsForAdmin,checkAndNotifyOutOfStockAdmin,getNotificationsForSeller,checkAndNotifyOutOfStockSeller,incrementProductSales,viewProductSales ,changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller,filterByProduct,getFilteredProducts};

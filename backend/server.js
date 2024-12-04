@@ -30,7 +30,7 @@ const {getTouristIntroStatus,sendItineraryReminders,sendActivityReminders,getNot
 const{changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser,getTouristReportForActivity,filterActivitiesByMonth,loginAdvertiser,filterByActivity,getFilteredActivities}=require("./Routes/advertiserController");
 
 //Seller
-const{viewMyProducts,deleteAllNotifications,getNotificationsForAdmin,checkAndNotifyOutOfStockAdmin,getNotificationsForSeller,checkAndNotifyOutOfStockSeller,changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller,filterByProduct,getFilteredProducts}=require("./Routes/sellerController");
+const{requestOTPS,resetPasswordS,viewMyProducts,deleteAllNotifications,getNotificationsForAdmin,checkAndNotifyOutOfStockAdmin,getNotificationsForSeller,checkAndNotifyOutOfStockSeller,changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller,filterByProduct,getFilteredProducts}=require("./Routes/sellerController");
 
 //Admin
 const{getPromoCodes,createPromoCode,getUserStatistics,replyToComplaint,rejectDeletionRequest,acceptDeletionRequest,getPendingDeletionRequests,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin,createCategory,
@@ -265,6 +265,8 @@ app.post("/sendActivityReminders", sendActivityReminders);
 app.get("/viewMyProducts",viewMyProducts);
 app.get('/filterByProduct',filterByProduct);
 app.get('/getFilteredProducts',getFilteredProducts);
+app.post('/requestOTPS',requestOTPS);
+app.post('/resetPasswordS',resetPasswordS); 
 
 
 //Admin
