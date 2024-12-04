@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../images/image.png';
-import { FaUserCircle } from 'react-icons/fa';
 import LockResetIcon from '@mui/icons-material/LockReset';
+import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 
 
 const TourismGov = () => {
@@ -38,8 +38,6 @@ const TourismGov = () => {
         setErrorMessage('');
         setCurrentPassword('');
         setNewPassword('');
-        setIsModalOpen(false); // Close the modal
-
       } else {
         setErrorMessage(data.error);
         setSuccessMessage('');
@@ -82,38 +80,44 @@ const TourismGov = () => {
         </div>
       </div>
 
-      {/* Change Password Modal */}
-      {isModalOpen && (
-        <div style={styles.modalOverlay}>
-          <div style={styles.modal}>
-            <h2 style={styles.modalTitle}>Change Password</h2>
-            <input
-              type="password"
-              placeholder="Current Password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              style={styles.input}
-            />
-            <input
-              type="password"
-              placeholder="New Password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              style={styles.input}
-            />
-            <button onClick={handleChangePassword} style={styles.modalButton}>
-              Change Password
-            </button>
-            <button onClick={() => setIsModalOpen(false)} style={styles.modalCloseButton}>
-              Cancel
-            </button>
+       {/* Change Password Modal */}
+    {isModalOpen && (
+      <div style={styles.modalOverlay}>
+        <div style={styles.modalContent}>
+          <HighlightOffOutlinedIcon
+            style={styles.cancelpasswordIcon}
+            onClick={() => setIsModalOpen(false)}
+          />
+          <h2 style={styles.modalContentH2}>Change Password</h2>
+          <input
+            type="password"
+            placeholder="Current Password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            style={styles.modalContentInput}
+          />
+          <input
+            type="password"
+            placeholder="New Password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            style={styles.modalContentInput}
+          />
+          <button
+            onClick={handleChangePassword}
+            style={styles.modalContentButton}
+          >
+            Change Password
+          </button>
 
-            {/* Success/Error Messages */}
-            {successMessage && <p style={styles.successMessage}>{successMessage}</p>}
-            {errorMessage && <p style={styles.errorMessage}>{errorMessage}</p>}
-          </div>
+          {/* Success/Error Messages */}
+          {successMessage && (
+            <p style={styles.successMessage}>{successMessage}</p>
+          )}
+          {errorMessage && <p style={styles.errorMessage}>{errorMessage}</p>}
         </div>
-      )}
+      </div>
+    )}
     </div>
   );
 };
@@ -172,17 +176,6 @@ const styles = {
     gap: '10px',
     marginBottom: '30px',
   },
-  button: {
-    padding: '10px 20px',
-    backgroundColor: '#0F5132',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    fontSize: '16px',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    transition: 'background-color 0.3s ease',
-  },
   buttonHover: {
     backgroundColor: '#084B24',
   },
@@ -194,67 +187,84 @@ const styles = {
     fontWeight: 'bold',
     marginBottom: '15px',
   },
-  input: {
-    display: 'block',
-    width: '100%',
-    padding: '10px',
-    marginBottom: '15px',
-    borderRadius: '5px',
-    border: '1px solid #ddd',
-    fontSize: '14px',
-  },
+ 
   modalOverlay: {
     position: 'fixed',
     top: 0,
     left: 0,
     width: '100vw',
     height: '100vh',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    background: 'rgba(0, 0, 0, 0.5)',
     display: 'flex',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
     zIndex: 1000,
   },
-  modal: {
-    backgroundColor: '#fff',
+  modalContent: {
+    background: 'white',
     padding: '20px',
-    borderRadius: '8px',
-    width: '400px',
-    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+    borderRadius: '10px',
+    width: '50%',
+    maxWidth: '600px',
+    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '15px',
+    maxHeight: '80vh',
+    overflowY: 'auto',
+  },
+  modalContentH2: {
+    fontSize: '22px',
     textAlign: 'center',
-  },
-  modalTitle: {
-    fontSize: '20px',
-    fontWeight: 'bold',
-    marginBottom: '20px',
-  },
-  input: {
-    display: 'block',
+    color: '#333',
+  }, modalContentInput: {
     width: '100%',
     padding: '10px',
-    marginBottom: '15px',
+    border: '1px solid #ccc',
     borderRadius: '5px',
-    border: '1px solid #ddd',
+    fontSize: '14px',
+  },cancelpasswordIcon: {
+    color: '#0F5132', // Set the color of the icon
+    fontSize: '30px', // Adjust the size as needed
+    cursor: 'pointer', // Ensure it acts as a button
+    position: 'absolute', // Position it correctly in the modal
+    right: '490px', // Adjust placement
+    top: '280px', // Adjust placement
+  },modalContentButton: {
+    padding: '10px 20px',
+    border: 'none',
+    background: '#0F5132',
+    color: 'white',
+    borderRadius: '5px',
+    cursor: 'pointer',
     fontSize: '14px',
   },
-  modalButton: {
+  lockIcon: {
+    fontSize: '30px',
+    color: '#fff',
+    cursor: 'pointer',
+  },
+  content: {
+    maxWidth: '800px',
+    margin: '0 auto',
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
+    marginBottom: '30px',
+  },
+  button: {
+    padding: '10px 20px',
     backgroundColor: '#0F5132',
     color: '#fff',
-    padding: '10px 20px',
-    borderRadius: '5px',
     border: 'none',
+    borderRadius: '5px',
+    fontSize: '16px',
     cursor: 'pointer',
     fontWeight: 'bold',
-    marginRight: '10px',
-  },
-  modalCloseButton: {
-    backgroundColor: '#ccc',
-    color: '#333',
-    padding: '10px 20px',
-    borderRadius: '5px',
-    border: 'none',
-    cursor: 'pointer',
-    fontWeight: 'bold',
+    transition: 'background-color 0.3s ease',
   },
   successMessage: {
     color: '#0F5132',
