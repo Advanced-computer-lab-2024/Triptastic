@@ -13,7 +13,7 @@ const {createTourGuideInfo,createTourGuide,getTouristReportForItinerary,filterIt
 const {updateTourGuide}=require("./Routes/tourGuideController");
 const {getTourGuide}=require("./Routes/tourGuideController");
 const {createItinerary,getItinerary,updateItinerary,deleteItinerary,getTouristItinerary,createTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG}=require("./Routes/tourGuideController");
-const {changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide,deactivateItinrary,activateItinrary,getFilteredItineraries,filterByItinerary}=require("./Routes/tourGuideController");
+const {resetPasswordTG,requestOTPTG,changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide,deactivateItinrary,activateItinrary,getFilteredItineraries,filterByItinerary}=require("./Routes/tourGuideController");
 
 //Guest
 const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActivitiesGuest,filterActivitiesGuest,filterHistoricalLocationsByTagsGuest,filterMuseumsByTagsGuest,viewAllMuseumsGuest}=require("./Routes/guestController");
@@ -30,7 +30,7 @@ const {getTouristIntroStatus,sendItineraryReminders,sendActivityReminders,getNot
 const{changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser,getTouristReportForActivity,filterActivitiesByMonth,loginAdvertiser,filterByActivity,getFilteredActivities}=require("./Routes/advertiserController");
 
 //Seller
-const{viewMyProducts,deleteAllNotifications,getNotificationsForAdmin,checkAndNotifyOutOfStockAdmin,getNotificationsForSeller,checkAndNotifyOutOfStockSeller,changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller,filterByProduct,getFilteredProducts}=require("./Routes/sellerController");
+const{requestOTPS,resetPasswordS,viewMyProducts,deleteAllNotifications,getNotificationsForAdmin,checkAndNotifyOutOfStockAdmin,getNotificationsForSeller,checkAndNotifyOutOfStockSeller,changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller,filterByProduct,getFilteredProducts}=require("./Routes/sellerController");
 
 //Admin
 const{getPromoCodes,createPromoCode,getUserStatistics,replyToComplaint,rejectDeletionRequest,acceptDeletionRequest,getPendingDeletionRequests,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin,createCategory,
@@ -221,6 +221,8 @@ app.get("/filterItinerariesByMonth", filterItinerariesByMonth);
 app.post('/loginTourGuide',loginTourGuide);
 app.get('/getFilteredItineraries',getFilteredItineraries);
 app.get('/filterByItinerary',filterByItinerary);
+app.post('/requestOTPTG',requestOTPTG);
+app.post('/resetPasswordTG',resetPasswordTG); 
 
 //Advertiser
 app.get("/getTouristReportForActivity/:activityId",getTouristReportForActivity);
@@ -263,6 +265,8 @@ app.post("/sendActivityReminders", sendActivityReminders);
 app.get("/viewMyProducts",viewMyProducts);
 app.get('/filterByProduct',filterByProduct);
 app.get('/getFilteredProducts',getFilteredProducts);
+app.post('/requestOTPS',requestOTPS);
+app.post('/resetPasswordS',resetPasswordS); 
 
 
 //Admin

@@ -290,9 +290,27 @@ return (
      
       {/* Sign-In Form */}
       {showSignIn && !isSignUp && (
-        <div className={`${styles.formContainer} ${styles.signIn}`}>
-          <h1>Sign In</h1>
-          <form onSubmit={handleSignInSubmit}>
+        <div
+        className={`${styles.formContainer2} ${styles.signIn}`}
+        style={{
+          width: '50%',
+          maxWidth: '600px',
+          margin: '0 auto',
+          padding: '20px',
+          backgroundColor: '#fff',
+          borderRadius: '10px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '15px',
+          right:'55%'
+        }}
+      >
+        
+        <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Sign In</h1>
+                  <form onSubmit={handleSignInSubmit}      style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}
+                  >
+                            <label style={{ fontSize: '14px', marginBottom: '5px', display: 'block' }}>Email:</label>
+
   <input
     type="email"
      name="Email"
@@ -300,7 +318,16 @@ return (
     value={signInFormData.Email}
     onChange={handleSignInChange}
     required
+    style={{
+      width: '100%',
+      padding: '10px',
+      borderRadius: '5px',
+      border: '1px solid #ccc',
+      fontSize: '14px',
+    }}
   />
+          <label style={{ fontSize: '14px', marginBottom: '5px', display: 'block' }}>Password:</label>
+
   <input
   type="password"
   name="Password"
@@ -308,24 +335,52 @@ return (
   value={signInFormData.Password}
   onChange={handleSignInChange}
   required
+  style={{
+    width: '100%',
+    padding: '10px',
+    borderRadius: '5px',
+    border: '1px solid #ccc',
+    fontSize: '14px',
+  }}
 
   />
-  <button type="submit">Sign In</button>
+  <button type="submit"  style={{
+          width: '50%',
+          padding: '10px',
+          borderRadius: '15px',
+          border: 'none',
+          backgroundColor: '#0F5132',
+          color: '#fff',
+          fontSize: '16px',
+          cursor: 'pointer',
+          marginTop:'10px'
+        }}>Sign In</button>
 </form>
 
 
-          <button onClick={() => setShowOTPForm(true)}>Forgot Password?</button>
+          <button onClick={() => setShowOTPForm(true)} style={{
+        background: 'none',
+        color: '#0F5132',
+        border: 'none',
+        cursor: 'pointer',
+        textDecoration: 'underline',
+        fontSize: '14px',
+        marginTop: '10px',
+      }}>Forgot Password?</button>
 
           {/* OTP Form */}
           {showOTPForm && (
-            <div className={`${styles.otpResetForm}`}>
-              <h1>{otpSent ? 'Reset Password' : 'Request OTP'}</h1>
+            <div className={`${styles.otpResetForm}`}  style={{
+              marginTop: '20px',
+              padding: '20px',
+              borderRadius: '10px',
+            }}>
               {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
               {successMessage && <p className={styles.successMessage}>{successMessage}</p>}
 
               {/* OTP Request Form */}
               {!otpSent && (
-                <form onSubmit={handleRequestOTP}>
+                <form onSubmit={handleRequestOTP}  style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                   <div>
                     <label htmlFor="emailForOTP">Enter Email:</label>
                     <input
@@ -334,17 +389,35 @@ return (
                       value={emailForOTP}
                       onChange={(e) => setEmailForOTP(e.target.value)}
                       required
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: '5px',
+                        border: '1px solid #ccc',
+                        fontSize: '14px',
+                      }}
                     />
                   </div>
-                  <button type="submit">Request OTP</button>
+                  <button type="submit"  style={{
+                width: '50%',
+                padding: '10px',
+                borderRadius: '15px',
+                border: 'none',
+                backgroundColor: '#0F5132',
+                color: '#fff',
+                fontSize: '16px',
+                cursor: 'pointer',
+              }}>Request OTP</button>
                 </form>
               )}
 
               {/* Reset Password Form */}
               {otpSent && (
-                <form onSubmit={handleResetPassword}>
+                <form onSubmit={handleResetPassword}             style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}
+>
                   <div>
-      <label htmlFor="emailForReset">Email:</label>
+      <label htmlFor="emailForReset"                 style={{ fontSize: '14px', marginBottom: '5px', display: 'block' }}
+      >Email:</label>
       <input
         type="email"
         id="emailForReset"
@@ -352,10 +425,19 @@ return (
         value={otpFormData.emailForReset} // New state for email field
         onChange={handleOTPChange}
         required
+        style={{
+          width: '100%',
+          padding: '10px',
+          borderRadius: '5px',
+          border: '1px solid #ccc',
+          fontSize: '14px',
+        }}
       />
     </div>
                   <div>
-                    <label htmlFor="otpCode">OTP:</label>
+                    <label htmlFor="otpCode"                 style={{ fontSize: '14px', marginBottom: '5px', display: 'block' }}
+                    >OTP:</label>
+
                     <input
                       type="text"
                       id="otpCode"
@@ -363,10 +445,18 @@ return (
                       value={otpFormData.otp}
                       onChange={handleOTPChange}
                       required
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: '5px',
+                        border: '1px solid #ccc',
+                        fontSize: '14px',
+                      }}
                     />
                   </div>
                   <div>
-                    <label htmlFor="newPassword">New Password:</label>
+                    <label htmlFor="newPassword"                 style={{ fontSize: '14px', marginBottom: '5px', display: 'block' }}
+                    >New Password:</label>
                     <input
                       type="password"
                       id="newPassword"
@@ -374,12 +464,36 @@ return (
                       value={otpFormData.newPassword}
                       onChange={handleOTPChange}
                       required
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: '5px',
+                        border: '1px solid #ccc',
+                        fontSize: '14px',
+                      }}
                     />
                   </div>
-                  <button type="submit">Reset Password</button>
+                  <button type="submit"  style={{
+                width: '50%',
+                padding: '10px',
+                borderRadius: '15px',
+                border: 'none',
+                backgroundColor: '#0F5132',
+                color: '#fff',
+                fontSize: '16px',
+                cursor: 'pointer',
+              }}>Reset Password</button>
                 </form>
               )}
-              <button onClick={() => setShowOTPForm(false)}>Back to Sign In</button>
+              <button onClick={() => setShowOTPForm(false)}  style={{
+            marginTop: '10px',
+            background: 'none',
+            color: '#0F5132',
+            border: 'none',
+            cursor: 'pointer',
+            textDecoration: 'underline',
+            fontSize: '14px',
+          }}>Back to Sign In</button>
             </div>
           )}
         </div>
