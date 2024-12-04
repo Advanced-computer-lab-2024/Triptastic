@@ -13,7 +13,7 @@ const {createTourGuideInfo,createTourGuide,getTouristReportForItinerary,filterIt
 const {updateTourGuide}=require("./Routes/tourGuideController");
 const {getTourGuide}=require("./Routes/tourGuideController");
 const {createItinerary,getItinerary,updateItinerary,deleteItinerary,getTouristItinerary,createTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG}=require("./Routes/tourGuideController");
-const {changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide,deactivateItinrary,activateItinrary,getFilteredItineraries,filterByItinerary}=require("./Routes/tourGuideController");
+const {resetPasswordTG,requestOTPTG,changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide,deactivateItinrary,activateItinrary,getFilteredItineraries,filterByItinerary}=require("./Routes/tourGuideController");
 
 //Guest
 const {viewAllHistoricalPlacesGuest, viewAllItinerariesGuest,viewAllUpcomingActivitiesGuest,filterActivitiesGuest,filterHistoricalLocationsByTagsGuest,filterMuseumsByTagsGuest,viewAllMuseumsGuest}=require("./Routes/guestController");
@@ -221,6 +221,8 @@ app.get("/filterItinerariesByMonth", filterItinerariesByMonth);
 app.post('/loginTourGuide',loginTourGuide);
 app.get('/getFilteredItineraries',getFilteredItineraries);
 app.get('/filterByItinerary',filterByItinerary);
+app.post('/requestOTPTG',requestOTPTG);
+app.post('/resetPasswordTG',resetPasswordTG); 
 
 //Advertiser
 app.get("/getTouristReportForActivity/:activityId",getTouristReportForActivity);

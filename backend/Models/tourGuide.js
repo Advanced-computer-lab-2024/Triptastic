@@ -14,6 +14,18 @@ const tourGuideSchema = new Schema({
     type: String,
     required: true,
   },
+  otp: {
+    type: String,
+    default: null,
+  },
+  otpExpiry: {
+    type: Date,
+    default: null,
+  },
+  createdAt: { 
+    type: Date, 
+    default: Date.now, // Automatically add creation date 
+  },
   mobileNumber: {
     type: Number,
     default: null,

@@ -7,6 +7,7 @@ const { default: mongoose } = require('mongoose');
 const ItinBookingModel = require('../Models/itinbookings.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 const createTourGuide = async (req, res) => {
   const { Username, Email, Password } = req.body;
   const idDocument = req.files?.Id?.[0]?.path || null;
@@ -75,6 +76,80 @@ const loginTourGuide = async (req, res) => {
       res.status(500).json({ error: 'Something went wrong. Please try again later.' });
   }
 };
+
+const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
+
+const requestOTPTG = async (req, res) => {
+  const { Email } = req.body;
+
+  try {
+    const tourGuide = await tourGuideModel.findOne({ Email });
+      if (!tourGuide) {
+          return res.status(404).json({ error: 'Tour Guide not found' });
+      }
+
+    const otp = generateOTP();
+
+    // Save the OTP and expiration in the database
+    tourGuide.otp = otp;
+    tourGuide.otpExpiry = Date.now() + 10 * 60 * 1000; // Valid for 10 minutes
+    await tourGuide.save();
+
+    // Send OTP to email
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'malook25062003@gmail.com',
+        pass: 'sxvo feuu woie gpfn',
+      },
+    });
+
+    const mailOptions = {
+      from: 'malook25062003@gmail.com',
+      to: Email,
+      subject: 'Your OTP for Password Reset',
+      text: `Your OTP is ${otp}. It is valid for 10 minutes.`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: 'OTP sent to email' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to send OTP' });
+  }
+};
+
+const resetPasswordTG = async (req, res) => {
+  const { Email, otp, newPassword } = req.body;
+
+  try {
+    const tourist = await tourGuideModel.findOne({ Email });
+    if (!tourist) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (tourist.otp !== otp || Date.now() > tourist.otpExpiry) {
+      return res.status(400).json({ error: 'Invalid or expired OTP' });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the password and clear the OTP fields
+    tourist.Password = hashedPassword;
+    tourist.otp = null;
+    tourist.otpExpiry = null;
+    await tourist.save();
+
+    res.status(200).json({ message: 'Password reset successful' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to reset password' });
+  }
+};
+
+
 
 const createTourGuideInfo = async (req, res) => {
    const { Username, mobileNumber, yearsOfExperience, previousWork } = req.body;
@@ -573,6 +648,6 @@ const settleDocsTourGuide = async (req, res) => {
  
  
  
- module.exports = {createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG
+ module.exports = {resetPasswordTG,requestOTPTG,createTourGuideInfo,getTourGuide,updateTourGuide,createTourGuide,createItinerary,getItinerary,updateItinerary,deleteItinerary,createTouristItinerary,getTouristItinerary,updateTouristItinerary,deleteTouristItinerary,getMyItineraries,getMyTouristItineraries,requestAccountDeletionTourG
    ,changePasswordTourGuide,getPendingTourGuides,settleDocsTourGuide,deactivateItinrary,activateItinrary,getTouristReportForItinerary,filterItinerariesByMonth,loginTourGuide,getFilteredItineraries,filterByItinerary};
  
