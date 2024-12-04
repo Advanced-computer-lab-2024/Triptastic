@@ -210,7 +210,7 @@ return (
     {/* Sign-Up Form */}
     {isSignUp && (
       <div className={`${styles.formContainer} ${styles.signUp} ${isSignUp ? styles.active : ''}`}>
-        <h1>Create Account</h1>
+        <h2>Create Account</h2>
         {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
         {successMessage && <p className={styles.successMessage}>{successMessage}</p>}
         <form onSubmit={handleSignUpSubmit}>
