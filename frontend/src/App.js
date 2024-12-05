@@ -144,7 +144,7 @@ function App() {
             <Route path="/preftags" element={<Preftags />} />
             <Route path="/createTransportation" element={<CreateTransportation />} />
             <Route path="/category" element={<Category />} />
-            <Route path="/dvertiserReport" element={<AdvertiserReport />} />
+            <Route path="/advertiserReport" element={<AdvertiserReport />} />
             <Route path="/sellerReport" element={<SellerReport />} />
             <Route path="/my-itineraries" element={<TourGItinerary />} />
             <Route path="/adminReport" element={<AdminReport />} />
