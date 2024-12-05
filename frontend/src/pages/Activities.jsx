@@ -899,10 +899,6 @@ const styles = {
     flexWrap: 'wrap',
   },
 
-
-
-
-
 container: {
   maxWidth: '1200px',
       margin: '0 auto',

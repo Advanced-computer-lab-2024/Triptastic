@@ -958,11 +958,11 @@ return (
                   borderRadius: '5px',
                   padding: '10px',
                   borderBottom: '1px solid #f0f0f0',
-                  fontSize: '14px',
+                  fontSize: '10px',
                 }}
               >
                 <MdNotificationImportant
-                  size={20}
+                     size={50}
                   style={{ marginRight: '10px', color: '#ff9800' }}
                 />
                 <p>{notification.message}</p>
@@ -1714,12 +1714,13 @@ const styles = {
     fontWeight: 'bold',
   },
   notificationItem: {
+    padding: '10px',
    
     borderBottom: '1px solid #ddd',
     padding: '20px',
     textAlign: 'center',
     color: '#888',
-    fontSize: '14px',
+    fontSize: '5px',
   },
   notificationDate: {
     fontSize: '12px',

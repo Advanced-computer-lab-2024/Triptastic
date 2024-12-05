@@ -636,7 +636,7 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
           style={styles.profileIcon}
           onClick={toggleModal} // Open modal on click
         />
-      </header>
+     
   
     {/* Notification Bell Icon */}
  
@@ -644,21 +644,21 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
       {/* Notification Count */}
       {notifications && notifications.length > 0 && (
         <span
-          style={{
-            position: 'absolute',
-            top: -5,
-            right: -5,
-            backgroundColor: '#ff4d4d',
-            color: 'white',
-            borderRadius: '50%',
-            width: '20px',
-            height: '20px',
-            fontSize: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
-          }}
+        style={{
+          position: 'absolute',
+          top: 0,
+            right: 100,
+          backgroundColor: '#ff4d4d',
+          color: 'white',
+          borderRadius: '50%',
+          width: '20px',
+          height: '20px',
+          fontSize: '12px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+        }}
         >
           {notifications.length}
         </span>
@@ -692,6 +692,7 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
               <li
                 key={notification.id}
                 style={{
+                  
                   display: 'flex',
                   flexDirection: 'row', // Align icon and text horizontally
                   alignItems: 'flex-start', // Align icon with the top of the text
@@ -701,12 +702,12 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
                   padding: '10px', // Add padding inside each item
                   borderBottom: '1px solid #f0f0f0',
                   padding: '10px',
-                  fontSize: '14px',
+                  fontSize: '10px',
                 }}
               >
                 <MdNotificationImportant
                   size={20}
-                  style={{ marginRight: '10px', color: '#ff9800' }}
+                  style={{marginRight: '10px', color: '#ff9800' }}
                 />
                 <div style={{ flex: 1 }}>
                   <p style={{ margin: 0, fontWeight: '500' }}>{notification.message}</p>
@@ -740,6 +741,7 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
           ) : null}
         </div>
       )}
+       </header>
 
    {/* Add Product Section */}
    <div style={styles.card}>
