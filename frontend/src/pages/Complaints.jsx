@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import './Complaints.css'; // Import the CSS file
 import {FaArrowLeft} from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import {FaTag,FaUser,FaBox, FaExclamationCircle, FaHeart, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
+import image from '../images/image.png';
 
 const Complaints = () => {
   const [complaints, setComplaints] = useState([]);
@@ -55,12 +57,12 @@ const Complaints = () => {
           body: JSON.stringify({ content: replyText, replier: 'Admin' }),
         }
       );
-
+  
       if (response.ok) {
         alert('Reply submitted successfully');
-        setReplyText('');
-        setActiveComplaintId(null);
-        fetchData();
+        setReplyText(''); // Clear the reply text
+        setActiveComplaintId(null); // Close the reply form
+        fetchData(); // Refresh the complaints data
       } else {
         const result = await response.json();
         alert(`Failed to submit reply: ${result.error}`);
@@ -69,7 +71,7 @@ const Complaints = () => {
       console.error('Error submitting reply:', error);
     }
   };
-
+  
   const updateComplaintStatus = async () => {
     // e.preventDefault();
     setUpdateStatusLoading(true);
@@ -100,34 +102,6 @@ const Complaints = () => {
     }
   };
 
-  // const fetchComplaintDetails = async (e) => {
-  //   e.preventDefault();
-  //   setComplaintLoading(true);
-  //   setComplaintError('');
-  //   setComplaintDetails(null);
-  
-  //   try {
-  //     const response = await fetch(`http://localhost:8000/getComplaintDetails/${complaintIdToSearch.trim()}`, {
-  //       method: 'GET',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //     });
-  
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       setComplaintDetails(data); // Store the fetched complaint details
-  //     } else {
-  //       const errorData = await response.json();
-  //       setComplaintError(errorData.error || 'Complaint not found.');
-  //     }
-  //   } catch (error) {
-  //     setComplaintError('An error occurred while fetching the complaint details.');
-  //     console.error(error);
-  //   } finally {
-  //     setComplaintLoading(false);
-  //   }
-  // };
   const handleViewDetails = async (id) => {
     if(selectedComplaintId !=id){
     setSelectedComplaintId(id);
@@ -141,82 +115,103 @@ const Complaints = () => {
   
   return (
     <div className="complaints-container">
-        <FaArrowLeft 
-    onClick={() => navigate('/adminPage')}
-    style={{
-      cursor: 'pointer', 
-      fontSize: '24px', 
-      color: '#0F5132' // Match your theme
-    }} 
-  />
-      <h2 className="page-heading">Complaints Management</h2>
- {/* View Complaint Details Section */}
- {/* <div className="complaint-card">
-        <h3 className="card-title">View Complaint Details</h3>
-        <form onSubmit={fetchComplaintDetails} className="form">
-          <div className="form-group">
-            <label>Complaint ID:</label>
-            <input
-              type="text"
-              value={complaintIdToSearch}
-              onChange={(e) => setComplaintIdToSearch(e.target.value)}
-              required
-              placeholder="Enter Complaint ID"
-            />
-          </div>
-          <button type="submit" className="primary-button" disabled={complaintLoading}>
-            {complaintLoading ? "Searching..." : "Get Complaint Details"}
-          </button>
-        </form>
-        {complaintError && <p className="error-text">{complaintError}</p>}
-        {complaintDetails && (
-          <div className="complaint-details">
-            <p><strong>Title:</strong> {complaintDetails.title}</p>
-            <p><strong>Body:</strong> {complaintDetails.body}</p>
-            <p><strong>Date:</strong> {new Date(complaintDetails.date).toLocaleDateString()}</p>
-            <p><strong>Username:</strong> {complaintDetails.username}</p>
-            <p><strong>Status:</strong> {complaintDetails.status}</p>
-          </div>
-        )}
-      </div> */}
+    {/* Header */}
+    <header style={styles.header}>
+      <div style={styles.logoContainer}>
+        <img src={image} alt="Logo" style={styles.logo} />
+      </div>
+      <h1 style={styles.title2}>Complaints Management</h1>
+    </header>
 
-       {/* Update Complaint Status Section
-       <div className="complaint-card">
-        <h3 className="card-title">Update Complaint Status</h3>
-        <form onSubmit={updateComplaintStatus} className="form">
-          <div className="form-group">
-            <label>Complaint ID:</label>
-            <input
-              type="text"
-              value={complaintIdToUpdate}
-              onChange={(e) => setComplaintIdToUpdate(e.target.value)}
-              required
-              placeholder="Enter Complaint ID"
-            />
-          </div>
-          <div className="form-group">
-            <label>Status:</label>
-            <select
-              value={complaintStatus}
-              onChange={(e) => setComplaintStatus(e.target.value)}
-              required
-            >
-              <option value="pending">Pending</option>
-              <option value="resolved">Resolved</option>
-            </select>
-          </div>
-          <button
-            type="submit"
-            className="primary-button"
-            disabled={updateStatusLoading}
-          >
-            {updateStatusLoading ? "Updating..." : "Update Status"}
-          </button>
-        </form>
-        {updateStatusError && <p className="error-text">{updateStatusError}</p>}
-        {updateStatusMessage && <p className="success-text">{updateStatusMessage}</p>}
-      </div> */}
-      
+     {/* Sidebar */}
+ <div
+        style={styles.sidebar}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.width = '200px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '1')
+          );
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.width = '60px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '0')
+          );
+        }}
+      >
+
+<div style={styles.item} onClick={() => navigate('/adminPage')}>
+          <FaUser style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Admin Profile
+          </span>
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/PromoCodeForm')}>
+          <FaTag style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Promo Codes
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/Complaints')}>
+          <FaExclamationCircle style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Complaints
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/preftags')}>
+          <FaHeart style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Preference Tags
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/docs')}>
+          <FaFileAlt style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Documents
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/category')}>
+          <FaThList style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Categories
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/adminReport')}>
+          <FaBox  style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Sales Report
+          </span>   
+        </div>
+        <div style={styles.item} onClick={() => navigate('/DeletionRequest')}>
+          <FaTrashAlt  style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Deletion Requests
+          </span>   
+        </div>
+        <div style={styles.item} onClick={() => navigate('/AddProduct')}>
+          <FaPlus  style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Add Product
+          </span>   
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/EditProducts')}>
+          <FaEdit   style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Edit Products
+          </span>   
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/flagged')}>
+          <FaFlag   style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Flag Events
+          </span>   
+        </div>
+      </div>
+
+      <h2 className="page-heading"></h2>
       {/* Dropdown for Sorting and Filtering */}
       <div className="dropdown-container">
         <select
@@ -238,100 +233,300 @@ const Complaints = () => {
         </select>
       </div>
 
-      <div className="complaints-list">
-        {complaints.map((complaint) => (
-          <div key={complaint._id} className="complaint-card">
-            <div className="complaint-header">
-              <h3 className="complaint-title">{complaint.title}</h3>
-              <p className="complaint-date">
-                <strong>Date:</strong> {new Date(complaint.date).toLocaleDateString()}
-              </p>
-              <p
-                className={`complaint-status ${
-                  complaint.status === 'resolved' ? 'status-resolved' : 'status-pending'
-                }`}
-              >
-                <strong>Status:</strong> {complaint.status}
-              </p>
-            </div>
+<div className="complaints-list">
+  {complaints.map((complaint) => (
+    <div key={complaint._id} className="complaint-card">
+      {/* Header */}
+      <div className="complaint-header">
+        <h3 className="complaint-title">{complaint.title}</h3>
+        <p className="complaint-date">
+          <strong>Date:</strong> {new Date(complaint.date).toLocaleDateString()}
+        </p>
+        <p
+          className={`complaint-status ${
+            complaint.status === 'resolved' ? 'status-resolved' : 'status-pending'
+          }`}
+        >
+          <strong>Status:</strong> {complaint.status}
+        </p>
+      </div>
 
-            <button
-              className="reply-button"
-              onClick={() => handleReplyClick(complaint._id)}
-            >
-              Reply
-            </button>
-            <button
-              className="reply-button"
-              onClick={() => handleViewDetails(complaint._id)}
-            >
-              View details
-            </button>
-            {selectedComplaintId === complaint._id && (
-              <div>
-              <p>Username:{complaint.username}</p>
-              <p>{complaint.body}</p>
-              <label>Status:</label>
-            <select
-              value={complaintStatus}
-              onChange={(e) => setComplaintStatus(e.target.value)}
-              required
-            >
-              <option value="pending">Pending</option>
-              <option value="resolved">Resolved</option>
-            </select>
-              <button
-              className="reply-button"
-              onClick={() => handleUpdateStatus()}
-            >Update status</button>
-              </div>    
-              )}
+      {/* Buttons */}
+      <div className="complaint-actions">
+        <button
+          className="reply-button"
+          onClick={() => handleReplyClick(complaint._id)}
+        >
+          Reply
+        </button>
+        <button
+          className="details-button"
+          onClick={() => handleViewDetails(complaint._id)}
+        >
+          View Details
+        </button>
+      </div>
 
-            {activeComplaintId === complaint._id && (
-              <div className="reply-form">
-                <textarea
-                  value={replyText}
-                  onChange={(e) => setReplyText(e.target.value)}
-                  placeholder="Write your reply here"
-                  className="reply-textarea"
-                />
-                <button
-                  onClick={() => handleReplySubmit(complaint._id)}
-                  className="submit-reply-button"
-                >
-                  Submit Reply
-                </button>
-              </div>
-            )}
+{/* View Details Section */}
+{selectedComplaintId === complaint._id && (
+  <div className="complaint-details">
+    <h4 className="details-title">Complaint Details</h4>
+    <div className="details-body">
+      <p><strong>Username:</strong> {complaint.username}</p>
+      <p><strong>Body:</strong> {complaint.body}</p>
+    </div>
+    <div className="details-status">
+      <label className="status-label"><strong>Status:</strong></label>
+      <select
+        value={complaintStatus}
+        onChange={(e) => setComplaintStatus(e.target.value)}
+        className="status-dropdown"
+        required
+      >
+        <option value="pending">Pending</option>
+        <option value="resolved">Resolved</option>
+      </select>
+      <button
+        className="update-status-button"
+        onClick={() => handleUpdateStatus()}
+      >
+        Update Status
+      </button>
+    </div>
+  </div>
+)}
 
-            {complaint.replies && complaint.replies.length > 0 && (
-              <div className="replies-section">
-                <h4>Replies:</h4>
-                <ul>
-                  {complaint.replies.map((reply, index) => (
-                    <li key={index} className="reply-item">
-                      <p>
-                        <strong>Reply:</strong> {reply.content}
-                      </p>
-                      <p>
-                        <strong>Date:</strong>{' '}
-                        {new Date(reply.date).toLocaleDateString()}
-                      </p>
-                      {reply.replier && (
-                        <p>
-                          <strong>Replier:</strong> {reply.replier}
-                        </p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+      {/* Reply Section */}
+      {activeComplaintId === complaint._id && (
+  <div className="reply-form">
+    <textarea
+      value={replyText}
+      onChange={(e) => setReplyText(e.target.value)}
+      placeholder="Write your reply here"
+      className="reply-textarea"
+    />
+    <button
+      onClick={() => handleReplySubmit(complaint._id)}
+      className="submit-reply-button"
+    >
+      Submit Reply
+    </button>
+  </div>
+)}
+
+
+
+
+{complaint.replies && complaint.replies.length > 0 && (
+  <div className="replies-section-horizontal">
+    <h4 className="replies-title">Replies</h4>
+    <div className="replies-container">
+      {complaint.replies.map((reply, index) => (
+        <div key={index} className="reply-card">
+          <p><strong>Replier:</strong> {reply.replier || 'N/A'}</p>
+          <p><strong>Date:</strong> {new Date(reply.date).toLocaleDateString()}</p>
+          <p className="reply-content">{reply.content}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
           </div>
         ))}
       </div>
     </div>
   );
 };
+
+const styles = {
+
+  container: {
+    maxWidth: '800px',
+    margin: '20px auto',
+    padding: '20px',
+    backgroundColor: '#f4f4f4',
+    borderRadius: '10px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  },
+      
+  header: {
+    height:'60px',
+    position: 'fixed', // Make the header fixed
+    top: '0', // Stick to the top of the viewport
+    left: '0',
+    width: '100%', // Make it span the full width of the viewport
+    backgroundColor: '#0F5132', // Green background
+    color: 'white', // White text
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '10px 20px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for depth
+    zIndex: '1000', // Ensure it appears above other content
+  },
+  logoContainer: {
+    marginBottom: '10px', // Space between the logo and the title
+  },
+  logo: {
+    height: '60px',
+    width: '70px',
+    borderRadius: '10px',
+  
+  },
+  title2: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: 'white',
+    position: 'absolute', // Position the title independently
+    top: '50%', // Center vertically
+    left: '50%', // Center horizontally
+    transform: 'translate(-50%, -50%)', // Adjust for element's size
+    margin: '0',
+  },
+  profileIcon: {
+    fontSize: '40px',
+    color: 'white',
+    cursor: 'pointer',
+  },
+//header
+    heading: {
+fontSize: '24px',
+fontWeight: 'bold',
+marginBottom: '20px',
+color: '#0F5132', // Green theme
+textAlign: 'center',
+},
+form: {
+display: 'flex',
+flexDirection: 'column',
+gap: '15px',
+maxWidth: '700px',
+margin: '0 auto',
+backgroundColor: '#f9f9f9',
+padding: '20px',
+borderRadius: '10px',
+boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+},
+formGroup: {
+display: 'flex',
+flexDirection: 'column',
+gap: '5px',
+},
+item: {
+padding: '10px 0',
+},
+label: {
+fontSize: '16px',
+fontWeight: 'bold',
+color: '#555',
+},
+input: {
+padding: '10px',
+border: '1px solid #ccc',
+borderRadius: '5px',
+fontSize: '14px',
+},
+button: {
+padding: '12px',
+fontSize: '16px',
+fontWeight: 'bold',
+backgroundColor: '#0F5132',
+color: '#fff',
+border: 'none',
+borderRadius: '5px',
+cursor: 'pointer',
+transition: 'background-color 0.3s ease',
+},
+buttonHover: {
+backgroundColor: '#155724', // Darker green on hover
+},
+icon: {
+  fontSize: '24px',
+  marginLeft: '15px', // Move icons slightly to the right
+  color: '#fff', // Icons are always white
+},
+//header
+  actionButtons: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    marginTop: '10px',
+  },
+  productList: {
+    listStyleType: 'none',
+    padding: 0,
+  },
+  productItem: {
+    backgroundColor: '#fff',
+    padding: '20px',
+    marginBottom: '10px',
+    borderRadius: '10px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  },
+  productName: {
+    fontSize: '20px',
+    color: '#4CAF50',
+  },
+  productImage: {
+    width: '100%',
+    maxWidth: '400px',
+    height: '300px',
+    objectFit: 'cover',
+    borderRadius: '10px',
+  },
+  title: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  imagePreview: {
+    maxWidth: '100%',
+    borderRadius: '10px',
+    marginTop: '10px',
+  },
+  addButton: {
+    marginTop: '10px',
+    padding: '10px 20px',
+    backgroundColor: '#4CAF50',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+    //sidebar
+    sidebar: {
+      position: 'fixed',
+      top: '60px',
+      left: 0,
+      height: '100vh',
+      width: '50px', // Default width when collapsed
+      backgroundColor: 'rgba(15, 81, 50, 0.85)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-start', // Ensure alignment starts from the left
+      padding: '10px 0',
+      overflowX: 'hidden',
+      transition: 'width 0.3s ease',
+      zIndex: 1000,
+    },
+    item: {
+      padding: '10px 0',
+    },
+    sidebarExpanded: {
+      width: '200px', // Width when expanded
+    },
+
+    label: {
+      cursor: 'pointer',
+      fontSize: '16px',
+      fontWeight: 'bold',
+      color: '#fff',
+      opacity: 0, // Initially hidden
+      whiteSpace: 'nowrap', // Prevent label text from wrapping
+      transition: 'opacity 0.3s ease',
+    },
+    //
+}
 
 export default Complaints;
