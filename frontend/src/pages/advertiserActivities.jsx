@@ -27,6 +27,7 @@ const AdvertiserActivity = () => {
     name: '',
     Advertiser: '', // This will be set in handleCreate and handleUpdate
   });
+  const [showDeletePopup, setShowDeletePopup] = useState(null);
 
   const [activities, setActivities] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -248,7 +249,7 @@ const handleGetActivity = async (e, Advertiser,name) => {
  
 
   const handleDeleteActivity = async (e, advertiser, name) => {
-    e.preventDefault();
+    if (e) e.preventDefault(); // Only call preventDefault if e is defined
     try {
       const response = await fetch(`http://localhost:8000/deleteActivity?Advertiser=${advertiser}&name=${name}`, {
         method: 'DELETE',
@@ -561,14 +562,49 @@ const handleGetActivity = async (e, Advertiser,name) => {
         </button>
         <button
           style={{ ...styles.button, ...styles.deleteButton }}
-          onClick={(e) => handleDeleteActivity(e, activity.Advertiser, activity.name)}
-        >
+          onClick={() => setShowDeletePopup(activity._id)} // Show confirmation popup
+          >
           <FaTrash /> Delete
         </button>
       </div>
     </li>
   ))}
 </ul>
+{/* Confirmation Popup */}
+{showDeletePopup && (
+  <div style={styles.popupOverlay}>
+    <div style={styles.popup}>
+      <p style={styles.popupText}>
+        Are you sure you want to delete this activity?
+      </p>
+      <div style={styles.popupButtons}>
+        <button
+          style={styles.confirmButton}
+          onClick={() => {
+            const activityToDelete = activities.find(
+              (act) => act._id === showDeletePopup
+            );
+            handleDeleteActivity(
+              null, // Pass null because there's no event object in this case
+              activityToDelete.Advertiser,
+              activityToDelete.name
+            );
+            setShowDeletePopup(null); // Close the popup
+          }}
+        >
+          Yes
+        </button>
+        <button
+          style={styles.cancelButton}
+          onClick={() => setShowDeletePopup(null)} // Close popup without deleting
+        >
+          No
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
            {/* Modal for Editing */}
            {isModalOpen && (
   <div style={styles.modalOverlay}>
@@ -1198,8 +1234,21 @@ const styles={
     display: "flex",
     justifyContent: "space-around",
     gap: "10px",
+    fontSize: "14px",
+    padding: "10px 20px",
+    borderRadius: "5px",
+    border: "none",
+    cursor: "pointer",
   },
-  
+  cancelButton: {
+    backgroundColor: "#dc3545",
+    color: "#fff",
+    padding: "10px 20px",
+    borderRadius: "5px",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "14px",
+  },
  
 }
 
