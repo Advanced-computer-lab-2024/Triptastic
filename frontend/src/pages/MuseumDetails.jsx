@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
-import { FaMapMarkerAlt, FaClock, FaUserTie, FaTag, FaTicketAlt, FaArrowLeft } from 'react-icons/fa';
+import {  FaClock, FaUserTie, FaTag, FaTicketAlt, FaArrowLeft } from 'react-icons/fa';
 import romanImage from '../images/roman.jpg';
 import museumHistoryImage from '../images/museumhistory.jpg';
 import museummImage from '../images/museumm.jpg';
 import buckinghamImage from '../images/buckingham.jpg';
 import fasImage from '../images/fas.jpg';
 import pyramidsImage from '../images/pyramids.jpg';
+import { FaBars, FaTimes,FaHome, FaUser, FaMapMarkerAlt } from "react-icons/fa"; // For menu icons
+import {FaUserCircle, FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
+  FaClipboardList,
+  FaStar, } from "react-icons/fa";
+import logo from '../images/image.png'; // Adjust the path based on your folder structure
+
 
 const MuseumDetail = () => {
   const { Name } = useParams();
@@ -39,16 +45,97 @@ const MuseumDetail = () => {
   if (!museum) return <p style={styles.noMuseum}>No museum found.</p>;
 
   return (
-    <div style={styles.container}>
+<div style={styles.container}>
+
       {/* Header Section */}
-      <div style={styles.header}>
-  <FaArrowLeft
-    style={styles.backButton}
-    onClick={() => navigate('/museums')} // Navigate back to Museums page
-    title="Back to Museums"
-  />
-  <h1 style={styles.title}>{museum.Name}</h1>
-</div>
+    <header style={styles.header}>
+  <div style={styles.logoContainer}>
+    <img src={logo} alt="Logo" style={styles.logo} />
+  </div>
+  <h1 style={{fontSize:'24px',margintop:'20px',marginRight:'700px'}}>Museums</h1>  
+
+
+</header>
+
+ {/* Sidebar */}
+ <div
+        style={styles.sidebar}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.width = '200px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '1')
+          );
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.width = '60px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '0')
+          );
+        }}
+      >
+        <div style={styles.item} onClick={() => navigate('/historical-locations')}>
+          <FaLandmark style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Historical Sites
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/museums')}>
+          <FaUniversity style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Museums
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/products')}>
+          <FaBox style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Products
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/itineraries')}>
+          <FaMap style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Itineraries
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/activities')}>
+          <FaRunning style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Activities
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-flights')}>
+          <FaPlane style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Book Flights
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-hotels')}>
+          <FaHotel style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Book a Hotel
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-transportation')}>
+          <FaBus style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Transportation
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
+          <FaClipboardList style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Past Orders
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
+          <FaStar style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Review Activities
+          </span>
+        </div>
+      </div>
+
+      
 
 
       <div style={styles.imageContainer}>
@@ -80,17 +167,17 @@ const MuseumDetail = () => {
 
         <div style={styles.details}>
           <div style={styles.detailItem}>
-            <FaMapMarkerAlt style={styles.icon} />
+            <FaMapMarkerAlt style={styles.icon2} />
             <span style={styles.detailLabel}>Location:</span>
             <span style={styles.detailValue}>{museum.Location}</span>
           </div>
           <div style={styles.detailItem}>
-            <FaClock style={styles.icon} />
+            <FaClock style={styles.icon2} />
             <span style={styles.detailLabel}>Opening Hours:</span>
             <span style={styles.detailValue}>{museum.OpeningHours}</span>
           </div>
           <div style={styles.detailItem}>
-            <FaUserTie style={styles.icon} />
+            <FaUserTie style={styles.icon2} />
             <span style={styles.detailLabel}>Tourism Governor:</span>
             <span style={styles.detailValue}>{museum.TourismGovernor}</span>
           </div>
@@ -130,10 +217,118 @@ const MuseumDetail = () => {
         </div>
       </div>
     </div>
+
+
   );
 };
 
 const styles = {
+  container2: {
+    marginTop:'60px',
+    fontFamily: 'Arial, sans-serif',
+  },
+ 
+
+  header: {
+    height:'60px',
+    position: 'fixed', // Make the header fixed
+    top: '0', // Stick to the top of the viewport
+    left: '0',
+    width: '100%', // Make it span the full width of the viewport
+    backgroundColor: '#0F5132', // Green background
+    color: 'white', // White text
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '10px 20px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for depth
+    zIndex: '1000', // Ensure it appears above other content
+  },
+  sidebar: {
+    position: 'fixed',
+    top: '60px',
+    left: 0,
+    height: '100vh',
+    width: '50px', // Default width when collapsed
+    backgroundColor: 'rgba(15, 81, 50, 0.85)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start', // Ensure alignment starts from the left
+    padding: '10px 0',
+    overflowX: 'hidden',
+    transition: 'width 0.3s ease',
+    zIndex: 1000,
+  },
+  sidebarExpanded: {
+    width: '200px', // Width when expanded
+  },
+  iconContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start', // Align items to the left
+    padding: '10px',
+    width: '100%', // Take full width of the sidebar
+    color: '#fff',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease',
+  },
+  item: {
+ 
+    padding: '10px 0',
+    
+  },
+  iconContainerHover: {
+    backgroundColor: '#084B24', // Background on hover
+  },
+  icon: {
+    fontSize: '24px',
+    marginLeft: '15px', // Move icons slightly to the right
+    color: '#fff', // Icons are always white
+  },
+  label: {
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#fff',
+    opacity: 0, // Initially hidden
+    whiteSpace: 'nowrap', // Prevent label text from wrapping
+    transition: 'opacity 0.3s ease',
+  },
+  labelVisible: {
+    opacity: 1, // Fully visible when expanded
+  },
+  labelVisible: {
+    opacity: 1, // Fully visible when expanded
+  },
+  logoContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  logo: {
+    height: '60px',
+    width: '70px',
+    borderRadius: '10px',
+  },
+  profileIcon:{
+    fontSize: '40px',
+    cursor: 'pointer',
+
+  },
+ 
+  logoContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  logo: {
+    height: '60px',
+    width: '70px',
+    borderRadius: '10px',
+  },
+  profileIcon:{
+    fontSize: '40px',
+    cursor: 'pointer',
+
+  },
   container: {
     display: 'flex',
     flexDirection: 'column',
@@ -145,26 +340,12 @@ const styles = {
     borderRadius: '10px',
     boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
     fontFamily: 'Arial, sans-serif',
+    marginTop:'50px',
   },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center', // Center content in the header
-    marginBottom: '15px',
-    padding: '8px 0',
-    backgroundColor: '#0F5132',
-    color: 'white',
-    borderRadius: '10px',
-    width: '100%',
-    position: 'relative', // Required for absolute positioning of the back button
-  },
-  backButton: {
-    position: 'absolute',
-    left: '20px', // Position the button to the left of the header
-    fontSize: '24px',
-    color: 'white',
-    cursor: 'pointer',
-  },
+
+  
+
+  
   title: {
     fontSize: '22px',
     fontWeight: 'bold',
@@ -209,7 +390,7 @@ const styles = {
   detailValue: {
     color: '#333',
   },
-  icon: {
+  icon2: {
     fontSize: '18px',
     color: '#0F5132',
   },
@@ -228,10 +409,7 @@ const styles = {
     alignItems: 'center',
     gap: '10px',
   },
-  sectionIcon: {
-    fontSize: '18px',
-    color: '#0F5132',
-  },
+  
   divider: {
     border: 'none',
     borderTop: '1px solid #ddd',

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './signuptest.module.css'; // Import CSS module
 import background from '../images/back.webp'; // Replace with the path to your image
-
+import logo2 from "../images/image_transparent.png";
 
 function AuthPage() {
   const [selectedRole, setSelectedRole] = useState(""); // Track the selected role
@@ -51,7 +51,7 @@ function AuthPage() {
 
 
   const [signInFormData, setSignInFormData] = useState({
-    Email: '',
+    Username: '',
     Password: '',
   });
 
@@ -208,10 +208,10 @@ const handleLoginSubmit = async (e) => {
 
   // Prepare the login data for the request
   const loginDataList = [
-    { url: 'http://localhost:8000/loginTourist', data: { Email: signInFormData.Email, Password: signInFormData.Password } },
-    { url: 'http://localhost:8000/loginAdvertiser', data: { Email: signInFormData.Email, Password: signInFormData.Password } },
-    { url: 'http://localhost:8000/loginSeller', data: { Email: signInFormData.Email, Password: signInFormData.Password } },
-    { url: 'http://localhost:8000/loginTourGuide', data: { Email: signInFormData.Email, Password: signInFormData.Password } },
+    { url: 'http://localhost:8000/loginTourist', data: { Username: signInFormData.Username, Password: signInFormData.Password } },
+    { url: 'http://localhost:8000/loginAdvertiser', data: { Username: signInFormData.Username, Password: signInFormData.Password } },
+    { url: 'http://localhost:8000/loginSeller', data: { Username: signInFormData.Username, Password: signInFormData.Password } },
+    { url: 'http://localhost:8000/loginTourGuide', data: { Username: signInFormData.Username, Password: signInFormData.Password } },
     { url: 'http://localhost:8000/AdminLogin', data: signInFormData },
     { url: 'http://localhost:8000/tourismGovLogin', data: signInFormData }, // Added tourismGovLogin here
   ];
@@ -231,17 +231,37 @@ const handleLoginSubmit = async (e) => {
         if (loginDataList[i].url === 'http://localhost:8000/loginTourist') {
           localStorage.setItem('token', data.token);
           localStorage.setItem('context', 'tourist');
+          localStorage.setItem('Username', data.user.Username);
+          localStorage.setItem('Email', data.user.Email);
+          localStorage.setItem('Nationality', data.user.Nationality);
+          localStorage.setItem('DOB', data.user.DOB);
+          localStorage.setItem('Occupation', data.user.Occupation);
 
           navigate('/tourist-profile');
         } else if (loginDataList[i].url === 'http://localhost:8000/loginAdvertiser') {
           localStorage.setItem('token', data.token);
           localStorage.setItem('context', 'advertiser');
+          localStorage.setItem('Username', data.user.Username);
+          localStorage.setItem('Email', data.user.Email);
+          localStorage.setItem('Nationality', data.user.Nationality);
+          localStorage.setItem('DOB', data.user.DOB);
+          localStorage.setItem('Occupation', data.user.Occupation);
           navigate('/advertiser-profile');
         } else if (loginDataList[i].url === 'http://localhost:8000/loginSeller') {
           localStorage.setItem('context', 'seller');
+          localStorage.setItem('Username', data.user.Username);
+          localStorage.setItem('Email', data.user.Email);
+          localStorage.setItem('Nationality', data.user.Nationality);
+          localStorage.setItem('DOB', data.user.DOB);
+          localStorage.setItem('Occupation', data.user.Occupation);
           navigate('/seller-profile');
         } else if (loginDataList[i].url === 'http://localhost:8000/loginTourGuide') {
           localStorage.setItem('token', data.token);
+          localStorage.setItem('Username', data.user.Username);
+          localStorage.setItem('Email', data.user.Email);
+          localStorage.setItem('Nationality', data.user.Nationality);
+          localStorage.setItem('DOB', data.user.DOB);
+          localStorage.setItem('Occupation', data.user.Occupation);
           navigate('/tour-guide-profile');
         } else if (loginDataList[i].url === 'http://localhost:8000/AdminLogin') {
           localStorage.setItem('Username', formData.Username);
@@ -456,10 +476,15 @@ return (
   <div style={styles2.container}>
        <div style={styles2.overlay}></div>
        <header style={styles2.header}>
-         {/* Animated Welcome Message */}
-         <h1 style={styles2.title}>
-           Welcome to <span style={styles2.highlight}>{animatedText}</span>
-         </h1>
+        {/* Animated Welcome Message */}
+<div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+  <div style={styles2.logoContainer}>
+    <img src={logo2} alt="Logo" style={styles2.logo} />
+  </div>
+  <h1 style={styles2.title}>
+    Welcome to <span style={styles2.highlight}>{animatedText}</span>
+  </h1>
+</div>
         
 
          
@@ -768,13 +793,13 @@ return (
       }}
     >
       <label style={{ fontSize: '14px', marginBottom: '2px', display: 'block' }}>
-        Email:
+        Username:
       </label>
       <input
-        type="email"
-        name="Email"
-        placeholder="Email"
-        value={signInFormData.Email}
+        type="text"
+        name="Username"
+        placeholder="Username"
+        value={signInFormData.Username}
         onChange={handleSignInChange}
         required
         style={{
@@ -1016,7 +1041,23 @@ return (
          
          
          
-         
+         {/* Continue as Guest */}
+<div style={{ marginTop: "20px", textAlign: "center" }}>
+  <button
+    onClick={() => navigate("/Guest")}
+    style={{
+      padding: "10px 20px",
+      borderRadius: "15px",
+      border: "2px solid #0F5132",
+      backgroundColor: "transparent",
+      color: "white",
+      cursor: "pointer",
+      fontSize: "16px",
+    }}
+  >
+    Continue as Guest
+  </button>
+</div>
          
          
          
@@ -1027,6 +1068,16 @@ return (
 );
 }
 const styles2 = {
+  logoContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom:'70px',
+  },
+  logo: {
+    height: '40px',
+    width: '50px',
+    borderRadius: '10px',
+  },
     container: {
       position: 'relative',
       width: '100%',
