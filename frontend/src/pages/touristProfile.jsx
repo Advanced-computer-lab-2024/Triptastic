@@ -39,10 +39,11 @@ const TouristProfile = () => {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(''); // Initialize successMessage
   const [fetchedProduct, setFetchedProduct] = useState(null);//new
-  const [ratings, setRatings] = useState({});
-  const [comments, setComments] = useState({});
   const [ratingsI, setRatingsI] = useState({});
-  const [commentsI, setCommentsI] = useState({});
+const [commentsI, setCommentsI] = useState({});
+const [ratings, setRatings] = useState({});
+const [comments, setComments] = useState({});
+
   const [requestSent, setRequestSent] = useState(false); // Track if request was successfully sent
   const [waiting, setWaiting] = useState(false);
 
@@ -80,9 +81,10 @@ const TouristProfile = () => {
     shopping: false,
     budget: ''
   });
+  const [isPreferencesVisible, setIsPreferencesVisible] = useState(true);
+
   const navigate = useNavigate();
   useEffect(() => {
-    fetchItineraries();
     fetchNotifications();
 
       }, []);
@@ -296,37 +298,12 @@ const TouristProfile = () => {
   const toggleViewBookedActivites = () => {
     setShowingBookedActivities((prev) => !prev);
   }
-  const handleRatingChangeI = (itineraryId, value) => {
-    setRatingsI((prevRatings) => ({
-      ...prevRatings,
-      [itineraryId]: value,
-    }));
-  };
-
-  const handleCommentChangeI = (itineraryId, value) => {
-    setCommentsI((prevComments) => ({
-      ...prevComments,
-      [itineraryId]: value,
-    }));
-  };
 
   const handleViewBookedItineraries = () => {
     setShowingBookedItineraries(prev => !prev);
   };
 
-  const handleRatingChange = (itineraryId, value) => {
-    setRatings((prevRatings) => ({
-      ...prevRatings,
-      [itineraryId]: value,
-    }));
-  };
-
-  const handleCommentChange = (itineraryId, value) => {
-    setComments((prevComments) => ({
-      ...prevComments,
-      [itineraryId]: value,
-    }));
-  };
+ 
   const handleCurrencyChange = (event) => {
     fetchConversionRate(event.target.value);
   };
@@ -445,29 +422,42 @@ const TouristProfile = () => {
       console.error(error);
     }
   };
-  const fetchItineraries= async ()=>{
-    try{
-      const response = await fetch(`http://localhost:8000/getAllItineraries`, {
+  const fetchItineraries = async () => { 
+    try {
+      const response = await fetch('http://localhost:8000/getAllItineraries', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
+  
       if (response.ok) {
         const data = await response.json();
-        setItineraries(data);
+        console.log('Fetched Itineraries:', data);
+  
+        // Ensure data is an array
+        if (Array.isArray(data)) {
+          // Filter past itineraries here
+          filterPastItineraries(data);
+        } else {
+          console.error('Data fetched is not an array:', data);
+        }
+      } else {
+        console.error('Failed to fetch itineraries. Status:', response.status, response.statusText);
       }
+    } catch (error) {
+      console.error('Error during fetch:', error);
     }
-    catch (error) {
-      console.error(error);
-    }
-  }
+  };
+  
   const filterPastItineraries = (data) => {
     const today = new Date();
     const past = data.filter(itinerary => new Date(itinerary.DatesTimes) < today);
-    setPastItineraries(past);
+    setPastItineraries(past); // Store past itineraries
   };
-
+  
+  
+ 
   useEffect(() => {
     fetchItineraries();
   }, []);
@@ -501,14 +491,6 @@ const TouristProfile = () => {
     fetchTouristInfo();
     fetchComplaints(); // Fetch complaints when the component loads
   }, []);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value
-    }));
-  };
 
 
 
@@ -569,11 +551,7 @@ const TouristProfile = () => {
     }
     setLoading(false);
   };
-  
-  const handleFetchProduct = () => {
-    const productName = formData.productName; // Assuming there's an input for productName
-    fetchProductByName(productName);
-  };
+ 
 
   const handleSubmitComplaint = async (e) => {
     e.preventDefault();
@@ -642,24 +620,23 @@ const TouristProfile = () => {
     } finally {
       setLoading(false);
     }
-  }; 
-  const fetchBookedItineraries = async () => {
+  }; const fetchBookedItineraries = async () => {
     setLoading(true);
     const username = localStorage.getItem('Username');
-
+  
     if (!username) {
       setErrorMessage('Username not found in localStorage. Please log in again.');
       setLoading(false);
       return; // Exit if username is not found
     }
-
+  
     try {
       const response = await axios.get(`http://localhost:8000/getBookedItineraries?username=${username}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming token is stored in local storage
         },
       });
-
+  
       if (response.status === 200) {
         setBookedItineraries(response.data); // Store booked itineraries in state
       } else {
@@ -671,80 +648,163 @@ const TouristProfile = () => {
     } finally {
       setLoading(false);
     }
-  }; 
-  const submitFeedbackItinerary = async (Itinerary) => {
-    const username = localStorage.getItem('Username'); // Get the username from local storage
+  };
   
-    console.log("Submitting feedback for itinerary:", Itinerary);
+  const submitFeedbackItinerary = async (Itinerary) => {
+    const username = localStorage.getItem('Username');
+  
+    console.log("Submitting feedback for itinerary:", Itinerary); // Log itinerary details
   
     // Check if the itinerary is in the past
     const itineraryEndDate = new Date(Itinerary.DatesTimes);
     const currentDate = new Date();
   
-    // If the itinerary end date is in the future, prevent feedback submission
+    console.log("Itinerary end date:", itineraryEndDate); // Log end date
+    console.log("Current date:", currentDate); // Log current date
+  
     if (itineraryEndDate > currentDate) {
       setErrorMessage('You cannot submit feedback for an upcoming itinerary.');
       setSuccessMessage('');
       return;
     }
   
+    const rating = ratingsI[Itinerary._id];
+    const comment = commentsI[Itinerary._id];
+  
+    console.log("Rating for itinerary:", rating); // Log rating
+    console.log("Comment for itinerary:", comment); // Log comment
+  
+    if (!rating) {
+      setErrorMessage('Please provide a rating.');
+      return;
+    }
+  
     try {
-      const response = await axios.post(`http://localhost:8000/submitFeedbackItinerary?username=${username}`, {
-        Itinerary: Itinerary, // Send the itinerary ID
-        rating: ratingsI[Itinerary], // Ensure you are using the correct ID to get the rating
-        comment: commentsI[Itinerary], // Ensure you are using the correct ID to get the comment
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`, // Include authorization if needed
+      console.log("Submitting to server with rating:", rating, "and comment:", comment);
+  
+      const response = await axios.post(
+        `http://localhost:8000/submitFeedbackItinerary?username=${username}`,
+        {
+          itineraryId: Itinerary._id,
+          rating,
+          comment: comment || '',
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+  
+      console.log("Server response:", response.data); // Log server response
   
       if (response.status === 200) {
         setSuccessMessage('Feedback submitted successfully!');
         setErrorMessage('');
+  
+        // Clear rating and comment
+        setRatingsI((prev) => ({ ...prev, [Itinerary._id]: "" }));
+        setCommentsI((prev) => ({ ...prev, [Itinerary._id]: "" }));
       }
     } catch (err) {
+      console.error('Feedback submission error:', err); // Log error details
       setErrorMessage(err.response?.data?.message || 'Failed to submit feedback');
       setSuccessMessage('');
     }
   };
   const submitFeedback = async (Itinerary) => {
-    const tourGuideUsername = Itinerary.TourGuide;
     const username = localStorage.getItem('Username');
+    const tourGuideUsername = Itinerary.TourGuide; // This should be the tour guide's username, ensure it's valid
   
-    console.log("Submitting feedback for itinerary:", Itinerary);
+    console.log("Submitting tour guide feedback for itinerary:", Itinerary);
   
-    // Check if the itinerary is in the past
     const itineraryEndDate = new Date(Itinerary.DatesTimes);
     const currentDate = new Date();
   
-    // If the itinerary end date is in the future, prevent feedback submission
     if (itineraryEndDate > currentDate) {
       setErrorMessage('You cannot submit feedback for an upcoming itinerary.');
       setSuccessMessage('');
       return;
     }
   
+    const rating = ratings[Itinerary._id];
+    const comment = comments[Itinerary._id];
+  
+    if (!rating) {
+      setErrorMessage('Please provide a rating.');
+      return;
+    }
+  
     try {
-      const response = await axios.post(`http://localhost:8000/submitFeedback?username=${username}`, {
-        Itinerary: Itinerary,
-        rating: ratings[Itinerary],
-        comment: comments[Itinerary],
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+      console.log("Submitting to server with rating:", rating, "and comment:", comment);
+      const response = await axios.post(
+        `http://localhost:8000/submitFeedback?username=${username}`,
+        {
+          itineraryId: Itinerary._id,
+          tourGuideUsername: tourGuideUsername, // Pass the tour guide's username here
+          rating,
+          comment: comment || '', // If no comment, send an empty string
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`, // Use token for auth
+          },
+        }
+      );
   
       if (response.status === 200) {
+        console.log("Server response:", response.data);
         setSuccessMessage('Feedback submitted successfully!');
         setErrorMessage('');
+  
+        setRatings((prev) => ({ ...prev, [Itinerary._id]: "" }));
+        setComments((prev) => ({ ...prev, [Itinerary._id]: "" }));
       }
     } catch (err) {
+      console.error('Feedback submission error:', err);
       setErrorMessage(err.response?.data?.message || 'Failed to submit feedback');
       setSuccessMessage('');
     }
   };
+  
+  
+  const handleRatingChangeI = (itinerary, value) => {
+    setRatingsI((prevRatings) => ({
+      ...prevRatings,
+      [itinerary._id]: value,
+    }));
+    console.log(`Updating rating for itinerary ID ${itinerary._id}: ${value}`);
+
+  };
+  
+  const handleCommentChangeI = (itinerary, value) => {
+    setCommentsI((prevComments) => ({
+      ...prevComments,
+      [itinerary._id]: value,
+    }));
+    console.log(`Updating comment for itinerary ID ${itinerary._id}: ${value}`);
+
+  };
+  
+  const handleRatingChange = (itinerary, value) => {
+    setRatings((prevRatings) => ({
+      ...prevRatings,
+      [itinerary._id]: value,  // Use the itinerary ID as the key for ratings
+    }));
+  
+    console.log(`Updating rating for itinerary ${itinerary._id}: ${value}`);
+  };
+  
+  const handleCommentChange = (itinerary, value) => {
+    setComments((prevComments) => ({
+      ...prevComments,
+      [itinerary._id]: value,  // Use the itinerary ID as the key for comments
+    }));
+  
+    console.log(`Updating comment for itinerary ${itinerary._id}: ${value}`);
+  };
+  
+  
   const submitPreferences = async () => {
     try {
       const username = localStorage.getItem('Username');
@@ -754,12 +814,13 @@ const TouristProfile = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(preferences)
+        body: JSON.stringify(preferences),
       });
 
       if (response.ok) {
         setSuccessMessage('Preferences updated successfully!');
         setErrorMessage('');
+        setIsPreferencesVisible(false); // Hide preferences section
       } else {
         throw new Error('Failed to update preferences');
       }
@@ -767,13 +828,17 @@ const TouristProfile = () => {
       setErrorMessage('An error occurred while updating preferences');
     }
   };
+
   const handlePreferenceChange = (e) => {
     const { name, type, value, checked } = e.target;
     setPreferences((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
+
+
+
   const handleDeleteRequest = async () => {
     const Username = localStorage.getItem('Username');
     setWaiting(true);
@@ -803,7 +868,31 @@ const TouristProfile = () => {
     finally {
       setWaiting(false); // Stop waiting regardless of outcome
   }
+  
 
+  // Show success message
+  setSuccessMessage('Feedback submitted successfully!');
+  
+  // Clear success message after 3 seconds
+  setTimeout(() => setSuccessMessage(''), 3000);
+};
+useEffect(() => {
+  if (Itineraries && Itineraries._id) {
+    // Update past itineraries with feedbackSubmitted flag
+    setPastItineraries((prevPastItineraries) =>
+      prevPastItineraries.map((item) =>
+        item._id === Itineraries._id
+          ? {
+              ...item,
+              feedbackSubmitted: true,
+              rating: '',
+              comment: '',
+            }
+          : item
+      )
+    );
+  }
+}, [Itineraries]); // Only update when 'Itineraries' changes
 
   
   const SidebarMenu = () => {
@@ -817,85 +906,78 @@ const TouristProfile = () => {
  
 
 
-};
 return (
   <div>
     {/* Header Section */}
     <header style={styles.header}>
-  <div style={styles.logoContainer}>
-    <img src={logo} alt="Logo" style={styles.logo} />
-  </div>
-  <h1 style={styles.title}>Tourist Profile</h1>
-  <div style={styles.headerIconsContainer}>
-    {/* Notification Bell */}
-    <div
-      style={styles.notificationButton}
-      onClick={handleNotificationClick}
-    >
-      <FaBell style={styles.notificationIcon} />
-      {unreadCount > 0 && (
-        <span style={styles.notificationBadge}>{unreadCount}</span>
-      )}
-    </div>
-
-    {/* Profile Icon */}
-    <ManageAccountsIcon
-      alt="Profile Icon"
-      style={styles.profileIcon}
-      onClick={() => navigate('/touristSettings')}
-    />
-
-    {/* Cart Icon */}
-    <div style={styles.cartButton} onClick={() => navigate('/Cart')}>
-      <FaShoppingCart style={styles.cartIcon} />
-    </div>
-  </div>
-</header>
-
-
-
- 
-
-
-{/* Notification Dropdown */}
-{showNotifications && (
-        <div style={styles.notificationDropdown}>
-          <h3 style={styles.dropdownHeader}>Notifications</h3>
-          {notifications.length > 0 ? (
-            notifications.map((notification, index) => (
-              <div key={index} style={styles.notificationItem}>
-                 <li
-         key={notification.id}
-         style={{
-           display: 'flex',
-           flexDirection: 'row', // Align icon and text horizontally
-           alignItems: 'flex-start', // Align icon with the top of the text
-           backgroundColor: '#f9f9f9', // Light background for each item
-           border: '1px solid #ddd', // Add subtle border
-           borderRadius: '5px', // Rounded corners
-           padding: '10px', // Add padding inside each item
-           borderBottom: '1px solid #f0f0f0',
-           padding: '10px',
-           fontSize: '14px',
-         }}
-       >
-         <MdNotificationImportant
-           size={20}
-           style={{ marginRight: '10px', color: '#ff9800' }}
-         />
-         
-       </li>
-                <p>{notification.message}</p>
-                <span style={styles.notificationDate}>
-                  {new Date(notification.date).toLocaleString()}
-                </span>
-              </div>
-            ))
-          ) : (
-            <p style={styles.noNotifications}>No notifications available</p>
+      <div style={styles.logoContainer}>
+        <img src={logo} alt="Logo" style={styles.logo} />
+      </div>
+      <h1 style={styles.title}>Tourist Profile</h1>
+      <div style={styles.headerIconsContainer}>
+        {/* Notification Bell */}
+        <div
+          style={styles.notificationButton}
+          onClick={handleNotificationClick}
+        >
+          <FaBell style={styles.notificationIcon} />
+          {unreadCount > 0 && (
+            <span style={styles.notificationBadge}>{unreadCount}</span>
           )}
         </div>
-      )}
+
+        {/* Profile Icon */}
+        <ManageAccountsIcon
+          alt="Profile Icon"
+          style={styles.profileIcon}
+          onClick={() => navigate('/touristSettings')}
+        />
+
+        {/* Cart Icon */}
+        <div style={styles.cartButton} onClick={() => navigate('/Cart')}>
+          <FaShoppingCart style={styles.cartIcon} />
+        </div>
+      </div>
+    </header>
+
+    {/* Notification Dropdown */}
+    {showNotifications && (
+      <div style={styles.notificationDropdown}>
+        <h3 style={styles.dropdownHeader}>Notifications</h3>
+        {notifications.length > 0 ? (
+          notifications.map((notification, index) => (
+            <div key={index} style={styles.notificationItem}>
+              <li
+                key={notification.id}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'flex-start',
+                  backgroundColor: '#f9f9f9',
+                  border: '1px solid #ddd',
+                  borderRadius: '5px',
+                  padding: '10px',
+                  borderBottom: '1px solid #f0f0f0',
+                  fontSize: '14px',
+                }}
+              >
+                <MdNotificationImportant
+                  size={20}
+                  style={{ marginRight: '10px', color: '#ff9800' }}
+                />
+                <p>{notification.message}</p>
+              </li>
+              <span style={styles.notificationDate}>
+                {new Date(notification.date).toLocaleString()}
+              </span>
+            </div>
+          ))
+        ) : (
+          <p style={styles.noNotifications}>No notifications available</p>
+        )}
+      </div>
+    )}
+
     {/* Main Content */}
     <div className="tourist-profile-container" style={{ marginTop: '120px' }}>
       {/* Sidebar */}
@@ -914,49 +996,49 @@ return (
           );
         }}
       >
-        <div  class="historical" style={styles.item} onClick={() => navigate('/historical-locations')}>
+        <div className="historical" style={styles.item} onClick={() => navigate('/historical-locations')}>
           <FaLandmark style={styles.icon} />
           <span className="label" style={styles.label}>
             Historical Loc
           </span>
         </div>
-        <div  class="museums" style={styles.item} onClick={() => navigate('/museums')}>
+        <div className="museums" style={styles.item} onClick={() => navigate('/museums')}>
           <FaUniversity style={styles.icon} />
           <span className="label" style={styles.label}>
             Museums
           </span>
         </div>
-        <div  class="products"style={styles.item} onClick={() => navigate('/products')}>
+        <div className="products" style={styles.item} onClick={() => navigate('/products')}>
           <FaBox style={styles.icon} />
           <span className="label" style={styles.label}>
             Products
           </span>
         </div>
-        <div  class="itineraries"style={styles.item} onClick={() => navigate('/itineraries')}>
+        <div className="itineraries" style={styles.item} onClick={() => navigate('/itineraries')}>
           <FaMap style={styles.icon} />
           <span className="label" style={styles.label}>
             Itineraries
           </span>
         </div>
-        <div  class="activities"style={styles.item} onClick={() => navigate('/activities')}>
+        <div className="activities" style={styles.item} onClick={() => navigate('/activities')}>
           <FaRunning style={styles.icon} />
           <span className="label" style={styles.label}>
             Activities
           </span>
         </div>
-        <div  class="flights"style={styles.item} onClick={() => navigate('/book-flights')}>
+        <div className="flights" style={styles.item} onClick={() => navigate('/book-flights')}>
           <FaPlane style={styles.icon} />
           <span className="label" style={styles.label}>
             Book Flights
           </span>
         </div>
-        <div  class="hotels"style={styles.item} onClick={() => navigate('/book-hotels')}>
+        <div className="hotels" style={styles.item} onClick={() => navigate('/book-hotels')}>
           <FaHotel style={styles.icon} />
           <span className="label" style={styles.label}>
             Book a Hotel
           </span>
         </div>
-        <div  class="transportation"style={styles.item} onClick={() => navigate('/book-transportation')}>
+        <div className="transportation" style={styles.item} onClick={() => navigate('/book-transportation')}>
           <FaBus style={styles.icon} />
           <span className="label" style={styles.label}>
            Transportation
@@ -975,479 +1057,469 @@ return (
           </span>
         </div>
       </div>
+      </div>
 
       <div>
-  <div className="preferences-section" style={{ margin: "20px 0", textAlign: "center" }}>
-    <h3 style={{ fontSize: "18px", marginBottom: "20px", color: "#333" }}>
-      Select Your Vacation Preferences
-    </h3>
-    <div
-      className="carousel-container"
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        overflowX: "auto",
-        gap: "20px",
-        padding: "20px",
-        scrollbarWidth: "none",
-        msOverflowStyle: "none",
-        scrollBehavior: "smooth",
-      }}
-    >
-      {/* Historic Areas */}
-      <div
-        className="carousel-item"
-        style={{
-          position: "relative",
-          width: "450px",
-          height: "290px",
-          border: "1px solid #ddd",
-          borderRadius: "15px",
-          flexShrink: 0,
-          backgroundColor: "#fff",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          overflow: "hidden",
-        }}
-      >
-        <img
-          src={historic}
-          alt="Historic Areas"
-          style={{
-            width: "100%",
-            height: "250px",
-            objectFit: "cover",
-            borderTopLeftRadius: "15px",
-            borderTopRightRadius: "15px",
-          }}
-        />
+   {isPreferencesVisible && (
+    <div className="preferences-section" style={{ margin: '20px 0', textAlign: 'center' }}>
+      <h3 style={{ fontSize: '18px', marginBottom: '20px', color: '#333' }}>
+        Select Your Vacation Preferences
+      </h3>
+      <div className="carousel-container" style={styles.carouselContainerStyle}>
+        {/* Historic Areas */}
         <div
+          className="carousel-item"
           style={{
-            padding: "10px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
+            position: "relative",
+            width: "450px",
+            height: "290px",
+            border: "1px solid #ddd",
+            borderRadius: "15px",
+            flexShrink: 0,
+            backgroundColor: "#fff",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            overflow: "hidden",
           }}
         >
-          <label
+          <img
+            src={historic}
+            alt="Historic Areas"
             style={{
-              fontSize: "16px",
-              fontWeight: "bold",
-              marginBottom: "0",
-              marginRight: "10px",
-              color: "#0F5132",
+              width: "100%",
+              height: "250px",
+              objectFit: "cover",
+              borderTopLeftRadius: "15px",
+              borderTopRightRadius: "15px",
+            }}
+          />
+          <div
+            style={{
+              padding: "10px",
               display: "flex",
+              justifyContent: "center",
               alignItems: "center",
             }}
           >
-            Historic Areas
-            <input
-              type="checkbox"
-              name="historicAreas"
-              checked={preferences.historicAreas}
-              onChange={handlePreferenceChange}
+            <label
               style={{
-                width: "20px",
-                height: "20px",
-                cursor: "pointer",
-                marginLeft: "10px",
+                fontSize: "16px",
+                fontWeight: "bold",
+                marginBottom: "0",
+                marginRight: "10px",
+                color: "#0F5132",
+                display: "flex",
+                alignItems: "center",
               }}
-            />
-          </label>
+            >
+              Historic Areas
+              <input
+                type="checkbox"
+                name="historicAreas"
+                checked={preferences.historicAreas}
+                onChange={handlePreferenceChange}
+                style={{
+                  width: "20px",
+                  height: "20px",
+                  cursor: "pointer",
+                  marginLeft: "10px",
+                }}
+              />
+            </label>
+          </div>
+        </div>
+
+        {/* Beaches */}
+        <div
+          className="carousel-item"
+          style={{
+            position: "relative",
+            width: "450px",
+            height: "290px",
+            border: "1px solid #ddd",
+            borderRadius: "15px",
+            flexShrink: 0,
+            backgroundColor: "#fff",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            overflow: "hidden",
+          }}
+        >
+          <img
+            src={beach}
+            alt="Beaches"
+            style={{
+              width: "100%",
+              height: "250px",
+              objectFit: "cover",
+              borderTopLeftRadius: "15px",
+              borderTopRightRadius: "15px",
+            }}
+          />
+          <div
+            style={{
+              padding: "10px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <label
+              style={{
+                fontSize: "16px",
+                fontWeight: "bold",
+                marginBottom: "0",
+                marginRight: "10px",
+                color: "#0F5132",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              Beaches
+              <input
+                type="checkbox"
+                name="beaches"
+                checked={preferences.beaches}
+                onChange={handlePreferenceChange}
+                style={{
+                  width: "20px",
+                  height: "20px",
+                  cursor: "pointer",
+                  marginLeft: "10px",
+                }}
+              />
+            </label>
+          </div>
+        </div>
+
+        {/* Family-Friendly */}
+        <div
+          className="carousel-item"
+          style={{
+            position: "relative",
+            width: "450px",
+            height: "290px",
+            border: "1px solid #ddd",
+            borderRadius: "15px",
+            flexShrink: 0,
+            backgroundColor: "#fff",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            overflow: "hidden",
+          }}
+        >
+          <img
+            src={family}
+            alt="Family-Friendly"
+            style={{
+              width: "100%",
+              height: "250px",
+              objectFit: "cover",
+              borderTopLeftRadius: "15px",
+              borderTopRightRadius: "15px",
+            }}
+          />
+          <div
+            style={{
+              padding: "10px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <label
+              style={{
+                fontSize: "16px",
+                fontWeight: "bold",
+                marginBottom: "0",
+                marginRight: "10px",
+                color: "#0F5132",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              Family-Friendly
+              <input
+                type="checkbox"
+                name="familyFriendly"
+                checked={preferences.familyFriendly}
+                onChange={handlePreferenceChange}
+                style={{
+                  width: "20px",
+                  height: "20px",
+                  cursor: "pointer",
+                  marginLeft: "10px",
+                }}
+              />
+            </label>
+          </div>
+        </div>
+
+        {/* Shopping */}
+        <div
+          className="carousel-item"
+          style={{
+            position: "relative",
+            width: "450px",
+            height: "290px",
+            border: "1px solid #ddd",
+            borderRadius: "15px",
+            flexShrink: 0,
+            backgroundColor: "#fff",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            overflow: "hidden",
+          }}
+        >
+          <img
+            src={shopping}
+            alt="Shopping"
+            style={{
+              width: "100%",
+              height: "250px",
+              objectFit: "cover",
+              borderTopLeftRadius: "15px",
+              borderTopRightRadius: "15px",
+            }}
+          />
+          <div
+            style={{
+              padding: "10px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <label
+              style={{
+                fontSize: "16px",
+                fontWeight: "bold",
+                marginBottom: "0",
+                marginRight: "10px",
+                color: "#0F5132",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              Shopping
+              <input
+                type="checkbox"
+                name="shopping"
+                checked={preferences.shopping}
+                onChange={handlePreferenceChange}
+                style={{
+                  width: "20px",
+                  height: "20px",
+                  cursor: "pointer",
+                  marginLeft: "10px",
+                }}
+              />
+            </label>
+          </div>
         </div>
       </div>
 
-      {/* Beaches */}
-      <div
-        className="carousel-item"
-        style={{
-          position: "relative",
-          width: "450px",
-          height: "290px",
-          border: "1px solid #ddd",
-          borderRadius: "15px",
-          flexShrink: 0,
-          backgroundColor: "#fff",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          overflow: "hidden",
-        }}
-      >
-        <img
-          src={beach}
-          alt="Beaches"
-          style={{
-            width: "100%",
-            height: "250px",
-            objectFit: "cover",
-            borderTopLeftRadius: "15px",
-            borderTopRightRadius: "15px",
-          }}
-        />
-        <div
+      {/* Budget Selection */}
+      <div className="budget-selection" style={{ marginTop: "30px", textAlign: "center" }}>
+        <label style={{ fontWeight: "bold", marginRight: "10px", fontSize: "16px" }}>
+          Budget:
+        </label>
+        <select
+          name="budget"
+          value={preferences.budget}
+          onChange={handlePreferenceChange}
           style={{
             padding: "10px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
+            fontSize: "16px",
+            border: "1px solid #ddd",
+            borderRadius: "5px",
           }}
         >
-          <label
-            style={{
-              fontSize: "16px",
-              fontWeight: "bold",
-              marginBottom: "0",
-              marginRight: "10px",
-              color: "#0F5132",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            Beaches
-            <input
-              type="checkbox"
-              name="beaches"
-              checked={preferences.beaches}
-              onChange={handlePreferenceChange}
-              style={{
-                width: "20px",
-                height: "20px",
-                cursor: "pointer",
-                marginLeft: "10px",
-              }}
-            />
-          </label>
-        </div>
-      </div>
-
-      {/* Family-Friendly */}
-      <div
-        className="carousel-item"
-        style={{
-          position: "relative",
-          width: "450px",
-          height: "290px",
-          border: "1px solid #ddd",
-          borderRadius: "15px",
-          flexShrink: 0,
-          backgroundColor: "#fff",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          overflow: "hidden",
-        }}
-      >
-        <img
-          src={family}
-          alt="Family-Friendly"
+          <option value="">Select</option>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+        <button
+          onClick={submitPreferences}
           style={{
-            width: "100%",
-            height: "250px",
-            objectFit: "cover",
-            borderTopLeftRadius: "15px",
-            borderTopRightRadius: "15px",
-          }}
-        />
-        <div
-          style={{
-            padding: "10px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
+            marginTop: "30px",
+            padding: "12px 20px",
+            backgroundColor: "#0F5132",
+            color: "#fff",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+            fontSize: "16px",
           }}
         >
-          <label
-            style={{
-              fontSize: "16px",
-              fontWeight: "bold",
-              marginBottom: "0",
-              marginRight: "10px",
-              color: "#0F5132",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            Family-Friendly
-            <input
-              type="checkbox"
-              name="familyFriendly"
-              checked={preferences.familyFriendly}
-              onChange={handlePreferenceChange}
-              style={{
-                width: "20px",
-                height: "20px",
-                cursor: "pointer",
-                marginLeft: "10px",
-              }}
-            />
-          </label>
-        </div>
-      </div>
-
-      {/* Shopping */}
-      <div
-        className="carousel-item"
-        style={{
-          position: "relative",
-          width: "450px",
-          height: "290px",
-          border: "1px solid #ddd",
-          borderRadius: "15px",
-          flexShrink: 0,
-          backgroundColor: "#fff",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          overflow: "hidden",
-        }}
-      >
-        <img
-          src={shopping}
-          alt="Shopping"
-          style={{
-            width: "100%",
-            height: "250px",
-            objectFit: "cover",
-            borderTopLeftRadius: "15px",
-            borderTopRightRadius: "15px",
-          }}
-        />
-        <div
-          style={{
-            padding: "10px",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <label
-            style={{
-              fontSize: "16px",
-              fontWeight: "bold",
-              marginBottom: "0",
-              marginRight: "10px",
-              color: "#0F5132",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            Shopping
-            <input
-              type="checkbox"
-              name="shopping"
-              checked={preferences.shopping}
-              onChange={handlePreferenceChange}
-              style={{
-                width: "20px",
-                height: "20px",
-                cursor: "pointer",
-                marginLeft: "10px",
-              }}
-            />
-          </label>
-        </div>
+          Save Preferences
+        </button>
+        {successMessage && <p style={{ color: "#0F5132" }}>{successMessage}</p>}
       </div>
     </div>
-      {/* Budget Dropdown */}
-  <div className="budget-selection" style={{ marginTop: "30px", textAlign: "center" }}>
-    <label style={{ fontWeight: "bold", marginRight: "10px", fontSize: "16px" }}>
-      <FaDollarSign style={{ marginRight: "5px" }} />
-      Budget:
-    </label>
-    <select
-      name="budget"
-      value={preferences.budget}
-      onChange={handlePreferenceChange}
-      style={{
-        padding: "10px",
-        fontSize: "16px",
-        border: "1px solid #ddd",
-        borderRadius: "5px",
-      }}
-    >
-      <option value="">Select</option>
-      <option value="low">Low</option>
-      <option value="medium">Medium</option>
-      <option value="high">High</option>
-    </select>
-    <button
-    onClick={submitPreferences}
+     )}
+     </div>
+
+    {/* Dashboard Section */}
+    <div className="dashboard-section" style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+      <div>
+        <h3 style={styles.cardTitle}>Your Upcoming Booked Itineraries</h3>
+        {bookedItineraries.length > 0 ? (
+          bookedItineraries.map((itinerary) => (
+            <div key={itinerary._id} style={styles.itineraryCard}>
+              <h4>Activities Included: {itinerary.Activities.join(", ")}</h4>
+              <p>Locations: {itinerary.Locations.join(", ")}</p>
+              <p>Price: {(itinerary.price * conversionRate).toFixed(2)} {selectedCurrency}</p>
+              <p>Tour Guide: {itinerary.TourGuide}</p>
+              <p>Date: {itinerary.DatesTimes}</p>
+
+              <button
+                onClick={() => handleCancelItineraryBooking(itinerary._id)}
+                style={styles.cancelButton}
+              >
+                Cancel Booking (2 days before)
+              </button>
+            </div>
+          ))
+        ) : (
+          <p style={styles.emptyMessage}>You have no booked upcoming itineraries.</p>
+        )}
+      </div>
+      <button
+  onClick={() => setShowPastItineraries(!showPastItineraries)}
+  style={{
+    marginTop: "20px",
+    padding: "10px 20px",
+    backgroundColor: "#0F5132",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+  }}
+>
+  {showPastItineraries ? "Hide Past Itineraries" : "Show Past Itineraries"}
+</button>
+
+{showPastItineraries && (
+  <div
+    className="card"
     style={{
-      marginTop: "30px",
-      padding: "12px 20px",
-      backgroundColor: "#0F5132",
-      color: "#fff",
-      border: "none",
+      marginTop: "20px",
+      padding: "10px",
+      backgroundColor: "#f9f9f9",
       borderRadius: "5px",
-      cursor: "pointer",
-      fontSize: "16px",
     }}
   >
-    Save Preferences
-  </button>
-  {successMessage && <p style={{ color: "#0F5132" }}>{successMessage}</p>}
-  </div>
+    <h3 style={{ fontSize: "18px", marginBottom: "10px" }}>Past Itineraries</h3>
+    {pastItineraries.length > 0 ? (
+      pastItineraries.map((itinerary) => (
+        <div
+          key={itinerary._id}
+          style={{
+            marginBottom: "10px",
+            padding: "10px",
+            border: "1px solid #ddd",
+            borderRadius: "5px",
+          }}
+        >
+          <h4>Activities Included: {itinerary.Activities.join(", ")}</h4>
+          <p>Locations: {itinerary.Locations.join(", ")}</p>
+          <p>Price: {(itinerary.price * conversionRate).toFixed(2)} {selectedCurrency}</p>
+          <p>Tour Guide: {itinerary.TourGuide}</p>
+          <p>Date: {itinerary.DatesTimes}</p>
 
-  </div>
-
-  
-</div>
-
-<div className="dashboard-section" style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-  {/* Search Product by Name */}
-  <div className="card" style={styles.card}>
-    <h3 style={styles.cardTitle}>Looking for a certain product?</h3>
-    <div style={styles.inputContainer}>
-      <input
-        type="text"
-        name="productName"
-        value={formData.productName}
-        onChange={handleInputChange}
-        placeholder="Enter product name"
-        style={styles.input}
-      />
-      <button onClick={handleFetchProduct} style={styles.iconButton}>
-        <i className="fas fa-search" style={styles.searchIcon}></i>
-        <FaSearch/>
-      </button>
-    </div>
-    {fetchedProduct && (
-      <div style={styles.productDetails}>
-        <h4 style={styles.sectionTitle}>Product Details</h4>
-        <p><strong>Name:</strong> {fetchedProduct.productName}</p>
-        <p><strong>Description:</strong> {fetchedProduct.description}</p>
-        <p>
-          <strong>Price:</strong> {(fetchedProduct.price * conversionRate).toFixed(2)} {selectedCurrency}
-        </p>
-        <p><strong>Stock:</strong> {fetchedProduct.stock}</p>
-        
-      </div>
-    )}
-  </div>
-  {errorMessage && <div style={styles.error}>{errorMessage}</div>}
-  {/* Booked Itineraries Section */}
-  <div className="card" style={styles.card}>
-    <h3 style={styles.cardTitle}>Your Upcoming Booked Itineraries</h3>
-    {bookedItineraries.length > 0 ? (
-      bookedItineraries.map((Itinerary) => (
-        <div key={Itinerary._id} style={styles.itineraryCard}>
-          <h4>Activities Included: {Itinerary.Activities.join(", ")}</h4>
-          <p>Locations: {Itinerary.Locations.join(", ")}</p>
-          <p>Price: {(Itinerary.price * conversionRate).toFixed(2)} {selectedCurrency}</p>
-          <p>Tour Guide: {Itinerary.TourGuide}</p>
-          <p>Date: {Itinerary.DatesTimes}</p>
-          <div style={styles.feedbackSection}>
-            <h4>Leave Feedback on itinerary</h4>
-            <input
-              type="number"
-              placeholder="Rating"
-              onChange={(e) => handleRatingChangeI(Itinerary, e.target.value)}
-              style={styles.input}
-            />
-            <input
-              type="text"
-              placeholder="Comment"
-              onChange={(e) => handleCommentChangeI(Itinerary, e.target.value)}
-              style={styles.input}
-            />
-            <button onClick={() => submitFeedbackItinerary(Itinerary)} style={styles.button}>
-              Submit Feedback
-            </button>
-          </div>
-          <div style={styles.feedbackSection}>
-            <h4>Leave Feedback on tour Guide</h4>
-            <input
-              type="number"
-              placeholder="Rating"
-              onChange={(e) => handleRatingChange(Itinerary, e.target.value)}
-              style={styles.input}
-            />
-            <input
-              type="text"
-              placeholder="Comment"
-              onChange={(e) => handleCommentChange(Itinerary, e.target.value)}
-              style={styles.input}
-            />
-            <button onClick={() => submitFeedback(Itinerary)} style={styles.button}>
-              Submit Feedback
-            </button>
-          </div>
-          <button
-            onClick={() => handleCancelItineraryBooking(Itinerary._id)}
-            style={styles.cancelButton}
-          >
-            Cancel Booking (2 days before)
-          </button>
-        </div>
-      ))
-    ) : (
-      <p style={styles.emptyMessage}>You have no booked upcoming itineraries.</p>
-    )}
-  </div>
-
-  {/* Booked Activities Section */}
-  <div className="card" style={styles.card}>
-    <h3 style={styles.cardTitle}>Your Upcoming Booked Activities</h3>
-    {bookedActivities.length > 0 ? (
-      bookedActivities.map((Activity) => (
-        <div key={Activity._id} style={styles.activityCard}>
-          <h4>Activity Name: {Activity.name}</h4>
-          <p>Category: {Activity.Category}</p>
-          <p>
-            Price: {(Activity.price * conversionRate).toFixed(2)} {selectedCurrency}
-          </p>
-          <p>Date: {Activity.date}</p>
-          <p>Location: {Activity.Location}</p>
-          <button
-            onClick={() => handleCancelActivityBooking(Activity._id)}
-            style={styles.cancelButton}
-          >
-            Cancel Booking (2 days before)
-          </button>
-        </div>
-      ))
-    ) : (
-      <p style={styles.emptyMessage}>You have no upcoming booked activities.</p>
-    )}
-  </div>
-  <button
-        onClick={() => setShowPastItineraries(!showPastItineraries)}
-        style={{
-          marginTop: '20px',
-          padding: '10px 20px',
-          backgroundColor: '#0F5132',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer'
-        }}
-      >
-        {showPastItineraries ? 'Hide Past Itineraries' : 'Show Past Itineraries'}
-      </button>
-
-      {showPastItineraries && (
-        <div className="card" style={{ marginTop: '20px', padding: '10px', backgroundColor: '#f9f9f9', borderRadius: '5px' }}>
-          <h3 style={{ fontSize: '18px', marginBottom: '10px' }}>Past Itineraries</h3>
-          {pastItineraries.length > 0 ? (
-            pastItineraries.map(itinerary => (
-              <div key={itinerary._id} style={{ marginBottom: '10px', padding: '10px', border: '1px solid #ddd', borderRadius: '5px' }}>
-                <h4>Activities Included: {itinerary.Activities.join(", ")}</h4>
-                <p>Locations: {itinerary.Locations.join(", ")}</p>
-                <p>Price: {(itinerary.price * conversionRate).toFixed(2)} {selectedCurrency}</p>
-                <p>Tour Guide: {itinerary.TourGuide}</p>
-                <p>Date: {itinerary.DatesTimes}</p>
-              </div>
-            ))
-          ) : (
-            <p>No past itineraries found.</p>
+          {!itinerary.feedbackSubmitted && (
+            <div style={styles.feedbackSection}>
+              <h4>Leave Feedback on Itinerary</h4>
+              <input
+                type="number"
+                placeholder="Rating"
+                value={ratingsI[itinerary._id] || ""} // Ensure correct binding
+                onChange={(e) => handleRatingChangeI(itinerary, e.target.value)}
+                style={styles.input}
+                min="1"
+                max="5"
+              />
+              <input
+                type="text"
+                placeholder="Comment"
+                value={commentsI[itinerary._id] || ""} // Ensure correct binding
+                onChange={(e) => handleCommentChangeI(itinerary, e.target.value)}
+                style={styles.input}
+              />
+              <button
+                onClick={() => submitFeedbackItinerary(itinerary)}
+                style={styles.button}
+              >
+                Submit Feedback
+              </button>
+            </div>
           )}
+
+          <div style={styles.feedbackSection}>
+            <h4>Leave Feedback on Tour Guide</h4>
+            <input
+              type="number"
+              placeholder="Rating"
+              value={ratings[itinerary._id] || ""} // Ensure correct binding
+              onChange={(e) => handleRatingChange(itinerary, e.target.value)}
+              style={styles.input}
+            />
+            <input
+              type="text"
+              placeholder="Comment"
+              value={comments[itinerary._id] || ""} // Ensure correct binding
+              onChange={(e) => handleCommentChange(itinerary, e.target.value)}
+              style={styles.input}
+            />
+            <button onClick={() => submitFeedback(itinerary)} style={styles.button}>
+              Submit Feedback
+            </button>
+          </div>
         </div>
-      )}
-  {successMessage && <div style={styles.success}>{successMessage}</div>}
-</div>
-</div>
-</div>
-);
+      ))
+    ) : (
+      <p style={styles.emptyMessage}>You can leave feedback after the itinerary date.</p>
+    )}
+  </div>
+)}
 
-};
+<div className="card" style={styles.card}>
+  <h3 style={styles.cardTitle}>Your Upcoming Booked Activities</h3>
+  {bookedActivities.length > 0 ? (
+    bookedActivities.map((Activity) => (
+      <div key={Activity._id} style={styles.activityCard}>
+        <h4>Activity Name: {Activity.name}</h4>
+        <p>Category: {Activity.Category}</p>
+        <p>
+          Price: {(Activity.price * conversionRate).toFixed(2)} {selectedCurrency}
+        </p>
+        <p>Date: {Activity.date}</p>
+        <p>Location: {Activity.Location}</p>
+        <button
+          onClick={() => handleCancelActivityBooking(Activity._id)}
+          style={styles.cancelButton}
+        >
+          Cancel Booking (2 days before)
+        </button>
+      </div>
+    ))
+  ) : (
+    <p style={styles.emptyMessage}>You have no upcoming booked activities.</p>
+  )}
+</div>
+
+{successMessage && <div style={styles.success}>{successMessage}</div>}
+</div>
+</div>
+
+);};
 const styles = {
-
-  
+  carouselContainerStyle : {
+    display: 'flex',
+    overflowX: 'scroll',
+    padding: '10px',
+    gap: '10px',
+    backgroundColor: '#f4f4f4',
+    borderRadius: '10px',
+  },
   card: {
     backgroundColor: "#fff",
     padding: "20px",
@@ -1564,6 +1636,25 @@ const styles = {
   logoContainer: {
     display: 'flex',
     alignItems: 'center',
+  },
+   carouselContainerStyle : {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    overflowX: 'auto',
+    gap: '20px',
+    padding: '20px',
+  },
+  
+   carouselItemStyle :{
+    position: 'relative',
+    width: '450px',
+    height: '290px',
+    border: '1px solid #ddd',
+    borderRadius: '15px',
+    backgroundColor: '#fff',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    overflow: 'hidden',
   },
   logo: {
     height: '60px',

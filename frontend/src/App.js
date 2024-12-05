@@ -59,6 +59,7 @@ import background from './images/back.webp'; // Replace with the path to your im
 import DeletionRequests from './pages/DeletionRequest';
 import AddProduct from './pages/AddProduct';
 import EditProducts from './pages/EditProducts';
+import UserStatistics from './pages/chart';
 
 
 
@@ -143,14 +144,14 @@ function App() {
             <Route path="/preftags" element={<Preftags />} />
             <Route path="/createTransportation" element={<CreateTransportation />} />
             <Route path="/category" element={<Category />} />
-            <Route path="/dvertiserReport" element={<AdvertiserReport />} />
+            <Route path="/advertiserReport" element={<AdvertiserReport />} />
             <Route path="/sellerReport" element={<SellerReport />} />
             <Route path="/my-itineraries" element={<TourGItinerary />} />
             <Route path="/adminReport" element={<AdminReport />} />
             <Route path="/DeletionRequest" element={<DeletionRequests />} />
             <Route path="/AddProduct" element={<AddProduct />} />
             <Route path="/EditProducts" element={<EditProducts />} />
-
+            <Route path="/chart" element={<UserStatistics />} />
           </Routes>
         </Router>
       </Elements>

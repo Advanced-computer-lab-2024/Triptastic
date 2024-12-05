@@ -203,6 +203,74 @@ const handleSignInSubmit = async (e) => {
     setErrorMessage('Something went wrong. Please try again later.');
   }
 };
+const handleLoginSubmit = async (e) => {
+  e.preventDefault();
+
+  // Prepare the login data for the request
+  const loginDataList = [
+    { url: 'http://localhost:8000/loginTourist', data: { Email: signInFormData.Email, Password: signInFormData.Password } },
+    { url: 'http://localhost:8000/loginAdvertiser', data: { Email: signInFormData.Email, Password: signInFormData.Password } },
+    { url: 'http://localhost:8000/loginSeller', data: { Email: signInFormData.Email, Password: signInFormData.Password } },
+    { url: 'http://localhost:8000/loginTourGuide', data: { Email: signInFormData.Email, Password: signInFormData.Password } },
+    { url: 'http://localhost:8000/AdminLogin', data: signInFormData },
+    { url: 'http://localhost:8000/tourismGovLogin', data: signInFormData }, // Added tourismGovLogin here
+  ];
+
+  // Iterate over all login endpoints and try each one
+  for (let i = 0; i < loginDataList.length; i++) {
+    try {
+      const response = await fetch(loginDataList[i].url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(loginDataList[i].data),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Store user details based on the login type (context is set differently for each type)
+        if (loginDataList[i].url === 'http://localhost:8000/loginTourist') {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('context', 'tourist');
+
+          navigate('/tourist-profile');
+        } else if (loginDataList[i].url === 'http://localhost:8000/loginAdvertiser') {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('context', 'advertiser');
+          navigate('/advertiser-profile');
+        } else if (loginDataList[i].url === 'http://localhost:8000/loginSeller') {
+          localStorage.setItem('context', 'seller');
+          navigate('/seller-profile');
+        } else if (loginDataList[i].url === 'http://localhost:8000/loginTourGuide') {
+          localStorage.setItem('token', data.token);
+          navigate('/tour-guide-profile');
+        } else if (loginDataList[i].url === 'http://localhost:8000/AdminLogin') {
+          localStorage.setItem('Username', formData.Username);
+          localStorage.setItem('context', 'admin');
+          navigate('/AdminPage');
+        } else if (loginDataList[i].url === 'http://localhost:8000/tourismGovLogin') {
+          localStorage.setItem('Username', formData.Username);
+          localStorage.setItem('context', 'tourismGov');
+          navigate('/tourism-gov');
+        }
+
+        // Set success message and break the loop if login is successful
+        setSuccessMessage('Login successful!');
+        setErrorMessage('');
+        return;
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Login failed');
+      }
+    } catch (error) {
+      setErrorMessage('Something went wrong. Please try again later.');
+    }
+  }
+
+  // If none of the login attempts succeed, show a generic error message
+  setSuccessMessage('');
+  setErrorMessage('Login failed for all attempts. Please check your credentials.');
+};
+
 const handleSubmit = async (e) => {
   e.preventDefault();
 
@@ -692,7 +760,7 @@ return (
   >
     <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Sign In</h1>
     <form
-      onSubmit={handleSignInSubmit}
+      onSubmit={handleLoginSubmit}
       style={{
         display: 'flex',
         flexDirection: 'column',

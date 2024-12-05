@@ -662,24 +662,6 @@ const handleViewReport = async (itineraryId) => {
 
 
 <div style={styles.mainContainer}>
-  {/* Filter Section */}
-  <div style={styles.filterContainer}>
-    <h3 style={styles.filterTitle}>
-      <DisplaySettingsIcon style={styles.filterIcon} /> Filter Itineraries
-    </h3>
-    <select
-      onChange={(e) => handleMonthFilter(e.target.value)}
-      value={selectedMonth}
-      style={styles.filterDropdown}
-    >
-      <option value="">All Months</option>
-      {Array.from({ length: 12 }, (_, i) => (
-        <option key={i + 1} value={i + 1}>
-          {new Date(0, i).toLocaleString("default", { month: "long" })}
-        </option>
-      ))}
-    </select>
-  </div>
   {/* Itinerary Reports Section */}
   <div style={styles.reportsSection}>
     <h3 style={styles.sectionTitle}>
@@ -707,26 +689,32 @@ const handleViewReport = async (itineraryId) => {
             {/* Report Table */}
             {itineraryReports[itinerary._id]?.visible && (
               <div style={styles.reportSection}>
-              <table style={styles.table}>
-                <thead style={styles.tableHead}>
-                  <tr>
-                    <th style={styles.tableHeadCell}>Tourist</th>
-                    <th style={styles.tableHeadCell}>Email</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {itineraryReports[itinerary._id].tourists.map((tourist, index) => (
-                    <tr
-                      key={index}
-                      style={index % 2 === 0 ? styles.tableRow : styles.tableRowAlt} // Alternating row colors
-                    >
-                      <td style={styles.tableCell}>{tourist.Username}</td>
-                      <td style={styles.tableCell}>{tourist.Email}</td>
+                <table style={styles.table}>
+                  <thead style={styles.tableHead}>
+                    <tr>
+                      <th style={styles.tableHeadCell}>Tourist</th>
+                      <th style={styles.tableHeadCell}>Email</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {itineraryReports[itinerary._id].tourists.map(
+                      (tourist, index) => (
+                        <tr
+                          key={index}
+                          style={
+                            index % 2 === 0
+                              ? styles.tableRow
+                              : styles.tableRowAlt
+                          } // Alternating row colors
+                        >
+                          <td style={styles.tableCell}>{tourist.Username}</td>
+                          <td style={styles.tableCell}>{tourist.Email}</td>
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
         ))
@@ -735,7 +723,27 @@ const handleViewReport = async (itineraryId) => {
       )}
     </div>
   </div>
+
+  {/* Filter Section */}
+  <div style={styles.filterContainer}>
+    <h3 style={styles.filterTitle}>
+      <DisplaySettingsIcon style={styles.filterIcon} /> Filter Reports
+    </h3>
+    <select
+      onChange={(e) => handleMonthFilter(e.target.value)}
+      value={selectedMonth}
+      style={styles.filterDropdown}
+    >
+      <option value="">All Months</option>
+      {Array.from({ length: 12 }, (_, i) => (
+        <option key={i + 1} value={i + 1}>
+          {new Date(0, i).toLocaleString("default", { month: "long" })}
+        </option>
+      ))}
+    </select>
+  </div>
 </div>
+
 <div style={styles.filtersWrapper}>
   {/* Date Filter */}
   <div style={styles.dateFilter}>
@@ -773,6 +781,7 @@ const handleViewReport = async (itineraryId) => {
     </select>
   </div>
 </div>
+
 
 {/* Statistics Section */}
 <div style={styles.reportSection}>
@@ -903,7 +912,7 @@ const styles = {
     fontSize: '24px',
     fontWeight: 'bold',
     margin: 0,
-    marginLeft:'90px'
+    marginLeft:'50px'
   },
   profileIcon: {
     fontSize: '30px',
@@ -1161,37 +1170,81 @@ const styles = {
   },
   mainContainer: {
     display: "flex",
-    alignItems: "flex-start",
-    gap: "20px",
-    marginTop: "20px",
+    justifyContent: "space-between", // Space between the two sections
+    alignItems: "flex-start", // Align at the top
+    gap: "20px", // Add some space between them
+    color:'#0F5132',
+    fontSize:'14px'
   },
+  
   filterContainer: {
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#white",
     padding: "10px",
     borderRadius: "10px",
     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
     width: "200px",
     marginTop:'70px'
   },
-  filterTitle: {
-    fontSize: "16px",
-    fontWeight: "bold",
-    color: "#0F5132",
+  filtersWrapper: {
     display: "flex",
-    alignItems: "center",
+    justifyContent: "flex-end", // Align the entire section to the right
+    alignItems: "center", // Vertically align items
+    gap: "10px", // Maintain smaller gaps between elements
+    padding: "10px 20px", // Add padding for a cleaner layout
+    backgroundColor: "#fff", // White background for visibility
+    borderRadius: "10px", // Rounded corners for a polished look
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)", // Subtle shadow
+    maxWidth: "600px", // Limit width for better layout
+    margin: "20px auto", // Center horizontally in its container
+  },
+  
+  dateFilter: {
+    display: "flex",
+    alignItems: "center", // Align the input and icon
+    gap: "10px", // Ensure the icon and input are close
+  },
+  
+  dateInput: {
+    padding: "6px 10px", // Adjust padding for better sizing
+    borderRadius: "5px", // Rounded corners
+    border: "1px solid #ccc", // Light border for better contrast
+    fontSize: "14px", // Standardize font size
+  },
+  
+  filterButton: {
+    backgroundColor: "#0F5132", // Green button
+    color: "#fff",
+    padding: "6px 12px",
+    borderRadius: "5px",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "14px",
+    transition: "background-color 0.3s ease",
+    display: "flex",
+    alignItems: "center", // Align the icon and text
     gap: "5px",
   },
-  filterIcon: {
-    fontSize: "20px",
+  
+  itineraryFilter: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px", // Ensure close proximity between label and dropdown
+  },
+  
+  filterLabel: {
+    fontSize: "14px",
+    fontWeight: "bold",
     color: "#0F5132",
   },
-  filterDropdown: {
-    width: "100%",
-    padding: "8px",
+  
+  dropdown: {
+    padding: "6px 10px",
     borderRadius: "5px",
     border: "1px solid #ccc",
-    marginTop: "10px",
+    fontSize: "14px",
   },
+  
+  
   reportsSection: {
     flex: "3",
   },
@@ -1218,7 +1271,7 @@ const styles = {
   },
 
   flagIcon: {
-    fontSize: "18px",
+    fontSize: "20px",
     color: "#0F5132",
   },
   gridContainer: {
@@ -1377,52 +1430,28 @@ const styles = {
     textAlign: "right",
     marginTop: "5px",
   },
-  filtersWrapper: {
+  filterMainContainer: {
     display: "flex",
-    justifyContent: "flex-end",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "20px",
+    padding: "20px",
+    backgroundColor: "#fff",
+    borderRadius: "10px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    margin: "20px 0",
+    maxWidth: "800px",
+    marginLeft: "auto",
+    marginRight: "auto",
+  },
+  
+  filterSection: {
+    display: "flex",
+    flexDirection: "column",
     alignItems: "center",
     gap: "15px",
-    marginBottom: "20px",
-  },
-  dateFilter: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-  },
-  dateInput: {
-    padding: "6px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
-    fontSize: "13px",
-  },
-  filterButton: {
-    backgroundColor: "#0F5132",
-    color: "#fff",
-    padding: "6px 12px",
-    borderRadius: "5px",
-    border: "none",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    gap: "5px",
-    fontSize: "14px",
-    transition: "background-color 0.3s ease",
-  },
-  itineraryFilter: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-  },
-  filterLabel: {
-    fontSize: "13px",
-    fontWeight: "bold",
-    color: "#0F5132",
-  },
-  dropdown: {
-    padding: "6px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
-    fontSize: "13px",
+    width: "100%",
   },
   iconn: {
     fontSize: "14px",
