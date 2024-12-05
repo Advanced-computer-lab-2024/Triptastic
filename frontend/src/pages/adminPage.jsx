@@ -1366,7 +1366,7 @@ profitAmount: {
 userStatsContainer: {
   margin: '0 auto',
   padding: '20px',
-  maxWidth: '1000px',
+  maxWidth: '1600px',
   fontFamily: 'Arial, sans-serif',
   textAlign: 'center',
 },
@@ -1794,9 +1794,20 @@ loadingText: {
 
   
 <div style={styles.userStatsContainer}>    
-  <div style={styles.profitSummary}>
-  <h2 style={styles.summaryTitle}>User Statistics</h2>
-  <FaChartBar style={styles.statisticsIcon} />
+<div style={styles.profitSummary}>
+    <div
+      style={{
+        display: 'flex', // Flexbox for alignment
+        alignItems: 'center', // Vertical alignment
+        justifyContent: 'center', // Horizontal alignment
+        gap: '10px', // Space between title and icon
+      }}
+    >
+      <h2 style={{ fontSize: '18px', fontWeight: 'bold', margin: '0' }}>
+        User Statistics
+      </h2>
+      <FaChartBar style={{ fontSize: '24px', color: '#0F5132' }} />
+</div>
 </div>
 
   {statsError && <p style={styles.errorText}>{statsError}</p>}
