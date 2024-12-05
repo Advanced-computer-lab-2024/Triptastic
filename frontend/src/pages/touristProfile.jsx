@@ -16,6 +16,7 @@ import { MdNotificationImportant } from 'react-icons/md';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import "intro.js/introjs.css"; // Import Intro.js styles
 import introJs from "intro.js";
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
 
 
@@ -937,6 +938,10 @@ return (
         <div style={styles.cartButton} onClick={() => navigate('/Cart')}>
           <FaShoppingCart style={styles.cartIcon} />
         </div>
+           {/* Logout Icon */}
+   <div style={styles.logoutButton} onClick={()=>navigate('/Guest')}>
+     <LogoutOutlinedIcon style={styles.logoutIcon} />
+   </div>
       </div>
     </header>
 
@@ -958,11 +963,11 @@ return (
                   borderRadius: '5px',
                   padding: '10px',
                   borderBottom: '1px solid #f0f0f0',
-                  fontSize: '14px',
+                  fontSize: '10px',
                 }}
               >
                 <MdNotificationImportant
-                  size={20}
+                     size={50}
                   style={{ marginRight: '10px', color: '#ff9800' }}
                 />
                 <p>{notification.message}</p>
@@ -1713,13 +1718,17 @@ const styles = {
     borderBottom: '1px solid #ddd',
     fontWeight: 'bold',
   },
+  logoutIcon: {
+    cursor:'pointer'
+  },
   notificationItem: {
+    padding: '10px',
    
     borderBottom: '1px solid #ddd',
     padding: '20px',
     textAlign: 'center',
     color: '#888',
-    fontSize: '14px',
+    fontSize: '5px',
   },
   notificationDate: {
     fontSize: '12px',

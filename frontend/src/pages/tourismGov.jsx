@@ -5,6 +5,7 @@ import { FaLandmark, FaUniversity } from 'react-icons/fa';
 
 import LockResetIcon from '@mui/icons-material/LockReset';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
 
 const TourismGov = () => {
@@ -61,6 +62,10 @@ const TourismGov = () => {
             style={styles.lockIcon}
             onClick={() => setIsModalOpen(true)}
           />
+              <LogoutOutlinedIcon
+      style={styles.logoutIcon}
+      onClick={() => navigate('/Guest')}
+    />
                   </div>
       </header>
     {/* Sidebar */}
@@ -191,6 +196,10 @@ const styles = {
     gap: '10px',
     marginBottom: '30px',
   },
+  logoutIcon: {
+    cursor: 'pointer',
+    color: 'white',
+  },
   buttonHover: {
     backgroundColor: '#084B24',
   },
@@ -286,6 +295,9 @@ const styles = {
     fontSize: '30px',
     color: '#fff',
     cursor: 'pointer',
+    marginRight:'20',
+    marginTop:'10'
+
   },
   content: {
     maxWidth: '800px',
