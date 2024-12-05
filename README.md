@@ -1,6 +1,6 @@
 # Triptastic
 
-*A platform to help tourists plan their travels by booking flights, accommodations, transportation, and activities. Additionally, it allows sellers and advertisers to post their offers and products for tourists to book. *
+*A platform to help tourists plan their travels by booking flights, accommodations, transportation, and activities. Additionally, it allows sellers and advertisers to post their offers and products for tourists to book.*
 
 ## Motivation
 
