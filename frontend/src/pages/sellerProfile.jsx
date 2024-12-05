@@ -780,28 +780,39 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
         required
         style={styles.input}
       />
-      <div style={styles.fileUploadContainer}>
-        <label style={styles.fileLabel}>
-        <strong style={{ color: '#0F5132', display: 'flex', alignItems: 'center', gap: '5px' }}>
-  Upload Product Image <AddPhotoAlternateIcon style={{ color: '#0F5132' }} />
-</strong>        </label>
+    <div style={styles.fileUploadContainer}>
+  <label style={styles.fileLabel} htmlFor="file-upload">
+    <strong
+      style={{
+        color: '#0F5132',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '5px',
+        cursor: 'pointer',
+      }}
+    >
+      Upload Product Image
+      <AddPhotoAlternateIcon style={styles.iconButton} />
+    </strong>
+  </label>
 
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          required
-          style={styles.fileInput}
-        />
+  <input
+    id="file-upload"
+    type="file"
+    accept="image/*"
+    onChange={handleImageChange}
+    required
+    style={styles.fileInput}
+  />
 
-      </div>
-      {imagePreview && (
-        <img
-          src={imagePreview}
-          alt="Product Preview"
-          style={styles.imagePreview}
-        />
-      )}
+  {imagePreview && (
+    <img
+      src={imagePreview}
+      alt="Product Preview"
+      style={styles.imagePreview}
+    />
+  )}
+</div>
       <button type="submit" style={styles.submitButton}>
         Submit Product
       </button>
@@ -1303,25 +1314,36 @@ const styles = {
     resize: 'none',
   },
   fileUploadContainer: {
-    marginRight:'400px',
     display: 'flex',
     flexDirection: 'column',
-    gap: '5px',
+    alignItems: 'center',
+    marginTop: '20px',
   },
   fileLabel: {
-    right:'10px',
-    fontWeight: 'bold',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconButton: {
+    //backgroundColor: '#0F5132',
+    color: '#0F5132',
+    //borderRadius: '50%',
+    //padding: '10px',
+    fontSize: '24px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease, transform 0.2s ease',
   },
   fileInput: {
-    display: 'none',
+    display: 'none', // Hides the native file input
   },
   imagePreview: {
+    marginTop: '10px',
     width: '150px',
     height: '150px',
-    marginRight:'550px',
     objectFit: 'cover',
-    borderRadius: '10px',
-    marginTop: '10px',
+    border: '1px solid #ddd',
+    borderRadius: '5px',
   },
   submitButton: {
     backgroundColor: '#0F5132',

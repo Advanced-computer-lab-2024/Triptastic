@@ -1,7 +1,12 @@
 import React, { useState, useEffect} from 'react';
 import image from '../images/image.png';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
-import { FaBell,FaSearch,FaUserCircle, FaBox, FaLandmark, FaUniversity, FaMap, FaRunning, FaPlane, FaHotel, FaClipboardList, FaStar, FaBus } from 'react-icons/fa';
+import { FaBell,FaSearch,FaUserCircle, FaBox, FaLandmark, FaUniversity,  FaSync,
+  FaFilter,
+  FaDollarSign,
+  FaMapMarkedAlt,
+  FaCalendarDay,
+  FaChartLine,FaClipboardList,FaMap, FaRunning, FaPlane, FaHotel, FaStar, FaBus } from 'react-icons/fa';
 import { MdNotificationImportant } from 'react-icons/md';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
@@ -23,6 +28,18 @@ function TourGuideProfile() {
   const [modalOpen, setModalOpen] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
 
+const [isLoading, setIsLoading] = useState(false);
+const [totalSales, setTotalSales] = useState(0);
+const [refresh, setRefresh] = useState(false);
+const [mostSold, setMostSold] = useState();
+const [leastSold, setLeastSold] = useState();
+const [date, setDate] = useState('');
+const [filteredD, setFilteredD] = useState(false);
+const [filterI, setFilterI] = useState(null);
+const [dates, setDates] = useState([]);
+const [count, setCount] = useState(0);
+const [filteredI, setFilteredI] = useState(false);
+const [showDropdown, setShowDropdown] = useState(false);
   const handlePasswordChange = async (e) => {
     e.preventDefault();
     setIsChangingPassword(true);
@@ -60,7 +77,86 @@ function TourGuideProfile() {
       setIsChangingPassword(false);
     }
   };
+  const filterByItinerary = async (itineraryId) => {
+    try{
+      const response = await fetch(`http://localhost:8000/filterByItinerary?itineraryId=${itineraryId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setDates(data);
+        setCount(data.length);
+      }
+      else {
+        console.error('Failed to fetch data');
+      }
+    }
+      catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
   
+  const fetchFilteredItineraries = async (date) => {
+      const Username = localStorage.getItem('Username');
+      setIsLoading(true);
+      try{
+      const response = await fetch(`http://localhost:8000/getFilteredItineraries?Username=${Username}&date=${date}`);
+      if (response.ok) {
+          const data = await response.json();
+          setItineraries(data);
+          setIsLoading(false);
+      } else {
+          console.error('Failed to fetch itineraries');
+      }
+      } catch (error) {
+          console.error('Error fetching itineraries:', error);
+      }
+  };
+    const calculateTotalSales = (itineraries) => {
+      const total = itineraries.reduce((sum, itinerary) => sum + itinerary.sales, 0);
+      setTotalSales(total);
+    };
+    const findMostSold = (itineraries) => {
+      if (itineraries.length > 0) {
+        const mostSoldItinerary = itineraries.reduce((max, itinerary) => (itinerary.sales > max.sales ? itinerary : max), itineraries[0]);
+        setMostSold(mostSoldItinerary);
+      }
+    };
+  
+    const findLeastSold = (itineraries) => {
+      if (itineraries.length > 0) {
+        const leastSoldItinerary = itineraries.reduce((min, itinerary) => (itinerary.sales < min.sales ? itinerary : min), itineraries[0]);
+        setLeastSold(leastSoldItinerary);
+      }
+    };
+    const handleFilterD = () => {
+      if(!filteredD){
+          fetchFilteredItineraries(date);
+          setFilteredD(true);
+          findMostSold(itineraries);
+          findLeastSold(itineraries);
+      }else{
+          fetchItineraries();
+          setFilteredD(false);
+          findMostSold(itineraries);
+          findLeastSold(itineraries);
+      }
+      };
+  
+      useEffect(() => {
+        fetchItineraries();
+        fetchTourGuideData()
+      }, []); // Only run once on mount
+      
+    const handleFilterChange = (itineraryId) => {
+      const selectedItinerary = itineraries.find(itinerary => itinerary._id === itineraryId);
+      if (selectedItinerary) {
+        filterByItinerary(selectedItinerary._id); // Call the filter function for the selected itinerary
+        setFilteredI(true); // Mark that itineraries are filtered
+        setFilterI(selectedItinerary); // Save the selected itinerary
+      } else {
+        setFilteredI(false); // Reset if no itinerary is selected
+      }
+    };
+
   const [itineraryReports, setItineraryReports] = useState({});
   const [tourGuideInfo, setTourGuideInfo] = useState(null);
   const [itineraries, setItineraries] = useState([]);
@@ -105,22 +201,16 @@ function TourGuideProfile() {
     pickUpDropOff: '',
     bookingOpen: false,
   });
-  
-  const [isCreatingItinerary, setIsCreatingItinerary] = useState(false);
-  const [isEditingItinerary, setIsEditingItinerary] = useState(false); // New state for editing itinerary
-  const [isCreatingTouristItinerary, setIsCreatingTouristItinerary] = useState(false);
-  const [isEditingTouristItinerary, setIsEditingTouristItinerary] = useState(false);
-
   const toggleModal = () => {
     setModalOpen((prev) => !prev);
   }; 
   const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
   useEffect(() => {
-    fetchTourGuideData();
-    fetchItineraries();
-    setLoading(false);
-    fetchTouristItineraries();
-  }, []);
+    calculateTotalSales(itineraries);
+    findMostSold(itineraries);
+    findLeastSold(itineraries);
+  }, [itineraries]); // Re-run when itineraries change
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -134,6 +224,17 @@ function TourGuideProfile() {
       setFormData((prevData) => ({ ...prevData, photo: file }));
     }
   };
+  useEffect(() => {
+    if (!selectedMonth) {
+      setFilteredItineraries(itineraries); // Show all if no month selected
+    } else {
+      const filtered = itineraries.filter((itinerary) => {
+        const month = new Date(itinerary.DatesTimes).getMonth() + 1;
+        return month === Number(selectedMonth);
+      });
+      setFilteredItineraries(filtered);
+    }
+  }, [selectedMonth, itineraries]);
   const fetchTourGuideData = async () => {
     const Username = localStorage.getItem('Username');
     try {
@@ -233,348 +334,41 @@ function TourGuideProfile() {
     }
   };
 
-  const handleMonthFilter = async (month) => {
-    setSelectedMonth(month);
-  
-    const Username = localStorage.getItem("Username");
-  
-    if (!Username) {
-      console.error("No logged-in username found.");
-      return;
+ const handleMonthFilter = async (month) => {
+  setSelectedMonth(month); // Update the dropdown value
+
+  const Username = localStorage.getItem("Username");
+
+  if (!Username) {
+    console.error("No logged-in username found.");
+    return;
+  }
+
+  if (!month) {
+    // Reset to show all itineraries
+    setFilteredItineraries(itineraries);
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `http://localhost:8000/filterItinerariesByMonth?Username=${Username}&month=${month}`
+    );
+    if (response.ok) {
+      const data = await response.json();
+      setFilteredItineraries(data); // Update with filtered itineraries
+    } else {
+      console.error("Failed to fetch filtered itineraries");
+      const errorData = await response.json();
+      console.error(errorData.message || "Error fetching filtered data");
+      setFilteredItineraries([]); // Clear if no results or error
     }
-  
-    if (!month) {
-      // Reset to show all itineraries for this tour guide
-      setFilteredItineraries(itineraries);
-      return;
-    }
-  
-    try {
-      const response = await fetch(
-        `http://localhost:8000/filterItinerariesByMonth?Username=${Username}&month=${month}`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setFilteredItineraries(data); // Update with filtered itineraries
-      } else {
-        setFilteredItineraries([]); // Clear if no results or error
-        const errorData = await response.json();
-        console.error("Error fetching filtered itineraries:", errorData);
-      }
-    } catch (error) {
-      console.error("An error occurred while filtering itineraries:", error);
-      setFilteredItineraries([]);
-    }
-  };
-  
+  } catch (error) {
+    console.error("An error occurred while filtering itineraries:", error);
+    setFilteredItineraries([]); // Clear in case of error
+  }
+};
 
-  const toggleProfileDetails = () => {
-    setIsVisible((prevState) => !prevState);
-  };
-
-  const handleEditToggle = () => {
-    setIsEditing((prev) => !prev);
-  };
-
-  const handleItineraryChange = (e) => {
-    const { name, value } = e.target;
-    setItineraryData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-  const handleTouristItineraryChange = (e) => {
-    const { name, value } = e.target;
-    setTouristItineraryData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-
-  const handleItinerarySubmit = async (e) => {
-    e.preventDefault();
-    const Username = localStorage.getItem('Username');
-
-    const activitiesArray = itineraryData.Activities.split(',').map((activity) => activity.trim());
-    const locationsArray = itineraryData.Locations.split(',').map((location) => location.trim());
-
-    const updatedItineraryData = {
-      ...itineraryData,
-      Activities: activitiesArray,
-      Locations: locationsArray,
-      TourGuide: Username,
-    };
-
-    try {
-      const response = await fetch('http://localhost:8000/addItinerary', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedItineraryData),
-      });
-
-      if (response.ok) {
-        await fetchItineraries();
-        setErrorMessage('');
-        setIsCreatingItinerary(false);
-        setItineraryData({
-          Activities: '',
-          Locations: '',
-          Timeline: '',
-          DurationOfActivity: '',
-          Language: '',
-          Price: 0,
-          DatesTimes: '',
-          Accesibility: '',
-          pickUpDropOff: '',
-          bookingOpen: false,
-
-        });
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(`Error: ${response.status} - ${errorData.message || 'Unknown error occurred'}`);
-        console.error('Error response:', errorData);
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while adding the itinerary');
-      console.error('Error occurred while adding the itinerary:', error);
-    }
-  };
-  const handleTouristItinerarySubmit = async (e) => {
-    e.preventDefault();
-    const Username = localStorage.getItem('Username');
-
-    const tagsArray = touristItineraryData.Tags.split(',').map((tag) => tag.trim());
-    const locationsArray = touristItineraryData.Locations.split(',').map((location) => location.trim());
-    const activitiesArray = touristItineraryData.Activities.split(',').map((activity) => activity.trim());
-
-    const updatedTouristItineraryData = {
-      ...touristItineraryData,
-      Tags: tagsArray,
-      Locations: locationsArray,
-      Activities: activitiesArray,
-      tourGuide: Username,
-    };
-
-    try {
-      const response = await fetch('http://localhost:8000/addTouristItinerary', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedTouristItineraryData),
-      });
-
-      if (response.ok) {
-        await fetchTouristItineraries();
-        setErrorMessage('');
-        setIsCreatingTouristItinerary(false);
-        setTouristItineraryData({
-          Activities: '',
-          Locations: '',
-          startDate:'',
-          endDate:'',
-          Tags:'',
-        });
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(`Error: ${response.status} - ${errorData.message || 'Unknown error occurred'}`);
-        console.error('Error response:', errorData);
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while adding the itinerary');
-      console.error('Error occurred while adding the itinerary:', error);
-    }
-  };
-
-  const handleViewItinerary = (itinerary) => {
-    setSelectedItinerary(itinerary);
-    setIsEditingItinerary(false); // Reset editing state
-    setIsIVisible((prevState) => !prevState);
-  };
-  const handleViewTouristItinerary = (tourisItinerary) => {
-    setSelectedTouristItinerary(tourisItinerary);
-    setIsEditingTouristItinerary(false); // Reset editing state
-    setIsTIVisible((prevState) => !prevState);
-  };
-
-  const handleEditItinerary = (itinerary) => {
-    setItineraryData({
-      Activities: itinerary.Activities.join(', '),
-      Locations: itinerary.Locations.join(', '),
-      Timeline: itinerary.Timeline,
-      DurationOfActivity: itinerary.DurationOfActivity,
-      Language: itinerary.Language,
-      Price: itinerary.Price,
-      DatesTimes: itinerary.DatesTimes,
-      Accesibility: itinerary.Accesibility,
-      pickUpDropOff: itinerary.pickUpDropOff,
-      bookingOpen: itinerary.bookingOpen,
-
-    });
-    setSelectedItinerary(itinerary);
-    setIsEditingItinerary(true); // Set editing state to true
-  };
-  const handleEditTouristItinerary = (touristItinerary) => {
-    setTouristItineraryData({
-      Activities: touristItinerary.Activities.join(', '),
-      Locations: touristItinerary.Locations.join(', '),
-      startDate: touristItinerary.startDate,
-      endDate: touristItinerary.endDate,
-      Tags: touristItinerary.Tags.join(', '),
-    });
-    setSelectedTouristItinerary(touristItinerary);
-    setIsEditingTouristItinerary(true); // Set editing state to true
-  };
-  const handleDeleteItinerary = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:8000/deleteItinerary/${id}`, {
-        method: 'DELETE',
-      });
-      
-      if (response.ok) {
-        await fetchItineraries();
-        setSelectedItinerary(null);
-        
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(`Error: ${response.status} - ${errorData.message || 'Unknown error occurred'}`);
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while deleting the itinerary');
-      console.error('Error occurred while deleting the itinerary:', error);
-    }
-  };
-  const handleDeleteTouristItinerary = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:8000/deletetouristItinerary/${id}`, {
-        method: 'DELETE',
-      });
-      
-      if (response.ok) {
-        await fetchTouristItineraries();
-        setSelectedTouristItinerary(null);
-        
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(`Error: ${response.status} - ${errorData.message || 'Unknown error occurred'}`);
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while deleting the itinerary');
-      console.error('Error occurred while deleting the itinerary:', error);
-    }
-  };
-  const handleUpdateItinerary = async (e) => {
-    e.preventDefault();
-
-    const activitiesArray = itineraryData.Activities.split(',').map((activity) => activity.trim());
-    const locationsArray = itineraryData.Locations.split(',').map((location) => location.trim());
-
-    const updatedItineraryData = {
-      ...itineraryData,
-      Activities: activitiesArray,
-      Locations: locationsArray,
-    };
-
-    try {
-      const response = await fetch(`http://localhost:8000/updateItinerary/${selectedItinerary._id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedItineraryData),
-      });
-
-      if (response.ok) {
-        await fetchItineraries();
-        setIsEditingItinerary(false);
-        setSelectedItinerary(null);
-        setErrorMessage('');
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(`Error: ${response.status} - ${errorData.message || 'Unknown error occurred'}`);
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while updating the itinerary');
-      console.error('Error occurred while updating the itinerary:', error);
-    }
-  };
-  const handleUpdateTouristItinerary = async (e) => {
-    e.preventDefault();
-
-    const activitiesArray = touristItineraryData.Activities.split(',').map((activity) => activity.trim());
-    const locationsArray = touristItineraryData.Locations.split(',').map((location) => location.trim());
-    const tagsArray = touristItineraryData.Tags.split(',').map((tag) => tag.trim());
-    const updatedTouristItineraryData = {
-      ...touristItineraryData,
-      Activities: activitiesArray,
-      Locations: locationsArray,
-      Tags: tagsArray
-    };
-
-    try {
-      const response = await fetch(`http://localhost:8000/updatetouristItinerary/${selectedTouristItinerary._id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedTouristItineraryData),
-      });
-
-      if (response.ok) {
-        await fetchTouristItineraries();
-        setIsEditingTouristItinerary(false);
-        setSelectedTouristItinerary(null);
-        setErrorMessage('');
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(`Error: ${response.status} - ${errorData.message || 'Unknown error occurred'}`);
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while updating the itinerary');
-      console.error('Error occurred while updating the itinerary:', error);
-    }
-  };
-  const deactivateItinerary = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:8000/deactivateItinrary/${id}`, {
-        method: 'PATCH',
-      });
-      
-      if (response.ok) {
-        await fetchItineraries();
-        setSelectedItinerary(null);
-       
-        
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(`Error: ${response.status} - ${errorData.message || 'Unknown error occurred'}`);
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while deactivating the itinerary');
-      console.error('Error occurred while deactivating the itinerary:', error);
-    }
-  };
-  const activateItinerary = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:8000/activateItinrary/${id}`, {
-        method: 'PATCH',
-      });
-      
-      if (response.ok) {
-        await fetchItineraries();
-        setSelectedItinerary(null);
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(`Error: ${response.status} - ${errorData.message || 'Unknown error occurred'}`);
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while activating the itinerary');
-      console.error('Error occurred while activating the itinerary:', error);
-    }
-  };
   const handleDeleteRequest = async () => {
     const Username = localStorage.getItem('Username');
     setWaiting(true);
@@ -657,41 +451,68 @@ const handleViewReport = async (itineraryId) => {
         <img src={image} alt="Logo" style={styles.logo} />
       </div>
       <h1 style={styles.title}>Tour Guide Profile</h1>
-
-      <AssessmentIcon
-        alt="View Report"
-        style={{ cursor: 'pointer', color: 'white', marginRight: '-490px' }}
-        onClick={() => navigate('/guideReport')}
-      />
-
-      <LockResetIcon
-        alt="Profile Icon"
-        style={{ cursor: 'pointer', color: 'white', marginRight: '-490px' }}
-        onClick={togglePasswordModal}
-      />
-
-      {/* Profile Icon */}
-      <ManageAccountsIcon
-        style={styles.profileIcon}
-        title="Edit Profile"
-        onClick={toggleModal} // Open modal on click
-      />
-    </header>
-      {/* Sidebar */}
-   <div className="sidebar"style={styles.sidebar}>
-      
-      <ul>
-      <li 
-  onClick={() => navigate('/my-itineraries')} 
-  style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', paddingLeft: '10px' }}
->
-  <FaMap style={{ marginRight: '8px' }} />
-  View My Itineraries
-</li>
-
-      </ul> 
+      <div style={styles.manageAccountContainer}>
+  <ManageAccountsIcon
+    style={styles.profileIcon}
+    title="Manage Account Settings"
+    onClick={() => setShowDropdown((prev) => !prev)} // Toggle dropdown
+  />
+  {showDropdown && (
+    <div style={styles.dropdownMenu}>
+      <div
+        style={styles.dropdownItem}
+        onClick={() => {
+          setShowDropdown(false); // Close dropdown
+          toggleModal(); // Open Edit Profile modal
+        }}
+      >
+        Edit Profile
+      </div>
+      <div
+        style={styles.dropdownItem}
+        onClick={() => {
+          setShowDropdown(false); // Close dropdown
+          togglePasswordModal(); // Open Change Password modal
+        }}
+      >
+        Change Password
+      </div>
     </div>
-
+  )}
+</div>
+    </header>
+    {/* Sidebar */}
+    <div
+        style={styles.sidebar}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.width = '200px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '1')
+          );
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.width = '60px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '0')
+          );
+        }}
+      >
+        <div  class="itineraries" style={styles.item} onClick={() => navigate('/my-itineraries')}>
+          <FaMap style={styles.icon} />
+          <span className="label" style={styles.label}>
+            My Itineraries
+          </span>
+        </div>
+        <div  class="report" style={styles.item} onClick={() => navigate('/guideReport')}>
+          <FaStar style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Reviews
+          </span>
+        </div>
+      
+      
+     
+      </div>
     {/* Edit Profile Modal */}
     {modalOpen && (
       <div style={styles.modalOverlay}>
@@ -841,24 +662,6 @@ const handleViewReport = async (itineraryId) => {
 
 
 <div style={styles.mainContainer}>
-  {/* Filter Section */}
-  <div style={styles.filterContainer}>
-    <h3 style={styles.filterTitle}>
-      <DisplaySettingsIcon style={styles.filterIcon} /> Filter Itineraries
-    </h3>
-    <select
-      onChange={(e) => handleMonthFilter(e.target.value)}
-      value={selectedMonth}
-      style={styles.filterDropdown}
-    >
-      <option value="">All Months</option>
-      {Array.from({ length: 12 }, (_, i) => (
-        <option key={i + 1} value={i + 1}>
-          {new Date(0, i).toLocaleString("default", { month: "long" })}
-        </option>
-      ))}
-    </select>
-  </div>
   {/* Itinerary Reports Section */}
   <div style={styles.reportsSection}>
     <h3 style={styles.sectionTitle}>
@@ -886,26 +689,32 @@ const handleViewReport = async (itineraryId) => {
             {/* Report Table */}
             {itineraryReports[itinerary._id]?.visible && (
               <div style={styles.reportSection}>
-              <table style={styles.table}>
-                <thead style={styles.tableHead}>
-                  <tr>
-                    <th style={styles.tableHeadCell}>Tourist</th>
-                    <th style={styles.tableHeadCell}>Email</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {itineraryReports[itinerary._id].tourists.map((tourist, index) => (
-                    <tr
-                      key={index}
-                      style={index % 2 === 0 ? styles.tableRow : styles.tableRowAlt} // Alternating row colors
-                    >
-                      <td style={styles.tableCell}>{tourist.Username}</td>
-                      <td style={styles.tableCell}>{tourist.Email}</td>
+                <table style={styles.table}>
+                  <thead style={styles.tableHead}>
+                    <tr>
+                      <th style={styles.tableHeadCell}>Tourist</th>
+                      <th style={styles.tableHeadCell}>Email</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {itineraryReports[itinerary._id].tourists.map(
+                      (tourist, index) => (
+                        <tr
+                          key={index}
+                          style={
+                            index % 2 === 0
+                              ? styles.tableRow
+                              : styles.tableRowAlt
+                          } // Alternating row colors
+                        >
+                          <td style={styles.tableCell}>{tourist.Username}</td>
+                          <td style={styles.tableCell}>{tourist.Email}</td>
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
         ))
@@ -914,74 +723,154 @@ const handleViewReport = async (itineraryId) => {
       )}
     </div>
   </div>
+
+  {/* Filter Section */}
+  <div style={styles.filterContainer}>
+    <h3 style={styles.filterTitle}>
+      <DisplaySettingsIcon style={styles.filterIcon} /> Filter Reports
+    </h3>
+    <select
+      onChange={(e) => handleMonthFilter(e.target.value)}
+      value={selectedMonth}
+      style={styles.filterDropdown}
+    >
+      <option value="">All Months</option>
+      {Array.from({ length: 12 }, (_, i) => (
+        <option key={i + 1} value={i + 1}>
+          {new Date(0, i).toLocaleString("default", { month: "long" })}
+        </option>
+      ))}
+    </select>
+  </div>
 </div>
 
-{/* Flagged Itineraries */}
-{tourGuideInfo?.flaggedItineraries?.length > 0 ? (
-  <div style={styles.section}>
-    <h3 style={styles.sectionTitle}>
-      <span style={styles.titleText}>Flagged Itineraries</span>
-      <AssistantPhotoIcon style={styles.sectionIcon} />
-    </h3>
-    <ul style={styles.list}>
-      {Array.from(
-        new Set(tourGuideInfo.flaggedItineraries.map((itinerary) => itinerary._id))
-      ).map((uniqueId) => {
-        const itinerary = tourGuideInfo.flaggedItineraries.find(
-          (item) => item._id === uniqueId
-        );
-        return (
-          <li key={itinerary._id} style={styles.listItem}>
-            <div style={styles.itineraryInfo}>
-              <p style={styles.listText}>
-                <LocationOnIcon style={styles.icon} />
-                <strong>Locations:</strong> {itinerary.Locations.join(', ')}
-              </p>
-              <p style={styles.listText}>
-                <CalendarMonthIcon style={styles.icon} />
-                <strong>Dates:</strong> {itinerary.DatesTimes}
-              </p>
-            </div>
-          </li>
-        );
-      })}
-    </ul>
+<div style={styles.filtersWrapper}>
+  {/* Date Filter */}
+  <div style={styles.dateFilter}>
+    <FaCalendarDay style={styles.iconn} />
+    <input
+      type="date"
+      value={date}
+      onChange={(e) => setDate(e.target.value)}
+      style={styles.dateInput}
+    />
   </div>
-) : (
-  <p style={styles.noData}>No flagged itineraries.</p>
-)}
 
-{/* Feedback */}
-<div style={styles.section}>
-  <h3 style={styles.sectionTitle}>
-    <span style={styles.titleText}>Feedback</span>
-    <FeedbackIcon style={styles.sectionIcon} />
-  </h3>
-  {tourGuideInfo?.feedback?.length > 0 ? (
-    <ul style={styles.feedbackList}>
-      {tourGuideInfo.feedback.map((feedback, index) => (
-        <li key={index} style={styles.feedbackItem}>
-          <h4 style={styles.feedbackUser}>
-            <FaUserCircle style={styles.icon} />
-            {feedback.touristUsername}
-          </h4>
-          <p style={styles.listText}>
-            <strong>Rating:</strong> {feedback.rating}/5
-          </p>
-          <p style={styles.listText}>
-            <strong>Commented:</strong> {feedback.comment}
-          </p>
-          <p style={styles.feedbackDate}>
-            <CalendarMonthIcon style={styles.icon} /> {feedback.date}
-          </p>
-        </li>
+  {/* Apply/Reset Filter by Date */}
+  <button style={styles.filterButton} onClick={handleFilterD}>
+    <FaFilter style={styles.iconf} /> {filteredD ? "Clear Filter" : "Filter"}
+  </button>
+
+  {/* Itinerary Filter */}
+  <div style={styles.itineraryFilter}>
+    <label htmlFor="itineraryDropdown" style={styles.filterLabel}>
+      <DisplaySettingsIcon style={styles.iconn} /> Filter by Itinerary:
+    </label>
+    <select
+      id="itineraryDropdown"
+      value={filterI ? filterI._id : ""}
+      onChange={(e) => handleFilterChange(e.target.value)}
+      style={styles.dropdown}
+    >
+      <option value="">Select an itinerary</option>
+      {itineraries.map((itinerary) => (
+        <option key={itinerary._id} value={itinerary._id}>
+          {itinerary.Locations.join(", ")}
+        </option>
       ))}
-    </ul>
-  ) : (
-    <p style={styles.noData}>No feedback available.</p>
+    </select>
+  </div>
+</div>
+
+
+{/* Statistics Section */}
+<div style={styles.reportSection}>
+  {!filteredI && !filteredD && (
+    <>
+      <h3 style={styles.sectionTitlee}>
+       Total Profit from Sales: ${totalSales}
+      </h3>
+      {mostSold && (
+        <div style={styles.itineraryCard}>
+          <h4 style={styles.cardTitle}>
+            <FaChartLine style={styles.iconn} /> Most Sold Itinerary
+          </h4>
+          <p><strong>Locations:</strong> {mostSold.Locations.join(", ")}</p>
+          <p><strong>Price:</strong> ${mostSold.Price}</p>
+          <p><strong>Sales:</strong> ${mostSold.sales}</p>
+        </div>
+      )}
+      {leastSold && (
+        <div style={styles.itineraryCard}>
+          <h4 style={styles.cardTitle}>
+            <FaChartLine style={styles.iconn} /> Least Sold Itinerary
+          </h4>
+          <p><strong>Locations:</strong> {leastSold.Locations.join(", ")}</p>
+          <p><strong>Price:</strong> ${leastSold.Price}</p>
+          <p><strong>Sales:</strong> ${leastSold.sales}</p>
+        </div>
+      )}
+    </>
   )}
 </div>
 
+{/* Reports Section */}
+<div style={styles.reportSection}>
+  {/* Filtered by Date */}
+  {filteredD && (
+    <div style={styles.filteredSection}>
+      <h3 style={styles.sectionTitle}>
+        <FaCalendarDay style={styles.iconn} /> Filtered by Date: {date}
+      </h3>
+      {itineraries.map((itinerary) => (
+        <div key={itinerary._id} style={styles.itineraryCard}>
+          <p><strong>Locations:</strong> {itinerary.Locations.join(", ")}</p>
+          <p><strong>Price:</strong> ${itinerary.Price}</p>
+          <p><strong>Sales:</strong> ${itinerary.sales}</p>
+        </div>
+      ))}
+    </div>
+  )}
+
+  {/* Filtered by Itinerary */}
+  {filteredI && filterI && (
+    <div style={styles.filteredSection}>
+      <h3 style={styles.sectionTitle}>
+        <FaClipboardList style={styles.iconn} /> Selected Itinerary
+      </h3>
+      <p><strong>Locations:</strong> {filterI.Locations.join(", ")}</p>
+      <p><strong>Price:</strong> ${filterI.Price}</p>
+      <p><strong>Sales:</strong> ${filterI.sales}</p>
+      <p><strong>Bookings:</strong> {count}</p>
+      <ul>
+        {dates.map((date, index) => (
+          <li key={index}>{date}</li>
+        ))}
+      </ul>
+      <p><strong>Cancellations:</strong> {count - filterI.sales / filterI.Price}</p>
+    </div>
+  )}
+
+  {/* All Itineraries */}
+  {!filteredI && !filteredD && (
+    <div style={styles.itineraryList}>
+      <h3 style={styles.sectionTitle}>
+        <FaMapMarkedAlt style={styles.iconn} /> All Itineraries
+      </h3>
+      {itineraries.length > 0 ? (
+        itineraries.map((itinerary) => (
+          <div key={itinerary._id} style={styles.itineraryCard}>
+            <p><strong>Locations:</strong> {itinerary.Locations.join(", ")}</p>
+            <p><strong>Price:</strong> ${itinerary.Price}</p>
+            <p><strong>Sales:</strong> ${itinerary.sales}</p>
+          </div>
+        ))
+      ) : (
+        <p>No itineraries found.</p>
+      )}
+    </div>
+  )}
+</div>
 </div>
     );
   }
@@ -1023,19 +912,90 @@ const styles = {
     fontSize: '24px',
     fontWeight: 'bold',
     margin: 0,
-    marginLeft:'90px'
+    marginLeft:'50px'
   },
   profileIcon: {
     fontSize: '30px',
     color: 'white',
     cursor: 'pointer',
   },
-  sidebar  :{
-    marginTop: '20px',
-  display: 'flex',       // Enables flexbox layout
-  justifyContent: 'center', // Horizontally centers the content
-  alignItems: 'center',  // Vertically centers the content
-  textAlign: 'center',
+  sidebar: {
+    position: 'fixed',
+    top: '60px',
+    left: 0,
+    height: '100vh',
+    width: '50px', // Default width when collapsed
+    backgroundColor: 'rgba(15, 81, 50, 0.85)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start', // Ensure alignment starts from the left
+    padding: '10px 0',
+    overflowX: 'hidden',
+    transition: 'width 0.3s ease',
+    zIndex: 1000,
+  },
+  sidebarExpanded: {
+    width: '200px', // Width when expanded
+  },
+  iconContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start', // Align items to the left
+    padding: '10px',
+    width: '100%', // Take full width of the sidebar
+    color: '#fff',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease',
+  },
+  iconContainerHover: {
+    backgroundColor: '#084B24', // Background on hover
+  },
+  icon: {
+    fontSize: '24px',
+    marginLeft: '15px', // Move icons slightly to the right
+    color: '#fff', // Icons are always white
+  },
+  label: {
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#fff',
+    opacity: 0, // Initially hidden
+    whiteSpace: 'nowrap', // Prevent label text from wrapping
+    transition: 'opacity 0.3s ease',
+  },
+  labelVisible: {
+    opacity: 1, // Fully visible when expanded
+  },
+  manageAccountContainer: {
+    position: "relative",
+    display: "inline-block",
+  },
+  dropdownMenu: {
+    position: "absolute",
+    top: "40px",
+    right: "0",
+    backgroundColor: "#fff",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    zIndex: 1000,
+    minWidth: "150px",
+    overflow: "hidden",
+  },
+  dropdownItem: {
+    padding: "10px 15px",
+    fontSize: "14px",
+    color: "#333",
+    cursor: "pointer",
+    transition: "background-color 0.2s ease",
+  },
+  dropdownItemHover: {
+    backgroundColor: "#f5f5f5",
+  },
+  item: {
+ 
+    padding: '10px 0',
   },
   modalOverlay: {
     position: 'fixed',
@@ -1118,6 +1078,21 @@ const styles = {
     right: '490px', // Adjust placement
     top: '290px', // Adjust placement
   },
+  filterInput: {
+    width: '100%',
+    padding: '8px',
+    borderRadius: '5px',
+    border: '1px solid #ccc',
+    marginBottom: '10px',
+  },
+  statisticsSection: {
+    marginTop: '20px',
+    padding: '15px',
+    backgroundColor: '#f7fdf8',
+    borderRadius: '10px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+    textAlign: 'center',
+  },
   profileForm: {
     marginTop: '10px',
     display: 'flex',
@@ -1195,42 +1170,86 @@ const styles = {
   },
   mainContainer: {
     display: "flex",
-    alignItems: "flex-start",
-    gap: "20px",
-    marginTop: "20px",
+    justifyContent: "space-between", // Space between the two sections
+    alignItems: "flex-start", // Align at the top
+    gap: "20px", // Add some space between them
+    color:'#0F5132',
+    fontSize:'14px'
   },
+  
   filterContainer: {
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#white",
     padding: "10px",
     borderRadius: "10px",
     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
     width: "200px",
     marginTop:'70px'
   },
-  filterTitle: {
-    fontSize: "16px",
-    fontWeight: "bold",
-    color: "#0F5132",
+  filtersWrapper: {
     display: "flex",
-    alignItems: "center",
+    justifyContent: "flex-end", // Align the entire section to the right
+    alignItems: "center", // Vertically align items
+    gap: "10px", // Maintain smaller gaps between elements
+    padding: "10px 20px", // Add padding for a cleaner layout
+    backgroundColor: "#fff", // White background for visibility
+    borderRadius: "10px", // Rounded corners for a polished look
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)", // Subtle shadow
+    maxWidth: "600px", // Limit width for better layout
+    margin: "20px auto", // Center horizontally in its container
+  },
+  
+  dateFilter: {
+    display: "flex",
+    alignItems: "center", // Align the input and icon
+    gap: "10px", // Ensure the icon and input are close
+  },
+  
+  dateInput: {
+    padding: "6px 10px", // Adjust padding for better sizing
+    borderRadius: "5px", // Rounded corners
+    border: "1px solid #ccc", // Light border for better contrast
+    fontSize: "14px", // Standardize font size
+  },
+  
+  filterButton: {
+    backgroundColor: "#0F5132", // Green button
+    color: "#fff",
+    padding: "6px 12px",
+    borderRadius: "5px",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "14px",
+    transition: "background-color 0.3s ease",
+    display: "flex",
+    alignItems: "center", // Align the icon and text
     gap: "5px",
   },
-  filterIcon: {
-    fontSize: "20px",
+  
+  itineraryFilter: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px", // Ensure close proximity between label and dropdown
+  },
+  
+  filterLabel: {
+    fontSize: "14px",
+    fontWeight: "bold",
     color: "#0F5132",
   },
-  filterDropdown: {
-    width: "100%",
-    padding: "8px",
+  
+  dropdown: {
+    padding: "6px 10px",
     borderRadius: "5px",
     border: "1px solid #ccc",
-    marginTop: "10px",
+    fontSize: "14px",
   },
+  
+  
   reportsSection: {
     flex: "3",
   },
   sectionTitle: {
-    fontSize: "20px",
+    fontSize: "25px",
     color: "#0F5132",
     textAlign: "center",
     display: "flex",
@@ -1238,12 +1257,21 @@ const styles = {
     justifyContent: "center",
     gap: "10px",
   },
+  sectionTitlee: {
+    fontSize: "23px", // Increased font size for better visibility
+    color: "#0F5132", // Green color for the text
+    textAlign: "center", // Center the text horizontally
+    display: "flex", // Use flexbox for alignment
+    alignItems: "center", // Center the content vertically
+    justifyContent: "center", // Center the content horizontally
+  },
+  
   titleText: {
     color: '#0F5132', // Green shade for the title
   },
 
   flagIcon: {
-    fontSize: "18px",
+    fontSize: "20px",
     color: "#0F5132",
   },
   gridContainer: {
@@ -1368,9 +1396,6 @@ const styles = {
     alignItems: "center",
     gap: "5px",
   },
-  icon: {
-    fontSize: "16px",
-  },
   noData: {
     fontSize: "14px",
     color: "#777",
@@ -1404,6 +1429,119 @@ const styles = {
     color: "#777",
     textAlign: "right",
     marginTop: "5px",
+  },
+  filterMainContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "20px",
+    padding: "20px",
+    backgroundColor: "#fff",
+    borderRadius: "10px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    margin: "20px 0",
+    maxWidth: "800px",
+    marginLeft: "auto",
+    marginRight: "auto",
+  },
+  
+  filterSection: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "15px",
+    width: "100%",
+  },
+  iconn: {
+    fontSize: "14px",
+    color: "#0F5132",
+  },
+  iconf: {
+    fontSize: "14px",
+    color: "white",
+  },
+  filteredSection: {
+    marginTop: "15px",
+    backgroundColor: "#f7fdf8",
+    padding: "12px",
+    borderRadius: "8px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    fontSize: "13px",
+    color: "#333",
+  },
+  statisticsSection: {
+    marginTop: "15px",
+    padding: "12px",
+    backgroundColor: "#f9f9f9",
+    borderRadius: "8px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+  },
+  cardTitle: {
+    fontSize: "15px",
+    fontWeight: "bold",
+    color: "#0F5132",
+    marginBottom: "8px",
+  },
+  itineraryCard: {
+    marginTop: "12px",
+    padding: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "8px",
+    backgroundColor: "#fff",
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    fontSize: "13px",
+  },
+
+  sectionTitle: {
+    display: "flex",
+    alignItems: "center",
+    fontSize: "15px",
+    fontWeight: "bold",
+    color: "#0F5132",
+    gap: "5px",
+    marginBottom: "10px",
+  },
+  reportSection: {
+    marginTop: "15px",
+    padding: "12px",
+    backgroundColor: "#fff",
+    borderRadius: "8px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    fontFamily: "'Arial', sans-serif",
+  },
+  table: {
+    width: "100%",
+    borderCollapse: "collapse",
+    marginTop: "10px",
+    fontSize: "13px",
+    color: "#333",
+  },
+  tableHead: {
+    backgroundColor: "#0F5132",
+    color: "#fff",
+    fontWeight: "bold",
+    textAlign: "left",
+  },
+  tableHeadCell: {
+    padding: "10px",
+    border: "1px solid #ccc",
+    fontSize: "13px",
+  },
+  tableRow: {
+    backgroundColor: "#fff",
+    textAlign: "left",
+  },
+  tableCell: {
+    padding: "8px",
+    border: "1px solid #e0e0e0",
+    fontSize: "13px",
+  },
+  tableRowAlt: {
+    backgroundColor: "#f9f9f9",
   },
   
 }
