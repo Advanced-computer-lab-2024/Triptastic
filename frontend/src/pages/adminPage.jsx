@@ -1303,14 +1303,7 @@ const addTourismGov = async (e) => {
     transition: 'opacity 0.3s ease',
   },
   //
-  profitSummary: {
-    backgroundColor: '#f1f5f9',
-    padding: '20px',
-    borderRadius: '10px',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    textAlign: 'center',
-    marginBottom: '20px',
-},
+
 profitAmount: {
     fontSize: '24px',
     fontWeight: 'bold',
@@ -1437,12 +1430,16 @@ loadingText: {
   marginTop: '20px',
 },
 //////
+
   profitSummary: {
     textAlign: 'center',
     marginBottom: '20px',
     padding: '15px', // Reduced padding    backgroundColor: '#f5f5f5',
     borderRadius: '8px',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    height: '150px', // Set a fixed height (adjust as needed)
+    minHeight: '90px', // Optional: Ensure a minimum height
+    maxHeight: '90px', // Optional: Restrict maximum height
   },
   summaryTitle: {
     fontSize: '20px', // Reduced font size
