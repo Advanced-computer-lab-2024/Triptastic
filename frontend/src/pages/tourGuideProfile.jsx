@@ -18,6 +18,8 @@ import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CommentIcon from '@mui/icons-material/Comment';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+
 
 function TourGuideProfile() {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -457,6 +459,10 @@ const handleViewReport = async (itineraryId) => {
     title="Manage Account Settings"
     onClick={() => setShowDropdown((prev) => !prev)} // Toggle dropdown
   />
+                    <LogoutOutlinedIcon
+      style={{marginLeft:"20",cursor:'pointer'}}
+      onClick={() => navigate('/Guest')}
+    />
   {showDropdown && (
     <div style={styles.dropdownMenu}>
       <div
@@ -608,6 +614,7 @@ const handleViewReport = async (itineraryId) => {
       </div>
     )}
 
+
     {/* Change Password Modal */}
     {showPasswordModal && (
       <div style={styles.modalOverlay}>
@@ -756,6 +763,7 @@ const handleViewReport = async (itineraryId) => {
     />
   </div>
 
+
   {/* Apply/Reset Filter by Date */}
   <button style={styles.filterButton} onClick={handleFilterD}>
     <FaFilter style={styles.iconf} /> {filteredD ? "Clear Filter" : "Filter"}
@@ -814,6 +822,7 @@ const handleViewReport = async (itineraryId) => {
   )}
 </div>
 
+
 {/* Reports Section */}
 <div style={styles.reportSection}>
   {/* Filtered by Date */}
@@ -831,6 +840,7 @@ const handleViewReport = async (itineraryId) => {
       ))}
     </div>
   )}
+
 
   {/* Filtered by Itinerary */}
   {filteredI && filterI && (
@@ -850,6 +860,7 @@ const handleViewReport = async (itineraryId) => {
       <p><strong>Cancellations:</strong> {count - filterI.sales / filterI.Price}</p>
     </div>
   )}
+
 
   {/* All Itineraries */}
   {!filteredI && !filteredD && (

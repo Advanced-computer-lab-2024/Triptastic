@@ -20,6 +20,8 @@ import { FaBell ,FaCalendar,FaDollarSign ,FaClock,FaTags,FaPercent} from 'react-
 import { FaSearch,
   } from "react-icons/fa";
   import museum from '../images/museum.jpg'; 
+  import HotelIcon from '@mui/icons-material/Hotel';
+import MuseumIcon from '@mui/icons-material/Museum';
 
 
 
@@ -298,14 +300,14 @@ const Museums = () => {
           );
         }}
       >
-        <div style={styles.item} onClick={() => navigate('/historical-locations')}>
-          <FaLandmark style={styles.icon} />
+        <div   style={styles.item} onClick={() => navigate('/historical-locations')}>
+          <FaUniversity style={styles.icon} />
           <span className="label" style={styles.label}>
             Historical Sites
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/museums')}>
-          <FaUniversity style={styles.icon} />
+        <div  style={styles.item} onClick={() => navigate('/museums')}>
+          <MuseumIcon style={styles.icon} />
           <span className="label" style={styles.label}>
             Museums
           </span>
@@ -316,13 +318,13 @@ const Museums = () => {
             Products
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/itineraries')}>
+        <div  style={styles.item} onClick={() => navigate('/itineraries')}>
           <FaMap style={styles.icon} />
           <span className="label" style={styles.label}>
             Itineraries
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/activities')}>
+        <div  style={styles.item} onClick={() => navigate('/activities')}>
           <FaRunning style={styles.icon} />
           <span className="label" style={styles.label}>
             Activities
@@ -335,7 +337,7 @@ const Museums = () => {
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/book-hotels')}>
-          <FaHotel style={styles.icon} />
+          <HotelIcon style={styles.icon} />
           <span className="label" style={styles.label}>
             Book a Hotel
           </span>

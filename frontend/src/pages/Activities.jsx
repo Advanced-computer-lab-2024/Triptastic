@@ -13,6 +13,8 @@ import IosShareIcon from '@mui/icons-material/IosShare';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import { FiCopy } from 'react-icons/fi'; // Import a copy icon
 import activity from '../images/activity.jpg'; 
+import HotelIcon from '@mui/icons-material/Hotel';
+import MuseumIcon from '@mui/icons-material/Museum';
 
 const Activities = () => {
   const { selectedCurrency, conversionRate ,fetchConversionRate} = useContext(CurrencyContext);
@@ -305,6 +307,7 @@ const Activities = () => {
           await navigator.clipboard.writeText(data.link); // Copy link to clipboard
           setCopySuccess((prev) => ({ ...prev, [activity._id]: 'Link copied to clipboard!' })); // Set success message for the specific museum
         } else if (shareMethod === 'email') {
+          setEmail(''); // Reset the email state
       
           alert('Link sent to the specified email!');
         }
@@ -315,7 +318,10 @@ const Activities = () => {
       console.error('Error generating shareable link:', error);
     }
   };
-  
+  const handleViewDetails = (activity) => {
+    // Assuming you have a route like "/activity-details/:id"
+    navigate(`/activity-details/${activity._id}`);
+  };
   const handleEmailInputChange = (e) => {
     setEmail(e.target.value);
   };
@@ -466,10 +472,10 @@ return (
         <div style={styles.section}>
           <h3>Sort Activities</h3>
           <div style={styles.buttonGroup}>
-            <button onClick={() => handleSort('PASC', 'RASC')}>Price Asc & Rating Asc</button>
-            <button onClick={() => handleSort('PASC', 'RDSC')}>Price Asc & Rating Desc</button>
-            <button onClick={() => handleSort('PDSC', 'RASC')}>Price Desc & Rating Asc</button>
-            <button onClick={() => handleSort('PDSC', 'RDSC')}>Price Desc & Rating Desc</button>
+            <button style={{ borderRadius:'20px', padding: '10px 14px',}} onClick={() => handleSort('PASC', 'RASC')}>Price Asc & Rating Asc</button>
+            <button style={{ borderRadius:'20px', padding: '10px 14px',}} onClick={() => handleSort('PASC', 'RDSC')}>Price Asc & Rating Desc</button>
+            <button style={{ borderRadius:'20px', padding: '10px 14px',}} onClick={() => handleSort('PDSC', 'RASC')}>Price Desc & Rating Asc</button>
+            <button style={{ borderRadius:'20px', padding: '10px 14px',}} onClick={() => handleSort('PDSC', 'RDSC')}>Price Desc & Rating Desc</button>
           </div>
         </div>
 
@@ -489,14 +495,14 @@ return (
           );
         }}
       >
-        <div style={styles.item} onClick={() => navigate('/historical-locations')}>
-          <FaLandmark style={styles.icon} />
+        <div   style={styles.item} onClick={() => navigate('/historical-locations')}>
+          <FaUniversity style={styles.icon} />
           <span className="label" style={styles.label}>
-            Historical Loc
+            Historical Sites
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/museums')}>
-          <FaUniversity style={styles.icon} />
+        <div  style={styles.item} onClick={() => navigate('/museums')}>
+          <MuseumIcon style={styles.icon} />
           <span className="label" style={styles.label}>
             Museums
           </span>
@@ -507,13 +513,13 @@ return (
             Products
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/itineraries')}>
+        <div  style={styles.item} onClick={() => navigate('/itineraries')}>
           <FaMap style={styles.icon} />
           <span className="label" style={styles.label}>
             Itineraries
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/activities')}>
+        <div  style={styles.item} onClick={() => navigate('/activities')}>
           <FaRunning style={styles.icon} />
           <span className="label" style={styles.label}>
             Activities
@@ -526,7 +532,7 @@ return (
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/book-hotels')}>
-          <FaHotel style={styles.icon} />
+          <HotelIcon style={styles.icon} />
           <span className="label" style={styles.label}>
             Book a Hotel
           </span>
@@ -601,7 +607,7 @@ return (
                 max="5"
               />
             </label>
-            <button type="submit">Apply Filters</button>
+            <button type="submit" style={{ borderRadius:'20px', padding: '10px 14px',}}>Apply Filters</button>
           </form>
         </div>
 
@@ -609,32 +615,66 @@ return (
 
         {/* Error Message */}
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-
         {/* Activities List */}
-        {activities.length > 0 ? (
-          <div>
-            {activities.map((activity) => (
-              <div key={activity._id} style={styles.activityCard}>
-                 <div style={{ position: 'relative', display: 'inline-block'}}>
+{activities.length > 0 ? (
+  <div
+    style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+      gap: '20px',
+    }}
+  >
+    {activities.map((activity, index) => (
+      <div
+        key={index}
+        style={{
+          position: 'relative',
+          backgroundColor: '#fff',
+          border: '1px solid #ddd',
+          borderRadius: '10px',
+          padding: '20px',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          transition: 'transform 0.2s ease',
+          overflow: 'visible',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'scale(1.03)';
+          e.currentTarget.style.boxShadow = '0 8px 12px rgba(0, 0, 0, 0.15)';
+          e.currentTarget.style.borderColor = '#0F5132';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+          e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+          e.currentTarget.style.borderColor = '#ddd';
+        }}
+      >
 
+ 
 
+ 
+
+  
       
-
-
-
-
-
+<div>
   {/* Share Button */}
-   <button
+  <button
     onClick={() => handleShareMode(activity)}
-    style={styles.shareButtonTopRight}
+    style={{
+      position: 'absolute', // Ensure it's at the top-right corner
+      top: '10px',
+      right: '10px',
+      background: 'none', // No background
+      border: 'none', // Remove border
+      cursor: 'pointer', // Change cursor to pointer
+      fontSize: '20px', // Size of the icon
+      color: '#0F5132', // Icon color
+    }}
   >
     <IosShareIcon />
   </button>
-           
-
-  
-
   <button
     onClick={() => handleShareMode(activity)}
     style={styles.shareOption}
@@ -644,61 +684,54 @@ return (
 
   {/* Share Dropdown */}
   {isEmailMode && activityToShare && activityToShare._id === activity._id && (
-    <div style={styles.shareDropdown}>
-      {/* Copy Link Option */}
-      <button
-        onClick={() => handleShare(activity, 'copy')}
-        style={styles.shareOption}
-      >
-        <FiCopy style={styles.shareOptionIcon} /> Copy Link
-      </button>
+  <div style={styles.shareDropdown}>
+    <button
+      onClick={() => handleShare(activity, 'copy')}
+      style={styles.shareOption}
+    >
+      <FiCopy style={styles.shareOptionIcon} /> Copy Link
+    </button>
+    <button
+      onClick={() => setIsEmailMode(false)}
+      style={styles.shareOption}
+    >
+      <MailOutlineIcon style={styles.shareOptionIcon} /> Share via Email
+    </button>
+    {showEmailInput && activityToShare && activityToShare._id === activity._id && (
+      <div style={{ marginTop: '10px' }}>
+        <input
+          type="email"
+          placeholder="Enter recipient's email"
+          value={email}
+          onChange={handleEmailInputChange}
+          style={styles.emailInput}
+        />
+        <button
+          onClick={() => handleShare(activity, 'email')}
+          style={{ ...styles.button, marginTop: '10px' }}
+        >
+          Send Email
+        </button>
+      </div>
+    )}
+  </div>
+)}
 
-      {/* Share via Email Option */}
-      <button
-        onClick={() => setIsEmailMode(false)}
-        style={styles.shareOption}
-      >
-        <MailOutlineIcon style={styles.shareOptionIcon} /> Share via Email
-      </button>
-
-      {/* Email Input Field */}
-      {showEmailInput && activityToShare && activityToShare._id === activity._id && (
-        <div style={{ marginTop: '10px' }}>
-          <input
-            type="email"
-            placeholder="Enter recipient's email"
-            value={email}
-            onChange={handleEmailInputChange}
-            style={styles.emailInput}
-          />
-          <button
-            onClick={() => handleShare(activity, 'email')}
-            style={{ ...styles.button, marginTop: '10px' }}
-          >
-            Send Email
-          </button>
-        </div>
-      )}
-    </div>
-  )}
-</div>
-  
-                
-                <h4>{activity.name}</h4>    {/* Display Average Rating */}
-              
-             
-                <p>
-                  <strong><FaDollarSign /> Price:</strong> {(activity.price * conversionRate).toFixed(2)}{' '}
-                  {selectedCurrency}
-                </p>
-                <p>
+          <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>
+            {activity.name}
+          </h3>
+          <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
+            <strong><FaMapMarkerAlt />Location:</strong> {activity.location}
+          </p>
+          <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
                   <strong><FaCalendar /> Date:</strong>{' '}
                   {new Date(activity.date).toLocaleDateString()}
                 </p>
-                <p>
-                  <strong><FaMapMarkerAlt /> Location:</strong> {activity.location}
+          <p style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '8px'  }}>
+                  <strong><FaDollarSign /> Price:</strong> {(activity.price * conversionRate).toFixed(2)}{' '}
+                  {selectedCurrency}
                 </p>
-                <p>
+                <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
                   <strong>Booking Open:</strong> {activity.bookingOpen ? 'Yes' : 'No'}
                   {!activity.bookingOpen && (
                     <FaBell
@@ -707,11 +740,33 @@ return (
                     />
                   )}
                 </p>
-                <div style={styles.buttonGroup}>
-  <button onClick={() => bookActivity(activity.name)}>Book</button>
- 
+         
+        </div>
+        <a
+  href="#"
+  onClick={() => navigate(`/activities/${encodeURIComponent(activity.name)}`)}
+  style={styles.activityDetailsLink}
+>
+  {expandedActivities[activity._id] ? 'Hide Activity Details' : 'View Activity Details'}
+</a>
 
-      {/* Bookmark Button */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+          <button
+           onClick={() => bookActivity(activity.name)}
+            style={{
+              backgroundColor: '#0F5132',
+              color: '#fff',
+              padding: '10px 16px',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              //flex: 1, // Adjust the button to take up space proportionally
+            }}
+          >
+            Book
+          </button>
+            {/* Bookmark Button */}
       <button
         onClick={() => handleBookmarkToggle(activity._id)} // Toggle bookmark for the current activity
         style={{
@@ -719,6 +774,7 @@ return (
           border: 'none',
           cursor: 'pointer',
           fontSize: '24px',
+          marginRight: '70px', // Add space between the buttons
         }}
         title={bookmarkedActivities.some((item) => item._id === activity._id) ? 'Remove Bookmark' : 'Add Bookmark'}
       >
@@ -728,62 +784,23 @@ return (
           <FaRegBookmark style={{ color: '#000' }} /> // Outline icon
         )}
       </button>
-</div>
-
-               
-                {copySuccess[activity._id] && <p>{copySuccess[activity._id]}</p>}
-                <a
-  href="#"
-  onClick={(e) => {
-    e.preventDefault(); // Prevent default anchor behavior
-    toggleActivityDetails(activity._id); // Toggle details visibility
-  }}
-  style={styles.activityDetailsLink}
->
-  {expandedActivities[activity._id] ? 'Hide Activity Details' : 'View Activity Details'}
-</a>
-                {expandedActivities[activity._id] && (
-                  <div style={styles.details}>
-                    <p><strong>Category:</strong> {activity.Category}</p>
-                    <p><strong><FaClock /> Time:</strong> {activity.time}</p>
-                    <p><strong><FaTags /> Tags:</strong> {activity.tags.join(', ')}</p>
-                    <p><strong><FaPercent /> Discounts:</strong> {activity.specialDiscounts}</p>
-                    <p><strong><FaUserCircle /> Advertiser:</strong> {activity.Advertiser}</p>
-                  </div>
-                )}
-                  {/* Display Average Rating */}
-            <div style={styles.ratingContainer}>
+          
+           {/* Display Average Rating */}
+           <div style={{ display: 'flex', alignItems: 'center', gap: '10px',marginRight:'20px' }}>
       <span style={styles.stars}>
       {'★'.repeat(Math.floor(activity.rating || 0)) + '☆'.repeat(5 - Math.floor(activity.rating || 0))}
       </span>
     </div>
-                  {/* Display Existing Comments */}
-    <div style={styles.commentsSection}>
-          
-    <h5 style={{ fontSize: '12px' }}>Comments:</h5>
-    {activity.comments.length > 0 ? (
-        activity.comments.map((comment, index) => (
-          <div key={index} style={styles.commentItem}>
-            <p>
-              <strong>{comment.Username}:</strong> {comment.comment}
-            </p>
-            <span style={styles.commentDate}>
-              {new Date(comment.commentedAt).toLocaleDateString()}
-            </span>
-          </div>
-        ))
-      ) : (
-        <p>No comments yet</p>
-      )}
-    </div>
-              </div>
-              
-            ))}
-          </div>
-          
-        ) : (
-          <p>No activities found.</p>
-        )}
+        </div>
+      </div>
+    ))}
+  </div>
+) : (
+  <p>No activities found.</p>
+)}
+
+
+       
       </>
       
     )}
@@ -882,10 +899,6 @@ const styles = {
     flexWrap: 'wrap',
   },
 
-
-
-
-
 container: {
   maxWidth: '1200px',
       margin: '0 auto',
@@ -893,7 +906,7 @@ container: {
       backgroundColor: '#f9f9f9',
       borderRadius: '10px',
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-      marginTop:'60px',
+      marginTop:'20px',
       fontSize:'12px'
 },
 activityDetailsLink: {
@@ -969,13 +982,16 @@ bookmarkButton: {
   display: 'flex', // Flexbox for proper alignment
   alignItems: 'center', // Vertically align the icon
   justifyContent: 'center',
-  marginTop:'30px'
 },
 bookmarkIcon: {
   fontSize: '30px', // Match the size of other icons or adjust as needed
   color: '#FFD700', // Gold color for bookmark icon
 },
-
+item: {
+ 
+  padding: '10px 0',
+  
+},
 
 title: {
   fontSize: '24px',
@@ -1079,18 +1095,17 @@ shareButton: {
 
 },
 shareDropdown: {
-  position: 'absolute', // Position relative to parent
-  top: '80px', // Distance from the button (adjust as needed)
-  left: '3000%', // Center align with the button
-  transform: 'translateX(-50%)', // Center alignment adjustment
+  position: 'absolute',
+  top: '60px',
+  right: '10px',
   backgroundColor: '#fff',
   border: '1px solid #ddd',
   borderRadius: '8px',
   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-  zIndex: 1000,
   padding: '10px',
-  width: '200px', // Fixed width
+  width: '200px',
 },
+
 shareOption: {
   display: 'flex',
   alignItems: 'center', // Align icon and text vertically
@@ -1119,9 +1134,10 @@ button: {
   backgroundColor: '#0F5132',
   color: 'white',
   border: 'none',
-  padding: '10px',
+  padding: '5px',
   borderRadius: '5px',
   cursor: 'pointer',
+  fontSize: '10px',
 },
 
 topSection: {
@@ -1138,7 +1154,7 @@ ratingContainer: {
 },
 stars: {
  
-  fontSize: '34px', // Adjust size for better visibility
+  fontSize: '24px', // Adjust size for better visibility
   color: '#FFD700',
   marginRight: '8px', // Space between stars and the rating text
 },
@@ -1170,7 +1186,8 @@ commentDate: {
 buttonGroup: {
   display: 'flex',
   gap: '10px',
-  marginTop: '15px',
+ borderRadius:'100px', 
+ padding: '10px 14px',
 },
 
 };
