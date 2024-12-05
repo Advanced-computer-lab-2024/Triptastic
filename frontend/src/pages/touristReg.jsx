@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './signuptest.module.css'; // Import CSS module
 import background from '../images/back.webp'; // Replace with the path to your image
-
+import logo2 from "../images/image_transparent.png";
 
 function AuthPage() {
   const [selectedRole, setSelectedRole] = useState(""); // Track the selected role
@@ -456,10 +456,15 @@ return (
   <div style={styles2.container}>
        <div style={styles2.overlay}></div>
        <header style={styles2.header}>
-         {/* Animated Welcome Message */}
-         <h1 style={styles2.title}>
-           Welcome to <span style={styles2.highlight}>{animatedText}</span>
-         </h1>
+        {/* Animated Welcome Message */}
+<div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+  <div style={styles2.logoContainer}>
+    <img src={logo2} alt="Logo" style={styles2.logo} />
+  </div>
+  <h1 style={styles2.title}>
+    Welcome to <span style={styles2.highlight}>{animatedText}</span>
+  </h1>
+</div>
         
 
          
@@ -1016,7 +1021,23 @@ return (
          
          
          
-         
+         {/* Continue as Guest */}
+<div style={{ marginTop: "20px", textAlign: "center" }}>
+  <button
+    onClick={() => navigate("/Guest")}
+    style={{
+      padding: "10px 20px",
+      borderRadius: "15px",
+      border: "2px solid #0F5132",
+      backgroundColor: "transparent",
+      color: "white",
+      cursor: "pointer",
+      fontSize: "16px",
+    }}
+  >
+    Continue as Guest
+  </button>
+</div>
          
          
          
@@ -1027,6 +1048,16 @@ return (
 );
 }
 const styles2 = {
+  logoContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom:'70px',
+  },
+  logo: {
+    height: '40px',
+    width: '50px',
+    borderRadius: '10px',
+  },
     container: {
       position: 'relative',
       width: '100%',
