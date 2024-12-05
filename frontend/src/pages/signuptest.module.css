@@ -12,30 +12,33 @@
 
 /* AuthPage Container */
 :local(.authPage) {
-    background-color: #c9d6ff;
-    background: linear-gradient(to right, #4b8f3c, #0F5132);
+    background-color: transparent;
+    background: linear-gradient(to right, rgba(75, 143, 60, 0.8), rgba(15, 81, 50, 0.8));
+
     /* Green tones */    display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    height: 100vh;
+    height: 100vh; /* Full-screen height */
     width: 100vw;
     transition: background-color 0.3s ease;
 }
 
 /* Main Container */
 :local(.container) {
-    background-color: #fff;
-    border-radius: 30px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
-    position: relative;
-    overflow: hidden;
-    width: 100%; /* Full width */
-    height: 100vh; /* Full height */
-
+    background-color:transparent; /* Semi-transparent background */
+    border-radius: 15px; /* Softer rounded corners */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Add a slight shadow */
+    width: 50vw; /* Smaller width */
+    height: 50vh; /* Smaller height */
+    min-width: 300px; /* Minimum width for responsiveness */
+    min-height: 300px; /* Minimum height for responsiveness */
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    flex-direction: column;
+    position: relative; /* Ensure proper positioning */
+    margin-bottom: 50px;
 }
 
 /* Text Elements */
@@ -49,7 +52,7 @@
 
 :local(.container span) {
     font-size: 12px;
-    color: #888;
+    color: transparent;
 }
 
 :local(.container a) {
@@ -59,14 +62,14 @@
     margin: 15px 0 10px;
 }
 
+
 /* Buttons */
 :local(.container button) {
     background-color:   #0F5132; /* Green */
-    color: #fff;
-    font-size: 14px;
-    padding: 10px 45px;
-    border: none;
-    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.8);;
+    padding: 6px 16px; /* Smaller padding */
+    font-size: 12px; /* Smaller font size */
+    border-radius: 4px; /* Smaller radius */
     font-weight: 600;
     text-transform: uppercase;
     cursor: pointer;
@@ -79,32 +82,28 @@
 }
 
 .container form {
-    background-color: #fff;
+    width: 90%; /* Reduce form width for smaller container */
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
-    padding: 0 40px;
-    height: 100%;
-    width: 100%;
-    text-align: center;
+    gap: 5px; /* Spacing between form elements */
 }
 
 :local(.container input ){
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
-    margin: 8px 0;
-    padding: 10px 15px;
-    font-size: 14px;
-    border-radius: 8px;
-    width: 100%;
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+    border: 1px solid transparent;
+    padding: 6px 8px; /* Smaller padding */
+  font-size: 12px; /* Smaller font size */
+  border-radius: 4px; /* Smaller radius */
+    
+    width: 100%; /* Full width of the form */
     outline: none;
     transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
 :local(.container input:focus) {
-    border-color:   #0F5132; /* Green */
-    background-color: #f0fff0; /* Light green background */
+    border-color: #0f5132; /* Green border on focus */
 }
 /* Forms */
 :local(.formContainer) {
@@ -144,7 +143,7 @@
 /* Style for h1 */
 :local(.signIn h1) {
     margin-bottom: 0px; /* Space between the heading and the form */
-    font-size: 3rem; /* Adjust the size of the heading */
+    font-size: 25px; /* Adjust the size of the heading */
     text-align: center; /* Center align the heading text */
 }
 
@@ -165,7 +164,7 @@
     padding: 10px;
     margin: 0px;
     width: 100%;
-    border: 1px solid #ccc;
+    border: 1px solid transparent;
     border-radius: 5px;
 }
 
@@ -175,7 +174,7 @@
     margin-top: 5px;
     border: none;
     background-color: #0F5132;
-    color: white;
+    color: transparent;
     border-radius: 5px;
     cursor: pointer;
 }
@@ -213,13 +212,14 @@
     max-width: 500px; /* Smaller max-width for OTP form */
     margin: 30px auto;
     padding: 2px;
-    background-color: #fff;
+    background-color: transparent;
     border-radius: 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     transition: all 0.3s ease;
+    position: relative;
 }
 
 /* OTP form input fields */
@@ -228,7 +228,7 @@
     margin: 10px 0;
     padding: 5px;
     font-size: 16px;
-    border: 1px solid #ddd;
+    border: 1px solid transparent;
     border-radius: 8px;
     outline: none;
 }
@@ -255,7 +255,7 @@
     padding: 10px 20px;
     border: none;
     background-color: #0F5132; /* Green background */
-    color: white;
+    color: transparent;
     cursor: pointer;
     border-radius: 5px;
     font-size: 16px;
@@ -270,8 +270,8 @@
 :local(.otpResetForm button, .formContainer button) {
     width: 80%;
     padding: 12px;
-    background-color: #f44336;
-    color: #fff;
+    background-color:transparent;
+    color: transparent;
     font-size: 16px;
     border-radius: 8px;
     border: none;
@@ -280,14 +280,15 @@
 }
 
 :local(.otpResetForm button:hover, .formContainer button:hover) {
-    background-color: #d32f2f;
+    background-color:transparent;
 }
 
 /* Responsive design adjustments */
 @media (max-width: 768px) {
     :local(.formContainer) {
-        width: 90%;
-        padding: 15px;
+        width: 80vw; /* Adjust width for smaller screens */
+        height: auto; /* Let height adjust automatically */
+        padding: 20px; /* Add padding for smaller screens */
     }
 
     :local(.formContainer input, .formContainer button) {
@@ -351,7 +352,7 @@
 
 :local(.sign-up form ){
     width: 30%; /* Reduced form width */
-    max-width: 150px; /* Smaller maximum width */
+    max-width: 50px; /* Smaller maximum width */
     padding: 0px; /* Reduced padding inside the form */
     box-sizing: border-box;
     display: flex;
@@ -377,15 +378,15 @@
     padding: 2px; /* Reduced padding for inputs */
     font-size: 5px; /* Smaller font size */
     border-radius: 6px;
-    border: 1px solid #ddd;
+    border: 1px solid transparent;
     outline: none;
-    background-color: #f8f8f8;
+    background-color: transparent;
     transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
 :local(.sign-up form input:focus) {
     border-color: orange;
-    background-color: #fff;
+    background-color: transparent;
 }
 
 :local(.sign-up h1) {
@@ -400,8 +401,8 @@
     padding: 8px; /* Reduced padding for buttons */
     font-size: 12px; /* Smaller font size for buttons */
     border-radius: 5px;
-    background-color: orange;
-    color: white;
+    background-color: transparent;
+    color: transparent;
     cursor: pointer;
     border: none;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
@@ -427,13 +428,13 @@
 }
 
 :local(.sign-up::-webkit-scrollbar-track ){
-    background: #f0f0f0;
+    background: transparent;
 }
 
 /* Responsive Design for Smaller Screens */
 @media (max-width: 768px) {
     :local(.sign-up form) {
-        max-width: 70%; /* Reduce form width further on smaller screens */
+        max-width: 30%; /* Reduce form width further on smaller screens */
     }
 
    :local( .sign-up h1) {
@@ -468,7 +469,7 @@
 
 :local(.socialIcons a:hover) {
     background-color: #0F5132; /* Green */
-    color: #fff;
+    color: transparent;
     border-color:   #0F5132;
 }
 
