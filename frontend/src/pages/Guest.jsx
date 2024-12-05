@@ -110,7 +110,7 @@ const Guest = () => {
         <div   style={styles.item} onClick={() => navigate('/historical-locations')}>
           <FaUniversity style={styles.icon} />
           <span className="label" style={styles.label}>
-            Historical Loc
+            Historical Sites
           </span>
         </div>
         <div  style={styles.item} onClick={() => navigate('/museums')}>
@@ -396,7 +396,11 @@ const styles = {
     width: '70px',
     borderRadius: '10px',
   },
+  item: {
  
+    padding: '10px 0',
+    
+  },
 
   icon: {
     fontSize: '16px',
