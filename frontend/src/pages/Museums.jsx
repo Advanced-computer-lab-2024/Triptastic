@@ -143,8 +143,12 @@ const Museums = () => {
         setShareableLink(data.link); // Set the link to state
   
         if (shareMethod === 'copy') {
+
           await navigator.clipboard.writeText(data.link); // Copy link to clipboard
-          setCopySuccess((prev) => ({ ...prev, [museumName]: 'Link copied to clipboard!' })); // Set success message for the specific museum
+
+          setCopySuccess((prev) => ({ ...prev, [museumName]: 'Link copied to clipboard!' })); 
+          alert('Link copied to clipboard!');
+
         } else if (shareMethod === 'email') {
       
           alert('Link sent to the specified email!');
@@ -297,7 +301,7 @@ const Museums = () => {
         <div style={styles.item} onClick={() => navigate('/historical-locations')}>
           <FaLandmark style={styles.icon} />
           <span className="label" style={styles.label}>
-            Historical Loc
+            Historical Sites
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/museums')}>
@@ -577,6 +581,11 @@ const styles = {
     color: '#fff',
     cursor: 'pointer',
     transition: 'background-color 0.3s ease',
+  },
+  item: {
+ 
+    padding: '10px 0',
+    
   },
   iconContainerHover: {
     backgroundColor: '#084B24', // Background on hover

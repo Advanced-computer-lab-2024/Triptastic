@@ -38,11 +38,11 @@ const createSeller = async (req, res) => {
   }
 };
 const loginSeller = async (req, res) => {
-  const { Email, Password } = req.body;
+  const { Username, Password } = req.body;
 
   try {
       // Find the seller by email
-      const seller = await sellerModel.findOne({ Email });
+      const seller = await sellerModel.findOne({ Username });
       if (!seller) {
           return res.status(404).json({ error: 'Seller not found' });
       }

@@ -60,7 +60,7 @@ import DeletionRequests from './pages/DeletionRequest';
 import AddProduct from './pages/AddProduct';
 import EditProducts from './pages/EditProducts';
 import UserStatistics from './pages/chart';
-
+import Flaged from './pages/flagged';
 
 
 
@@ -152,6 +152,7 @@ function App() {
             <Route path="/AddProduct" element={<AddProduct />} />
             <Route path="/EditProducts" element={<EditProducts />} />
             <Route path="/chart" element={<UserStatistics />} />
+            <Route path="/flagged" element={<Flaged />} />
           </Routes>
         </Router>
       </Elements>
