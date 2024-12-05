@@ -1316,123 +1316,110 @@ const bookItinerary = async (req, res) => {
 
 
 const submitFeedbackItinerary = async (req, res) => {
-  const { username } = req.query; // Get the username from the query parameters
-  const { Itinerary, rating, comment } = req.body; // Use itineraryId passed in the body
+  const { username } = req.query; 
+  const {  itineraryId, rating, comment } = req.body;
 
-  // Validate input
-  if (!Itinerary || !rating || !comment) {
-    return res.status(400).json({ message: 'Itinerary ID, rating, and comment are required' });
-  }
+  console.log("Received feedback submission request:", { itineraryId, rating, comment, username }); // Log request details
 
-  // Retrieve the tourist's username from the request or session (logged-in user)
-  const touristUsername = await touristModel.findOne({ Username: username });
-
-  // Check if the tourist is authenticated
-  if (!touristUsername) {
-    return res.status(403).json({ message: 'User is not authenticated' });
+  if (!itineraryId || !rating || !comment) {
+    console.log("Validation failed: Missing required fields."); // Log validation failure
+    return res.status(400).json({ message: 'Itinerary ID, rating, and comment are required.' });
   }
 
   try {
-    // Fetch the itinerary
-    const itinerary = await itineraryModel.findById(Itinerary); // Ensure you have the correct model here
+    const tourist = await touristModel.findOne({ Username: username });
+    console.log("Fetched tourist:", tourist); // Log fetched tourist
+
+    if (!tourist) {
+      console.log("Authentication failed: Tourist not found."); // Log authentication failure
+      return res.status(403).json({ message: 'User is not authenticated.' });
+    }
+
+    const itinerary = await itineraryModel.findById(itineraryId);
+    console.log("Fetched itinerary:", itinerary); // Log fetched itinerary
 
     if (!itinerary) {
-      return res.status(404).json({ message: 'Itinerary not found' });
+      console.log("Itinerary not found."); // Log missing itinerary
+      return res.status(404).json({ message: 'Itinerary not found.' });
+    }
+
+    if (rating < 1 || rating > 5) {
+      console.log("Invalid rating value."); // Log invalid rating
+      return res.status(400).json({ message: 'Rating must be between 1 and 5.' });
+    }
+
+    console.log(`Submitting feedback for itinerary: ${itineraryId}, User: ${username}`);
+
+    const feedbackEntry = {
+      touristUsername: tourist.Username,
+      itineraryId,
+      rating,
+      comment,
+      date: Date.now(),
+    };
+
+    itinerary.feedback.push(feedbackEntry);
+    await itinerary.save();
+
+    res.status(200).json({ message: 'Feedback submitted successfully!' });
+  } catch (error) {
+    console.error('Error in submitFeedbackItinerary:', error); // Log server error
+    res.status(500).json({ message: 'Server error while submitting feedback.' });
+  }
+};const submitFeedback = async (req, res) => {
+  const { username } = req.query;  // From query parameters
+  const { itineraryId, rating, comment, tourGuideUsername } = req.body;  // Ensure correct destructuring
+
+  if (!itineraryId || !rating || !comment || !tourGuideUsername) {
+    return res.status(400).json({ message: 'Itinerary ID, rating, comment, and tour guide username are required.' });
+  }
+
+  try {
+    // Fetch the tourist by username
+    const tourist = await touristModel.findOne({ Username: username });
+
+    if (!tourist) {
+      return res.status(403).json({ message: 'User is not authenticated.' });
+    }
+
+    // Fetch the itinerary and populate TourGuide
+    const itinerary = await itineraryModel.findById(itineraryId).populate('TourGuide');
+
+    if (!itinerary) {
+      return res.status(404).json({ message: 'Itinerary not found.' });
     }
 
     if (rating < 1 || rating > 5) {
       return res.status(400).json({ message: 'Rating must be between 1 and 5.' });
     }
-    console.log(touristUsername);
 
-    // Create the feedback object
+    console.log(`Submitting tour guide feedback. Itinerary: ${itineraryId}, Tour Guide: ${tourGuideUsername}`);
+
+    // Create the feedback entry
     const feedbackEntry = {
-      touristUsername: touristUsername.Username, // Add the tourist's username
-      itineraryId: Itinerary, // Use the ID from the itinerary object directly
+      touristUsername: tourist.Username,
+      itineraryId,
       rating,
       comment,
-      date: Date.now(), // Automatically set to current date
+      date: Date.now(),
     };
 
-    // Add the feedback to the itinerary's feedback array
-    itinerary.feedback.push(feedbackEntry);
+    // Find the tour guide and update their feedback
+    const tourGuide = await TourGuideModel.findOne({ Username: tourGuideUsername });
 
-    // Save the updated itinerary document
-    await itinerary.save();
+    if (!tourGuide) {
+      return res.status(404).json({ message: `Tour guide '${tourGuideUsername}' not found.` });
+    }
 
-    res.status(200).json({ message: 'Feedback submitted successfully!' });
+    tourGuide.feedback.push(feedbackEntry);
+    await tourGuide.save();
+
+    res.status(200).json({ message: 'Tour guide feedback submitted successfully!' });
   } catch (error) {
-    
-
-    console.error(error);
-    res.status(500).json({ message: 'Server error while submitting feedback' });
+    console.error('Error in submitFeedback:', error);
+    res.status(500).json({ message: 'Server error while submitting feedback.' });
   }
 };
-
-
-const submitFeedback = async (req, res) => {
-  const { username } = req.query; // Get the username from the query parameters
-  const { Itinerary, rating, comment} = req.body; // Use itineraryId passed in the body
-
-  // Validate input
-  if (!Itinerary || !rating || !comment) {
-   
-    return res.status(400).json({ message: 'Itinerary ID, rating, and comment are required' });
-  }
-
-  // Retrieve the tourist's username from the request or session (logged-in user)
-  const touristUsername = await touristModel.findOne({ Username: username });
-  console.log(comment);
-  console.log(rating);
-  console.log(touristUsername);
-  // Check if the tourist is authenticated
-  if (!touristUsername) {
-    return res.status(403).json({ message: 'User is not authenticated' });
-  }
-
-  try {
-    // Fetch the itinerary to find the associated tour guide's username
-    const itinerary = await itineraryModel.findById(Itinerary).populate('TourGuide'); // Ensure you have the correct model here
-
-    if (!itinerary) {
-      return res.status(404).json({ message: 'Itinerary not found' });
-    }
-    if (rating < 0 || rating > 5) {
-      return res.status(400).json({ message: 'Rating must be between 0 and 5.' });
-    }
-    const tourGuideUsername = Itinerary.TourGuide; // Get the tour guide's username from the itinerary
-
-    // Create the feedback object
-    const feedbackEntry = {
-      touristUsername: touristUsername.Username, // Add the tourist's username
-      itineraryId:Itinerary, // Use the ID from the itinerary object directly
-      rating,
-      comment,
-      date: Date.now(), // Automatically set to current date
-    };
-    
-    // Find the tour guide and add the feedback
-    const foundTourGuide = await TourGuideModel.findOne({ Username: tourGuideUsername });
-
-    if (!foundTourGuide) {
-      return res.status(404).json({ message: `Tour guide '${tourGuideUsername}' not found` });
-    }
-
-    // Add the feedback to the tour guide's feedback array
-    foundTourGuide.feedback.push(feedbackEntry);
-
-    // Save the updated tour guide document
-    await foundTourGuide.save();
-    
-    res.status(200).json({ message: 'Feedback submitted successfully!' });
-  } catch (error) {
- 
-
-        res.status(500).json({ message: 'Server error while submitting feedback' });
-  }
-};
-
-
 
 const getBookedItineraries = async(req, res) => {
   const { username } = req.query; // Get the username from the query parameters
