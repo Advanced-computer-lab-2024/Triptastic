@@ -9,6 +9,7 @@ import LockResetIcon from '@mui/icons-material/LockReset';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
 import { Tooltip } from 'react-tooltip'; // Updated import
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
 const SellerProfile = () => {
   const [sellerProducts, setSellerProducts] = useState([]);
@@ -601,42 +602,53 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
     <div style={styles.container}>
       {/* Header */}
       <header style={styles.header}>
-        <div style={styles.logoContainer}>
-          <img src={image} alt="Logo" style={styles.logo} />
-        </div>
+  <div style={styles.logoContainer}>
+    <img src={image} alt="Logo" style={styles.logo} />
+  </div>
 
+  <h1 style={styles.title}>Seller Profile</h1>
 
+  {/* Icons Container */}
+  <div style={styles.iconContainer}>
+    {/* Products Icon */}
+    <FaBox
+      title="View Products"
+      size={22}
+      style={styles.icon}
+      onClick={() => navigate('/products')} // Navigate to Products page
+    />
 
+    {/* Notification Bell */}
+    <FaBell
+      title="Notifications"
+      size={22}
+      style={styles.icon}
+      onClick={handleNotificationClick}
+    />
 
-        <h1 style={styles.title}>Seller Profile</h1>
-  
-        {/* Products Icon */}
-        <FaBox title=" View Products"
-          size={22}
-          style={{ cursor: 'pointer', color: 'white', marginRight: '-490px' }}
-          onClick={() => navigate('/products')} // Navigate to Products page
-        />
-  
-        {/* Notification Bell */}
-        <FaBell title="Notifications"
-          size={22}
-          style={{ cursor: 'pointer', color: 'white', marginRight: '-490px' }}
-          onClick={handleNotificationClick}
-        />
-         <LockResetIcon title="Change Password"
-            alt="Profile Icon"
-            style={{cursor: 'pointer', color: 'white', marginRight: '-490px' }}
-            onClick={togglePasswordModal}
-          />
-        
-  
-        {/* Profile Icon */}
-        <ManageAccountsIcon title="Edit Profile"
+    {/* Change Password Icon */}
+    <LockResetIcon
+      title="Change Password"
+      style={styles.icon}
+      onClick={togglePasswordModal}
+    />
 
-          style={styles.profileIcon}
-          onClick={toggleModal} // Open modal on click
-        />
-     
+    {/* Profile Icon */}
+    <ManageAccountsIcon
+      title="Edit Profile"
+      style={styles.profileIcon}
+      onClick={toggleModal} // Open modal on click
+    />
+
+    {/* Logout Icon */}
+    <LogoutOutlinedIcon
+      style={styles.logoutIcon}
+      onClick={() => navigate('/Guest')}
+    />
+  </div>
+</header>
+
+      
   
     {/* Notification Bell Icon */}
  
@@ -647,7 +659,7 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
         style={{
           position: 'absolute',
           top: 0,
-            right: 100,
+          right: 100,
           backgroundColor: '#ff4d4d',
           color: 'white',
           borderRadius: '50%',
@@ -1137,6 +1149,44 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
 };
 
 const styles = {
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '10px 20px',
+    backgroundColor: '#333',
+    color: 'white',
+  },
+  logoContainer: {
+    flex: 1,
+  },
+  logo: {
+    height: '50px',
+    width: 'auto',
+  },
+  title: {
+    flex: 2,
+    textAlign: 'center',
+    fontSize: '24px',
+  },
+  iconContainer: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    gap: '20px', // Consistent spacing between icons
+  },
+  icon: {
+    cursor: 'pointer',
+    color: 'white',
+  },
+  profileIcon: {
+    cursor: 'pointer',
+    color: 'white',
+  },
+  logoutIcon: {
+    cursor: 'pointer',
+    color: 'white',
+  },
   photoSection : {
     display: 'flex',
     flexDirection: 'column',
@@ -1197,6 +1247,9 @@ const styles = {
     fontSize: '30px',
     color: 'white',
     cursor: 'pointer',
+  },
+  logoutIcon: {
+    cursor:'pointer'
   },
   modalOverlay: {
     position: 'fixed',

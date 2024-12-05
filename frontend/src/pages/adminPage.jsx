@@ -10,6 +10,7 @@ import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
 import { FaUser,FaExclamationCircle, FaHeart, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
 import UserStatistics from './chart';
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
 
 const AdminPage = () => {
@@ -1469,6 +1470,9 @@ loadingText: {
     textAlign: 'left',
     transition: 'transform 0.2s',
   },
+  logoutIcon: {
+    cursor:'pointer'
+  },
   profitCardHover: {
     transform: 'scale(1.02)',
   },
@@ -1582,6 +1586,7 @@ loadingText: {
 />
 
 
+
       {/* Notification Count */}
       {notifications && notifications.length > 0 && (
         <span
@@ -1653,6 +1658,9 @@ loadingText: {
     title="Manage Account Settings"
     onClick={() => setShowDropdown((prev) => !prev)} // Toggle dropdown
   />
+  <div style={styles.logoutButton} onClick={()=>navigate('/Guest')}>
+     <LogoutOutlinedIcon style={styles.logoutIcon} />
+   </div>
   {showDropdown && (
     <div style={styles.dropdownMenu}>
       <div
