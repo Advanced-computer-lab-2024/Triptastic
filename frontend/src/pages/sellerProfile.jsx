@@ -646,7 +646,7 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
       onClick={() => navigate('/Guest')}
     />
   </div>
-</header>
+
 
       
   
@@ -659,7 +659,7 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
         style={{
           position: 'absolute',
           top: 0,
-          right: 100,
+          right: 150,
           backgroundColor: '#ff4d4d',
           color: 'white',
           borderRadius: '50%',
@@ -753,7 +753,7 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
           ) : null}
         </div>
       )}
-       </header>
+     </header>
 
    {/* Add Product Section */}
    <div style={styles.card}>
