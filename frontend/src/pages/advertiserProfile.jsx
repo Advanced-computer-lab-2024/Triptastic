@@ -12,6 +12,8 @@ import { FaCalendarDay, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, F
   import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
   import TrendingUpOutlinedIcon from '@mui/icons-material/TrendingUpOutlined';
   import TrendingDownOutlinedIcon from '@mui/icons-material/TrendingDownOutlined';
+  import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+
 const AdvertiserProfile = () => {
   const [advertiserInfo, setAdvertiserInfo] = useState(null);
   const [activities, setActivities] = useState([]);
@@ -456,6 +458,10 @@ const [date, setDate] = useState('');
       alt="Manage Settings"
       style={styles.profileIcon}
       onClick={() => setShowDropdown((prev) => !prev)} // Toggle dropdown visibility
+    />
+                  <LogoutOutlinedIcon
+      style={{marginLeft:"20",cursor:'pointer'}}
+      onClick={() => navigate('/Guest')}
     />
     {showDropdown && (
       <div style={styles.dropdownMenu}>

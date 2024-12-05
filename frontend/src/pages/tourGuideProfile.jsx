@@ -18,6 +18,8 @@ import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CommentIcon from '@mui/icons-material/Comment';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+
 
 function TourGuideProfile() {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -457,6 +459,10 @@ const handleViewReport = async (itineraryId) => {
     title="Manage Account Settings"
     onClick={() => setShowDropdown((prev) => !prev)} // Toggle dropdown
   />
+                    <LogoutOutlinedIcon
+      style={{marginLeft:"20",cursor:'pointer'}}
+      onClick={() => navigate('/Guest')}
+    />
   {showDropdown && (
     <div style={styles.dropdownMenu}>
       <div

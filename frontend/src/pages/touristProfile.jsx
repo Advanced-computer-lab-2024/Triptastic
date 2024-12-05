@@ -16,6 +16,7 @@ import { MdNotificationImportant } from 'react-icons/md';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import "intro.js/introjs.css"; // Import Intro.js styles
 import introJs from "intro.js";
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
 
 
@@ -937,6 +938,10 @@ return (
         <div style={styles.cartButton} onClick={() => navigate('/Cart')}>
           <FaShoppingCart style={styles.cartIcon} />
         </div>
+           {/* Logout Icon */}
+   <div style={styles.logoutButton} onClick={()=>navigate('/Guest')}>
+     <LogoutOutlinedIcon style={styles.logoutIcon} />
+   </div>
       </div>
     </header>
 
@@ -1712,6 +1717,9 @@ const styles = {
     padding: '10px',
     borderBottom: '1px solid #ddd',
     fontWeight: 'bold',
+  },
+  logoutIcon: {
+    cursor:'pointer'
   },
   notificationItem: {
    
