@@ -513,55 +513,84 @@ const BookFlights = () => {
       {/* Search Form */}
  <div style={styles.searchFormContainer}>
  <form onSubmit={handleSubmit} style={styles.searchForm}>
-   <div style={styles.searchField}>
-     <FaPlaneDeparture style={styles.icon} />
-     <input
-       type="text"
-       name="origin"
-       value={flightDetails.origin}
-       onChange={handleInputChange}
-       placeholder="From: Origin"
-       style={styles.input}
-       required
-     />
-   </div>
-   <div style={styles.searchField}>
-     <FaPlaneArrival style={styles.icon} />
-     <input
-       type="text"
-       name="destination"
-       value={flightDetails.destination}
-       onChange={handleInputChange}
-       placeholder="To: Destination"
-       style={styles.input}
-       required
-     />
-   </div>
-   <div style={styles.searchField}>
-     <FaCalendarAlt style={styles.icon} />
-     <input
-       type="date"
-       name="date"
-       value={flightDetails.date}
-       onChange={handleInputChange}
-       style={styles.input}
-       required
-     />
-   </div>
-   <div style={styles.searchField}>
-     <FaUser style={styles.icon} />
-     <input
-       type="number"
-       name="adults"
-       value={flightDetails.adults}
-       onChange={handleInputChange}
-       placeholder="1 Traveler"
-       min="1"
-       max="10"
-       style={styles.input}
-       required
-     />
-   </div>
+ <div style={styles.searchField}>
+      <FaPlaneDeparture style={styles.icon} />
+      <select
+        name="origin"
+        value={flightDetails.origin}
+        onChange={handleInputChange}
+        style={styles.input}
+        required
+      >
+        <option value="" disabled>Select Origin</option>
+        {/* Add options for the origin */}
+        <option value="JFK">John F. Kennedy International Airport (JFK)</option>
+        <option value="LHR">London Heathrow Airport (LHR)</option>
+        <option value="DXB">Dubai International Airport (DXB)</option>
+        <option value="ATL">Hartsfield-Jackson Atlanta International Airport (ATL)</option>
+        <option value="ORD">O'Hare International Airport (ORD)</option>
+        <option value="LAX">Los Angeles International Airport (LAX)</option>
+        <option value="LHR">London Heathrow Airport (LHR)</option>
+        <option value="CDG">Charles de Gaulle Airport (CDG)</option>
+        {/* Add more options as needed */}
+      </select>
+    </div>
+
+    {/* To: Dropdown */}
+    <div style={styles.searchField}>
+      <FaPlaneArrival style={styles.icon} />
+      <select
+        name="destination"
+        value={flightDetails.destination}
+        onChange={handleInputChange}
+        style={styles.input}
+        required
+      >
+        <option value="" disabled>Select Destination</option>
+        {/* Add options for the destination */}
+        <option value="LAX">Los Angeles International Airport (LAX)</option>
+        <option value="FCO">Fiumicino Airport (FCO)</option>
+        <option value="LHR">London Heathrow Airport (LHR)</option>
+        <option value="DXB">Dubai International Airport (DXB)</option>
+        <option value="JFK">John F. Kennedy International Airport (JFK)</option>
+        <option value="SYD">Sydney Kingsford Smith Airport (SYD)</option>
+        <option value="CDG">Charles de Gaulle Airport (CDG)</option>
+        <option value="BKK">Suvarnabhumi Airport (BKK)</option>
+        <option value="ICN">Incheon International Airport (ICN)</option>
+        <option value="SIN">Singapore Changi Airport (SIN)</option>
+        <option value="ORD">O'Hare International Airport (ORD)</option>
+        {/* Add more options as needed */}
+      </select>
+    </div>
+
+    {/* Date Input */}
+    <div style={styles.searchField}>
+      <FaCalendarAlt style={styles.icon} />
+      <input
+        type="date"
+        name="date"
+        value={flightDetails.date}
+        onChange={handleInputChange}
+        style={styles.input}
+        required
+      />
+    </div>
+
+    {/* Adults Input */}
+    <div style={styles.searchField}>
+      <FaUser style={styles.icon} />
+      <input
+        type="number"
+        name="adults"
+        value={flightDetails.adults}
+        onChange={handleInputChange}
+        placeholder="1 Traveler"
+        min="1"
+        max="10"
+        style={styles.input}
+        required
+      />
+    </div>
    <button type="submit" disabled={loading} style={styles.searchButton}>
           {loading ? 'Searching...' : 'Search Flights'}
           <FaSearch /> Search

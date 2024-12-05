@@ -8,7 +8,7 @@ import LockResetIcon from '@mui/icons-material/LockReset';
 import { FaTag, FaInfoCircle, FaDollarSign ,FaSearch} from "react-icons/fa";
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
-import { FaExclamationCircle, FaHeart, FaFileAlt,FaTrashAlt ,FaThList,FaPlus} from 'react-icons/fa';
+import { FaExclamationCircle, FaHeart, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit } from 'react-icons/fa';
 
 
 
@@ -118,44 +118,6 @@ const AdminPage = () => {
       [name]: value
     }));
   };
-  const handleProductEdit = (productId) => {
-    const product = myProducts.find((product) => product._id === productId);
-    setEditProductId(productId);
-    setEditProductData({
-      productName: product.productName,
-      description: product.description,
-      price: product.price,
-      stock: product.stock,
-      rating: product.rating
-    });
-  };
-  const handleSaveProduct = async (productId) => {
-    // Save the updated product data to the server...
-    // After saving, update the sellerProducts state and reset editProductId
-    try {
-      const response = await fetch(`http://localhost:8000/updateProduct?productId=${productId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(editProductData),
-      });
-  
-      if (response.ok) {
-        const updatedProduct = await response.json();
-        setMyProducts((prevProducts) =>
-          prevProducts.map((product) =>
-            product._id === productId ? updatedProduct : product
-          )
-        );
-        setEditProductId(null);
-      } else {
-        console.error('Failed to update product');
-      }
-    } catch (error) {
-      console.error('Error updating product:', error);
-    }
-  };
 
   useEffect(() => {
     getItineraries();
@@ -167,12 +129,14 @@ const AdminPage = () => {
     fetchMyProducts();
 
   }, []);
+
   const addNotification = (message) => {
     setNotifications((prevNotifications) => [
       ...prevNotifications,
       { id: Date.now(), message },
     ]);
   };
+  
  const fetchMyProducts=async()=>{
     const Username = localStorage.getItem('Username');
     try {
@@ -898,6 +862,9 @@ const addTourismGov = async (e) => {
     flexDirection: 'column',
     gap: '5px',
   },
+  item: {
+    padding: '10px 0',
+  },
   label: {
     fontSize: '16px',
     fontWeight: 'bold',
@@ -1587,7 +1554,7 @@ const addTourismGov = async (e) => {
         <div style={styles.item} onClick={() => navigate('/adminReport')}>
           <FaBox  style={styles.icon} />
           <span className="label" style={styles.label}>
-            Products
+            Sales Report
           </span>   
         </div>
         <div style={styles.item} onClick={() => navigate('/DeletionRequest')}>
@@ -1602,12 +1569,18 @@ const addTourismGov = async (e) => {
             Add Product
           </span>   
         </div>
+
+        <div style={styles.item} onClick={() => navigate('/EditProducts')}>
+          <FaEdit   style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Edit Products
+          </span>   
+        </div>
       </div>
 
 
 
       <div style={styles.headerContainer}>
-  
       <h2 style={styles.heading}>Users Statistics</h2>
       <FaChartBar style={styles.statisticsIcon} />
     </div>
@@ -1838,114 +1811,6 @@ const addTourismGov = async (e) => {
   </div>
 )}
 
-
-<div style={styles.card}>
-  <h1 style={styles.cardTitle}>My Products</h1>
-      {loading && <p>Loading...</p>}
-      {error && <p style={styles.error}>{error}</p>}
-      {myProducts.length === 0 && !loading ? (
-        <p>No products found.</p>
-      ) : (
-        <table style={styles.table}>
-        <thead>
-          <tr>
-            <th style={styles.th}>Product Name</th>
-            <th style={styles.th}>Description</th>
-            <th style={styles.th}>Price</th>
-            <th style={styles.th}>Stock</th>
-            <th style={styles.th}>Rating</th>
-            <th style={styles.th}></th> {/* Add a column for buttons */}
-          </tr>
-        </thead>
-        <tbody>
-          {myProducts.map((product) => (
-            <tr key={product._id} style={styles.tr}>
-              <td style={styles.td}>
-                  {editProductId === product._id ? (
-                    <input
-                      type="text"
-                      name="productName"
-                      value={editProductData.productName}
-                      onChange={handleInputChange2}
-                    />
-                  ) : (
-                    product.productName
-                  )}
-                </td>
-                <td style={styles.td}>
-                  {editProductId === product._id ? (
-                    <input
-                      type="text"
-                      name="description"
-                      value={editProductData.description}
-                      onChange={handleInputChange2}
-                    />
-                  ) : (
-                    product.description
-                  )}
-                </td>
-                <td style={styles.td}>
-                  {editProductId === product._id ? (
-                    <input
-                      type="number"
-                      name="price"
-                      value={editProductData.price}
-                      onChange={handleInputChange2}
-                    />
-                  ) : (
-                    `$${product.price}`
-                  )}
-                </td>
-                <td style={styles.td}>
-                  {editProductId === product._id ? (
-                    <input
-                      type="number"
-                      name="stock"
-                      value={editProductData.stock}
-                      onChange={handleInputChange2}
-                    />
-                  ) : (
-                    product.stock
-                  )}
-                </td>
-                <td style={styles.td}>
-                  {editProductId === product._id ? (
-                    <input
-                      type="number"
-                      name="rating"
-                      value={editProductData.rating}
-                      onChange={handleInputChange2}
-                    />
-                  ) : (
-                    product.rating
-                  )}
-                </td>
-                <td style={styles.td}>
-                  {editProductId === product._id ? (
-                    <button
-                      style={styles.button}
-                      onClick={() => handleSaveProduct(product._id)}
-                    >
-                      Save
-                    </button>
-                  ) : (
-                    <button
-                      style={styles.button}
-                      onClick={() => handleProductEdit(product._id)}
-                    >
-                      Edit
-                    </button>
-                  )}
-                </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      
-     
-      )}
-  </div>
-
    {/* Search Product Section */}
 <div style={styles.card2}>
   <h3 style={styles.cardTitle}>
@@ -1970,7 +1835,6 @@ const addTourismGov = async (e) => {
       Search Product
     </button>
   </form>
-
   {/* Error and Success Messages for Search */}
   {getProductErrorMessage && <p style={styles.error}>{getProductErrorMessage}</p>}
 
