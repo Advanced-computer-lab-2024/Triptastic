@@ -2787,13 +2787,29 @@ const getTouristOrders = async (req, res) => {
       return res.status(404).json({ message: 'No orders found for this tourist.' });
     }
 
-    // Return the found orders
+    // Get the current date
+    const currentDate = new Date();
+
+    // Loop through each order and check if it's more than 3 days old
+    for (let order of orders) {
+      const orderDate = new Date(order.orderDate);
+      const daysDifference = currentDate.getDay() - orderDate.getDay();// Difference in days
+
+      // If the order is more than 3 days old and its status is not already 'delivered', update it
+      if (daysDifference > 2 && order.status !== 'delivered') {
+        order.status = 'delivered';
+        await order.save(); // Save the updated order
+      }
+    }
+
+    // Return the updated orders
     res.status(200).json(orders);
   } catch (error) {
     console.error('Error retrieving orders:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 
 const cancelOrder = async (req, res) => {
