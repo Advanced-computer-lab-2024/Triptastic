@@ -35,11 +35,11 @@ const createTourGuide = async (req, res) => {
   }
 };
 const loginTourGuide = async (req, res) => {
-  const { Email, Password } = req.body;
+  const { Username, Password } = req.body;
 
   try {
       // Find the tour guide by email
-      const tourGuide = await tourGuideModel.findOne({ Email });
+      const tourGuide = await tourGuideModel.findOne({ Username });
       if (!tourGuide) {
           return res.status(404).json({ error: 'Tour Guide not found' });
       }

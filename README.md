@@ -1,10 +1,10 @@
-# Project Title
+# Triptastic
 
-*A brief description or summary of the project goes here.*
+*A platform to help tourists plan their travels by booking flights, accommodations, transportation, and activities. Additionally, it allows sellers and advertisers to post their offers and products for tourists to book.*
 
 ## Motivation
 
-*Explain why this project was created. What problem does it solve? What inspired you to work on this project?*
+*Travel planning can be overwhelming, with tourists needing to coordinate flights, accommodations, transportation, and activities while managing multiple platforms. Similarly, sellers and advertisers in the tourism industry often struggle to reach potential customers in a crowded market. This project aims to simplify the travel planning process by offering a one-stop platform for tourists to book all aspects of their trip, while also providing an easy way for sellers to connect with travelers and promote their offers. By bringing everything into a single platform, we can enhance user experience and create new opportunities for both tourists and vendors.*
 
 ## Build Status
 
@@ -26,19 +26,41 @@
 
 ## Tech/Framework Used
 
-- [Tech/Framework 1]
-- [Tech/Framework 2]
-- [Tech/Framework 3]
+- MongoDb
+- Express.js
+- React.js
+- Node.js
+
+
 
 ## Features
 
-- Feature 1
-- Feature 2
-- Feature 3
-- Additional features that make this project stand out.
+- Flight Booking
+- Hotel Booking
+- Activity and Itinerary booking
+- Product Buying and Selling
 
 ## Code Examples
 
 *Provide a simple code example to demonstrate how your project works.*
+
+## Installation
+
+
+
+## Tests
+
+
+
+## How to Use
+
+
+## Contribute
+
+
+## Credits
+
+
+## License
 
 

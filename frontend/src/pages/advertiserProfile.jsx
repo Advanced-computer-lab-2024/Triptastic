@@ -3,17 +3,15 @@ import './advertiserProfile.css';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
 import { FaBell,FaUserCircle} from 'react-icons/fa';
-import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
+import { FaCalendarDay, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
   FaClipboardList,
   FaStar, FaDollarSign,FaSearch} from "react-icons/fa";
   import LockResetIcon from '@mui/icons-material/LockReset';
   import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
   import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
-
-
-
-
-
+  import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
+  import TrendingUpOutlinedIcon from '@mui/icons-material/TrendingUpOutlined';
+  import TrendingDownOutlinedIcon from '@mui/icons-material/TrendingDownOutlined';
 const AdvertiserProfile = () => {
   const [advertiserInfo, setAdvertiserInfo] = useState(null);
   const [activities, setActivities] = useState([]);
@@ -31,7 +29,18 @@ const [filteredActivities, setFilteredActivities] = useState([]);
   const [showModal, setShowModal] = useState(false); // State for modal visibility
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [activityDetails, setActivityDetails] = useState({}); // Tracks visibility of details for each activity
-
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [filteredD, setFilteredD] = useState(false); // For filtering by date
+  const [filterA, setFilterA] = useState(null); // Selected activity in the dropdown menu
+  const [dates, setDates] = useState([]); // Dates of the chosen activity
+  const [count, setCount] = useState(0); // Count of the chosen activity
+  const [filteredA, setFilteredA] = useState(false); // Indicates if activities are filtered
+  const [isLoading, setIsLoading] = useState(false);
+const [totalSales, setTotalSales] = useState(0);
+const [refresh, setRefresh] = useState(false);
+const [mostSold, setMostSold] = useState();
+const [leastSold, setLeastSold] = useState();
+const [date, setDate] = useState('');
 
 
     const [formData, setFormData] = useState({
@@ -89,6 +98,11 @@ const [filteredActivities, setFilteredActivities] = useState([]);
     fetchActivities();
   }, []);
 
+  useEffect(() => {
+    calculateTotalSales(activities);
+    findMostSold(activities);
+    findLeastSold(activities);
+  }, [filteredActivities]);
   const fetchAdvertiserInfo = async () => {
     setLoading(true);
     const Username = localStorage.getItem('Username');
@@ -343,40 +357,85 @@ const [filteredActivities, setFilteredActivities] = useState([]);
       setWaiting(false);
     }
   };
-  const handleTransportInputChange = (e) => {
-    const { name, value } = e.target;
-    
-    if (name.startsWith("company.contact.")) {
-      // Handle nested company contact fields
-      const contactField = name.split(".")[2];
-      setTransportFormData((prevData) => ({
-        ...prevData,
-        company: {
-          ...prevData.company,
-          contact: {
-            ...prevData.company.contact,
-            [contactField]: value,
-          },
-        },
-      }));
-    } else if (name.startsWith("company.")) {
-      // Handle company name field
-      const companyField = name.split(".")[1];
-      setTransportFormData((prevData) => ({
-        ...prevData,
-        company: {
-          ...prevData.company,
-          [companyField]: value,
-        },
-      }));
-    } else {
-      // Handle other fields
-      setTransportFormData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
+  
+  const fetchFilteredActivities = async (selectedDate) => {
+    const Username = localStorage.getItem('Username');
+    setIsLoading(true);
+    try {
+      const response = await fetch(`http://localhost:8000/getFilteredActivities?Username=${Username}&date=${date}`);
+      if (response.ok) {
+        const data = await response.json();
+        setFilteredActivities(data);
+        setIsLoading(false);
+      } else {
+        console.error('Failed to fetch activities');
+      }
+    } catch (error) {
+      console.error('Error fetching activities:', error);
     }
   };
+  
+  const filterByActivity = async (activityId) => {
+    try {
+      const response = await fetch(`http://localhost:8000/filterByActivity?activityId=${activityId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setDates(data);
+        setCount(data.length);
+      } else {
+        console.error('Failed to fetch data');
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+  
+  const calculateTotalSales = (activities) => {
+    const total = activities.reduce((sum, activity) => sum + activity.sales, 0);
+    setTotalSales(total);
+  };
+  
+  const findMostSold = (activities) => {
+    if (activities.length > 0) {
+      const mostSoldActivity = activities.reduce((max, activity) => (activity.sales > max.sales ? activity : max), activities[0]);
+      setMostSold(mostSoldActivity);
+    }
+  };
+  
+  const findLeastSold = (activities) => {
+    if (activities.length > 0) {
+      const leastSoldActivity = activities.reduce((min, activity) => (activity.sales < min.sales ? activity : min), activities[0]);
+      setLeastSold(leastSoldActivity);
+    }
+  };
+  
+  const handleFilterD = () => {
+    if (!filteredD) {
+      fetchFilteredActivities(date);
+      setFilteredD(true);
+      findMostSold(activities);
+      findLeastSold(activities);
+    } else {
+      setFilteredActivities(activities);
+
+      fetchActivities();
+      setFilteredD(false);
+      findMostSold(activities);
+      findLeastSold(activities);
+    }
+  };
+  
+  const handleFilterChange = (event) => {
+    const selectedActivity = activities.find(activity => activity._id === event.target.value);
+    if (selectedActivity) {
+      setFilteredActivities([selectedActivity]);
+      setFilterA(selectedActivity);
+    } else {
+      setFilteredActivities(activities);
+      setFilterA(null);
+    }
+  };
+  
 
 
   const toggleModal = () => setShowModal(!showModal);
@@ -385,43 +444,76 @@ const [filteredActivities, setFilteredActivities] = useState([]);
   return (
     <div className="advertiser-profile">
 
-    <div>
-    {/* Header Section */}
-    <header style={styles.header}>
+<div style={styles.container}>
+{/* Header Section */}
+<header style={styles.header}>
   <div style={styles.logoContainer}>
     <img src={logo} alt="Logo" style={styles.logo} />
   </div>
   <h1 style={styles.title}>Advertiser Profile</h1>
-  <div style={styles.leftContainer}>
-          <ManageAccountsIcon
-            alt="Profile Icon"
-            style={styles.profileIcon}
-            onClick={toggleModal}
-          />
-     
-       
-          <LockResetIcon
-            alt="Profile Icon"
-            style={styles.profileIcon}
-            onClick={togglePasswordModal}
-          />
+  <div style={styles.manageSettingsContainer}>
+    <ManageAccountsIcon
+      alt="Manage Settings"
+      style={styles.profileIcon}
+      onClick={() => setShowDropdown((prev) => !prev)} // Toggle dropdown visibility
+    />
+    {showDropdown && (
+      <div style={styles.dropdownMenu}>
+        <div
+          style={styles.dropdownItem}
+          onClick={() => {
+            setShowDropdown(false); // Close dropdown
+            toggleModal(); // Open Edit Profile modal
+          }}
+        >
+          Edit Profile
         </div>
-</header>
-   {/* Sidebar */}
-   <div className="sidebar"style={styles.sidebar}>
-      
-        <ul>
-          <li onClick={() => navigate('/advertiser-Activities')}>MY Activities</li>
-        </ul>
-        <ul>
-          <li onClick={() => navigate('/createTransportation')}>Create Transportation</li>
-        </ul>
-       
+        <div
+          style={styles.dropdownItem}
+          onClick={() => {
+            setShowDropdown(false); // Close dropdown
+            togglePasswordModal(); // Open Change Password modal
+          }}
+        >
+          Change Password
+        </div>
       </div>
+    )}
+  </div>
+</header>
 
-     
+      {/* Sidebar */}
+      <div
+        style={styles.sidebar}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.width = '200px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '1')
+          );
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.width = '60px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '0')
+          );
+        }}
+      >
+        <div  class="activities" style={styles.item} onClick={() => navigate('/advertiser-Activities')}>
+          <FaRunning style={styles.icon} />
+          <span className="label" style={styles.label}>
+            My Activities
+          </span>
+        </div>
+        <div  class="transportation" style={styles.item} onClick={() => navigate('/createTransportation')}>
+          <FaBus style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Transportation
+          </span>
+        </div>
       
-
+      
+     
+      </div>
 
       {/* Modal */}
       {showModal && (
@@ -573,38 +665,38 @@ const [filteredActivities, setFilteredActivities] = useState([]);
 {/* Notification Dropdown */}
 
       {errorMessage && <p className="error-message">{errorMessage}</p>}
-
-     
-
       
       
-{/* Filter Activities by Month */}
-<div className="filter-section" style={{ marginTop: '40px' }}>
-
-  <label htmlFor="monthFilter" >Filter by Month:</label>
-  <select
-    id="monthFilter"
-    value={filterMonth}
-    onChange={handleFilterMonth}
-  >
-    <option value="">All Months</option>
-    <option value="1">January</option>
-    <option value="2">February</option>
-    <option value="3">March</option>
-    <option value="4">April</option>
-    <option value="5">May</option>
-    <option value="6">June</option>
-    <option value="7">July</option>
-    <option value="8">August</option>
-    <option value="9">September</option>
-    <option value="10">October</option>
-    <option value="11">November</option>
-    <option value="12">December</option>
-  </select>
-  <button onClick={()=>navigate('/AdvertiserReport')} style={{marginLeft:'20px'}}>View Report</button>
+      <div style={styles.filterContainer}>
+  <div style={styles.filterGroup}>
+    <label htmlFor="monthFilter" style={styles.filterLabel}>
+      <DisplaySettingsIcon style={styles.iconn} /> Filter Month:
+    </label>
+    <select
+      id="monthFilter"
+      value={filterMonth}
+      onChange={handleFilterMonth}
+      style={styles.dropdown}
+    >
+      <option value="">All Months</option>
+      <option value="1">January</option>
+      <option value="2">February</option>
+      <option value="3">March</option>
+      <option value="4">April</option>
+      <option value="5">May</option>
+      <option value="6">June</option>
+      <option value="7">July</option>
+      <option value="8">August</option>
+      <option value="9">September</option>
+      <option value="10">October</option>
+      <option value="11">November</option>
+      <option value="12">December</option>
+    </select>
+  </div>
 </div>
+
      {/* Activities Section */}
-<h3 className="activities-title"> Activity Reports</h3>
+<h6 className="activities-title" style={{fontSize:'20px'}}>Reports</h6>
 {filteredActivities.length > 0 ? (
   <div className="activities-grid">
     {filteredActivities.map((activity) => (
@@ -613,27 +705,23 @@ const [filteredActivities, setFilteredActivities] = useState([]);
           <h4 className="activity-name">{activity.name}</h4>
           <p className="activity-detail"><strong>Category:</strong> {activity.Category}</p>
           <p className="activity-detail"><strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}</p>
-          <p className="activity-detail"><strong>Budget:</strong> ${activity.budget}</p>
-          <p className="activity-detail">
-            <strong>Flagged:</strong> 
-            <span className={activity.FlagInappropriate ? 'flag-yes' : 'flag-no'}>
-              {activity.FlagInappropriate ? "Yes" : "No"}
-            </span>
-          </p>
         </div>
 
-        <button
-          className="toggle-report-button"
-          onClick={() => handleViewReport(activity._id)}
-        >
-          {activityReports[activity._id]?.visible ? 'Hide Report' : 'View Report'}
-        </button>
+        <div style={{ position: "relative" }}>
+  <button
+    className="toggle-report-button"
+    style={styles.toggleReportButton}
+    onClick={() => handleViewReport(activity._id)}
+  >
+    {activityReports[activity._id]?.visible ? 'Hide Report' : 'View Report'}
+  </button>
+</div>
+
 
         {/* Collapsible Report Section */}
        {/* Collapsible Report Section */}
 {activityReports[activity._id]?.visible && (
   <div className="report-section">
-    <h5 className="report-title">Activity Report</h5>
     <table className="report-table">
       <thead>
         <tr>
@@ -641,8 +729,7 @@ const [filteredActivities, setFilteredActivities] = useState([]);
           <th colSpan="2">{activityReports[activity._id].totalTourists}</th>
         </tr>
         <tr>
-          <th>#</th>
-          <th>Tourist Name</th>
+          <th>Tourist</th>
           <th>Email</th>
         </tr>
       </thead>
@@ -650,7 +737,6 @@ const [filteredActivities, setFilteredActivities] = useState([]);
         {activityReports[activity._id].tourists.length > 0 ? (
           activityReports[activity._id].tourists.map((tourist, index) => (
             <tr key={index}>
-              <td>{index + 1}</td>
               <td>{tourist.Username}</td>
               <td>{tourist.Email}</td>
             </tr>
@@ -671,6 +757,92 @@ const [filteredActivities, setFilteredActivities] = useState([]);
 ) : (
   <p className="no-activities">No activities found.</p>
 )}
+
+  {/* Filters Section */}
+  <div style={styles.filterContainerr}>
+  <div style={styles.salesTitle}>
+    <h3 style={styles.salesHeading}>
+      Sales
+    </h3>
+  </div>
+        <div style={styles.filterGroup}>
+          <label htmlFor="activityFilter" style={styles.filterLabel}>
+            <DisplaySettingsIcon style={styles.iconn} /> Activity:
+          </label>
+          <select
+            id="activityFilter"
+            value={filterA ? filterA._id : ""}
+            onChange={handleFilterChange}
+            style={styles.dropdown}
+          >
+            <option value="">All Activities</option>
+            {activities.map((activity) => (
+              <option key={activity._id} value={activity._id}>
+                {activity.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div style={styles.filterGroup}>
+          <label htmlFor="dateFilter" style={styles.filterLabel}>
+            <FaCalendarDay style={styles.iconn} /> Date:
+          </label>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            style={styles.dateInput}
+          />
+          <button style={styles.filterButton} onClick={handleFilterD}>
+            {filteredD ? "Clear Filter" : "Apply Filter"}
+          </button>
+        </div>
+      </div>
+
+     {/* Statistics Section */}
+<div style={styles.statisticsContainer}>
+  <div style={styles.totalSales}>
+    <h2 style={styles.totalSalesText}>
+       Total Sales: ${totalSales}
+    </h2>
+  </div>
+  
+  {mostSold && (
+    <div style={styles.statisticsCard}>
+      <h4 style={styles.cardTitle}>
+        <TrendingUpOutlinedIcon style={styles.iconSmall} /> Most Sold Activity
+      </h4>
+      <p style={styles.cardDetail}><strong>Name:</strong> {mostSold.name}</p>
+      <p style={styles.cardDetail}><strong>Sales:</strong> ${mostSold.sales}</p>
+    </div>
+  )}
+
+  {leastSold && (
+    <div style={styles.statisticsCard}>
+      <h4 style={styles.cardTitle}>
+        <TrendingDownOutlinedIcon style={styles.iconSmall} /> Least Sold Activity
+      </h4>
+      <p style={styles.cardDetail}><strong>Name:</strong> {leastSold.name}</p>
+      <p style={styles.cardDetail}><strong>Sales:</strong> ${leastSold.sales}</p>
+    </div>
+  )}
+</div>
+
+{/* Activities List */}
+<div style={styles.activitiesContainer}>
+  {filteredActivities.map((activity) => (
+    <div key={activity._id} style={styles.activityCard}>
+      <h4 style={styles.cardTitle}>
+        <FaRunning style={styles.iconSmall} /> {activity.name}
+      </h4>
+      <p style={styles.cardDetail}><strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}</p>
+      <p style={styles.cardDetail}><strong>Sales:</strong> ${activity.sales}</p>
+    </div>
+  ))}
+</div>
+
+
 
 
 
@@ -726,29 +898,106 @@ const styles = {
     marginTop: '60px',
 
   },
- 
-  activitiesContainer: {
+  statisticsContainer: {
+    marginTop: "20px",
+    padding: "20px",
+    backgroundColor: "#f9f9f9",
+    borderRadius: "10px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    display: "flex",
+    flexDirection: "column",
+    gap: "20px",
+  },
+  
+  totalSales: {
+    textAlign: "center",
+    marginBottom: "20px",
+  },
 
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '10px',
+  totalSalesText: {
+    fontSize: "24px",
+    fontWeight: "bold",
+    color: "#0F5132",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "10px",
   },
+
+  statisticsCard: {
+    backgroundColor: "#fff",
+    padding: "15px",
+    borderRadius: "8px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    display: "flex",
+    flexDirection: "column",
+    gap: "5px",
+  },
+
+  cardTitle: {
+    fontSize: "16px",
+    fontWeight: "bold",
+    color: "#333",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+  },
+
+  cardDetail: {
+    fontSize: "14px",
+    color: "#555",
+  },
+
+  activitiesContainer: {
+    marginTop: "20px",
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "15px",
+  },
+
   activityCard: {
-    border: '1px solid #ccc',
-    padding: '10px',
-    borderRadius: '5px',
-    backgroundColor: '#f9f9f9',
+    backgroundColor: "#fff",
+    padding: "15px",
+    borderRadius: "8px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    width: "calc(33.333% - 10px)", // Responsive card width
   },
-  activityRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
+
+  iconSmall: {
+    fontSize: "14px",
+    color: "#0F5132",
+  },
+
+  iconBig: {
+    fontSize: "20px",
+    color: "#0F5132",
   },
   title: {
     fontSize: '24px',
     fontWeight: 'bold',
     color: 'white',
     margin: 0,
-    marginLeft:'60px'
+  },
+  salesTitle: {
+    flex: "0 0 15%", // Adjust width for the title
+    textAlign: "left",
+  },
+
+  salesHeading: {
+    fontSize: "20px",
+    fontWeight: "bold",
+    color: "#0F5132",
+    margin: 0,
+    marginRight:"450px"
+  },
+  container: {
+    maxWidth: '1200px',
+        margin: '0 auto',
+        padding: '20px',
+        backgroundColor: '#f9f9f9',
+        borderRadius: '10px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        fontSize:'14px'
   },
   header: {
     height:'60px',
@@ -783,6 +1032,47 @@ const styles = {
     height: '60px',
     width: '70px',
     borderRadius: '10px',
+  },
+  manageSettingsContainer: {
+    position: "relative",
+    display: "inline-block",
+  },
+  dropdownMenu: {
+    position: "absolute",
+    top: "40px",
+    right: "0",
+    backgroundColor: "#fff",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    zIndex: 1000,
+    minWidth: "150px",
+    overflow: "hidden",
+  },
+  dropdownItem: {
+    padding: "10px 15px",
+    fontSize: "14px",
+    color: "#333",
+    cursor: "pointer",
+    transition: "background-color 0.2s ease",
+  },
+  dropdownItemHover: {
+    backgroundColor: "#f5f5f5",
+  },
+  toggleReportButton: {
+    position: "absolute", // Position it relative to its container
+    top: "-50px", // Move it to the top
+    right: "10px", // Move it to the right
+    padding: "5px 10px", // Smaller padding for a compact size
+    backgroundColor: "#0F5132", // Consistent color
+    color: "#fff",
+    fontSize: "14px", // Smaller font size
+    border: "none",
+    borderRadius: "5px", // Rounded corners
+    cursor: "pointer",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)", // Subtle shadow for depth
+    zIndex: 10, // Ensure it sits on top
+    transition: "background-color 0.3s ease",
   },
   
  
@@ -854,6 +1144,182 @@ const styles = {
     borderTop: '1px solid #ddd',
     marginTop: '20px',
     paddingTop: '15px',
+  },
+  sidebar: {
+    position: 'fixed',
+    top: '60px',
+    left: 0,
+    height: '100vh',
+    width: '50px', // Default width when collapsed
+    backgroundColor: 'rgba(15, 81, 50, 0.85)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start', // Ensure alignment starts from the left
+    padding: '10px 0',
+    overflowX: 'hidden',
+    transition: 'width 0.3s ease',
+    zIndex: 1000,
+  },
+  sidebarExpanded: {
+    width: '200px', // Width when expanded
+  },
+  iconContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start', // Align items to the left
+    padding: '10px',
+    width: '100%', // Take full width of the sidebar
+    color: '#fff',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease',
+  },
+  iconContainerHover: {
+    backgroundColor: '#084B24', // Background on hover
+  },
+  icon: {
+    fontSize: '24px',
+    marginLeft: '15px', // Move icons slightly to the right
+    color: '#fff', // Icons are always white
+  },
+  label: {
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#fff',
+    opacity: 0, // Initially hidden
+    whiteSpace: 'nowrap', // Prevent label text from wrapping
+    transition: 'opacity 0.3s ease',
+  },
+  labelVisible: {
+    opacity: 1, // Fully visible when expanded
+  },
+  item: {
+ 
+    padding: '10px 0',
+  },
+  filterContainer: {
+    marginTop: "50px",
+    marginBottom:"-50px",
+    padding: "15px",
+    backgroundColor: "#f9f9f9",
+    borderRadius: "5px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    maxWidth: "250px",
+    marginLeft: "900px", // Center-align the filter container
+    display: "flex",
+    flexDirection: "column",
+    gap: "15px",
+  },
+  filterContainerr: {
+    display: "flex",
+    justifyContent: "flex-end", // Align filters to the right
+    alignItems: "center", // Center align items vertically
+    gap: "10px", // Space between filters
+    padding: "10px",
+    backgroundColor: "#f9f9f9",
+    borderRadius: "8px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    marginBottom: "20px",
+  },
+
+  // Individual filter group (label + input/button)
+  filterGroup: {
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+  },
+
+  // Label for the filters
+  filterLabel: {
+    fontSize: "14px",
+    fontWeight: "bold",
+    color: "#333",
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+  },
+
+  // Input for date filter
+  dateInput: {
+    padding: "5px",
+    borderRadius: "4px",
+    border: "1px solid #ccc",
+    fontSize: "14px",
+  },
+
+  // Button for applying/clearing filters
+  filterButton: {
+    padding: "5px 10px",
+    borderRadius: "4px",
+    border: "none",
+    backgroundColor: "#0F5132",
+    color: "#fff",
+    fontSize: "14px",
+    cursor: "pointer",
+    transition: "background-color 0.3s ease",
+  },
+
+  // Hover effect for the button
+  filterButtonHover: {
+    backgroundColor: "#084B24",
+  },
+
+  salesContainer: {
+    marginTop: "40px",
+    padding: "20px",
+    backgroundColor: "#f9f9f9",
+    borderRadius: "10px",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+  },
+
+  filterTitle: {
+    fontSize: "18px",
+    fontWeight: "bold",
+    color: "#0F5132",
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    marginBottom: "10px",
+  },
+
+  filterGroup: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "10px",
+  },
+
+  filterLabel: {
+    fontSize: "16px",
+    fontWeight: "500",
+    color: "#333",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+  },
+
+  dropdown: {
+    padding: "6px",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+    fontSize: "14px",
+    flex: "1",
+  },
+
+  viewReportButton: {
+    backgroundColor: "#0F5132",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    padding: "6px 12px",
+    cursor: "pointer",
+    fontSize: "14px",
+    transition: "background-color 0.3s ease",
+  },
+
+  iconn: {
+    fontSize: "18px",
+    color: "#0F5132",
   },
 };
 

@@ -6,6 +6,10 @@
   background-color: #f8f9fa;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+    margin-top: 70px; /* Adjust this value to match or slightly exceed the header's height */
+
+
 }
 
 .page-heading {
@@ -39,28 +43,6 @@
   background-color: #0c3e27;
 }
 
-.complaints-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.complaint-card {
-  background-color: white;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.complaint-header {
-  margin-bottom: 10px;
-}
-
-.complaint-title {
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-}
 
 .complaint-date {
   font-size: 14px;
@@ -152,13 +134,6 @@
   text-align: center;
 }
 
-.complaint-card {
-  background-color: #fff;
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
 
 .card-title {
   font-size: 20px;
@@ -216,4 +191,219 @@ select {
 .complaint-details p {
   font-size: 14px;
   margin: 5px 0;
+}
+
+.complaints-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Space between complaint cards */
+}
+
+.complaint-card {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.complaint-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.complaint-header {
+  margin-bottom: 15px;
+}
+
+.complaint-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.complaint-date,
+.complaint-status {
+  font-size: 14px;
+  color: #555;
+}
+
+.status-resolved {
+  color: #28a745; /* Green for resolved */
+}
+
+.status-pending {
+  color: #dc3545; /* Red for pending */
+}
+
+.complaint-actions {
+  display: flex;
+  gap: 10px; /* Space between buttons */
+  margin-bottom: 15px;
+}
+
+.reply-button,
+.details-button,
+.update-status-button,
+.submit-reply-button {
+  padding: 10px 15px;
+  font-size: 14px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.reply-button {
+  background-color: #0f5132; /* Dark green */
+  color: white;
+}
+
+.reply-button:hover {
+  background-color: #0f5132; /* Darker green on hover */
+}
+
+.details-button {
+  background-color: #0f5132; /* Blue */
+  color: white;
+}
+
+.details-button:hover {
+  background-color: #0f5132; /* Darker blue on hover */
+}
+
+.reply-form,
+.complaint-details {
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 15px;
+}
+
+.reply-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+.replies-section-horizontal {
+  background-color: #f9f9f9; /* Light gray background */
+  border: 1px solid #e0e0e0; /* Subtle border for separation */
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.replies-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.replies-container {
+  display: flex; /* Use flexbox for horizontal layout */
+  gap: 15px; /* Space between reply cards */
+  overflow-x: auto; /* Enable horizontal scrolling */
+  padding-bottom: 10px; /* Extra padding for scrollbar space */
+}
+
+.replies-container::-webkit-scrollbar {
+  height: 6px; /* Adjust height for horizontal scrollbar */
+}
+
+.replies-container::-webkit-scrollbar-thumb {
+  background: #ccc; /* Thumb color */
+  border-radius: 3px; /* Rounded scrollbar */
+}
+
+.replies-container::-webkit-scrollbar-thumb:hover {
+  background: #aaa; /* Darker on hover */
+}
+
+.reply-card {
+  flex: 0 0 auto; /* Prevent cards from shrinking */
+  background-color: #ffffff; /* White background */
+  border: 1px solid #dcdcdc; /* Light border */
+  border-radius: 8px; /* Rounded corners */
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  width: 200px; /* Fixed width for consistent sizing */
+}
+
+.reply-card p {
+  margin: 5px 0; /* Spacing between text lines */
+  font-size: 14px;
+  color: #555;
+}
+
+.reply-content {
+  font-size: 14px;
+  font-weight: normal;
+  color: #333;
+  margin-top: 10px;
+}
+
+.complaint-details {
+  background-color: #f9f9f9; /* Light gray background */
+  border: 1px solid #e0e0e0; /* Light border */
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.details-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.details-body p {
+  font-size: 14px;
+  color: #555;
+  margin: 10px 0;
+}
+
+.details-status {
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between label, dropdown, and button */
+}
+
+.status-label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #555;
+}
+
+.status-dropdown {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.update-status-button {
+  padding: 10px 15px;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #0f5132; /* Green button */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.update-status-button:hover {
+  background-color: #155724; /* Darker green on hover */
 }

@@ -107,11 +107,11 @@ const getTouristIntroStatus = async (req, res) => {
 
 
 const loginTourist = async (req, res) => {
-  const { Email, Password } = req.body;
+  const { Username, Password } = req.body;
 
   try {
     // Check if the user exists
-    const tourist = await touristModel.findOne({ Email });
+    const tourist = await touristModel.findOne({ Username });
     if (!tourist) {
       return res.status(404).json({ error: 'User not found' });
     }

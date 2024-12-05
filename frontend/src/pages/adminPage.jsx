@@ -8,7 +8,7 @@ import LockResetIcon from '@mui/icons-material/LockReset';
 import { FaTag, FaInfoCircle, FaDollarSign ,FaSearch} from "react-icons/fa";
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
-import { FaExclamationCircle, FaHeart, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit } from 'react-icons/fa';
+import { FaUser,FaExclamationCircle, FaHeart, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
 import UserStatistics from './chart';
 
 
@@ -51,6 +51,8 @@ const AdminPage = () => {
   const [showStats, setShowStats] = useState(false); // State to toggle visibility
   const [notifications, setNotifications] = useState([]); // Initialize as an empty array
   const [myProducts, setMyProducts] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+
 
 
   const [complaintIdToSearch, setComplaintIdToSearch] = useState('');
@@ -101,16 +103,7 @@ const AdminPage = () => {
 
   const navigate = useNavigate();
 
-  const handleViewItineraries=()=>{
-    setShowingItineraries( prev=>!prev);
-  }
-  const handleViewActivities=()=>{
-    setShowingActivities( prev=>!prev);
-  }
 
-  const handleViewTouristItineraries=()=>{
-    setShowingTouristItineraries( prev=>!prev);
-  }
   const handleInputChange2 = (e) => {
     const { name, value } = e.target;
     setEditProductData((prevData) => ({
@@ -120,9 +113,6 @@ const AdminPage = () => {
   };
 
   useEffect(() => {
-    getItineraries();
-    getTouristItineraries();
-    getActivities();
     checkoutOfStock();
     fetchNotifications();
     fetchStatistics();
@@ -360,154 +350,7 @@ useEffect(() => {
     }
   };
   
-  
-  
-  const [flagMessage, setFlagMessage] = useState(''); // State to store flagging messages
 
-  const handleFlagActivity = async (id) => {
-    setFlagMessage(''); // Reset the message state
-  
-    try {
-      const response = await fetch(`http://localhost:8000/flagActivity/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
-        setFlagMessage('Activity flagged successfully!'); // Success message
-        console.log(data.msg);
-      } else {
-        const errorData = await response.json();
-        setFlagMessage(errorData.error || 'Failed to flag activity.'); // Error message from server
-        console.error('Error:', errorData.error);
-      }
-    } catch (error) {
-      setFlagMessage('An error occurred while flagging the activity.'); // Catch unexpected errors
-      console.error(error);
-    }
-  };
-  
-
-
-  
-
-  
-  
-  const [flagItineraryMessage, setFlagItineraryMessage] = useState(''); // State for flagging messages
-
-  const handleFlagItinerary = async (id) => {
-    setFlagItineraryMessage(''); // Reset the message
-  
-    try {
-      const response = await fetch(`http://localhost:8000/flagItinerary/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
-        setFlagItineraryMessage('Itinerary flagged successfully!'); // Success message
-        console.log(data.msg);
-      } else {
-        const errorData = await response.json();
-        setFlagItineraryMessage(errorData.error || 'Failed to flag itinerary.'); // Error message from server
-        console.error('Error:', errorData.error);
-      }
-    } catch (error) {
-      setFlagItineraryMessage('An error occurred while flagging the itinerary.'); // Catch unexpected errors
-      console.error(error);
-    }
-  };
-  
-  const [flagTouristItineraryMessage, setFlagTouristItineraryMessage] = useState('');
-
-  const handleFlagTouristItinerary = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:8000/flagTouristItinerary/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data.msg);
-        // Display success message
-        setFlagTouristItineraryMessage(`Successfully flagged tourist itinerary: ${data.msg}`);
-      } else {
-        const errorData = await response.json();
-        console.error('Error:', errorData.error);
-        // Display error message
-        setFlagTouristItineraryMessage(
-          errorData.error || 'Failed to flag the tourist itinerary.'
-        );
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      // Display generic error message
-      setFlagTouristItineraryMessage('An error occurred while flagging the tourist itinerary.');
-    }
-  };
-  
-
-
-const getItineraries= async ()=>{
-  try{
-    const response = await fetch(`http://localhost:8000/getAllItineraries`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    if (response.ok) {
-      const data = await response.json();
-      setItineraries(data);
-    }
-  }
-  catch (error) {
-    console.error(error);
-  }
-}
-const getTouristItineraries= async ()=>{
-  try{
-    const response = await fetch(`http://localhost:8000/getAllTouristItineraries`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    if (response.ok) {
-      const data = await response.json();
-      setTouristItineraries(data);
-    }
-  }
-  catch (error) {
-    console.error(error);
-  }
-}
-const getActivities= async ()=>{
-  try{
-    const response = await fetch(`http://localhost:8000/getAllActivities`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    if (response.ok) {
-      const data = await response.json();
-      setActivities(data);
-    }
-  }
-  catch (error) {
-    console.error(error);
-  }
-}
   const [changePasswordData, setChangePasswordData] = useState({
     Username: '',
     currentPassword: '',
@@ -1462,14 +1305,7 @@ const addTourismGov = async (e) => {
     transition: 'opacity 0.3s ease',
   },
   //
-  profitSummary: {
-    backgroundColor: '#f1f5f9',
-    padding: '20px',
-    borderRadius: '10px',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    textAlign: 'center',
-    marginBottom: '20px',
-},
+
 profitAmount: {
     fontSize: '24px',
     fontWeight: 'bold',
@@ -1525,7 +1361,7 @@ profitAmount: {
 userStatsContainer: {
   margin: '0 auto',
   padding: '20px',
-  maxWidth: '1000px',
+  maxWidth: '1600px',
   fontFamily: 'Arial, sans-serif',
   textAlign: 'center',
 },
@@ -1565,8 +1401,14 @@ totalUsersBox: {
   boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
   padding: '20px',
   width: '150px',
-  height: '150px',
+  height: '200px',
+  top: '-20px', // Raise the box slightly
+  flex: '0 0 200px', // Fixed size for the box
+  position: 'relative', // Enable positioning
+  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  textAlign: 'center',
 },
+
 totalUsersTitle: {
   fontSize: '16px',
   fontWeight: 'bold',
@@ -1589,6 +1431,94 @@ loadingText: {
   fontStyle: 'italic',
   marginTop: '20px',
 },
+//////
+
+  profitSummary: {
+    textAlign: 'center',
+    marginBottom: '20px',
+    padding: '15px', // Reduced padding    backgroundColor: '#f5f5f5',
+    borderRadius: '8px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    height: '150px', // Set a fixed height (adjust as needed)
+    minHeight: '90px', // Optional: Ensure a minimum height
+    maxHeight: '90px', // Optional: Restrict maximum height
+  },
+  summaryTitle: {
+    fontSize: '20px', // Reduced font size
+    fontWeight: 'bold',
+    marginBottom: '8px', // Reduced margin
+  },
+  summaryAmount: {
+    fontSize: '24px', // Reduced font size
+    fontWeight: 'bold',
+    color: '#0F5132',
+  },
+  profitSummaryContainer: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: '15px', // Reduced gap
+    marginBottom: '20px', // Reduced margin
+  },
+  profitCard: {
+    flex: '1 1 calc(30% - 10px)',  // Adjusted width for smaller cards
+    backgroundColor: '#ffffff',
+    borderRadius: '8px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    padding: '15px', // Reduced padding
+    textAlign: 'left',
+    transition: 'transform 0.2s',
+  },
+  profitCardHover: {
+    transform: 'scale(1.02)',
+  },
+  profitTitle: {
+    fontSize: '20px', // Reduced font siz
+    fontWeight: 'bold',
+    marginBottom: '10px',
+    borderBottom: '2px solid #0F5132',
+    paddingBottom: '8px',
+    color: '#333',
+  },
+  productDetails: {
+    fontSize: '14px',
+    lineHeight: '1.4',
+  },
+  productInfo: {
+    marginBottom: '10px',
+    color: '#555',
+  },
+  noData: {
+    fontStyle: 'italic',
+    color: '#888',
+  },
+  ///
+  manageAccountContainer: {
+    position: "relative",
+    display: "inline-block",
+  },
+  dropdownMenu: {
+    position: "absolute",
+    top: "40px",
+    right: "0",
+    backgroundColor: "#fff",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    zIndex: 1000,
+    minWidth: "150px",
+    overflow: "hidden",
+  },
+  dropdownItem: {
+    padding: "10px 15px",
+    fontSize: "14px",
+    color: "#333",
+    cursor: "pointer",
+    transition: "background-color 0.2s ease",
+  },
+  dropdownItemHover: {
+    backgroundColor: "#f5f5f5",
+  },
   };
  
   const handleChangePassword = async (e) => {
@@ -1627,6 +1557,7 @@ loadingText: {
     }
   };
   
+
   return (
   <div>
     <h1>--</h1>
@@ -1643,25 +1574,6 @@ loadingText: {
     >
     </div>
     <div style={styles.iconContainer}>
-  {/* Products Icon */}
-  <FaBox
-    size={22}
-    style={styles.profileIcon}
-    onClick={() => navigate('/products')} // Navigate to Products page
-  />
-         <LockResetIcon title="Change Password"
-            alt="Profile Icon"
-            style={styles.profileIcon}
-            onClick={togglePasswordModal}
-          />
-
-  {/* Edit Profile Icon */}
-  <ManageAccountsIcon
-    style={styles.profileIcon}
-    title="Edit Profile"
-    onClick={toggleModal} // Open modal on click
-  />
-
       {/* Notification Bell Icon */}
 <FaBell
   size={24}
@@ -1734,8 +1646,40 @@ loadingText: {
           )}
         </div>
       )}
+
+        {/* settings  Dropdown */}
+  <ManageAccountsIcon
+    style={styles.profileIcon}
+    title="Manage Account Settings"
+    onClick={() => setShowDropdown((prev) => !prev)} // Toggle dropdown
+  />
+  {showDropdown && (
+    <div style={styles.dropdownMenu}>
+      <div
+        style={styles.dropdownItem}
+        onClick={() => {
+          setShowDropdown(false); // Close dropdown
+          toggleModal(); // Open Edit Profile modal
+        }}
+      >
+      Admin Control
+      </div>
+      <div
+        style={styles.dropdownItem}
+        onClick={() => {
+          setShowDropdown(false); // Close dropdown
+          togglePasswordModal(); // Open Change Password modal
+        }}
+      >
+        Change Password
+      </div>
+    </div>
+  )}
 </div>
+
   </div>
+
+
 </header>
 
 
@@ -1756,6 +1700,14 @@ loadingText: {
           );
         }}
       >
+
+<div style={styles.item} onClick={() => navigate('/adminPage')}>
+          <FaUser style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Admin Profile
+          </span>
+        </div>
+
         <div style={styles.item} onClick={() => navigate('/PromoCodeForm')}>
           <FaTag style={styles.icon} />
           <span className="label" style={styles.label}>
@@ -1811,75 +1763,101 @@ loadingText: {
             Edit Products
           </span>   
         </div>
+
+        <div style={styles.item} onClick={() => navigate('/flagged')}>
+          <FaFlag   style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Flag Events
+          </span>   
+        </div>
       </div>
 
 
 
     
       <div style={styles.profitSummary}>
-            <h2>Total Profit from Sales</h2>
-            <p style={styles.profitAmount}>${totalSales}</p>
-        </div>
-      <div style={styles.profitSummaryContainer}>
-    <div style={styles.profitCard}>
-        <h3 style={styles.profitTitle}>Total Itinerary Profits</h3>
-        <p style={styles.profitAmount}>${itinProfits}</p>
-    </div>
-    <div style={styles.profitCard}>
-        <h3 style={styles.profitTitle}>Total Activities Profits</h3>
-        <p style={styles.profitAmount}>${actProfits}</p>
-    </div>
+  <h2 style={styles.summaryTitle}>Total Profit from Sales</h2>
+  <p style={styles.summaryAmount}>${totalSales}</p>
+</div>
+
+<div style={styles.profitSummaryContainer}>
+  <div style={styles.profitCard}>
+    <h3 style={styles.profitTitle}>Total Itinerary Profits</h3>
+    <p style={styles.profitAmount}>${itinProfits}</p>
+  </div>
+  <div style={styles.profitCard}>
+    <h3 style={styles.profitTitle}>Total Activities Profits</h3>
+    <p style={styles.profitAmount}>${actProfits}</p>
+  </div>
 </div>
 
 {!filteredP && !filteredD && (
-    <>
-
-
-        <div style={styles.profitSummaryContainer}>
-            <div style={styles.profitCard}>
-                <h3 style={styles.profitTitle}>Most Sold Product</h3>
-                {!isLoading && mostSold ? (
-                    <>
-                        <p><strong>Product Name:</strong> {mostSold.productName}</p>
-                        <p><strong>Price:</strong> ${mostSold.price}</p>
-                        <p><strong>Sales:</strong> {mostSold.sales}</p>
-                        <p>
-                            <strong>Times Purchased:</strong> {mostSold.sales === 0 ? 0 : mostSold.sales / mostSold.price}
-                        </p>
-                    </>
-                ) : (
-                    <p>No data available</p>
-                )}
-            </div>
-
-            <div style={styles.profitCard}>
-                <h3 style={styles.profitTitle}>Least Sold Product</h3>
-                {!isLoading && leastSold ? (
-                    <>
-                        <p><strong>Product Name:</strong> {leastSold.productName}</p>
-                        <p><strong>Price:</strong> ${leastSold.price}</p>
-                        <p><strong>Sales:</strong> {leastSold.sales}</p>
-                        <p>
-                            <strong>Times Purchased:</strong> {leastSold.sales === 0 ? 0 : leastSold.sales / leastSold.price}
-                        </p>
-                    </>
-                ) : (
-                    <p>No data available</p>
-                )}
-            </div>
+  <div style={styles.profitSummaryContainer}>
+    <div style={styles.profitCard}>
+      <h3 style={styles.profitTitle}>Most Sold Product</h3>
+      {!isLoading && mostSold ? (
+        <div style={styles.productDetails}>
+          <p style={styles.productInfo}>
+            <strong>Product Name:</strong> {mostSold.productName}
+          </p>
+          <p style={styles.productInfo}>
+            <strong>Price:</strong> ${mostSold.price}
+          </p>
+          <p style={styles.productInfo}>
+            <strong>Sales:</strong> {mostSold.sales}
+          </p>
+          <p style={styles.productInfo}>
+            <strong>Times Purchased:</strong> {mostSold.sales === 0 ? 0 : (mostSold.sales / mostSold.price).toFixed(2)}
+          </p>
         </div>
-    </>
+      ) : (
+        <p style={styles.noData}>No data available</p>
+      )}
+    </div>
+
+    <div style={styles.profitCard}>
+      <h3 style={styles.profitTitle}>Least Sold Product</h3>
+      {!isLoading && leastSold ? (
+        <div style={styles.productDetails}>
+          <p style={styles.productInfo}>
+            <strong>Product Name:</strong> {leastSold.productName}
+          </p>
+          <p style={styles.productInfo}>
+            <strong>Price:</strong> ${leastSold.price}
+          </p>
+          <p style={styles.productInfo}>
+            <strong>Sales:</strong> {leastSold.sales}
+          </p>
+          <p style={styles.productInfo}>
+            <strong>Times Purchased:</strong> {leastSold.sales === 0 ? 0 : (leastSold.sales / leastSold.price).toFixed(2)}
+          </p>
+        </div>
+      ) : (
+        <p style={styles.noData}>No data available</p>
+      )}
+    </div>
+  </div>
 )}
 
   
-<div style={styles.userStatsContainer}>
-  <div style={styles.headerContainer}>
-    <h2 style={styles.heading}>Users Statistics</h2>
-    <FaChartBar style={styles.statisticsIcon} />
-  </div>
+<div style={styles.userStatsContainer}>    
+<div style={styles.profitSummary}>
+    <div
+      style={{
+        display: 'flex', // Flexbox for alignment
+        alignItems: 'center', // Vertical alignment
+        justifyContent: 'center', // Horizontal alignment
+        gap: '10px', // Space between title and icon
+      }}
+    >
+      <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0' }}>
+        User Statistics
+      </h2>
+      <FaChartBar style={{ fontSize: '24px', color: '#0F5132' }} />
+</div>
+</div>
 
   {statsError && <p style={styles.errorText}>{statsError}</p>}
-
   {statistics ? (
     <div style={styles.contentRow}>
       {/* Total Users Box */}
@@ -1892,8 +1870,7 @@ loadingText: {
       <div style={styles.chartContainer}>
         
         <UserStatistics statistics={statistics} />
-        
-        
+     
       </div>
     </div>
   ) : (
@@ -1903,14 +1880,11 @@ loadingText: {
 
 
 
-
-
-
 {/* Modal for Admin Settings */}
 {modalOpen && (
   <div style={styles.modalOverlay}>
     <div style={styles.modalContent}>
-      <h2 style={styles.modalContentH2}>Admin Control</h2>
+      <h2 style={styles.modalContentH2}></h2>
       <HighlightOffOutlinedIcon
         onClick={toggleModal}
         style={styles.cancelIcon} // Apply cancel icon style
@@ -2094,250 +2068,6 @@ loadingText: {
     </div>
   </div>
 )}
-
-   {/* Search Product Section */}
-<div style={styles.card2}>
-  <h3 style={styles.cardTitle}>
-  Search Product to Archive<FaSearch style={styles.icon} />
-  </h3>
-  <form onSubmit={getProductByName} style={styles.form}>
-    <div style={styles.formGroup}>
-      <label style={styles.label}>
-        <FaTag style={styles.icon} /> Product Name:
-      </label>
-      <input
-        type="text"
-        value={productNameToSearch}
-        onChange={(e) => setProductNameToSearch(e.target.value)}
-        required
-        style={styles.input}
-        placeholder="Enter Product Name"
-      />
-    </div>
-    <button type="submit" style={styles.searchButton} disabled={loading}>
-      <FaSearch style={{ marginRight: '5px' }} />
-      Search Product
-    </button>
-  </form>
-  {/* Error and Success Messages for Search */}
-  {getProductErrorMessage && <p style={styles.error}>{getProductErrorMessage}</p>}
-
-
-  {/* Product Search Result */}
-  {productSearchResult && (
-    <div style={styles.searchResult}>
-      <h4 style={styles.resultTitle}>Product Details</h4>
-      <p>
-        <strong>Name:</strong> {productSearchResult.productName}
-      </p>
-      <p>
-        <strong>Description:</strong> {productSearchResult.description}
-      </p>
-      <p>
-        <strong>Price:</strong> ${productSearchResult.price}
-      </p>
-      <p>
-        <strong>Rating:</strong> {productSearchResult.rating}
-      </p>
-      <p>
-        <strong>Seller:</strong> {productSearchResult.seller}
-      </p>
-      <p>
-        <strong>Archived:</strong>{' '}
-        {productSearchResult.archived !== undefined
-          ? productSearchResult.archived.toString()
-          : 'N/A'}
-      </p>
-      <div style={styles.buttonGroup}>
-        <button
-          onClick={archiveProduct}
-          disabled={loading}
-          style={styles.archiveButton}
-        >
-          Archive Product
-        </button>
-        <button
-          onClick={unarchiveProduct}
-          disabled={loading || !productSearchResult.archived}
-          style={styles.unarchiveButton}
-        >
-          Unarchive Product
-        </button>
-      </div>
-    </div>
-  )}
-
-  {/* Error and Success Messages for Archive */}
-  {archiveProductErrorMessage && <p style={styles.error}>{archiveProductErrorMessage}</p>}
-  {archiveProductSuccessMessage && <p style={styles.success}>{archiveProductSuccessMessage}</p>}
-
-  {/* Error and Success Messages for Unarchive */}
-  {unarchiveProductErrorMessage && <p style={styles.error}>{unarchiveProductErrorMessage}</p>}
-  {unarchiveProductSuccessMessage && <p style={styles.success}>{unarchiveProductSuccessMessage}</p>}
-</div>
-
-<div
-  style={{
-    display: 'flex',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap',
-    gap: '20px',
-    marginBottom: '40px',
-    marginTop: '50px', // This pushes it lower
-  }}
->
-  {/* Itineraries Section */}
-  <div style={{ ...styles.section, flex: '1 1 calc(30% - 20px)' }}>
-    <button style={styles.button} onClick={handleViewItineraries}>
-      {showingItineraries ? 'Hide Itineraries' : 'Show Itineraries'}
-    </button>
-
-    {/* Modal for Itineraries */}
-    {showingItineraries && (
-      <div style={styles.modalOverlay}>
-        <div style={styles.modalContent}>
-          <h2 style={styles.modalTitle}>Itineraries</h2>
-          <button onClick={() => setShowingItineraries(false)} style={styles.modalCloseButton}>
-            Close
-          </button>
-
-          <div style={styles.modalBody}>
-            {Itineraries.length > 0 ? (
-              Itineraries.map((itinerary) => (
-                <div key={itinerary._id} style={styles.card}>
-                  <h4 style={styles.title}>Locations:</h4>
-                  <p style={styles.text}>{itinerary.Locations.join(', ')}</p>
-                  <p style={styles.text}>Dates: {itinerary.DatesTimes}</p>
-                  <button
-                    style={styles.flagButton}
-                    onClick={() => handleFlagItinerary(itinerary._id)}
-                  >
-                    Flag Itinerary
-                  </button>
-                </div>
-              ))
-            ) : (
-              <p style={styles.text}>No itineraries found.</p>
-            )}
-          </div>
-          {flagItineraryMessage && (
-            <p
-              style={{
-                color: flagItineraryMessage.includes('successfully') ? 'green' : 'red',
-                textAlign: 'center',
-                marginTop: '10px',
-              }}
-            >
-              {flagItineraryMessage}
-            </p>
-          )}
-        </div>
-      </div>
-    )}
-  </div>
-
-  {/* Activities Section */}
-  <div style={{ ...styles.section, flex: '1 1 calc(30% - 20px)' }}>
-    <button style={styles.button} onClick={handleViewActivities}>
-      {showingActivities ? 'Hide Activities' : 'Show Activities'}
-    </button>
-
-    {/* Modal for Activities */}
-    {showingActivities && (
-      <div style={styles.modalOverlay}>
-        <div style={styles.modalContent}>
-          <h2 style={styles.modalTitle}>Activities</h2>
-          <button onClick={() => setShowingActivities(false)} style={styles.modalCloseButton}>
-            Close
-          </button>
-
-          <div style={styles.modalBody}>
-            {Activities.length > 0 ? (
-              Activities.map((activity) => (
-                <div key={activity._id} style={styles.card}>
-                  <h4 style={styles.title}>Name:</h4>
-                  <p style={styles.text}>{activity.Name}</p>
-                  <p style={styles.text}>Category: {activity.Category}</p>
-                  <button
-                    style={styles.flagButton}
-                    onClick={() => handleFlagActivity(activity._id)}
-                  >
-                    Flag Activity
-                  </button>
-                </div>
-              ))
-            ) : (
-              <p style={styles.text}>No activities found.</p>
-            )}
-          </div>
-          {flagMessage && (
-            <p
-              style={{
-                color: flagMessage.includes('successfully') ? 'green' : 'red',
-                textAlign: 'center',
-                marginTop: '15px',
-              }}
-            >
-              {flagMessage}
-            </p>
-          )}
-        </div>
-      </div>
-    )}
-  </div>
-
-  {/* Tourist Itineraries Section */}
-  <div style={{ ...styles.section, flex: '1 1 calc(30% - 20px)' }}>
-    <button style={styles.button} onClick={handleViewTouristItineraries}>
-      {showingTouristItineraries ? 'Hide Tourist Itineraries' : 'Show Tourist Itineraries'}
-    </button>
-
-    {/* Modal for Tourist Itineraries */}
-    {showingTouristItineraries && (
-      <div style={styles.modalOverlay}>
-        <div style={styles.modalContent}>
-          <h2 style={styles.modalTitle}>Tourist Itineraries</h2>
-          <button
-            onClick={() => setShowingTouristItineraries(false)}
-            style={styles.modalCloseButton}
-          >
-            Close
-          </button>
-
-          <div style={styles.modalBody}>
-            {touristItineraries.length > 0 ? (
-              touristItineraries.map((touristItinerary) => (
-                <div key={touristItinerary._id} style={styles.card}>
-                  <h4 style={styles.title}>Activities:</h4>
-                  <p style={styles.text}>{touristItinerary.Activities.join(', ')}</p>
-                  <p style={styles.text}>Locations: {touristItinerary.Locations.join(', ')}</p>
-                  <button
-                    style={styles.flagButton}
-                    onClick={() => handleFlagTouristItinerary(touristItinerary._id)}
-                  >
-                    Flag Tourist Itinerary
-                  </button>
-                </div>
-              ))
-            ) : (
-              <p style={styles.text}>No tourist itineraries found.</p>
-            )}
-          </div>
-          {flagTouristItineraryMessage && (
-            <p
-              style={{
-                color: flagTouristItineraryMessage.includes('Successfully') ? 'green' : 'red',
-              }}
-            >
-              {flagTouristItineraryMessage}
-            </p>
-          )}
-        </div>
-      </div>
-    )}
-  </div>
-</div>
-
 
       {/* Password Modal */}
 {showPasswordModal && (
