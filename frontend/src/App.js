@@ -70,57 +70,16 @@ stripePromise.then((stripe) => console.log('Stripe initialized:', stripe));
 
 
 
-function Home() {
-  const [animatedText, setAnimatedText] = useState('');
-  const fullText = 'Trriptastic'; // The full word to display
+const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    let index = 0;
-    const interval = setInterval(() => {
-      if (index < fullText.length-1) {
-        setAnimatedText((prev) => prev + fullText[index]);
-        index++;
-      } else {
-        clearInterval(interval);
-      }
-    }, 200); // Delay for each letter (200ms)
-    return () => clearInterval(interval);
-  }, []);
+    // Redirect all users to the Guest page
+    navigate('/Guest');
+  }, [navigate]);
 
-  return (
-    <div style={styles.container}>
-      <div style={styles.overlay}></div>
-      <header style={styles.header}>
-        {/* Animated Welcome Message */}
-        <h1 style={styles.title}>
-          Welcome to <span style={styles.highlight}>{animatedText}</span>
-        </h1>
-
-        {/* Dropdown List for Roles */}
-        <div style={styles.content}>
-          <p style={styles.description}>Select your role to start your Adventure!</p>
-          <select
-            onChange={(e) => navigate(e.target.value)} // Navigate to the selected page
-            style={styles.dropdown}
-          >
-            <option value="">-- Choose a Role --</option>
-            <option value="/adminLogin">Admin</option>
-            <option value="/advertiser-register">Advertiser</option>
-            <option value="/seller-register">Seller</option>
-            <option value="/tourist-register">Tourist</option>
-            <option value="/tgov-login">Tourism Governor</option>
-            <option value="/tour-guide-register">Tour Guide</option>
-          </select>
-          <button style={styles.button} onClick={() => navigate('/Guest')}>
-           or Continue as Guest
-          </button>
-        </div>
-      </header>
-    </div>
-  );
+  return null; // Optionally, you can show a loader or empty screen during redirection
 };
-
 
 function App() {
   const [isStripeLoaded, setIsStripeLoaded] = useState(false);
@@ -200,68 +159,6 @@ function App() {
   );
 }
 
-const styles = {
-  container: {
-    position: 'relative',
-    width: '100%',
-    height: '100vh',
-    backgroundImage: `url(${background})`, // Replace with your image path
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.3)', // Dark overlay for contrast
-    zIndex: 1,
-  },
-  header: {
-    position: 'relative',
-    zIndex: 2,
-    textAlign: 'center',
-    color: '#fff',
-  },
-  title: {
-    fontSize: '3rem',
-    fontWeight: 'bold',
-    marginBottom: '20px',
-    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)',
-  },
-  highlight: {
-    color: '#197B4D',
-  },
-  content: {
-    marginTop: '20px',
-  },
-  description: {
-    color:'white',
-    fontSize: '1.2rem',
-    marginBottom: '10px',
-  },
-  dropdown: {
-    padding: '10px',
-    fontSize: '16px',
-    borderRadius: '5px',
-    marginBottom: '20px',
-    border: '1px solid #ccc',
-  },
-  button: {
-    padding: '10px 20px',
-    fontSize: '16px',
-    color: '#fff',
-    backgroundColor: '#197B4D',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    marginTop: '10px',
-    transition: 'background-color 0.3s',
-  },
-};
+
 
 export default App;

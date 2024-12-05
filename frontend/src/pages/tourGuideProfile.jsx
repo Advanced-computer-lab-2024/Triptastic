@@ -141,12 +141,11 @@ const [showDropdown, setShowDropdown] = useState(false);
       }
       };
   
-    useEffect(() => {
-      fetchItineraries()
-      calculateTotalSales(itineraries);
-      findMostSold(itineraries);
-      findLeastSold(itineraries);
-    }, );
+      useEffect(() => {
+        fetchItineraries();
+        fetchTourGuideData()
+      }, []); // Only run once on mount
+      
     const handleFilterChange = (itineraryId) => {
       const selectedItinerary = itineraries.find(itinerary => itinerary._id === itineraryId);
       if (selectedItinerary) {
@@ -207,11 +206,11 @@ const [showDropdown, setShowDropdown] = useState(false);
   }; 
   const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
   useEffect(() => {
-    fetchTourGuideData();
-    fetchItineraries();
-    setLoading(false);
-    fetchTouristItineraries();
-  }, []);
+    calculateTotalSales(itineraries);
+    findMostSold(itineraries);
+    findLeastSold(itineraries);
+  }, [itineraries]); // Re-run when itineraries change
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -226,11 +225,16 @@ const [showDropdown, setShowDropdown] = useState(false);
     }
   };
   useEffect(() => {
-    fetchItineraries();
-    calculateTotalSales(itineraries);
-    findMostSold(itineraries);
-    findLeastSold(itineraries);
-  }, );
+    if (!selectedMonth) {
+      setFilteredItineraries(itineraries); // Show all if no month selected
+    } else {
+      const filtered = itineraries.filter((itinerary) => {
+        const month = new Date(itinerary.DatesTimes).getMonth() + 1;
+        return month === Number(selectedMonth);
+      });
+      setFilteredItineraries(filtered);
+    }
+  }, [selectedMonth, itineraries]);
   const fetchTourGuideData = async () => {
     const Username = localStorage.getItem('Username');
     try {
@@ -330,40 +334,41 @@ const [showDropdown, setShowDropdown] = useState(false);
     }
   };
 
-  const handleMonthFilter = async (month) => {
-    setSelectedMonth(month);
-  
-    const Username = localStorage.getItem("Username");
-  
-    if (!Username) {
-      console.error("No logged-in username found.");
-      return;
+ const handleMonthFilter = async (month) => {
+  setSelectedMonth(month); // Update the dropdown value
+
+  const Username = localStorage.getItem("Username");
+
+  if (!Username) {
+    console.error("No logged-in username found.");
+    return;
+  }
+
+  if (!month) {
+    // Reset to show all itineraries
+    setFilteredItineraries(itineraries);
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `http://localhost:8000/filterItinerariesByMonth?Username=${Username}&month=${month}`
+    );
+    if (response.ok) {
+      const data = await response.json();
+      setFilteredItineraries(data); // Update with filtered itineraries
+    } else {
+      console.error("Failed to fetch filtered itineraries");
+      const errorData = await response.json();
+      console.error(errorData.message || "Error fetching filtered data");
+      setFilteredItineraries([]); // Clear if no results or error
     }
-  
-    if (!month) {
-      // Reset to show all itineraries for this tour guide
-      setFilteredItineraries(itineraries);
-      return;
-    }
-  
-    try {
-      const response = await fetch(
-        `http://localhost:8000/filterItinerariesByMonth?Username=${Username}&month=${month}`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setFilteredItineraries(data); // Update with filtered itineraries
-      } else {
-        setFilteredItineraries([]); // Clear if no results or error
-        const errorData = await response.json();
-        console.error("Error fetching filtered itineraries:", errorData);
-      }
-    } catch (error) {
-      console.error("An error occurred while filtering itineraries:", error);
-      setFilteredItineraries([]);
-    }
-  };
-  
+  } catch (error) {
+    console.error("An error occurred while filtering itineraries:", error);
+    setFilteredItineraries([]); // Clear in case of error
+  }
+};
+
   const handleDeleteRequest = async () => {
     const Username = localStorage.getItem('Username');
     setWaiting(true);
@@ -773,8 +778,8 @@ const handleViewReport = async (itineraryId) => {
 <div style={styles.reportSection}>
   {!filteredI && !filteredD && (
     <>
-      <h3 style={styles.sectionTitle}>
-        <FaDollarSign style={styles.iconn} /> Total Profit from Sales: ${totalSales}
+      <h3 style={styles.sectionTitlee}>
+       Total Profit from Sales: ${totalSales}
       </h3>
       {mostSold && (
         <div style={styles.itineraryCard}>
@@ -978,6 +983,10 @@ const styles = {
   },
   dropdownItemHover: {
     backgroundColor: "#f5f5f5",
+  },
+  item: {
+ 
+    padding: '10px 0',
   },
   modalOverlay: {
     position: 'fixed',
@@ -1187,7 +1196,7 @@ const styles = {
     flex: "3",
   },
   sectionTitle: {
-    fontSize: "20px",
+    fontSize: "25px",
     color: "#0F5132",
     textAlign: "center",
     display: "flex",
@@ -1195,6 +1204,15 @@ const styles = {
     justifyContent: "center",
     gap: "10px",
   },
+  sectionTitlee: {
+    fontSize: "23px", // Increased font size for better visibility
+    color: "#0F5132", // Green color for the text
+    textAlign: "center", // Center the text horizontally
+    display: "flex", // Use flexbox for alignment
+    alignItems: "center", // Center the content vertically
+    justifyContent: "center", // Center the content horizontally
+  },
+  
   titleText: {
     color: '#0F5132', // Green shade for the title
   },

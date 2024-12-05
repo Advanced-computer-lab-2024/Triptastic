@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './signuptest.module.css'; // Import CSS module
+import background from '../images/back.webp'; // Replace with the path to your image
+
 
 function AuthPage() {
+  const [selectedRole, setSelectedRole] = useState(""); // Track the selected role
   const [isSignUp, setIsSignUp] = useState(false); // State to toggle forms
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [otpSent, setOtpSent] = useState(false); // Track OTP sent status
@@ -17,8 +20,24 @@ function AuthPage() {
     otp: '',
     newPassword: '',
   });
+  const [animatedText, setAnimatedText] = useState('');
+  const fullText = 'Trriptastic'; // The full word to display
   
   const navigate = useNavigate();
+  const [acceptTerms, setAcceptTerms] = useState(false); // Add this line
+  const [formData, setFormData] = useState({
+    Username: "",
+    Email: "",
+    Password: "",
+    Id: null,
+    Certificate: null,
+    TaxationRegistryCard: null,
+  });
+
+
+ 
+
+
 
   // Separate state for Sign-Up form
   const [signUpFormData, setSignUpFormData] = useState({
@@ -30,6 +49,7 @@ function AuthPage() {
     Occupation: '',
   });
 
+
   const [signInFormData, setSignInFormData] = useState({
     Email: '',
     Password: '',
@@ -37,6 +57,21 @@ function AuthPage() {
 
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+
+
+
+  useEffect(() => {
+    let index = 0;
+    const interval = setInterval(() => {
+      if (index < fullText.length-1) {
+        setAnimatedText((prev) => prev + fullText[index]);
+        index++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 200); // Delay for each letter (200ms)
+    return () => clearInterval(interval);
+  }, []);
 
   // Handle input changes for Sign-Up form
   const handleSignUpChange = (e) => {
@@ -62,6 +97,31 @@ function AuthPage() {
       [name]: value
     }));
   };
+  // Handle input changes for text inputs
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+
+
+  // Handle file input changes
+  const handleFileChange = (e) => {
+    const { name, files } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: files[0], // Store the first selected file
+    }));
+  };
+
+  // Handle checkbox change
+  const handleTermsChange = (e) => {
+    setAcceptTerms(e.target.checked);
+  };
+
   // Handle Sign-Up form submission
   const handleSignUpSubmit = async (e) => {
     e.preventDefault();
@@ -143,7 +203,130 @@ const handleSignInSubmit = async (e) => {
     setErrorMessage('Something went wrong. Please try again later.');
   }
 };
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
+  // Validate input fields
+  if (!formData.Username || !formData.Email || !formData.Password) {
+    setErrorMessage("Please fill all required fields.");
+    return;
+  }
+
+  
+
+  // Define endpoint and payload based on role
+  let endpoint = "";
+  let payload;
+  let headers = {};
+
+  switch (selectedRole) {
+    case "tourGuide":
+      endpoint = "http://localhost:8000/addTourGuide";
+      payload = new FormData();
+      payload.append("Username", formData.Username);
+      payload.append("Email", formData.Email);
+      payload.append("Password", formData.Password);
+      payload.append("Id", formData.Id);
+      payload.append("Certificate", formData.Certificate);
+      break;
+
+    case "seller":
+      endpoint = "http://localhost:8000/createSeller";
+      payload = new FormData();
+      payload.append("Username", formData.Username);
+      payload.append("Email", formData.Email);
+      payload.append("Password", formData.Password);
+      payload.append("Id", formData.Id);
+      payload.append("TaxationRegistryCard", formData.TaxationRegistryCard);
+      break;
+
+    case "advertiser":
+      endpoint = "http://localhost:8000/addAdvertiser";
+      payload = new FormData();
+      payload.append("Username", formData.Username);
+      payload.append("Email", formData.Email);
+      payload.append("Password", formData.Password);
+      payload.append("Id", formData.Id);
+      payload.append("TaxationRegistryCard", formData.TaxationRegistryCard);
+      break;
+
+    case "tourist":
+      endpoint = "http://localhost:8000/addTourist";
+      payload = JSON.stringify({
+        Username: formData.Username,
+        Email: formData.Email,
+        Password: formData.Password,
+        Nationality: formData.Nationality,
+        DOB: formData.DOB,
+        Occupation: formData.Occupation,
+      });
+      headers = { "Content-Type": "application/json" };
+      break;
+
+    default:
+      setErrorMessage("Please select a valid role.");
+      return;
+  }
+
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers,
+      body: payload,
+    });
+
+    if (response.ok) {
+      const responseData = await response.json();
+
+      // Store user data in localStorage
+      localStorage.setItem("context", selectedRole);
+      localStorage.setItem("Username", formData.Username);
+      localStorage.setItem("Email", formData.Email);
+      localStorage.setItem("Password", formData.Password);
+
+      if (selectedRole === "tourist") {
+        localStorage.setItem("Nationality", formData.Nationality);
+        localStorage.setItem("DOB", formData.DOB);
+        localStorage.setItem("Occupation", formData.Occupation);
+      }
+
+      setSuccessMessage(`${selectedRole} registered successfully!`);
+      setErrorMessage("");
+
+      // Reset form data
+      setFormData({
+        Username: "",
+        Email: "",
+        Password: "",
+        Id: null,
+        Certificate: null,
+        TaxationRegistryCard: null,
+        Nationality: "",
+        DOB: "",
+        Occupation: "",
+      });
+
+      // Redirect to role-specific profile page
+      const redirectPath =
+        selectedRole === "tourGuide"
+          ? "/tour-guide-profile"
+          : selectedRole === "seller"
+          ? "/seller-profile"
+          : selectedRole === "advertiser"
+          ? "/advertiser-profile"
+          : "/tourist-profile";
+
+      navigate(redirectPath);
+    } else {
+      const errorData = await response.json();
+      setErrorMessage(errorData.error || "Registration failed");
+      setSuccessMessage("");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    setErrorMessage("Something went wrong. Please try again later.");
+  }
+};
 const handleRequestOTP = async (e) => {
   e.preventDefault();
   try {
@@ -202,7 +385,18 @@ const handleResetPassword = async (e) => {
 };
 
 return (
-  <div className={`${styles.container} ${isSignUp ? styles.active : ''}`}>
+  <div style={styles2.container}>
+       <div style={styles2.overlay}></div>
+       <header style={styles2.header}>
+         {/* Animated Welcome Message */}
+         <h1 style={styles2.title}>
+           Welcome to <span style={styles2.highlight}>{animatedText}</span>
+         </h1>
+        
+
+         
+         
+         <div className={`${styles.container} ${isSignUp ? styles.active : ''}`}>
     {/* Half-Sliding Circle */}
     <div className={styles.halfCircle}></div>
 
@@ -210,18 +404,83 @@ return (
     {/* Sign-Up Form */}
     {isSignUp && (
       <div className={`${styles.formContainer} ${styles.signUp} ${isSignUp ? styles.active : ''}`}>
-        <h2>Create Account</h2>
         {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
         {successMessage && <p className={styles.successMessage}>{successMessage}</p>}
-        <form onSubmit={handleSignUpSubmit}>
-          <div>
+        {/* Role Slider */}
+    <div style={{ marginBottom: "20px", textAlign: "center" }}>
+      <label htmlFor="roleSlider" style={{ fontSize: "16px", fontWeight: "bold" }}>
+        Select Your Role:
+      </label>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "7px",
+          marginTop: "10px",
+        }}
+      >
+        <button
+          onClick={() => setSelectedRole("tourist")}
+          style={{
+            padding: "3px 8px",
+            borderRadius: "15px",
+            border: selectedRole === "tourist" ? "2px solid #0F5132" : "1px solid #ccc",
+            backgroundColor: selectedRole === "tourist" ? "#0F5132" : "#fff",
+            color: selectedRole === "tourist" ? "#fff" : "#0F5132",
+            cursor: "pointer",
+          }}
+        >
+          Tourist
+        </button>
+        <button
+          onClick={() => setSelectedRole("tourGuide")}
+          style={{
+            padding: "5px 10px",
+            borderRadius: "15px",
+            border: selectedRole === "tourGuide" ? "2px solid #0F5132" : "1px solid #ccc",
+            backgroundColor: selectedRole === "tourGuide" ? "#0F5132" : "#fff",
+            color: selectedRole === "tourGuide" ? "#fff" : "#0F5132",
+            cursor: "pointer",
+          }}
+        >
+          Tour Guide
+        </button>
+        <button
+          onClick={() => setSelectedRole("seller")}
+          style={{
+            padding: "3px 8px",
+            borderRadius: "15px",
+            border: selectedRole === "seller" ? "2px solid #0F5132" : "1px solid #ccc",
+            backgroundColor: selectedRole === "seller" ? "#0F5132" : "#fff",
+            color: selectedRole === "seller" ? "#fff" : "#0F5132",
+            cursor: "pointer",
+          }}
+        >
+          Seller
+        </button>
+        <button
+      onClick={() => setSelectedRole("advertiser")}
+      style={{
+        padding: "3px 10px",
+        borderRadius: "15px",
+        border: selectedRole === "advertiser" ? "2px solid #0F5132" : "1px solid #ccc",
+        backgroundColor: selectedRole === "advertiser" ? "#0F5132" : "#fff",
+        color: selectedRole === "advertiser" ? "#fff" : "#0F5132",
+        cursor: "pointer",
+      }}
+    >
+      Advertiser
+    </button>
+      </div>
+    </div>
+        <form onSubmit={handleSubmit}>          <div>
             <label htmlFor="signUpUsername">Username:</label>
             <input
               type="text"
               id="signUpUsername"
               name="Username"
-              value={signUpFormData.Username}
-              onChange={handleSignUpChange}
+              value={formData.Username}
+              onChange={(e) => setFormData({ ...formData, Username: e.target.value })}
               required
             />
           </div>
@@ -231,9 +490,9 @@ return (
               type="email"
               id="signUpEmail"
               name="Email"
-              value={signUpFormData.Email}
-              onChange={handleSignUpChange}
-              required
+              value={formData.Email}
+          onChange={(e) => setFormData({ ...formData, Email: e.target.value })}
+          required
             />
           </div>
           <div>
@@ -242,280 +501,539 @@ return (
               type="password"
               id="signUpPassword"
               name="Password"
-              value={signUpFormData.Password}
-              onChange={handleSignUpChange}
+              value={formData.Password}
+              onChange={(e) => setFormData({ ...formData, Password: e.target.value })}
               required
             />
           </div>
-          <div>
-            <label htmlFor="signUpNationality">Nationality:</label>
-            <input
-              type="text"
-              id="signUpNationality"
-              name="Nationality"
-              value={signUpFormData.Nationality}
-              onChange={handleSignUpChange}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="signUpDOB">Date of Birth:</label>
-            <input
-              type="date"
-              id="signUpDOB"
-              name="DOB"
-              value={signUpFormData.DOB}
-              onChange={handleSignUpChange}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="signUpOccupation">Occupation:</label>
-            <input
-              type="text"
-              id="signUpOccupation"
-              name="Occupation"
-              value={signUpFormData.Occupation}
-              onChange={handleSignUpChange}
-              required
-            />
-          </div>
-          <button type="submit">Register as Tourist</button>
-        </form>
-      </div>
-    )}
-
-   
-      {/* Sign-In Form */}
-     
-      {/* Sign-In Form */}
-      {showSignIn && !isSignUp && (
-        <div
-        className={`${styles.formContainer2} ${styles.signIn}`}
-        style={{
-          width: '50%',
-          maxWidth: '600px',
-          margin: '0 auto',
-          padding: '20px',
-          backgroundColor: '#fff',
-          borderRadius: '10px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '15px',
-          right:'55%'
-        }}
-      >
-        
-        <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Sign In</h1>
-                  <form onSubmit={handleSignInSubmit}      style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}
-                  >
-                            <label style={{ fontSize: '14px', marginBottom: '5px', display: 'block' }}>Email:</label>
-
+          {selectedRole === "tourist" && (
+    <>     
+         <div>
+  <label htmlFor="signUpNationality">Nationality:</label>
   <input
-    type="email"
-     name="Email"
-    placeholder="Email"
-    value={signInFormData.Email}
-    onChange={handleSignInChange}
+    type="text"
+    id="signUpNationality"
+    name="Nationality"
+    value={formData.Nationality}
+    onChange={(e) => setFormData({ ...formData, Nationality: e.target.value })}
     required
-    style={{
-      width: '100%',
-      padding: '10px',
-      borderRadius: '5px',
-      border: '1px solid #ccc',
-      fontSize: '14px',
-    }}
   />
-          <label style={{ fontSize: '14px', marginBottom: '5px', display: 'block' }}>Password:</label>
-
+</div>
+<div>
+  <label htmlFor="signUpDOB">Date of Birth:</label>
   <input
-  type="password"
-  name="Password"
-  placeholder="Password"
-  value={signInFormData.Password}
-  onChange={handleSignInChange}
-  required
-  style={{
-    width: '100%',
-    padding: '10px',
-    borderRadius: '5px',
-    border: '1px solid #ccc',
-    fontSize: '14px',
-  }}
-
+    type="date"
+    id="signUpDOB"
+    name="DOB"
+    value={formData.DOB}
+    onChange={(e) => setFormData({ ...formData, DOB: e.target.value })}
+    required
   />
+</div>
+<div>
+  <label htmlFor="signUpOccupation">Occupation:</label>
+  <input
+    type="text"
+    id="signUpOccupation"
+    name="Occupation"
+    value={formData.Occupation}
+    onChange={(e) => setFormData({ ...formData, Occupation: e.target.value })}
+    required
+  />
+</div>
+</>
+
+
+            )}
+           {/* Role-specific fields */}
+  {selectedRole === "tourGuide" && (
+    <>
+      <div>
+        <label>ID:</label>
+        <input
+          type="file"
+          name="Id"
+          onChange={(e) =>
+            setFormData({ ...formData, Id: e.target.files[0] })
+          }
+          required
+        />
+      </div>
+      <div>
+        <label>Certificate:</label>
+        <input
+          type="file"
+          name="Certificate"
+          onChange={(e) =>
+            setFormData({ ...formData, Certificate: e.target.files[0] })
+          }
+          required
+        />
+      </div>
+      <div>
+    <input
+      type="checkbox"
+      checked={acceptTerms}
+      onChange={(e) => setAcceptTerms(e.target.checked)}
+      required
+    />
+    <label>I accept the terms and conditions</label>
+  </div>
+    </>
+  )}
+
+  {selectedRole === "seller" && (
+    <>
+      <div>
+        <label>ID:</label>
+        <input
+          type="file"
+          name="Id"
+          onChange={(e) =>
+            setFormData({ ...formData, Id: e.target.files[0] })
+          }
+          required
+        />
+      </div>
+      <div>
+        <label>Taxation Registry Card:</label>
+        <input
+          type="file"
+          name="TaxationRegistryCard"
+          onChange={(e) =>
+            setFormData({ ...formData, TaxationRegistryCard: e.target.files[0] })
+          }
+          required
+        />
+      </div>
+      <div>
+    <input
+      type="checkbox"
+      checked={acceptTerms}
+      onChange={(e) => setAcceptTerms(e.target.checked)}
+      required
+    />
+    <label>I accept the terms and conditions</label>
+  </div>
+    </>
+  )}
+   {selectedRole === "advertiser" && (
+    <>
+      <div>
+        <label>ID:</label>
+        <input
+          type="file"
+          name="Id"
+          onChange={(e) =>
+            setFormData({ ...formData, Id: e.target.files[0] })
+          }
+          required
+        />
+      </div>
+      <div>
+        <label>Taxation Registry Card:</label>
+        <input
+          type="file"
+          name="TaxationRegistryCard"
+          onChange={(e) =>
+            setFormData({ ...formData, TaxationRegistryCard: e.target.files[0] })
+          }
+          required
+        />
+      </div>
+      <div>
+    <input
+      type="checkbox"
+      checked={acceptTerms}
+      onChange={(e) => setAcceptTerms(e.target.checked)}
+      required
+    />
+    <label>I accept the terms and conditions</label>
+  </div>
+    </>
+  )}
+
+
+ 
+
   <button type="submit"  style={{
           width: '35%',
-          padding: '10px',
+          padding: '2px',
           borderRadius: '15px',
           border: 'none',
           backgroundColor: '#0F5132',
           color: '#fff',
-          fontSize: '16px',
+          fontSize: '14px',
           cursor: 'pointer',
-          marginTop:'10px'
-        }}>Sign In</button>
+          marginTop: '5px',
+        }}>Register</button>
 </form>
+          
+      </div>
+    )}
 
+       
+   {/* Sign-In Form */}
+{showSignIn && !isSignUp && !showOTPForm && (
+  <div
+    className={`${styles.formContainer2} ${styles.signIn}`}
+    style={{
+      width: '50%',
+      maxWidth: '600px',
+      margin: '0 auto',
+      padding: '20px',
+      backgroundColor: 'transparent',
+      borderRadius: '10px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '8px',
+      right: '55%',
+    }}
+  >
+    <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Sign In</h1>
+    <form
+      onSubmit={handleSignInSubmit}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '10px',
+      }}
+    >
+      <label style={{ fontSize: '14px', marginBottom: '2px', display: 'block' }}>
+        Email:
+      </label>
+      <input
+        type="email"
+        name="Email"
+        placeholder="Email"
+        value={signInFormData.Email}
+        onChange={handleSignInChange}
+        required
+        style={{
+          width: '100%',
+          padding: '5px',
+          borderRadius: '5px',
+          border: '1px solid #ccc',
+          fontSize: '14px',
+        }}
+      />
+      <label style={{ fontSize: '14px', marginBottom: '2px', display: 'block' }}>
+        Password:
+      </label>
+      <input
+        type="password"
+        name="Password"
+        placeholder="Password"
+        value={signInFormData.Password}
+        onChange={handleSignInChange}
+        required
+        style={{
+          width: '100%',
+          padding: '5px',
+          borderRadius: '5px',
+          border: '1px solid #ccc',
+          fontSize: '14px',
+        }}
+      />
+      <button
+        type="submit"
+        style={{
+          width: '35%',
+          padding: '2px',
+          borderRadius: '15px',
+          border: 'none',
+          backgroundColor: '#0F5132',
+          color: '#fff',
+          fontSize: '14px',
+          cursor: 'pointer',
+          marginTop: '5px',
+        }}
+      >
+        Sign In
+      </button>
+    </form>
 
-          <button onClick={() => setShowOTPForm(true)} style={{
+    <button
+      onClick={() => {
+        setShowSignIn(false);
+        setShowOTPForm(true);
+      }}
+      style={{
         background: 'none',
         color: '#0F5132',
         border: 'none',
         cursor: 'pointer',
         textDecoration: 'underline',
         fontSize: '14px',
-        marginTop: '10px',
-      }}>Forgot Password?</button>
+        marginTop: '3px',
+      }}
+    >
+      Forgot Password?
+    </button>
+  </div>
+)}
 
-          {/* OTP Form */}
-          {showOTPForm && (
-            <div className={`${styles.otpResetForm}`}  style={{
-              marginTop: '20px',
-              padding: '20px',
-              borderRadius: '10px',
-            }}>
-              {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
-              {successMessage && <p className={styles.successMessage}>{successMessage}</p>}
-
-              {/* OTP Request Form */}
-              {!otpSent && (
-                <form onSubmit={handleRequestOTP}  style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                  <div>
-                    <label htmlFor="emailForOTP">Enter Email:</label>
-                    <input
-                      type="email"
-                      id="emailForOTP"
-                      value={emailForOTP}
-                      onChange={(e) => setEmailForOTP(e.target.value)}
-                      required
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: '5px',
-                        border: '1px solid #ccc',
-                        fontSize: '14px',
-                      }}
-                    />
-                  </div>
-                  <button type="submit"  style={{
-                width: '50%',
-                padding: '10px',
-                borderRadius: '15px',
-                border: 'none',
-                backgroundColor: '#0F5132',
-                color: '#fff',
-                fontSize: '16px',
-                cursor: 'pointer',
-              }}>Request OTP</button>
-                </form>
-              )}
-
-              {/* Reset Password Form */}
-              {otpSent && (
-                <form onSubmit={handleResetPassword}             style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}
->
-                  <div>
-      <label htmlFor="emailForReset"                 style={{ fontSize: '14px', marginBottom: '5px', display: 'block' }}
-      >Email:</label>
-      <input
-        type="email"
-        id="emailForReset"
-        name="emailForReset"
-        value={otpFormData.emailForReset} // New state for email field
-        onChange={handleOTPChange}
-        required
+{/* OTP Form */}
+{showOTPForm && (
+  <div
+    className={`${styles.otpResetForm}`}
+    style={{
+      width: '50%',
+      maxWidth: '600px',
+      margin: '0 auto',
+      padding: '20px',
+      backgroundColor: 'transparent',
+      borderRadius: '10px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '8px',
+      right: '25%',  
+    }}
+  >
+    {/* OTP Request Form */}
+    {!otpSent && (
+      <form
+        onSubmit={handleRequestOTP}
         style={{
-          width: '100%',
-          padding: '10px',
-          borderRadius: '5px',
-          border: '1px solid #ccc',
-          fontSize: '14px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '5px',
         }}
-      />
-    </div>
-                  <div>
-                    <label htmlFor="otpCode"                 style={{ fontSize: '14px', marginBottom: '5px', display: 'block' }}
-                    >OTP:</label>
-
-                    <input
-                      type="text"
-                      id="otpCode"
-                      name="otp"
-                      value={otpFormData.otp}
-                      onChange={handleOTPChange}
-                      required
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: '5px',
-                        border: '1px solid #ccc',
-                        fontSize: '14px',
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="newPassword"                 style={{ fontSize: '14px', marginBottom: '5px', display: 'block' }}
-                    >New Password:</label>
-                    <input
-                      type="password"
-                      id="newPassword"
-                      name="newPassword"
-                      value={otpFormData.newPassword}
-                      onChange={handleOTPChange}
-                      required
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: '5px',
-                        border: '1px solid #ccc',
-                        fontSize: '14px',
-                      }}
-                    />
-                  </div>
-                  <button type="submit"  style={{
-                width: '50%',
-                padding: '10px',
-                borderRadius: '15px',
-                border: 'none',
-                backgroundColor: '#0F5132',
-                color: '#fff',
-                fontSize: '16px',
-                cursor: 'pointer',
-              }}>Reset Password</button>
-                </form>
-              )}
-              <button onClick={() => setShowOTPForm(false)}  style={{
-            marginTop: '10px',
-            background: 'none',
-            color: '#0F5132',
-            border: 'none',
-            cursor: 'pointer',
-            textDecoration: 'underline',
-            fontSize: '14px',
-          }}>Back to Sign In</button>
-            </div>
-          )}
+      >
+        <div>
+          <label htmlFor="emailForOTP">Enter Email:</label>
+          <input
+            type="email"
+            id="emailForOTP"
+            value={emailForOTP}
+            onChange={(e) => setEmailForOTP(e.target.value)}
+            required
+            style={{
+              width: '100%',
+              padding: '5px',
+              borderRadius: '5px',
+              border: '1px solid #ccc',
+              fontSize: '14px',
+            }}
+          />
         </div>
-      )}
+        <button
+          type="submit"
+          style={{
+            width: '50%',
+            padding: '10px',
+            borderRadius: '15px',
+            border: 'none',
+            backgroundColor: '#0F5132',
+            color: '#fff',
+            fontSize: '12px',
+            cursor: 'pointer',
+          }}
+        >
+          Request OTP
+        </button>
+      </form>
+    )}
+
+    {/* Reset Password Form */}
+    {otpSent && (
+      <form
+        onSubmit={handleResetPassword}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '5px',
+          right: '55%',
+        }}
+      >
+        <div>
+          <label htmlFor="otpCode">OTP:</label>
+          <input
+            type="text"
+            id="otpCode"
+            name="otp"
+            value={otpFormData.otp}
+            onChange={handleOTPChange}
+            required
+            style={{
+              width: '100%',
+              padding: '10px',
+              borderRadius: '5px',
+              border: '1px solid #ccc',
+              fontSize: '14px',
+            }}
+          />
+        </div>
+        <div>
+          <label htmlFor="newPassword">New Password:</label>
+          <input
+            type="password"
+            id="newPassword"
+            name="newPassword"
+            value={otpFormData.newPassword}
+            onChange={handleOTPChange}
+            required
+            style={{
+              width: '100%',
+              padding: '10px',
+              borderRadius: '5px',
+              border: '1px solid #ccc',
+              fontSize: '14px',
+            }}
+          />
+        </div>
+        <button
+          type="submit"
+          style={{
+            width: '50%',
+            padding: '10px',
+            borderRadius: '15px',
+            border: 'none',
+            backgroundColor: '#0F5132',
+            color: '#fff',
+            fontSize: '12px',
+            cursor: 'pointer',
+          }}
+        >
+          Reset Password
+        </button>
+      </form>
+    )}
+    <button
+      onClick={() => {
+        setShowOTPForm(false);
+        setShowSignIn(true);
+      }}
+      style={{
+        marginTop: '4px',
+        background: 'none',
+        color: '#0F5132',
+        border: 'none',
+        cursor: 'pointer',
+        textDecoration: 'underline',
+        fontSize: '14px',
+      }}
+    >
+      Back to Sign In
+    </button>
+  </div>
+)}
+
 
 
     {/* Toggle Panels */}
     <div className={styles.toggleContainer}>
       {!isSignUp ? (
         <div className={`${styles.togglePanel} ${styles.toggleRight}`}>
-          <h1>New to our website?</h1>
+          <h1 style={{
+           
+           fontSize: '32px',
+         
+         }}>New to our website?</h1>
           <button onClick={() => setIsSignUp(true)}>Sign Up</button>
         </div>
       ) : (
         <div className={`${styles.togglePanel} ${styles.toggleLeft}`}>
-          <h1>Already have an account?</h1>
+          <h1  style={{
+           
+            fontSize: '32px',
+          
+          }}>Already have an account?</h1>
           <button onClick={() => setIsSignUp(false)}>Sign In</button>
         </div>
       )}
     </div>
   </div>
+         
+         
+         
+         
+         
+         
+         
+         
+       
+      </header>
+    </div>
+ 
 );
 }
+const styles2 = {
+    container: {
+      position: 'relative',
+      width: '100%',
+      height: '100vh',
+      backgroundImage: `url(${background})`, // Replace with your image path
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    overlay: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'rgba(0, 0, 0, 0.3)', // Dark overlay for contrast
+      zIndex: 1,
+    },
+    header: {
+      position: 'relative',
+      zIndex: 2,
+      textAlign: 'center',
+      color: '#fff',
+      marginBottom: '10px', // Add spacing below the title
+    },
+    title: {
+      fontSize: '3rem',
+      fontWeight: 'bold',
+      marginBottom: '80px',
+      textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)',
+    },
+    highlight: {
+      color: '#197B4D',
+    },
+    formContainer: {
+      position: 'relative',
+      zIndex: 2,
+      width: '80%',
+      maxWidth: '800px',
+      margin: '0 auto',
+      padding: '10px',
+      backgroundColor: 'rgba(255, 255, 255, 0.9)', // Make it slightly transparent
+      borderRadius: '15px',
+      boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)',
+    },
+    content: {
+      marginTop: '5px',
+      textAlign: 'center',
+    },
+    description: {
+      color: 'white',
+      fontSize: '1.2rem',
+      marginBottom: '10px',
+    },
+    dropdown: {
+      padding: '10px',
+      fontSize: '16px',
+      borderRadius: '5px',
+      marginBottom: '20px',
+      border: '1px solid #ccc',
+    },
+    button: {
+      padding: '10px 20px',
+      fontSize: '16px',
+      color: '#fff',
+      backgroundColor: '#197B4D',
+      border: 'none',
+      borderRadius: '5px',
+      cursor: 'pointer',
+      marginTop: '10px',
+      transition: 'background-color 0.3s',
+    },
+  
+};
 
 export default AuthPage;

@@ -232,6 +232,9 @@ const styles = {
   },
   sidebarExpanded: {
     width: '200px', // Width when expanded
+  }, item: {
+ 
+    padding: '10px 0',
   },
   iconContainer: {
     display: 'flex',
