@@ -51,7 +51,7 @@ function AuthPage() {
 
 
   const [signInFormData, setSignInFormData] = useState({
-    Email: '',
+    Username: '',
     Password: '',
   });
 
@@ -208,10 +208,10 @@ const handleLoginSubmit = async (e) => {
 
   // Prepare the login data for the request
   const loginDataList = [
-    { url: 'http://localhost:8000/loginTourist', data: { Email: signInFormData.Email, Password: signInFormData.Password } },
-    { url: 'http://localhost:8000/loginAdvertiser', data: { Email: signInFormData.Email, Password: signInFormData.Password } },
-    { url: 'http://localhost:8000/loginSeller', data: { Email: signInFormData.Email, Password: signInFormData.Password } },
-    { url: 'http://localhost:8000/loginTourGuide', data: { Email: signInFormData.Email, Password: signInFormData.Password } },
+    { url: 'http://localhost:8000/loginTourist', data: { Username: signInFormData.Username, Password: signInFormData.Password } },
+    { url: 'http://localhost:8000/loginAdvertiser', data: { Username: signInFormData.Username, Password: signInFormData.Password } },
+    { url: 'http://localhost:8000/loginSeller', data: { Username: signInFormData.Username, Password: signInFormData.Password } },
+    { url: 'http://localhost:8000/loginTourGuide', data: { Username: signInFormData.Username, Password: signInFormData.Password } },
     { url: 'http://localhost:8000/AdminLogin', data: signInFormData },
     { url: 'http://localhost:8000/tourismGovLogin', data: signInFormData }, // Added tourismGovLogin here
   ];
@@ -231,17 +231,37 @@ const handleLoginSubmit = async (e) => {
         if (loginDataList[i].url === 'http://localhost:8000/loginTourist') {
           localStorage.setItem('token', data.token);
           localStorage.setItem('context', 'tourist');
+          localStorage.setItem('Username', data.user.Username);
+          localStorage.setItem('Email', data.user.Email);
+          localStorage.setItem('Nationality', data.user.Nationality);
+          localStorage.setItem('DOB', data.user.DOB);
+          localStorage.setItem('Occupation', data.user.Occupation);
 
           navigate('/tourist-profile');
         } else if (loginDataList[i].url === 'http://localhost:8000/loginAdvertiser') {
           localStorage.setItem('token', data.token);
           localStorage.setItem('context', 'advertiser');
+          localStorage.setItem('Username', data.user.Username);
+          localStorage.setItem('Email', data.user.Email);
+          localStorage.setItem('Nationality', data.user.Nationality);
+          localStorage.setItem('DOB', data.user.DOB);
+          localStorage.setItem('Occupation', data.user.Occupation);
           navigate('/advertiser-profile');
         } else if (loginDataList[i].url === 'http://localhost:8000/loginSeller') {
           localStorage.setItem('context', 'seller');
+          localStorage.setItem('Username', data.user.Username);
+          localStorage.setItem('Email', data.user.Email);
+          localStorage.setItem('Nationality', data.user.Nationality);
+          localStorage.setItem('DOB', data.user.DOB);
+          localStorage.setItem('Occupation', data.user.Occupation);
           navigate('/seller-profile');
         } else if (loginDataList[i].url === 'http://localhost:8000/loginTourGuide') {
           localStorage.setItem('token', data.token);
+          localStorage.setItem('Username', data.user.Username);
+          localStorage.setItem('Email', data.user.Email);
+          localStorage.setItem('Nationality', data.user.Nationality);
+          localStorage.setItem('DOB', data.user.DOB);
+          localStorage.setItem('Occupation', data.user.Occupation);
           navigate('/tour-guide-profile');
         } else if (loginDataList[i].url === 'http://localhost:8000/AdminLogin') {
           localStorage.setItem('Username', formData.Username);
@@ -773,13 +793,13 @@ return (
       }}
     >
       <label style={{ fontSize: '14px', marginBottom: '2px', display: 'block' }}>
-        Email:
+        Username:
       </label>
       <input
-        type="email"
-        name="Email"
-        placeholder="Email"
-        value={signInFormData.Email}
+        type="text"
+        name="Username"
+        placeholder="Username"
+        value={signInFormData.Username}
         onChange={handleSignInChange}
         required
         style={{

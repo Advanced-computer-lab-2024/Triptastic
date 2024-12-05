@@ -39,11 +39,11 @@ const createAdvertiser = async (req, res) => {
 };
 
 const loginAdvertiser = async (req, res) => {
-  const { Email, Password } = req.body;
+  const { Username, Password } = req.body;
 
   try {
       // Find the advertiser by email
-      const advertiser = await advertiserModel.findOne({ Email });
+      const advertiser = await advertiserModel.findOne({ Username });
       if (!advertiser) {
           return res.status(404).json({ error: 'Advertiser not found' });
       }
