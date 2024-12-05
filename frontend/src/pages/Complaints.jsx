@@ -315,8 +315,6 @@ const Complaints = () => {
 )}
 
 
-
-
 {complaint.replies && complaint.replies.length > 0 && (
   <div className="replies-section-horizontal">
     <h4 className="replies-title">Replies</h4>
