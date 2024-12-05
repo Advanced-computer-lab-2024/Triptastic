@@ -10,7 +10,6 @@ const UserStatistics = ({ statistics }) => {
   return (
     <div style={styles.statisticsContainer}>
 
-
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data} margin={{ top: 20, right: 30, bottom: 20, left: 0 }}>
           <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
