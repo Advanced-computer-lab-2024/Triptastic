@@ -1,46 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import {FaArrowLeft} from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import { FaArrowLeft, FaTag, FaUser, FaBox, FaExclamationCircle, FaHeart, FaFileAlt, FaTrashAlt, FaThList, FaPlus, FaEdit, FaFlag } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import image from '../images/image.png';
-import {FaTag,FaUser,FaBox, FaExclamationCircle, FaHeart, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
-
 
 const Docs = () => {
-  const [activeSection, setActiveSection] = useState('');
+  const [activeSection, setActiveSection] = useState('sellers'); // Default view is 'sellers'
   const [sellers, setSellers] = useState([]);
   const [tourGuides, setTourGuides] = useState([]);
   const [advertisers, setAdvertisers] = useState([]);
   const [viewingDocsId, setViewingDocsId] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
-  const navigate = useNavigate(); // Initialize useNavigate for navigation
 
-  const [currentPage, setCurrentPage] = useState(1); // Track the current page
-  const resultsPerPage = 5; // Number of results per page
-  
-  // Determine the slice of results to display based on activeSection
-  const results =
-    activeSection === 'sellers'
-      ? sellers
-      : activeSection === 'tourGuides'
-      ? tourGuides
-      : advertisers;
-  
-  const indexOfLastResult = currentPage * resultsPerPage;
-  const indexOfFirstResult = indexOfLastResult - resultsPerPage;
-  const currentResults = results.slice(indexOfFirstResult, indexOfLastResult);
-  
-  const nextPage = () => {
-    if (currentPage < Math.ceil(results.length / resultsPerPage)) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-  
-  const previousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-  
+  // Pagination States
+  const [currentSellerPage, setCurrentSellerPage] = useState(1);
+  const [currentTourGuidePage, setCurrentTourGuidePage] = useState(1);
+  const [currentAdvertiserPage, setCurrentAdvertiserPage] = useState(1);
+  const resultsPerPage = 4;
+
+  // Sliced Data for Pagination
+  const sellersToDisplay = sellers.slice(
+    (currentSellerPage - 1) * resultsPerPage,
+    currentSellerPage * resultsPerPage
+  );
+  const tourGuidesToDisplay = tourGuides.slice(
+    (currentTourGuidePage - 1) * resultsPerPage,
+    currentTourGuidePage * resultsPerPage
+  );
+  const advertisersToDisplay = advertisers.slice(
+    (currentAdvertiserPage - 1) * resultsPerPage,
+    currentAdvertiserPage * resultsPerPage
+  );
+
+  const navigate = useNavigate();
+
   const fetchData = async (endpoint, setter, errorMsg) => {
     try {
       const response = await fetch(`http://localhost:8000/${endpoint}`, {
@@ -69,12 +61,20 @@ const Docs = () => {
 
   const handleAction = async (endpoint, username, action, refresh) => {
     try {
+      // Confirmation dialog for "rejected" actions
+      if (action === 'rejected') {
+        const isConfirmed = window.confirm(`Are you sure you want to reject ${username}?`);
+        if (!isConfirmed) {
+          return; // Exit if the user cancels
+        }
+      }
+  
       const response = await fetch(`http://localhost:8000/${endpoint}?Username=${username}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ docsApproved: action }),
       });
-
+  
       if (response.ok) {
         alert(`${username} ${action === 'accepted' ? 'approved' : 'rejected'}`);
         refresh();
@@ -85,103 +85,88 @@ const Docs = () => {
       console.error(`Error ${action === 'accepted' ? 'accepting' : 'rejecting'} ${username}:`, error);
     }
   };
+  
+  const renderPagination = (currentPage, setCurrentPage, totalItems) => (
+    <div style={styles.paginationContainer}>
+      <button
+        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+        disabled={currentPage === 1}
+        style={styles.paginationButton}
+      >
+        Previous
+      </button>
+      <p style={{ margin: '0 10px', fontSize: '16px' }}>
+        Page {currentPage} of {Math.ceil(totalItems / resultsPerPage)}
+      </p>
+      <button
+        onClick={() =>
+          setCurrentPage((prev) => Math.min(prev + 1, Math.ceil(totalItems / resultsPerPage)))
+        }
+        disabled={currentPage === Math.ceil(totalItems / resultsPerPage)}
+        style={styles.paginationButton}
+      >
+        Next
+      </button>
+    </div>
+  );
 
-  const renderDocs = (docs) =>
-    docs.map((doc, index) => (
-      <img
-        key={index}
-        src={`http://localhost:8000/${doc.replace(/\\/g, '/')}`}
-        alt={`Document ${index + 1}`}
-        style={{
-          width: '300px',
-          height: '200px',
-          margin: '10px',
-          borderRadius: '8px',
-          border: '1px solid #ccc',
-        }}
-      />
-    ));
-
-  const Section = ({ title, items, itemType, refresh }) => (
+  const Section = ({ title, items, itemType, refresh, currentPage, setCurrentPage, totalItems }) => (
     <div style={{ marginBottom: '40px' }}>
-      <h2 style={{ color: '#0F5132', marginBottom: '20px', fontSize: '1.5em', borderBottom: '2px solid #ddd', paddingBottom: '5px' }}>
-        {title}
-      </h2>
-      <ul style={{ listStyle: 'none', padding: 0 }}>
+      <h2 style={styles.sectionHeading}>{title}</h2>
+      {renderPagination(currentPage, setCurrentPage, totalItems)}
+      <ul style={styles.cardGrid}>
         {items.map((item) => (
-          <li
-            key={item._id}
-            style={{
-              background: '#f9f9f9',
-              margin: '20px 0',
-              padding: '20px',
-              borderRadius: '10px',
-              boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-            }}
-          >
-            <p><strong>Name:</strong> {item.Name || 'N/A'}</p>
-            <p><strong>Username:</strong> {item.Username}</p>
-            <p><strong>Email:</strong> {item.Email || 'N/A'}</p>
-            <div style={{ marginTop: '10px' }}>
+          <li key={item._id} style={styles.card}>
+            <h3 style={styles.cardTitle}>{item.Name || 'N/A'}</h3>
+            <p style={styles.cardText}><strong>Username:</strong> {item.Username}</p>
+            <p style={styles.cardText}><strong>Email:</strong> {item.Email || 'N/A'}</p>
+            <div style={styles.buttonsContainer}>
+              {/* Toggle button for viewing documents */}
               <button
                 onClick={() => setViewingDocsId(viewingDocsId === item._id ? null : item._id)}
-                style={{
-                  backgroundColor: viewingDocsId === item._id ? '#0F5132' : '#0F5132',
-                  color: '#fff',
-                  padding: '8px 12px',
-                  border: 'none',
-                  borderRadius: '5px',
-                  marginRight: '10px',
-                  cursor: 'pointer',
-                }}
+                style={styles.button}
               >
                 {viewingDocsId === item._id ? 'Hide Docs' : 'View Docs'}
               </button>
+              {/* Accept button */}
               <button
                 onClick={() =>
-                  handleAction(
-                    `settleDocs${itemType}`,
-                    item.Username,
-                    'accepted',
-                    refresh
-                  )
+                  handleAction(`settleDocs${itemType}`, item.Username, 'accepted', refresh)
                 }
-                style={{
-                  backgroundColor: '#0F5132',
-                  color: '#fff',
-                  padding: '8px 12px',
-                  border: 'none',
-                  borderRadius: '5px',
-                  marginRight: '10px',
-                  cursor: 'pointer',
-                }}
+                style={styles.button}
               >
                 Accept
               </button>
+              {/* Reject button */}
               <button
                 onClick={() =>
-                  handleAction(
-                    `settleDocs${itemType}`,
-                    item.Username,
-                    'rejected',
-                    refresh
-                  )
+                  handleAction(`settleDocs${itemType}`, item.Username, 'rejected', refresh)
                 }
-                style={{
-                  backgroundColor: '#dc3545',
-                  color: '#fff',
-                  padding: '8px 12px',
-                  border: 'none',
-                  borderRadius: '5px',
-                  cursor: 'pointer',
-                }}
+                style={{ ...styles.button, backgroundColor: '#dc3545' }}
               >
                 Reject
               </button>
             </div>
+  
+            {/* Render documents when "View Docs" is toggled */}
             {viewingDocsId === item._id && (
-              <div style={{ marginTop: '20px' }}>
-                {renderDocs([item.Id, item.TaxationRegistryCard || item.Certificate])}
+              <div style={{ marginTop: '20px', display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                {[item.Id, item.TaxationRegistryCard, item.Certificate]
+                  .filter(Boolean) // Filter out undefined or null values
+                  .map((doc, index) => (
+                    <img
+                      key={index}
+                      src={`http://localhost:8000/${doc.replace(/\\/g, '/')}`}
+                      alt={`Document ${index + 1} for ${item.Username}`}
+                      style={{
+                        maxWidth: '200px',
+                        maxHeight: '150px',
+                        borderRadius: '5px',
+                        border: '1px solid #ddd',
+                        objectFit: 'cover',
+                      }}
+                    />
+                  ))}
               </div>
             )}
           </li>
@@ -189,17 +174,16 @@ const Docs = () => {
       </ul>
     </div>
   );
-
+  
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-
-    {/* Header */}
-    <header style={styles.header}>
-      <div style={styles.logoContainer}>
-        <img src={image} alt="Logo" style={styles.logo} />
-      </div>
-      <h1 style={styles.title2}>Document Approval Dashboard</h1>
-    </header>
+    <div style={styles.container}>
+      {/* Header */}
+      <header style={styles.header}>
+        <div style={styles.logoContainer}>
+          <img src={image} alt="Logo" style={styles.logo} />
+        </div>
+        <h1 style={styles.title2}>Document Approval Dashboard</h1>
+      </header>
 
     {/* Sidebar */}
     <div
@@ -288,89 +272,88 @@ const Docs = () => {
           </span>   
         </div>
       </div>
+    
 
 
-      <div style={{ marginTop: '80px' }}>
-  {/* Navigation Buttons */}
-  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-    <button
-      onClick={() => setActiveSection('sellers')}
-      style={{
-        backgroundColor: activeSection === 'sellers' ? '#0F5132' : '#0F5132',
-        color: '#fff',
-        padding: '10px 20px',
-        border: 'none',
-        borderRadius: '5px',
-        margin: '0 10px',
-        cursor: 'pointer',
-      }}
-    >
-      View Sellers
-    </button>
-    <button
-      onClick={() => setActiveSection('tourGuides')}
-      style={{
-        backgroundColor: activeSection === 'tourGuides' ? '#0F5132' : '#0F5132',
-        color: '#fff',
-        padding: '10px 20px',
-        border: 'none',
-        borderRadius: '5px',
-        margin: '0 10px',
-        cursor: 'pointer',
-      }}
-    >
-      View Tour Guides
-    </button>
-    <button
-      onClick={() => setActiveSection('advertisers')}
-      style={{
-        backgroundColor: activeSection === 'advertisers' ? '#0F5132' : '#0F5132',
-        color: '#fff',
-        padding: '10px 20px',
-        border: 'none',
-        borderRadius: '5px',
-        margin: '0 10px',
-        cursor: 'pointer',
-      }}
-    >
-      View Advertisers
-    </button>
-  </div>
+      {/* Navigation Buttons */}
+      <div style={{ marginTop: '80px', textAlign: 'center' }}>
+        <button
+          onClick={() => setActiveSection('sellers')}
+          style={styles.button2}
+        >
+          View Sellers
+        </button>
+        <button
+          onClick={() => setActiveSection('tourGuides')}
+          style={styles.button2}
+        >
+          View Tour Guides
+        </button>
+        <button
+          onClick={() => setActiveSection('advertisers')}
+          style={styles.button2}
+        >
+          View Advertisers
+        </button>
+      </div>
 
-  {/* Error Message */}
-  {errorMessage && <p style={{ color: '#dc3545', textAlign: 'center' }}>{errorMessage}</p>}
+      {/* Error Message */}
+      {errorMessage && <p style={styles.error}>{errorMessage}</p>}
 
-  {/* Sections */}
-  {activeSection === 'sellers' && (
-    <Section
-      title="Pending Sellers"
-      items={sellers}
-      itemType="Seller"
-      refresh={() => fetchData('getPendingSellers', setSellers, 'Failed to fetch sellers')}
-    />
-  )}
-  {activeSection === 'tourGuides' && (
-    <Section
-      title="Pending Tour Guides"
-      items={tourGuides}
-      itemType="TourGuide"
-      refresh={() => fetchData('getPendingTourGuides', setTourGuides, 'Failed to fetch tour guides')}
-    />
-  )}
-  {activeSection === 'advertisers' && (
-    <Section
-      title="Pending Advertisers"
-      items={advertisers}
-      itemType="Advertiser"
-      refresh={() => fetchData('getPendingAdvertisers', setAdvertisers, 'Failed to fetch advertisers')}
-    />
-  )}
-</div>
-</div>
+      {/* Sections */}
+      {activeSection === 'sellers' && (
+        <Section
+          title="Pending Sellers"
+          items={sellersToDisplay}
+          itemType="Seller"
+          refresh={() => fetchData('getPendingSellers', setSellers, 'Failed to fetch sellers')}
+          currentPage={currentSellerPage}
+          setCurrentPage={setCurrentSellerPage}
+          totalItems={sellers.length}
+        />
+      )}
+      {activeSection === 'tourGuides' && (
+        <Section
+          title="Pending Tour Guides"
+          items={tourGuidesToDisplay}
+          itemType="TourGuide"
+          refresh={() => fetchData('getPendingTourGuides', setTourGuides, 'Failed to fetch tour guides')}
+          currentPage={currentTourGuidePage}
+          setCurrentPage={setCurrentTourGuidePage}
+          totalItems={tourGuides.length}
+        />
+      )}
+      {activeSection === 'advertisers' && (
+        <Section
+          title="Pending Advertisers"
+          items={advertisersToDisplay}
+          itemType="Advertiser"
+          refresh={() => fetchData('getPendingAdvertisers', setAdvertisers, 'Failed to fetch advertisers')}
+          currentPage={currentAdvertiserPage}
+          setCurrentPage={setCurrentAdvertiserPage}
+          totalItems={advertisers.length}
+        />
+      )}
+    </div>
   );
 };
 
 const styles = {
+  paginationContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: '20px',
+  },
+  paginationButton: {
+    padding: '10px 20px',
+    borderRadius: '5px',
+    border: 'none',
+    backgroundColor: '#0F5132',
+    color: '#fff',
+    cursor: 'pointer',
+    fontSize: '14px',
+  },
   container: {
     maxWidth: '800px',
     margin: '0 auto',
@@ -380,6 +363,7 @@ const styles = {
     borderRadius: '10px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
   },
+  
   cardGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
@@ -401,26 +385,6 @@ const styles = {
   },
   cardText: {
     fontSize: '14px',
-    color: '#555',
-  },
-  paginationContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '10px',
-    marginTop: '20px',
-  },
-  paginationButton: {
-    padding: '10px 20px',
-    border: 'none',
-    borderRadius: '5px',
-    color: '#fff',
-    cursor: 'pointer',
-    fontSize: '14px',
-    transition: 'background-color 0.3s ease',
-  },
-  pageIndicator: {
-    fontSize: '16px',
     color: '#555',
   },
   heading: {
@@ -510,6 +474,7 @@ const styles = {
     borderRadius: '5px',
     cursor: 'pointer',
     transition: 'background-color 0.3s ease',
+    
   },
   result: {
     marginTop: '15px',
@@ -553,6 +518,8 @@ const styles = {
     cursor: 'pointer',
     transition: 'background-color 0.3s ease',
     textAlign: 'center',
+    
+    
   },
   buttonHover: {
     backgroundColor: '#0C3E27',
@@ -589,6 +556,7 @@ const styles = {
     borderRadius: '10px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
     
+    
   },
   heading: {
     fontSize: '24px',
@@ -615,7 +583,8 @@ const styles = {
     backgroundColor: '#f4f4f4',
     borderRadius: '10px',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    marginTop: '80px', // Push content down to account for the header
+    marginTop: '90px', // Push content down to account for the header
+    
   },
       
   header: {
@@ -705,7 +674,23 @@ border: 'none',
 borderRadius: '5px',
 cursor: 'pointer',
 transition: 'background-color 0.3s ease',
+
 },
+button2: {
+  padding: '12px',
+  fontSize: '16px',
+  fontWeight: 'bold',
+  backgroundColor: '#0F5132',
+  color: '#fff',
+  border: 'none',
+  borderRadius: '5px',
+  cursor: 'pointer',
+  transition: 'background-color 0.3s ease',
+  margin: '10px 10px', // Add horizontal and vertical spacing
+  position: 'relative', // Allow relative positioning
+  top: '-50px', // Move the button up
+},
+
 buttonHover: {
 backgroundColor: '#155724', // Darker green on hover
 },
