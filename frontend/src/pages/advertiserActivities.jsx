@@ -3,9 +3,10 @@ import Select from 'react-select';
 import MapPicker from './MapPicker';
 import Modal from "react-modal";
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
+import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
 import { FaBell,FaUserCircle} from 'react-icons/fa';
-import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
+import { FaLandmark, FaEdit,FaMapMarkerAlt,FaCalendar,FaEye,FaTrash,FaPlus, FaTag, FaCheck, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
   FaClipboardList,
   FaStar, FaDollarSign,FaSearch} from "react-icons/fa";
   import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
@@ -36,6 +37,9 @@ const AdvertiserActivity = () => {
   const [availableTags, setAvailableTags] = useState([]);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen
+  ] = useState(false);
+
   const [viewDetails, setViewDetails] = useState({});
   const [selectedActivityId, setSelectedActivityId] = useState(null);
   const [activityDetails, setActivityDetails] = useState({});
@@ -218,28 +222,29 @@ const handleUpdate = async (e) => {
 };
 
 
-  const handleGetActivity = async (e, Advertiser,name) => {
-    e.preventDefault();
-    console.log(`Fetching activity for Advertiser: ${Advertiser}, name: ${name}`);
-    try {
-      const response = await fetch(`http://localhost:8000/viewActivitydetails?Advertiser=${Advertiser}&name=${name}`, {
-        method: 'GET',
-      });
+const handleGetActivity = async (e, Advertiser,name) => {
+  e.preventDefault();
+  console.log(`Fetching activity for Advertiser: ${Advertiser}, name: ${name}`);
+  try {
+    const response = await fetch(`http://localhost:8000/viewActivitydetails?Advertiser=${Advertiser}&name=${name}`, {
+      method: 'GET',
+    });
 
-      if (response.ok) {
-        const result = await response.json();
-        setFormData(result);
-        setSuccessMessage(`Activity "${result.name}" retrieved successfully!`);
-        setViewData(result);
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(errorData.error || 'Failed to retrieve Activity.');
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while retrieving the Activity.');
-      console.error(error);
+    if (response.ok) {
+      const result = await response.json();
+      setFormData(result);
+      setSuccessMessage(`Activity "${result.name}" retrieved successfully!`);
+      setViewData(result);
+    } else {
+      const errorData = await response.json();
+      setErrorMessage(errorData.error || 'Failed to retrieve Activity.');
     }
-  };
+  } catch (error) {
+    setErrorMessage('An error occurred while retrieving the Activity.');
+    console.error(error);
+  }
+};
+
  
 
   const handleDeleteActivity = async (e, advertiser, name) => {
@@ -293,6 +298,7 @@ const handleUpdate = async (e) => {
     }));
 };
 
+
   
   
   
@@ -315,552 +321,886 @@ const handleUpdate = async (e) => {
       name: "",
     });
   };
-  
-    // Modal Styles
-    const modalStyles = {
-      content: {
-        maxWidth: "500px",
-        margin: "auto",
-        padding: "20px",
-        borderRadius: "10px",
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-      },
-      cancelIcon: {
-        color: '#0F5132', // Set the color of the icon
-        fontSize: '30px', // Adjust the size as needed
-        cursor: 'pointer', // Ensure it acts as a button
-        position: 'absolute', // Position it correctly in the modal
-        right: '500px', // Adjust placement
-        top: '100px', // Adjust placement
-      },
-      header: {
-        height:'60px',
-        position: 'fixed', // Make the header fixed
-        top: '0', // Stick to the top of the viewport
-        left: '0',
-        width: '100%', // Make it span the full width of the viewport
-        backgroundColor: '#0F5132', // Green background
-        color: 'white', // White text
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '10px 20px',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for depth
-        zIndex: '1000', // Ensure it appears above other content
-      },
-      headerIconsContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '20px', // Spacing between the icons
-      },
-      leftContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '15px', // Adjust spacing between icons
-      },
-      logoContainer: {
-        display: 'flex',
-        alignItems: 'center',
-      },
-      logo: {
-        height: '60px',
-        width: '70px',
-        borderRadius: '10px',
-      },
-      
-     
-      profileIcon: {
-        fontSize: '30px',
-        color: 'white',
-        cursor: 'pointer',
-      },
-      title: {
-        fontSize: '24px',
-        fontWeight: 'bold',
-        color: 'white',
-        margin: 0,
-        marginLeft:'60px'
-      },
-    };
-    return (
-      <div className="advertiser-profile">
 
-         {/* Header Section */}
-    <header style={modalStyles.header}>
-    <div style={modalStyles.logoContainer}>
-      <img src={logo} alt="Logo" style={modalStyles.logo} />
-    </div>
-    <h1 style={modalStyles.title}>Advertiser Profile</h1>
-    <div style={modalStyles.leftContainer}>
-            <FaUserCircle
-              alt="Profile Icon"
-              style={modalStyles.profileIcon}
-              onClick={() => navigate('/advertiser-profile')}          />
-       
-         
-            
+    return (
+      <div style={styles.container}>
+      <div className="advertiser-profile">
+        {/* Header Section */}
+        <header style={styles.header}>
+          <div style={styles.logoContainer}>
+            <img src={logo} alt="Logo" style={styles.logo} />
           </div>
-  </header>
-      <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-       
-        <form
-        
-          onSubmit={handleCreate}
-          style={{
-            maxWidth: "500px", // Reduce the width
-            margin: "0 auto", // Center the form horizontally            margin: "0 auto",
-            padding: "20px",
-            border: "1px solid #ccc",
-            borderRadius: "10px",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          <h1 style={styles.title}>Activities</h1>
+          <button style={styles.createButton} onClick={() => setIsCreateModalOpen(true)}>
+  <FaPlus style={styles.createIcon} /> Add Activity
+</button>
+         
+        </header>
+    
+        {/* Sidebar */}
+        <div
+          style={styles.sidebar}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.width = '200px';
+            Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+              (label) => (label.style.opacity = '1')
+            );
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.width = '50px';
+            Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+              (label) => (label.style.opacity = '0')
+            );
           }}
         >
-                  <h1 style={{fontSize:"25px", textAlign: "center" ,marginTop:"20px"}}> Activity Form</h1>
-
-          <div style={{ display: "grid", gap: "15px" }}>
-            <div>
-   
-              <input
-                type="text"
-                name="name"
-                placeholder='Name'
-                value={formData.name}
-                onChange={handleInputChange}
-                style={{
-                  width: "40%",
-                  padding: "10px",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
-                  fontSize: "14px",
-                }}              />
-            </div>
-            <div>
-            
-              <input
-                type="date"
-                name="date"
-                placeholder='Date'
-                value={formData.date}
-                onChange={handleInputChange}
-                style={{ width: "40%",
-                  padding: "8px", borderRadius: "5px", border: "1px solid #ccc" }}
-              />
-            </div>
-            <div>
-              <input
-                type="time"
-                name="time"
-                placeholder='Time'
-                value={formData.time}
-                onChange={handleInputChange}
-                style={{ width: "40%", padding: "8px", borderRadius: "5px", border: "1px solid #ccc" }}
-              />
-            </div>
-            <div>
-              <input
-                type="number"
-                name="price"
-                placeholder='Price'
-                value={formData.price}
-                onChange={handleInputChange}
-                style={{ width: "40%", padding: "8px", borderRadius: "5px", border: "1px solid #ccc" }}
-              />
-            </div>
-            <div>
-              <input
-                type="text"
-                name="Category"
-                placeholder='Category'
-                value={formData.Category}
-                onChange={handleInputChange}
-                style={{ width: "40%", padding: "8px", borderRadius: "5px", border: "1px solid #ccc" }}
-              />
-            </div>
-            <div style={{ position: "relative" }}>
-
-  <Select
-    isMulti
-    name="tags"
-    placeholder='Tags'
-    options={availableTags}
-    className="basic-multi-select"
-    classNamePrefix="select"
-    onChange={handleTagsChange}
-    value={availableTags.filter((tag) => formData.tags.includes(tag.value))}
-    styles={{
-      control: (base) => ({
-        ...base,
-        borderRadius: "5px",
-        border: "1px solid #ccc",
-        fontSize: "14px",
-        padding: "5px",
-        boxShadow: "none",
-        width: "30%",
-      }),
-      menu: (base) => ({
-        ...base,
-        zIndex: 9999, // Prevents being hidden by other elements
-        position: "absolute", // Ensures proper alignment
-        top: 0, // Reset any offsets
-      }),
-      menuPortal: (base) => ({
-        ...base,
-        zIndex: 9999, // Make sure it's above other elements
-      }),
-    }}
-  />
-</div>
-
-            <div>
-              <input
-                type="text"
-                placeholder='Special Discounts'
-                name="specialDiscounts"
-                value={formData.specialDiscounts}
-                onChange={handleInputChange}
-                style={{ width: "40%", padding: "8px", borderRadius: "5px", border: "1px solid #ccc" }}
-              />
-            </div>
-            
-
-          <div>
-            <label><strong>Booking Open:</strong></label>
-            <input
-              type="checkbox"
-              name="bookingOpen"
-              checked={formData.bookingOpen}
-              onChange={(e) =>
-                setFormData((prevData) => ({ ...prevData, bookingOpen: e.target.checked }))
-              }
-              style={{ width: "50%", padding: "8px", borderRadius: "5px", border: "1px solid #ccc" }}
-
-            />
-          </div>   
-            {/* Location picker */}
-        <div>
-          
-          <label><strong>Location:</strong></label>
-          
-          <div style={{ width: "50%", height: "300px", marginTop: "10px", borderRadius: "10px", overflow: "hidden" }}>
-  <MapPicker
-  onLocationSelect={handleLocationSelect2}    style={{
-      width: "100%",
-      height: "100%", // Ensure the map fills the container
-    }}
-  />
-</div>
-
+          <div className="activities" style={styles.item} onClick={() => navigate('/advertiser-Activities')}>
+            <FaRunning style={styles.iconn} />
+            <span className="label" style={styles.label}>
+              My Activities
+            </span>
+          </div>
+          <div className="transportation" style={styles.item} onClick={() => navigate('/createTransportation')}>
+            <FaBus style={styles.iconn} />
+            <span className="label" style={styles.label}>
+              Transportation
+            </span>
+          </div>
+          <div className="profile" style={styles.item} onClick={() => navigate('/advertiser-profile')}>
+            <FaUserCircle style={styles.iconn} />
+            <span className="label" style={styles.label}>
+              Profile
+            </span>
+          </div>
         </div>
-
-          {/* Removed Advertiser input field */}
+    
+        {isCreateModalOpen && (
+  <div style={styles.modalOverlay}>
+    <div style={styles.modalContent}>
+      <div style={styles.modalHeader}>
+        <h2 style={styles.modalTitle}>Create Activity</h2>
+        <HighlightOffOutlinedIcon
+          onClick={() => {setIsCreateModalOpen(false);resetFormData(); }}
+          style={styles.cancelIcon}
+        />
+      </div>
+      <form style={styles.form} onSubmit={handleCreate}>
+        <div style={styles.inputGroup}>
+            <BadgeOutlinedIcon style={styles.inputIcon} /> 
+            <span style={styles.inputLabel}>Name:</span>
+          <input
+            type="text"
+            name="name"
+            placeholder="Enter activity name"
+            value={formData.name}
+            onChange={handleInputChange}
+            style={styles.input}
+          />
         </div>
-          <button
-            type="submit"
-            style={{
-              width: "100%",
-              padding: "10px",
-              marginTop: "20px",
-              backgroundColor: "#0F5132",
-              color: "#fff",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer",
+        <div style={styles.inputGroup}>
+        
+            <FaCalendar style={styles.inputIcon} />
+            <span style={styles.inputLabel}>Date:</span>
+          <input
+            type="date"
+            name="date"
+            value={formData.date}
+            onChange={handleInputChange}
+            style={styles.input}
+          />
+        </div>
+        <div style={styles.inputGroup}>
+        
+            <FaDollarSign style={styles.inputIcon} /> 
+            <span style={styles.inputLabel}>Price:</span>
+          <input
+            type="number"
+            name="price"
+            placeholder="Enter price"
+            value={formData.price}
+            onChange={handleInputChange}
+            style={styles.input}
+          />
+        </div>
+        <div style={styles.inputGroup}>
+            <FaClipboardList style={styles.inputIcon} />
+            <span style={styles.inputLabel}>Category:</span>
+
+          <input
+            type="text"
+            name="Category"
+            placeholder="Enter a Category"
+            value={formData.Category}
+            onChange={handleInputChange}
+            style={styles.input}
+          />
+        </div>
+        <div style={styles.inputGroup}>
+            <FaTag style={styles.inputIcon} />
+            <span style={styles.inputLabel}>Tags:</span>
+
+          <Select
+            isMulti
+            name="tags"
+            options={availableTags}
+            className="basic-multi-select"
+            classNamePrefix="select"
+            onChange={handleTagsChange}
+            value={availableTags.filter((tag) =>
+              formData.tags.includes(tag.value)
+            )}
+            styles={{
+              control: (base) => ({
+                ...base,
+                borderRadius: "5px",
+                border: "1px solid #ccc",
+                fontSize: "14px",
+                padding: "5px",
+                width:'400px'
+              }),
             }}
-          >
-            Create Activity
-          </button>
-        </form>
-  
-        <div style={{ marginTop: "30px" }}>
-          <h2 style={{ textAlign: "center" }}>All Activities</h2>
-          {activities.length > 0 ? (
-          <div style={{ display: "grid", gap: "10px" }}>
-            {activities.map((activity) => (
-              <div
-                key={activity._id}
-                style={{
-                  padding: "10px",
-                  border: "1px solid #ccc",
-                  borderRadius: "5px",
-                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-                  position: "relative",
-                }}
-              >
-                <h3>{activity.name}</h3>
+          />
+        </div>
+        <div style={styles.inputGroup}>
+          
+            <FaClipboardList style={styles.inputIcon} /> 
+            <span style={styles.inputLabel}>Special Discounts:</span>
 
-<button
-  onClick={() => toggleViewDetails(activity._id)}
-  style={{
-    marginBottom: '10px',
-    padding: '5px 10px',
-    backgroundColor: '#0F5132',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-  }}
->
-  {activityDetails[activity._id]?.visible ? 'Hide Details' : 'View Details'}
-</button>
+          <input
+            type="text"
+            name="specialDiscounts"
+            placeholder="Enter a discount"
 
-{activityDetails[activity._id]?.visible && (
-  <div>
-    <p><strong>Date:</strong> {activity.date}</p>
-    <p><strong>Time:</strong> {activity.time}</p>
-    <p><strong>Price:</strong> {activity.price}</p>
-    <p><strong>Category:</strong> {activity.Category}</p>
-    <p><strong>Tags:</strong> {activity.tags.join(', ')}</p>
-    <p>
-      <strong>Location:</strong>{' '}
-      {activity.location || 'Not specified'}
-    </p>
-    <p><strong>Booking Open:</strong> {activity.bookingOpen ? 'Yes' : 'No'}</p>
+            value={formData.specialDiscounts}
+            onChange={handleInputChange}
+            style={styles.input}
+          />
+        </div>
+        <div style={styles.checkboxGroup}>
+          <FaCheck style={styles.inputIcon} />
+          <input
+            type="checkbox"
+            name="bookingOpen"
+            checked={formData.bookingOpen}
+            onChange={(e) =>
+              setFormData((prevData) => ({
+                ...prevData,
+                bookingOpen: e.target.checked,
+              }))
+            }
+            style={styles.checkbox}
+          />
+          <span style={styles.checkboxLabel}>Booking Open</span>
+        </div>
+        <div style={styles.inputGroup}>
+            <FaMapMarkerAlt style={styles.inputIcon} /> 
+            <span style={styles.inputLabel}>Locations:</span>
+
+          <div style={styles.mapPickerContainer}>
+            <MapPicker
+              onLocationSelect={handleLocationSelect}
+              style={styles.mapPicker}
+            />
+          </div>
+        </div>
+        <button type="submit" style={styles.submitButton}>
+          Add Activity
+        </button>
+      </form>
+    </div>
   </div>
 )}
-              
-        
-                  <button
-  onClick={(e) => handleUpdateClick(e, activity)}
-  style={{
-    padding: "5px 10px",
-    backgroundColor: "#0F5132",
 
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    marginTop: "10px",
-  }}
->
-  Edit Activity
-</button>
- {/* Delete Icon */}
- <HighlightOffOutlinedIcon
-        onClick={(e) => handleDeleteActivity(e, activity.Advertiser, activity.name)}
-        style={{
-          color: "#0F5132",
-          fontSize: "30px",
-          cursor: "pointer",
-          position: "absolute",
-          right: "15px", // Position relative to the modal
-          top: "15px", // Position relative to the modal
-        }}
-      />  
+{/* Activities List */}
+<ul style={styles.activityList}>
+<h2 style={styles.sectionTitle}>Your Activities</h2>
 
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p style={{ textAlign: "center", color: "#999" }}>No Activities available.</p>
-          )}
+  {activities.map((activity) => (
+    <li key={activity.id} style={styles.activityItem}>
+      <div style={styles.activityInfo}>
+        <p style={styles.activityText}>{activity.name}</p>
+        <p style={styles.activityText}>
+          <FaMapMarkerAlt style={styles.detailsIcon} /> Location: {activity.location}
+        </p>
+        <p style={styles.activityText}>
+          <FaCalendar style={styles.detailsIcon} /> Date: {activity.date}
+        </p>
+        <button
+          style={{ ...styles.button, ...styles.viewButton }}
+          onClick={() => toggleViewDetails(activity._id)}
+        >
+          <FaEye style={styles.detailsIcon} />
+          {activityDetails[activity._id]?.visible ? ' Hide Details' : ' View Details'}
+        </button>
+        {activityDetails[activity._id]?.visible && (
+          <div style={styles.detailSection}>
+            <p style={styles.detailText}>
+              <strong>Time:</strong> {activity.time}
+            </p>
+            <p style={styles.detailText}>
+              <strong>Price:</strong> ${activity.price}
+            </p>
+            <p style={styles.detailText}>
+              <strong>Category:</strong> {activity.Category}
+            </p>
+            <p style={styles.detailText}>
+              <strong>Tags:</strong> {activity.tags.join(', ')}
+            </p>
+            <p style={styles.detailText}>
+              <strong>Booking Open:</strong> {activity.bookingOpen ? 'Yes' : 'No'}
+            </p>
+          </div>
+        )}
+      </div>
+      <div style={styles.actionButtons}>
+
+        <button
+          style={{ ...styles.button, ...styles.editButton }}
+          onClick={(e) => handleUpdateClick(e, activity)}
+        >
+          <FaEdit /> Edit
+        </button>
+        <button
+          style={{ ...styles.button, ...styles.deleteButton }}
+          onClick={(e) => handleDeleteActivity(e, activity.Advertiser, activity.name)}
+        >
+          <FaTrash /> Delete
+        </button>
+      </div>
+    </li>
+  ))}
+</ul>
+           {/* Modal for Editing */}
+           {isModalOpen && (
+  <div style={styles.modalOverlay}>
+    <div style={styles.modalContent}>
+      <h2 style={styles.modalTitle}>Edit Activity</h2>
+      <HighlightOffOutlinedIcon 
+          onClick={() => {
+            setIsModalOpen(false);
+            resetFormData();}}
+          style={styles.cancel2Icon} // Apply cancel icon style
+        />
+      <form onSubmit={handleUpdate}>
+      <div style={styles.inputGroup}>
+            <BadgeOutlinedIcon style={styles.inputIcon} /> 
+            <span style={styles.inputLabel}>Name:</span>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+            style={styles.input}
+          />
         </div>
-  
-         {/* Activity Details Modal */}
-      {/* Modal for Editing */}
-      <Modal
-        isOpen={isModalOpen}
-        onRequestClose={() => setIsModalOpen(false)}
-        style={{
-          content: {
-            maxWidth: "500px",
-            margin: "auto",
-            padding: "20px",
-            borderRadius: "10px",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          },
-        }}
-        ariaHideApp={false}
-      >
-        <h2 style={{ textAlign: "center" }}>Edit Activity</h2>
+        <div style={styles.inputGroup}>
         
-        <HighlightOffOutlinedIcon
-    onClick={() => {
-      setIsModalOpen(false);
-      resetFormData();
-    }}
-    style={{
-      color: "#0F5132",
-      fontSize: "30px",
-      cursor: "pointer",
-      position: "absolute",
-      right: "15px", // Position relative to the modal
-      top: "15px", // Position relative to the modal
-    }}
-  />
-        <form onSubmit={handleUpdate}>
-          <div style={{ display: "grid", gap: "15px" }}>
-            <div>
-              <label><strong>Name:</strong></label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
-                }}
-              />
-            </div>
-            <div>
-              <label><strong>Date:</strong></label>
-              <input
-                type="date"
-                name="date"
-                value={formData.date}
-                onChange={handleInputChange}
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
-                }}
-              />
-            </div>
-            <div>
-              <label><strong>Time:</strong></label>
-              <input
-                type="time"
-                name="time"
-                value={formData.time}
-                onChange={handleInputChange}
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
-                }}
-              />
-            </div>
-            <div>
-              <label><strong>Price:</strong></label>
-              <input
-                type="number"
-                name="price"
-                value={formData.price}
-                onChange={handleInputChange}
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
-                }}
-              />
-            </div>
-            <div>
-              <label><strong>Category:</strong></label>
-              <input
-                type="text"
-                name="Category"
-                value={formData.Category}
-                onChange={handleInputChange}
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
-                }}
-              />
-            </div>
-            <div>
-            <label>Tags</label>
-            <Select
-                isMulti
-                name="tags"
-                options={availableTags}
-                className="basic-multi-select"
-                classNamePrefix="select"
-                onChange={handleTagsChange}
-                value={availableTags.filter(tag => formData.tags.includes(tag.value))} // Set the value based on the selected tags
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
-                }}
-            />
+            <FaCalendar style={styles.inputIcon} />
+            <span style={styles.inputLabel}>Date:</span>
+          <input
+            type="date"
+            name="date"
+            value={formData.date}
+            onChange={handleInputChange}
+            style={styles.input}
+          />
         </div>
-            <div>
-              <label><strong>Special Discounts:</strong></label>
-              <input
-                type="text"
-                name="specialDiscounts"
-                value={formData.specialDiscounts}
-                onChange={handleInputChange}
-                style={{
-                  width: "100%",
-                  padding: "8px",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
-                }}
-              />
-            </div>
-            <div>
-            <label><strong>Rating:</strong></label>
-            <input
-              type="Number"
-              name="rating"
-              value={formData.rating}
-              onChange={handleInputChange}
-              style={{
-                width: "100%",
-                padding: "8px",
+        <div style={styles.inputGroup}>
+        
+            <FaDollarSign style={styles.inputIcon} /> 
+            <span style={styles.inputLabel}>Price:</span>
+          <input
+            type="number"
+            name="price"
+            value={formData.price}
+            onChange={handleInputChange}
+            style={styles.input}
+          />
+        </div>
+        <div style={styles.inputGroup}>
+            <FaClipboardList style={styles.inputIcon} />
+            <span style={styles.inputLabel}>Category:</span>
+
+          <input
+            type="text"
+            name="Category"
+            value={formData.Category}
+            onChange={handleInputChange}
+            style={styles.input}
+          />
+        </div>
+        <div style={styles.inputGroup}>
+            <FaTag style={styles.inputIcon} />
+            <span style={styles.inputLabel}>Tags:</span>
+
+          <Select
+            isMulti
+            name="tags"
+            options={availableTags}
+            className="basic-multi-select"
+            classNamePrefix="select"
+            onChange={handleTagsChange}
+            value={availableTags.filter((tag) =>
+              formData.tags.includes(tag.value)
+            )}
+            styles={{
+              control: (base) => ({
+                ...base,
                 borderRadius: "5px",
                 border: "1px solid #ccc",
-              }}
-            />
-          </div>
-
-          <div>
-            <label><strong>Booking Open:</strong></label>
-            <input
-              type="checkbox"
-              name="bookingOpen"
-              checked={formData.bookingOpen}
-              onChange={(e) =>
-                setFormData((prevData) => ({ ...prevData, bookingOpen: e.target.checked }))
-              }
-              style={{
-                width: "100%",
-                padding: "8px",
-                borderRadius: "5px",
-                border: "1px solid #ccc",
-              }}
-            />
-          </div>   
-            {/* Location picker */}
-        <div>
-          <label><strong>Location:</strong></label>
-          <MapPicker onLocationSelect={handleLocationSelect} />
-          
-        </div>
-          </div>
-          <button
-            type="submit"
-            style={{
-              width: "100%",
-              padding: "10px",
-              marginTop: "20px",
-              backgroundColor: "#0F5132",
-              color: "#fff",
-              border: "none",
-              borderRadius: "5px",
-              cursor: "pointer",
+                fontSize: "14px",
+                padding: "5px",
+                width:'400px'
+              }),
             }}
-          >
-            Update Activity
-          </button>
-        </form>
-      </Modal>
-      </div>
-      </div>
+          />
+        </div>
+        <div style={styles.inputGroup}>
+          
+            <FaClipboardList style={styles.inputIcon} /> 
+            <span style={styles.inputLabel}>Special Discounts:</span>
 
+          <input
+            type="text"
+            name="specialDiscounts"
+
+            value={formData.specialDiscounts}
+            onChange={handleInputChange}
+            style={styles.input}
+          />
+        </div>
+        <div style={styles.checkboxGroup}>
+          <FaCheck style={styles.inputIcon} />
+          <input
+            type="checkbox"
+            name="bookingOpen"
+            checked={formData.bookingOpen}
+            onChange={(e) =>
+              setFormData((prevData) => ({
+                ...prevData,
+                bookingOpen: e.target.checked,
+              }))
+            }
+            style={styles.checkbox}
+          />
+          <span style={styles.checkboxLabel}>Booking Open</span>
+        </div>
+        <div style={styles.inputGroup}>
+            <FaMapMarkerAlt style={styles.inputIcon} /> 
+            <span style={styles.inputLabel}>Locations:</span>
+
+          <div style={styles.mapPickerContainer}>
+            <MapPicker
+              onLocationSelect={handleLocationSelect}
+              style={styles.mapPicker}
+            />
+          </div>
+        </div>
+        <button type="submit" style={styles.submitButton}>
+          Update Activity
+        </button>
+      </form>
+    </div>
+  </div>
+)}
+
+        </div>
+      </div>
     );
+    
   
 
  
   
 };
+
+const styles={
+   itinerariesSection: {
+    marginTop: "20px",
+  },
+  list: {
+    padding: 0,
+    listStyle: "none",
+  },
+  listItem: {
+    padding: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    marginBottom: "10px",
+    backgroundColor: "#fff",
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+  },
+  container: {
+    maxWidth: '1200px',
+        margin: '0 auto',
+        padding: '20px',
+        backgroundColor: '#f9f9f9',
+        borderRadius: '10px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        fontSize:'14px',
+        marginTop:'50px'
+  },
+  sidebar: {
+    position: 'fixed',
+    top: '60px',
+    left: 0,
+    height: '100vh',
+    width: '50px', // Default width when collapsed
+    backgroundColor: 'rgba(15, 81, 50, 0.85)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    padding: '10px 0',
+    overflowX: 'hidden',
+    transition: 'width 0.3s ease',
+    zIndex: 1000,
+  },
+  sidebarExpanded: {
+    width: '200px', // Width when expanded
+  },
+  iconContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    padding: '10px',
+    width: '100%', // Full width of the sidebar
+    color: '#fff',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease',
+  },
+  iconContainerHover: {
+    backgroundColor: '#084B24', // Background on hover
+  },
+  iconn: {
+    fontSize: '24px',
+    marginLeft: '15px', // Move icons slightly to the right
+    color: '#fff', // Icons are always white
+  },
+  label: {
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#fff',
+    opacity: 0, // Initially hidden
+    whiteSpace: 'nowrap', // Prevent label text from wrapping
+    transition: 'opacity 0.3s ease',
+  },
+  labelVisible: {
+    opacity: 1, // Fully visible when expanded
+  },
+  item: {
+    padding: '10px 0',
+  },
+  icon: {
+    fontSize: "16px",
+  },
+  header: {
+    height: '60px',
+    position: 'fixed',
+    top: '0',
+    left: '0',
+    width: '100%',
+    backgroundColor: '#0F5132',
+    color: 'white',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '10px 20px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    zIndex: '1000',
+  },
+  title: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: 'white',
+    margin: 0,
+    marginLeft: '60px',
+  },
+  logoContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  logo: {
+    height: '60px',
+    width: '70px',
+    borderRadius: '10px',
+  },
+  leftContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '15px',
+  },
+  profileIcon: {
+    fontSize: '30px',
+    color: 'white',
+    cursor: 'pointer',
+  },
+
+  modalContent: {
+    background: "white",
+    padding: "20px",
+    borderRadius: "10px",
+    width: "500px",
+    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+    display: "flex",
+    flexDirection: "column",
+    gap: "20px",
+  },
+  modalTitle: {
+    fontSize: "24px",
+    fontWeight: "bold",
+    color: "#0F5132",
+    marginBottom: "15px",
+    textAlign: "center",
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "15px",
+  },
+  inputGroup: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+  },
+  inputIcon: {
+    fontSize: "16px",
+    color: "#0F5132",
+  },
+  inputLabel: {
+    fontSize: "14px",
+    fontWeight: "bold",
+    color: "#333",
+    width: "120px",
+  },
+  input: {
+    flex: 1,
+    padding: "10px",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+    fontSize: "14px",
+  },
+  checkboxGroup: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+  },
+  checkbox: {
+    width: "18px",
+    height: "18px",
+    margin: 0,
+  },
+  checkboxLabel: {
+    fontSize: "14px",
+    color: "#333",
+  },
+  submitButton: {
+    padding: "5px 10px",
+    backgroundColor: "#0F5132",
+    color: "white",
+    borderRadius: "5px",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "16px",
+    position: "relative", // Allows adjustment using top
+    top: "-5px", // Moves the button up
+    left: "50%", // Moves the button to the center horizontally
+    transform: "translateX(-50%)", // Ensures it's perfectly centered
+    display: "inline-block", // Ensures proper alignment
+    textAlign: "center",
+    marginTop:'20px'
+  },
+  mapPickerContainer: {
+    width: "100%",
+    height: "200px",
+    marginTop: "10px",
+    borderRadius: "10px",
+    overflow: "hidden",
+    border: "1px solid #ccc",
+  },
+  sectionTitle: {
+    fontSize: "20px",
+    fontWeight: "600",
+    color: "#0F5132", // Matches the theme
+    marginBottom: "15px",
+    textAlign: "center", // Center-align the title
+    borderBottom: "2px solid #0F5132", // Adds a subtle underline
+    paddingBottom: "10px", // Adds spacing below the text
+    letterSpacing: "1px", // Slightly spaced-out letters for readability
+    textTransform: "uppercase", // Capitalizes all letters for emphasis
+  },
+  activityList: {
+    listStyle: 'none',
+    padding: 0,
+    margin: '20px 0',
+  },
+  activityItem: {
+    padding: '15px',
+    border: '1px solid #ddd',
+    borderRadius: '8px',
+    backgroundColor: '#fff',
+    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+    marginBottom: '15px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: '20px',
+  },
+  activityInfo: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '5px',
+  },
+ 
+  activityText: {
+    fontWeight: 'bold',
+
+    margin: 0,
+    fontSize: '14px',
+    color: '#grey',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '5px',
+  },
+  detailsIcon: {
+    fontSize: '16px',
+    color: '#0F5132',
+  },
+  detailSection: {
+    marginTop: '10px',
+    padding: '10px',
+    backgroundColor: '#f9f9f9',
+    borderRadius: '8px',
+    border: '1px solid #ddd',
+  },
+  detailText: {
+    fontSize: '14px',
+    color: '#333',
+    margin: '5px 0',
+  },
+  actionButtons: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
+  },
+  button: {
+    padding: '8px 12px',
+    fontSize: '14px',
+    borderRadius: '5px',
+    border: 'none',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '5px',
+    justifyContent: 'center',
+    textTransform: 'uppercase',
+    fontWeight: 'bold',
+  },
+  viewButton: {
+    padding: "5px 10px", // Smaller padding
+    borderRadius: "5px", // Smaller border radius
+    cursor: "pointer",
+    fontSize: "14px", // Smaller font size
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+    backgroundColor: '#fff',
+    color: '#0F5132',
+    marginRight:'800px'
+  },
+  editButton: {
+    padding: "4px 10px",
+    backgroundColor: "#0F5132",
+    color: "white",
+    borderRadius: "5px",
+    cursor: "pointer",
+    fontSize: "14px",
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+  },
+  deleteButton: {
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+    border: "1px solid #dc3545", // Red border
+    borderRadius: "5px",
+    padding: "5px 10px",
+    backgroundColor: "#dc3545", // Red background
+    color: "white", // White text
+    cursor: "pointer",
+    transition: "background-color 0.3s ease, border-color 0.3s ease",
+  },
+  mapPickerContainer: {
+    width: '50%',
+    height: '50px',
+    marginTop: '10px',
+    borderRadius: '10px',
+    overflow: 'hidden',
+  },
+  mapPicker: {
+    width: '50%',
+    height: '60%',
+  },
+  modalOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
+    background: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  modalContent: {
+    background: 'white',
+    padding: '20px',
+    borderRadius: '10px',
+    width: '50%',
+    maxWidth: '600px',
+    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '15px',
+    maxHeight: '80vh',
+    overflowY: 'auto',
+  },
+  modalContentH2: {
+    fontSize: '22px',
+    textAlign: 'center',
+    color: '#333',
+  },
+  modalContentLabel: {
+    fontWeight: 'bold',
+    marginBottom: '5px',
+    display: 'flex', alignItems: 'center', gap: '5px',
+    color: '#555',
+  },
+  modalContentInput: {
+    width: '100%',
+    padding: '10px',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
+    fontSize: '14px',
+  },
+  modalContentTextarea: {
+    width: '100%',
+    padding: '10px',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
+    fontSize: '14px',
+    resize: 'vertical',
+  },
+  modalCloseIcon: {
+    color: "#0F5132",
+    fontSize: "30px",
+    cursor: "pointer",
+    position: "absolute",
+    right: "15px",
+    top: "15px",
+  },
+  modalContentButton: {
+    padding: '10px 20px',
+    border: 'none',
+    background: '#0F5132',
+    color: 'white',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '14px',
+  },
+ 
+  cancelIcon: {
+    color: '#0F5132', // Set the color of the icon
+    fontSize: '30px', // Adjust the size as needed
+    cursor: 'pointer', // Ensure it acts as a button
+    position: 'absolute', // Position it correctly in the modal
+    right: '500px', // Adjust placement
+    top: '100px', // Adjust placement
+  },
+  cancel2Icon: {
+    color: '#0F5132', // Set the color of the icon
+    fontSize: '30px', // Adjust the size as needed
+    cursor: 'pointer', // Ensure it acts as a button
+    position: 'absolute', // Position it correctly in the modal
+    right: '500px', // Adjust placement
+    top: '180px', // Adjust placement
+  },
+  createButton: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    backgroundColor: "#0F5132",
+    color: "white",
+    padding: "10px 20px",
+    borderRadius: "5px",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "16px",
+    fontWeight: "bold",
+    transition: "background-color 0.3s ease",
+    top:'-10px'
+  },
+  
+  createButtonHover: {
+    backgroundColor: "#084B24", // Darker green on hover
+  },
+  
+  createIcon: {
+    fontSize: "20px",
+  },
+  inputRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    gap: "15px",
+  },
+  modalHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "20px",
+  },
+  modalTitle: {
+    fontSize: "20px",
+    fontWeight: "bold",
+    color: "#0F5132",
+  },
+  popupOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "100vh",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1000,
+  },
+  
+  popup: {
+    backgroundColor: "#fff",
+    padding: "20px",
+    borderRadius: "10px",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    textAlign: "center",
+    width: "300px",
+  },
+  
+  popupText: {
+    fontSize: "16px",
+    marginBottom: "20px",
+    color: "#333",
+  },
+  
+  popupButtons: {
+    display: "flex",
+    justifyContent: "space-around",
+    gap: "10px",
+  },
+  
+ 
+}
 
 export default AdvertiserActivity;
