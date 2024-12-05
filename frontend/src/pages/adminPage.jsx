@@ -8,7 +8,7 @@ import LockResetIcon from '@mui/icons-material/LockReset';
 import { FaTag, FaInfoCircle, FaDollarSign ,FaSearch} from "react-icons/fa";
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
-import { FaExclamationCircle, FaHeart, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
+import { FaUser,FaExclamationCircle, FaHeart, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
 import UserStatistics from './chart';
 
 
@@ -51,6 +51,8 @@ const AdminPage = () => {
   const [showStats, setShowStats] = useState(false); // State to toggle visibility
   const [notifications, setNotifications] = useState([]); // Initialize as an empty array
   const [myProducts, setMyProducts] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+
 
 
   const [complaintIdToSearch, setComplaintIdToSearch] = useState('');
@@ -1490,6 +1492,33 @@ loadingText: {
     fontStyle: 'italic',
     color: '#888',
   },
+  ///
+  manageAccountContainer: {
+    position: "relative",
+    display: "inline-block",
+  },
+  dropdownMenu: {
+    position: "absolute",
+    top: "40px",
+    right: "0",
+    backgroundColor: "#fff",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    zIndex: 1000,
+    minWidth: "150px",
+    overflow: "hidden",
+  },
+  dropdownItem: {
+    padding: "10px 15px",
+    fontSize: "14px",
+    color: "#333",
+    cursor: "pointer",
+    transition: "background-color 0.2s ease",
+  },
+  dropdownItemHover: {
+    backgroundColor: "#f5f5f5",
+  },
   };
  
   const handleChangePassword = async (e) => {
@@ -1545,25 +1574,6 @@ loadingText: {
     >
     </div>
     <div style={styles.iconContainer}>
-  {/* Products Icon */}
-  <FaBox
-    size={22}
-    style={styles.profileIcon}
-    onClick={() => navigate('/products')} // Navigate to Products page
-  />
-         <LockResetIcon title="Change Password"
-            alt="Profile Icon"
-            style={styles.profileIcon}
-            onClick={togglePasswordModal}
-          />
-
-  {/* Edit Profile Icon */}
-  <ManageAccountsIcon
-    style={styles.profileIcon}
-    title="Edit Profile"
-    onClick={toggleModal} // Open modal on click
-  />
-
       {/* Notification Bell Icon */}
 <FaBell
   size={24}
@@ -1636,8 +1646,40 @@ loadingText: {
           )}
         </div>
       )}
+
+        {/* settings  Dropdown */}
+  <ManageAccountsIcon
+    style={styles.profileIcon}
+    title="Manage Account Settings"
+    onClick={() => setShowDropdown((prev) => !prev)} // Toggle dropdown
+  />
+  {showDropdown && (
+    <div style={styles.dropdownMenu}>
+      <div
+        style={styles.dropdownItem}
+        onClick={() => {
+          setShowDropdown(false); // Close dropdown
+          toggleModal(); // Open Edit Profile modal
+        }}
+      >
+      Admin Control
+      </div>
+      <div
+        style={styles.dropdownItem}
+        onClick={() => {
+          setShowDropdown(false); // Close dropdown
+          togglePasswordModal(); // Open Change Password modal
+        }}
+      >
+        Change Password
+      </div>
+    </div>
+  )}
 </div>
+
   </div>
+
+
 </header>
 
 
@@ -1658,6 +1700,14 @@ loadingText: {
           );
         }}
       >
+
+<div style={styles.item} onClick={() => navigate('/adminPage')}>
+          <FaUser style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Admin Profile
+          </span>
+        </div>
+
         <div style={styles.item} onClick={() => navigate('/PromoCodeForm')}>
           <FaTag style={styles.icon} />
           <span className="label" style={styles.label}>
@@ -1800,7 +1850,7 @@ loadingText: {
         gap: '10px', // Space between title and icon
       }}
     >
-      <h2 style={{ fontSize: '18px', fontWeight: 'bold', margin: '0' }}>
+      <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0' }}>
         User Statistics
       </h2>
       <FaChartBar style={{ fontSize: '24px', color: '#0F5132' }} />
@@ -1834,7 +1884,7 @@ loadingText: {
 {modalOpen && (
   <div style={styles.modalOverlay}>
     <div style={styles.modalContent}>
-      <h2 style={styles.modalContentH2}>Admin Control</h2>
+      <h2 style={styles.modalContentH2}></h2>
       <HighlightOffOutlinedIcon
         onClick={toggleModal}
         style={styles.cancelIcon} // Apply cancel icon style

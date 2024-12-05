@@ -3,7 +3,8 @@ import './promoCodeForm.css';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import { FaPercentage, FaCalendarAlt, FaTag ,FaArrowLeft} from 'react-icons/fa';
 import { MdDiscount } from 'react-icons/md';
-import logo from '../images/image.png'; // Replace with your logo path
+import image from '../images/image.png';
+import {FaUser,FaBox, FaExclamationCircle, FaHeart, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
 
 
 const PromoCodeForm = () => {
@@ -92,16 +93,106 @@ const PromoCodeForm = () => {
 
 
   return (
+    
     <div style={styles.container}>
-  <FaArrowLeft 
-    onClick={() =>  navigate('/adminPage')}
-    style={{
-      cursor: 'pointer', 
-      fontSize: '24px', 
-      color: '#0F5132' // Match your theme
-    }} 
-  />
-      <h2 style={styles.heading}>Promo Code Management</h2>
+      
+    {/* Header */}
+    <header style={styles.header}>
+      <div style={styles.logoContainer}>
+        <img src={image} alt="Logo" style={styles.logo} />
+      </div>
+      <h1 style={styles.title2}>Promo Code Management</h1>
+    </header>
+
+   {/* Sidebar */}
+ <div
+        style={styles.sidebar}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.width = '200px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '1')
+          );
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.width = '60px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '0')
+          );
+        }}
+      >
+
+<div style={styles.item} onClick={() => navigate('/adminPage')}>
+          <FaUser style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Admin Profile
+          </span>
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/PromoCodeForm')}>
+          <FaTag style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Promo Codes
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/Complaints')}>
+          <FaExclamationCircle style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Complaints
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/preftags')}>
+          <FaHeart style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Preference Tags
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/docs')}>
+          <FaFileAlt style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Documents
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/category')}>
+          <FaThList style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Categories
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/adminReport')}>
+          <FaBox  style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Sales Report
+          </span>   
+        </div>
+        <div style={styles.item} onClick={() => navigate('/DeletionRequest')}>
+          <FaTrashAlt  style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Deletion Requests
+          </span>   
+        </div>
+        <div style={styles.item} onClick={() => navigate('/AddProduct')}>
+          <FaPlus  style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Add Product
+          </span>   
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/EditProducts')}>
+          <FaEdit   style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Edit Products
+          </span>   
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/flagged')}>
+          <FaFlag   style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Flag Events
+          </span>   
+        </div>
+      </div>
+
+      <h2 style={styles.heading}></h2>
     <div className="promo-container">
       
 
@@ -109,7 +200,7 @@ const PromoCodeForm = () => {
 
       {/* Create Promo Code Section */}
       <div className="promo-section">
-        <h3 className="promo-subtitle">Promo Code Management</h3>
+        <h3 className="promo-subtitle"></h3>
         <form onSubmit={handleSubmit} className="promo-form">
           <div className="form-group">
             <label><FaTag /> Promo Code:</label>
@@ -169,8 +260,9 @@ const PromoCodeForm = () => {
             Create Promo Code
           </button>
         </form>
-        {message && <p className="success-message">{message}</p>}
-        {error && <p className="error-message">{error}</p>}
+{/* Alerts for Error and Success */}
+{error && alert(error)}
+{message && alert(message)}
       </div>
 
       {/* View Promo Codes Section */}
@@ -218,78 +310,109 @@ const styles = {
     borderRadius: '10px',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
   },
-  heading: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: '20px',
-    color: '#0F5132',
-  },
+      
   header: {
     height:'60px',
+    position: 'fixed', // Make the header fixed
+    top: '0', // Stick to the top of the viewport
+    left: '0',
+    width: '100%', // Make it span the full width of the viewport
+    backgroundColor: '#0F5132', // Green background
+    color: 'white', // White text
     display: 'flex',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '20px',
-    backgroundColor: '#4CAF50',
+    justifyContent: 'space-between',
     padding: '10px 20px',
-    borderRadius: '10px',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for depth
+    zIndex: '1000', // Ensure it appears above other content
   },
   logoContainer: {
-    display: 'flex',
-    alignItems: 'center',
+    marginBottom: '10px', // Space between the logo and the title
   },
   logo: {
     height: '60px',
     width: '70px',
     borderRadius: '10px',
- 
+  
+  },
+  title2: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: 'white',
+    position: 'absolute', // Position the title independently
+    top: '50%', // Center vertically
+    left: '50%', // Center horizontally
+    transform: 'translate(-50%, -50%)', // Adjust for element's size
+    margin: '0',
   },
   profileIcon: {
     fontSize: '40px',
     color: 'white',
     cursor: 'pointer',
-    borderRadius: '20px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
   },
+//header
+    heading: {
+fontSize: '24px',
+fontWeight: 'bold',
+marginBottom: '20px',
+color: '#0F5132', // Green theme
+textAlign: 'center',
+},
+form: {
+display: 'flex',
+flexDirection: 'column',
+gap: '15px',
+maxWidth: '700px',
+margin: '0 auto',
+backgroundColor: '#f9f9f9',
+padding: '20px',
+borderRadius: '10px',
+boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+},
+formGroup: {
+display: 'flex',
+flexDirection: 'column',
+gap: '5px',
+},
+item: {
+padding: '10px 0',
+},
+label: {
+fontSize: '16px',
+fontWeight: 'bold',
+color: '#555',
+},
+input: {
+padding: '10px',
+border: '1px solid #ccc',
+borderRadius: '5px',
+fontSize: '14px',
+},
+button: {
+padding: '12px',
+fontSize: '16px',
+fontWeight: 'bold',
+backgroundColor: '#0F5132',
+color: '#fff',
+border: 'none',
+borderRadius: '5px',
+cursor: 'pointer',
+transition: 'background-color 0.3s ease',
+},
+buttonHover: {
+backgroundColor: '#155724', // Darker green on hover
+},
+icon: {
+  fontSize: '24px',
+  marginLeft: '15px', // Move icons slightly to the right
+  color: '#fff', // Icons are always white
+},
+//header
   actionButtons: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-end',
     marginTop: '10px',
-  },
-  wishlistButton: {
-    backgroundColor: '#4CAF50',
-    color: '#fff',
-    padding: '10px 20px',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    marginBottom: '10px',
-  },title: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    color: 'white',
-    margin: 0,
-  },
-  cartIcon: {
-    width: '50px',
-    height: '50px',
-    cursor: 'pointer',
-    
-  },
-  filterForm: {
-    margin: '20px 0',
-  },
-  filterButton: {
-    marginTop: '10px',
-    padding: '10px 20px',
-    backgroundColor: '#4CAF50',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
   },
   productList: {
     listStyleType: 'none',
@@ -313,6 +436,16 @@ const styles = {
     objectFit: 'cover',
     borderRadius: '10px',
   },
+  title: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  imagePreview: {
+    maxWidth: '100%',
+    borderRadius: '10px',
+    marginTop: '10px',
+  },
   addButton: {
     marginTop: '10px',
     padding: '10px 20px',
@@ -322,6 +455,39 @@ const styles = {
     borderRadius: '5px',
     cursor: 'pointer',
   },
+    //sidebar
+    sidebar: {
+      position: 'fixed',
+      top: '60px',
+      left: 0,
+      height: '100vh',
+      width: '50px', // Default width when collapsed
+      backgroundColor: 'rgba(15, 81, 50, 0.85)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-start', // Ensure alignment starts from the left
+      padding: '10px 0',
+      overflowX: 'hidden',
+      transition: 'width 0.3s ease',
+      zIndex: 1000,
+    },
+    item: {
+      padding: '10px 0',
+    },
+    sidebarExpanded: {
+      width: '200px', // Width when expanded
+    },
+
+    label: {
+      cursor: 'pointer',
+      fontSize: '16px',
+      fontWeight: 'bold',
+      color: '#fff',
+      opacity: 0, // Initially hidden
+      whiteSpace: 'nowrap', // Prevent label text from wrapping
+      transition: 'opacity 0.3s ease',
+    },
+    //
 };
 
 export default PromoCodeForm;
