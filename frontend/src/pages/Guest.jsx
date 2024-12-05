@@ -11,6 +11,14 @@ import hotelImage from "../images/hotel.jpg";
 import transportationImage from "../images/transportation.webp";
 import productImage from "../images/product.jpg";
 import logo from "../images/image.png";
+import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
+  FaClipboardList,
+  FaStar, FaDollarSign,FaSearch} from "react-icons/fa";
+import { FaBell,FaUserCircle} from 'react-icons/fa';
+import HotelIcon from '@mui/icons-material/Hotel';
+import MuseumIcon from '@mui/icons-material/Museum';
+import { FaGlobe } from 'react-icons/fa';
+
 
 const Guest = () => {
   const navigate = useNavigate(); // Initialize useNavigate
@@ -63,22 +71,95 @@ const Guest = () => {
   }, []); // Empty array ensures the effect runs once when the component is mounted
 
   return (
-    <div style={styles.container}>
-      {/* Header Section */}
-      <header style={styles.header}>
-        <img src={logo} alt="Logo" style={styles.logo} />
-        <h1 style={styles.title}>Welcome, Guest!</h1>
-      </header>
+    <div>
 
-      <p style={styles.description}>
-        You are currently browsing as a guest. Explore our services without an account. If you wish to register, please{" "}
-        <span
-          style={styles.registerLink}
-          onClick={() => navigate("/tourist-register")}
-        >
-          go to the registration page.
-        </span>
-      </p>
+
+<header style={styles.header}>
+  <div style={styles.logoContainer}>
+    <img src={logo} alt="Logo" style={styles.logo} />
+  </div>
+  <h1 style={styles.title}>Welcome Guest!</h1>
+  <div style={styles.headerIconsContainer}>
+   
+
+    {/* Sign In Button */}
+    <button style={styles.signInButton} onClick={() => navigate('/tourist-register')}>
+      Sign In
+    </button>
+  </div>
+</header>
+
+{/* Main Content */}
+<div className="tourist-profile-container" >
+      {/* Sidebar */}
+      <div
+        style={styles.sidebar}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.width = '200px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '1')
+          );
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.width = '60px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '0')
+          );
+        }}
+      >
+        <div   style={styles.item} onClick={() => navigate('/historical-locations')}>
+          <FaUniversity style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Historical Loc
+          </span>
+        </div>
+        <div  style={styles.item} onClick={() => navigate('/museums')}>
+          <MuseumIcon style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Museums
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/products')}>
+          <FaBox style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Products
+          </span>
+        </div>
+        <div  style={styles.item} onClick={() => navigate('/itineraries')}>
+          <FaMap style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Itineraries
+          </span>
+        </div>
+        <div  style={styles.item} onClick={() => navigate('/activities')}>
+          <FaRunning style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Activities
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-flights')}>
+          <FaPlane style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Book Flights
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-hotels')}>
+          <HotelIcon style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Book a Hotel
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-transportation')}>
+          <FaBus style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Transportation
+          </span>
+        </div>
+      
+      </div>
+      </div>
+
+
 
       <div style={styles.grid}>
   {/* Museums Section */}
@@ -301,16 +382,76 @@ const styles = {
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for depth
     zIndex: '1000', // Ensure it appears above other content
   },
+  headerIconsContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '20px', // Spacing between the icons
+  },
+  logoContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
   logo: {
-    height: "70px",
-    width: "80px",
-    borderRadius: "10px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.4)",
+    height: '60px',
+    width: '70px',
+    borderRadius: '10px',
+  },
+ 
+
+  icon: {
+    fontSize: '16px',
+    color: '#000',
+  },
+  currency: {
+    fontWeight: 'bold',
+  },
+  signInButton: {
+    backgroundColor: 'white', // Black button
+    color: 'black',
+    border: 'none',
+    padding: '10px 20px',
+    borderRadius: '20px',
+    fontSize: '14px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease',
+  },
+  signInButtonHover: {
+    backgroundColor: '#333', // Darker black on hover
+  },
+  
+  notificationButton: {
+    position: 'relative',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  notificationIcon: {
+    fontSize: '24px',
+    color: 'white',
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: '-5px',
+    right: '-5px',
+    backgroundColor: 'red',
+    color: 'white',
+    borderRadius: '50%',
+    padding: '5px',
+    fontSize: '12px',
+  },
+  profileIcon: {
+    fontSize: '30px',
+    color: 'white',
+    cursor: 'pointer',
   },
   title: {
-    fontSize: "24px",
-    fontWeight: "bold",
-    marginRight:'650px'
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: 'white',
+    margin: 0,
+    marginRight:'50px'
   },
   description: {
     marginTop:'40px',
@@ -320,12 +461,15 @@ const styles = {
     color: "#333",
   },
   grid: {
-    marginTop:'30px',
+    marginTop:'10px',
     display: "grid",
-    gridTemplateColumns: "repeat(4, 1fr)", // 4 items per row
+    gridTemplateColumns: 'repeat(3, auto)', // Exactly 3 cards per row
+  justifyContent: 'center', // Center the grid
     gap: "20px",
   },
   card: {
+    width: '400px', // Fixed width for the card
+    maxWidth: '600px', // Ensure the card doesn't grow beyond 300px
     backgroundColor: "#fff",
     borderRadius: "8px",
     overflow: "hidden",
@@ -358,6 +502,54 @@ const styles = {
     fontWeight: "bold",
     cursor: "pointer",
     textDecoration: "underline",
+  },
+  sidebar: {
+    position: 'fixed',
+    top: '60px',
+    left: 0,
+    height: '100vh',
+    width: '50px', // Default width when collapsed
+    backgroundColor: 'rgba(15, 81, 50, 0.85)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start', // Ensure alignment starts from the left
+    padding: '10px 0',
+    overflowX: 'hidden',
+    transition: 'width 0.3s ease',
+    zIndex: 1000,
+  },
+  sidebarExpanded: {
+    width: '200px', // Width when expanded
+  },
+  iconContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start', // Align items to the left
+    padding: '10px',
+    width: '100%', // Take full width of the sidebar
+    color: '#fff',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease',
+  },
+  iconContainerHover: {
+    backgroundColor: '#084B24', // Background on hover
+  },
+  icon: {
+    fontSize: '24px',
+    marginLeft: '15px', // Move icons slightly to the right
+    color: '#fff', // Icons are always white
+  },
+  label: {
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#fff',
+    opacity: 0, // Initially hidden
+    whiteSpace: 'nowrap', // Prevent label text from wrapping
+    transition: 'opacity 0.3s ease',
+  },
+  labelVisible: {
+    opacity: 1, // Fully visible when expanded
   },
 };
 
