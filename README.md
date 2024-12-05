@@ -26,22 +26,41 @@
 
 ## Tech/Framework Used
 
-- [MongoDb]
-- [Express.js]
-- [React.js]
-- [Node.js]
+- MongoDb
+- Express.js
+- React.js
+- Node.js
 
 
 
 ## Features
 
-- Feature 1
-- Feature 2
-- Feature 3
-- Additional features that make this project stand out.
+- Flight Booking
+- Hotel Booking
+- Activity and Itinerary booking
+- Product Buying and Selling
 
 ## Code Examples
 
 *Provide a simple code example to demonstrate how your project works.*
+
+## Installation
+
+
+
+## Tests
+
+
+
+## How to Use
+
+
+## Contribute
+
+
+## Credits
+
+
+## License
 
 
