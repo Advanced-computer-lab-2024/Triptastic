@@ -384,6 +384,16 @@ const viewProducts = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+const getMyProducts = async (req, res) => {
+  const { Username } = req.query;
+  try{
+    const products = await productModel.find({seller: Username});
+    res.status(200).json(products);
+  }
+  catch (error){
+    res.status(400).json({error: error.message});
+  }
+};
 
 
 const sortProductsByRatingAdmin = async (req, res) => {
@@ -869,4 +879,4 @@ const actProfits = async (req, res) => {
     
 module.exports = {getPromoCodes,createPromoCode,getUserStatistics,replyToComplaint,getPendingDeletionRequests,acceptDeletionRequest,rejectDeletionRequest,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
     ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin,viewAllPrefTag,deleteAdmin
-    ,flagItinerary,flagTouristItinerary,flagActivity,getallItineraries,getallActivities,getallTouristItineraries,getComplaints,archiveProduct,unarchiveProduct,getFilteredP,viewAllProducts,actProfits,itinProfits};
+    ,flagItinerary,flagTouristItinerary,flagActivity,getallItineraries,getallActivities,getallTouristItineraries,getComplaints,archiveProduct,unarchiveProduct,getFilteredP,viewAllProducts,actProfits,itinProfits,getMyProducts};

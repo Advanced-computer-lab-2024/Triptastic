@@ -293,29 +293,41 @@ const BookHotels = () => {
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', // Subtle shadow for elevation
         }}
       >
+        
         <label style={{ display: 'block', marginBottom: '10px' 
 }}>
-          <span>City Code (IATA):</span>
-          <input
-            type="text"
-            name="cityCode"
-             placeholder="City Code"
-            value={hotelDetails.cityCode}
-            onChange={handleInputChange}
-            required
-            style={{
-              flex: 1,
-              padding: '12px 20px',
-              border: 'none',
-              borderRadius: '30px',
-              marginRight: '0px',
-              marginLeft: '18px',
-
-              backgroundColor: '#f4f4f4', // Slightly gray background for inputs
-              outline: 'none',
-              fontSize: '16px',
-            }}
-          />
+           <span>City Code (IATA):</span>
+        <select
+          name="cityCode"
+          value={hotelDetails.cityCode}
+          onChange={handleInputChange}
+          required
+          style={{
+            flex: 1,
+            padding: '12px 20px',
+            border: 'none',
+            borderRadius: '30px',
+            marginRight: '0px',
+            marginLeft: '18px',
+            backgroundColor: '#f4f4f4', // Slightly gray background for inputs
+            outline: 'none',
+            fontSize: '16px',
+          }}
+        >
+          <option value="">Select a City Code</option>
+          {/* Add City Codes here */}
+          <option value="NYC">New York (NYC)</option>
+          <option value="LAX">Los Angeles (LAX)</option>
+          <option value="LHR">London Heathrow (LHR)</option>
+          <option value="DXB">Dubai (DXB)</option>
+          <option value="SYD">Sydney (SYD)</option>
+          <option value="CDG">Paris Charles de Gaulle (CDG)</option>
+          <option value="FRA">Frankfurt (FRA)</option>
+          <option value="AMS">Amsterdam (AMS)</option>
+          <option value="HKG">Hong Kong (HKG)</option>
+          <option value="SIN">Singapore (SIN)</option>
+        </select>
+          
         </label>
         <label style={{ display: 'block', marginBottom: '10px' }}>
           <span>Check-In Date:</span>

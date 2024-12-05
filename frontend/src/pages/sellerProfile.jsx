@@ -38,6 +38,14 @@ const SellerProfile = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [notifications, setNotifications] = useState([]); // Initialize as an empty array
   const [showNotifications, setShowNotifications] = useState(false); // Toggle notification dropdown
+  const [editProductId, setEditProductId] = useState(null);
+  const [editProductData, setEditProductData] = useState({
+    productName: '',
+    description: '',
+    price: '',
+    stock: '',
+    rating: ''
+  });
   const [productFormData, setProductFormData] = useState({
     productName: '',
     description: '',
@@ -64,6 +72,13 @@ const SellerProfile = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+  const handleInputChange2 = (e) => {
+    const { name, value } = e.target;
+    setEditProductData((prevData) => ({
       ...prevData,
       [name]: value
     }));
@@ -540,11 +555,48 @@ const unarchiveProduct = async () => {
     setLoading(false);
   }
 };
+const handleSaveProduct = async (productId) => {
+  // Save the updated product data to the server...
+  // After saving, update the sellerProducts state and reset editProductId
+  try {
+    const response = await fetch(`http://localhost:8000/updateProduct?productId=${productId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(editProductData),
+    });
 
+    if (response.ok) {
+      const updatedProduct = await response.json();
+      setSellerProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product._id === productId ? updatedProduct : product
+        )
+      );
+      setEditProductId(null);
+    } else {
+      console.error('Failed to update product');
+    }
+  } catch (error) {
+    console.error('Error updating product:', error);
+  }
+};
 
 const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
   const handleCurrentPasswordChange = (e) => setCurrentPassword(e.target.value);
   const handleNewPasswordChange = (e) => setNewPassword(e.target.value);
+  const handleProductEdit = (productId) => {
+    const product = sellerProducts.find((product) => product._id === productId);
+    setEditProductId(productId);
+    setEditProductData({
+      productName: product.productName,
+      description: product.description,
+      price: product.price,
+      stock: product.stock,
+      rating: product.rating
+    });
+  };
   return (
     <div style={styles.container}>
       {/* Header */}
@@ -728,28 +780,39 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
         required
         style={styles.input}
       />
-      <div style={styles.fileUploadContainer}>
-        <label style={styles.fileLabel}>
-        <strong style={{ color: '#0F5132', display: 'flex', alignItems: 'center', gap: '5px' }}>
-  Upload Product Image <AddPhotoAlternateIcon style={{ color: '#0F5132' }} />
-</strong>        </label>
+    <div style={styles.fileUploadContainer}>
+  <label style={styles.fileLabel} htmlFor="file-upload">
+    <strong
+      style={{
+        color: '#0F5132',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '5px',
+        cursor: 'pointer',
+      }}
+    >
+      Upload Product Image
+      <AddPhotoAlternateIcon style={styles.iconButton} />
+    </strong>
+  </label>
 
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          required
-          style={styles.fileInput}
-        />
+  <input
+    id="file-upload"
+    type="file"
+    accept="image/*"
+    onChange={handleImageChange}
+    required
+    style={styles.fileInput}
+  />
 
-      </div>
-      {imagePreview && (
-        <img
-          src={imagePreview}
-          alt="Product Preview"
-          style={styles.imagePreview}
-        />
-      )}
+  {imagePreview && (
+    <img
+      src={imagePreview}
+      alt="Product Preview"
+      style={styles.imagePreview}
+    />
+  )}
+</div>
       <button type="submit" style={styles.submitButton}>
         Submit Product
       </button>
@@ -764,27 +827,102 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
         <p>No products found.</p>
       ) : (
         <table style={styles.table}>
-          <thead>
-            <tr>
-              <th style={styles.th}>Product Name</th>
-              <th style={styles.th}>Description</th>
-              <th style={styles.th}>Price</th>
-              <th style={styles.th}>Stock</th>
-              <th style={styles.th}>Rating</th>
+        <thead>
+          <tr>
+            <th style={styles.th}>Product Name</th>
+            <th style={styles.th}>Description</th>
+            <th style={styles.th}>Price</th>
+            <th style={styles.th}>Stock</th>
+            <th style={styles.th}>Rating</th>
+            <th style={styles.th}></th> {/* Add a column for buttons */}
+          </tr>
+        </thead>
+        <tbody>
+          {sellerProducts.map((product) => (
+            <tr key={product._id} style={styles.tr}>
+              <td style={styles.td}>
+                  {editProductId === product._id ? (
+                    <input
+                      type="text"
+                      name="productName"
+                      value={editProductData.productName}
+                      onChange={handleInputChange2}
+                    />
+                  ) : (
+                    product.productName
+                  )}
+                </td>
+                <td style={styles.td}>
+                  {editProductId === product._id ? (
+                    <input
+                      type="text"
+                      name="description"
+                      value={editProductData.description}
+                      onChange={handleInputChange2}
+                    />
+                  ) : (
+                    product.description
+                  )}
+                </td>
+                <td style={styles.td}>
+                  {editProductId === product._id ? (
+                    <input
+                      type="number"
+                      name="price"
+                      value={editProductData.price}
+                      onChange={handleInputChange2}
+                    />
+                  ) : (
+                    `$${product.price}`
+                  )}
+                </td>
+                <td style={styles.td}>
+                  {editProductId === product._id ? (
+                    <input
+                      type="number"
+                      name="stock"
+                      value={editProductData.stock}
+                      onChange={handleInputChange2}
+                    />
+                  ) : (
+                    product.stock
+                  )}
+                </td>
+                <td style={styles.td}>
+                  {editProductId === product._id ? (
+                    <input
+                      type="number"
+                      name="rating"
+                      value={editProductData.rating}
+                      onChange={handleInputChange2}
+                    />
+                  ) : (
+                    product.rating
+                  )}
+                </td>
+                <td style={styles.td}>
+                  {editProductId === product._id ? (
+                    <button
+                      style={styles.button}
+                      onClick={() => handleSaveProduct(product._id)}
+                    >
+                      Save
+                    </button>
+                  ) : (
+                    <button
+                      style={styles.button}
+                      onClick={() => handleProductEdit(product._id)}
+                    >
+                      Edit
+                    </button>
+                  )}
+                </td>
             </tr>
-          </thead>
-          <tbody>
-            {sellerProducts.map((product) => (
-              <tr key={product._id} style={styles.tr}>
-                <td style={styles.td}>{product.productName}</td>
-                <td style={styles.td}>{product.description}</td>
-                <td style={styles.td}>${product.price}</td>
-                <td style={styles.td}>{product.stock}</td>
-                <td style={styles.td}>{product.rating}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          ))}
+        </tbody>
+      </table>
+      
+     
       )}
   </div>
 
@@ -1176,25 +1314,36 @@ const styles = {
     resize: 'none',
   },
   fileUploadContainer: {
-    marginRight:'400px',
     display: 'flex',
     flexDirection: 'column',
-    gap: '5px',
+    alignItems: 'center',
+    marginTop: '20px',
   },
   fileLabel: {
-    right:'10px',
-    fontWeight: 'bold',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconButton: {
+    //backgroundColor: '#0F5132',
+    color: '#0F5132',
+    //borderRadius: '50%',
+    //padding: '10px',
+    fontSize: '24px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease, transform 0.2s ease',
   },
   fileInput: {
-    display: 'none',
+    display: 'none', // Hides the native file input
   },
   imagePreview: {
+    marginTop: '10px',
     width: '150px',
     height: '150px',
-    marginRight:'550px',
     objectFit: 'cover',
-    borderRadius: '10px',
-    marginTop: '10px',
+    border: '1px solid #ddd',
+    borderRadius: '5px',
   },
   submitButton: {
     backgroundColor: '#0F5132',

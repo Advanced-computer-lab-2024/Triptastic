@@ -18,6 +18,7 @@ const Complaints = () => {
   const [updateStatusMessage, setUpdateStatusMessage] = useState('');
   const [updateStatusError, setUpdateStatusError] = useState('');
   const [updateStatusLoading, setUpdateStatusLoading] = useState(false);
+  const [selectedComplaintId, setSelectedComplaintId] = useState(null);
   const navigate = useNavigate();
 
   const fetchData = async () => {
@@ -69,14 +70,14 @@ const Complaints = () => {
     }
   };
 
-  const updateComplaintStatus = async (e) => {
-    e.preventDefault();
+  const updateComplaintStatus = async () => {
+    // e.preventDefault();
     setUpdateStatusLoading(true);
     setUpdateStatusError('');
     setUpdateStatusMessage('');
   
     try {
-      const response = await fetch(`http://localhost:8000/updateComplaintStatus/${complaintIdToUpdate.trim()}`, {
+      const response = await fetch(`http://localhost:8000/updateComplaintStatus/${selectedComplaintId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -99,33 +100,43 @@ const Complaints = () => {
     }
   };
 
-  const fetchComplaintDetails = async (e) => {
-    e.preventDefault();
-    setComplaintLoading(true);
-    setComplaintError('');
-    setComplaintDetails(null);
+  // const fetchComplaintDetails = async (e) => {
+  //   e.preventDefault();
+  //   setComplaintLoading(true);
+  //   setComplaintError('');
+  //   setComplaintDetails(null);
   
-    try {
-      const response = await fetch(`http://localhost:8000/getComplaintDetails/${complaintIdToSearch.trim()}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+  //   try {
+  //     const response = await fetch(`http://localhost:8000/getComplaintDetails/${complaintIdToSearch.trim()}`, {
+  //       method: 'GET',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //     });
   
-      if (response.ok) {
-        const data = await response.json();
-        setComplaintDetails(data); // Store the fetched complaint details
-      } else {
-        const errorData = await response.json();
-        setComplaintError(errorData.error || 'Complaint not found.');
-      }
-    } catch (error) {
-      setComplaintError('An error occurred while fetching the complaint details.');
-      console.error(error);
-    } finally {
-      setComplaintLoading(false);
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       setComplaintDetails(data); // Store the fetched complaint details
+  //     } else {
+  //       const errorData = await response.json();
+  //       setComplaintError(errorData.error || 'Complaint not found.');
+  //     }
+  //   } catch (error) {
+  //     setComplaintError('An error occurred while fetching the complaint details.');
+  //     console.error(error);
+  //   } finally {
+  //     setComplaintLoading(false);
+  //   }
+  // };
+  const handleViewDetails = async (id) => {
+    if(selectedComplaintId !=id){
+    setSelectedComplaintId(id);
+    }else{
+      setSelectedComplaintId(null);
     }
+  };
+  const handleUpdateStatus = async () => {
+    updateComplaintStatus().then(() => {fetchData();});
   };
   
   return (
@@ -140,7 +151,7 @@ const Complaints = () => {
   />
       <h2 className="page-heading">Complaints Management</h2>
  {/* View Complaint Details Section */}
- <div className="complaint-card">
+ {/* <div className="complaint-card">
         <h3 className="card-title">View Complaint Details</h3>
         <form onSubmit={fetchComplaintDetails} className="form">
           <div className="form-group">
@@ -167,9 +178,9 @@ const Complaints = () => {
             <p><strong>Status:</strong> {complaintDetails.status}</p>
           </div>
         )}
-      </div>
+      </div> */}
 
-       {/* Update Complaint Status Section */}
+       {/* Update Complaint Status Section
        <div className="complaint-card">
         <h3 className="card-title">Update Complaint Status</h3>
         <form onSubmit={updateComplaintStatus} className="form">
@@ -204,7 +215,7 @@ const Complaints = () => {
         </form>
         {updateStatusError && <p className="error-text">{updateStatusError}</p>}
         {updateStatusMessage && <p className="success-text">{updateStatusMessage}</p>}
-      </div>
+      </div> */}
       
       {/* Dropdown for Sorting and Filtering */}
       <div className="dropdown-container">
@@ -250,6 +261,31 @@ const Complaints = () => {
             >
               Reply
             </button>
+            <button
+              className="reply-button"
+              onClick={() => handleViewDetails(complaint._id)}
+            >
+              View details
+            </button>
+            {selectedComplaintId === complaint._id && (
+              <div>
+              <p>Username:{complaint.username}</p>
+              <p>{complaint.body}</p>
+              <label>Status:</label>
+            <select
+              value={complaintStatus}
+              onChange={(e) => setComplaintStatus(e.target.value)}
+              required
+            >
+              <option value="pending">Pending</option>
+              <option value="resolved">Resolved</option>
+            </select>
+              <button
+              className="reply-button"
+              onClick={() => handleUpdateStatus()}
+            >Update status</button>
+              </div>    
+              )}
 
             {activeComplaintId === complaint._id && (
               <div className="reply-form">

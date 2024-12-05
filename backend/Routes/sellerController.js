@@ -226,6 +226,31 @@ const viewProductsSeller = async (req, res) => {
      res.status(500).json({ error: 'Server error' });
    }
    };
+   const updateProduct = async (req, res) => {
+    const { productId } = req.query;
+    const updatedFields  = req.body;
+  
+    console.log('Product ID:', productId);  // Debugging
+    console.log('Updated Fields:', updatedFields);  // Debugging
+  
+    try {
+      const updatedProduct = await productModel.findByIdAndUpdate(
+        productId,
+        { $set: updatedFields },  // Ensure updatedFields contains data
+        { new: true, runValidators: true } // Return the updated product and run validators
+      );
+  
+      if (!updatedProduct) {
+        return res.status(404).json({ message: 'Product not found' });
+      }
+  
+      res.status(200).json(updatedProduct);
+    } catch (error) {
+      console.error('Error updating product:', error);
+      res.status(400).json({ error: error.message });
+    }
+  };
+  
 
    const requestAccountDeletionSeller = async (req, res) => {
     const { Username } = req.query; 
@@ -691,4 +716,4 @@ const getFilteredProducts = async (req, res) => { //filtered by date
   }
 };
 
- module.exports = {resetPasswordS,requestOTPS,viewMyProducts,deleteAllNotifications,getNotificationsForAdmin,checkAndNotifyOutOfStockAdmin,getNotificationsForSeller,checkAndNotifyOutOfStockSeller,incrementProductSales,viewProductSales ,changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller,filterByProduct,getFilteredProducts};
+ module.exports = {resetPasswordS,requestOTPS,viewMyProducts,deleteAllNotifications,getNotificationsForAdmin,checkAndNotifyOutOfStockAdmin,getNotificationsForSeller,checkAndNotifyOutOfStockSeller,incrementProductSales,viewProductSales ,changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller,filterByProduct,getFilteredProducts,updateProduct};

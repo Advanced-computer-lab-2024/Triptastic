@@ -195,7 +195,7 @@ const Products = () => {
         <div style={styles.item} onClick={() => navigate('/historical-locations')}>
           <FaLandmark style={styles.icon} />
           <span className="label" style={styles.label}>
-            Historical Loc
+            Historical Sites
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/museums')}>
@@ -555,7 +555,14 @@ const styles = {
   icon: {
     fontSize: '24px',
     marginLeft: '15px', // Move icons slightly to the right
-    color: '#fff', // Icons are always white
+    color: '#fff',
+    opacity:1,
+     // Icons are always white
+  },
+  item: {
+ 
+    padding: '10px 0',
+    
   },
   label: {
     cursor: 'pointer',

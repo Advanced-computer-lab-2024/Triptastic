@@ -1,14 +1,16 @@
 import React, { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaBell,FaPlus,FaChartBar,FaBox  } from 'react-icons/fa'; // Importing bell icon
-import { FaUserCircle} from 'react-icons/fa';
+import { FaBell,FaChartBar,FaBox ,FaImage } from 'react-icons/fa'; // Importing bell icon
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 import LockResetIcon from '@mui/icons-material/LockReset';
-import { FaTag, FaInfoCircle, FaDollarSign, FaStar, FaImage ,FaSearch} from "react-icons/fa";
+import { FaTag, FaInfoCircle, FaDollarSign ,FaSearch} from "react-icons/fa";
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
+import { FaExclamationCircle, FaHeart, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit } from 'react-icons/fa';
+
+
 
 const AdminPage = () => {
   const [formData, setFormData] = useState({
@@ -48,7 +50,7 @@ const AdminPage = () => {
   const [statsError, setStatsError] = useState("");
   const [showStats, setShowStats] = useState(false); // State to toggle visibility
   const [notifications, setNotifications] = useState([]); // Initialize as an empty array
-  
+  const [myProducts, setMyProducts] = useState([]);
 
 
   const [complaintIdToSearch, setComplaintIdToSearch] = useState('');
@@ -68,18 +70,15 @@ const AdminPage = () => {
   const [newPassword, setNewPassword] = useState('');
   const [passwordMessage, setPasswordMessage] = useState('');
   const [changingPassword, setChangingPassword] = useState(false);
+  const [editProductId, setEditProductId] = useState(null);
+  const [editProductData, setEditProductData] = useState({
+    productName: '',
+    description: '',
+    price: '',
+    stock: '',
+    rating: ''
+  });
 
-  
-  const [imagePreview, setImagePreview] = useState(null);
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setProductFormData((prevData) => ({
-      ...prevData,
-      image: file,
-    }));
-    setImagePreview(file ? URL.createObjectURL(file) : null);
-  };
   const [productFormData, setProductFormData] = useState({
     productName: '',
     description: '',
@@ -112,13 +111,14 @@ const AdminPage = () => {
   const handleViewTouristItineraries=()=>{
     setShowingTouristItineraries( prev=>!prev);
   }
-  const handleChange = (e) => {
+  const handleInputChange2 = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
+    setEditProductData((prevData) => ({
       ...prevData,
       [name]: value
     }));
   };
+
   useEffect(() => {
     getItineraries();
     getTouristItineraries();
@@ -126,15 +126,36 @@ const AdminPage = () => {
     checkoutOfStock();
     fetchNotifications();
     fetchStatistics();
+    fetchMyProducts();
 
   }, []);
+
   const addNotification = (message) => {
     setNotifications((prevNotifications) => [
       ...prevNotifications,
       { id: Date.now(), message },
     ]);
   };
- 
+  
+ const fetchMyProducts=async()=>{
+    const Username = localStorage.getItem('Username');
+    try {
+      const response = await fetch(`http://localhost:8000/getMyProducts?Username=${Username}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setMyProducts(data);
+      }else{
+        console.error('Failed to fetch my products');
+      } 
+    } catch (error) {
+      console.error('Error fetching my products:', error);
+    }
+  }
   const fetchNotifications = async () => {
     const Username = localStorage.getItem('Username');
 
@@ -476,65 +497,6 @@ const handleDeleteUser = async () => {
       setCreateAdminError('');
     }
   };
-  
-  
-  const handleProductInputChange = (e) => {
-    const { name, value } = e.target;
-    setProductFormData((prevData) => ({
-      ...prevData,
-      [name]: value
-    }));
-  };
-const handleAddProduct = () => {
-  
-  const seller = formData.Username || ''; // Fallback to empty string if undefined
-  setProductFormData((prevData) => ({
-    ...prevData,
-    seller: seller // Assign the seller here
-  }));
-  setAddingProduct(true);
-};
-
-  const handleProductSubmit = async (e) => {
-    const Username = localStorage.getItem('Username'); // Assuming the Username is stored in local storage
-
-    e.preventDefault();
-    handleAddProduct();
-    const formData = new FormData();
-    for (const key in productFormData) {
-      formData.append(key, productFormData[key]);
-    }
-  
-    try {
-      const response = await fetch(`http://localhost:8000/createProduct?Username=${Username}`, {
-        method: 'POST',
-        body: formData,
-      });
-  
-      if (response.ok) {
-        alert('Product added successfully!');
-        setProductFormData({
-          productName: '',
-          description: '',
-          price: '',
-          rating: '',
-          seller: formData.Username,
-          review: '',
-          stock: '',
-          image: null // Reset image after submission
-        });
-        setAddingProduct(false);
-      } else {
-        const errorData = await response.json(); // Get error data from response
-        throw new Error(`Failed to create product: ${errorData.error || response.statusText}`);
-      }
-    } catch (error) {
-      setErrorMessage(`An error occurred while creating the product: ${error.message}`);
-      console.error(error);
-    }
-  };
-
-
 
   // For getProductByName
   const [getProductErrorMessage, setGetProductErrorMessage] = useState('');
@@ -731,49 +693,9 @@ const addTourismGov = async (e) => {
     setStatistics(null); // Clear statistics data
   };
   
-    useEffect(() => {
-      const fetchRequests = async () => {
-        try {
-          const response = await fetch('http://localhost:8000/getPendingDeletionRequests');
-          const data = await response.json();
-          setRequests(data);
-        } catch (error) {
-          console.error('Error fetching requests:', error);
-        }
-      };
-  
-      fetchRequests();
-    }, []);
-  
-    const handleAccept = async (id) => {
-      try {
-        const response = await fetch('http://localhost:8000/acceptDeletionRequest', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ requestId: id }),
-        });
-        const result = await response.json();
-        alert(result.message);
-        setRequests(requests.filter(request => request._id !== id));
-      } catch (error) {
-        console.error('Error accepting request:', error);
-      }
-    };
-  
-    const handleReject = async (id) => {
-      try {
-        const response = await fetch('http://localhost:8000/rejectDeletionRequest', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ requestId: id }),
-        });
-        const result = await response.json();
-        alert(result.message);
-        setRequests(requests.filter(request => request._id !== id));
-      } catch (error) {
-        console.error('Error rejecting request:', error);
-      }
-    };
+
+
+
     
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
@@ -825,6 +747,7 @@ const addTourismGov = async (e) => {
         marginBottom: "20px",
         textAlign: "center",
       },
+      
       noRequestsMessage: {
         fontSize: "16px",
         color: "#555",
@@ -938,6 +861,9 @@ const addTourismGov = async (e) => {
     display: 'flex',
     flexDirection: 'column',
     gap: '5px',
+  },
+  item: {
+    padding: '10px 0',
   },
   label: {
     fontSize: '16px',
@@ -1304,6 +1230,26 @@ const addTourismGov = async (e) => {
     alignItems: 'center',
     gap: '10px',
     marginBottom: '15px',
+  },card: {
+    backgroundColor: '#fff',
+    padding: '20px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  },
+  th: {
+    textAlign: 'left',
+    backgroundColor: '#0F5132',
+    color: 'white',
+    padding: '10px',
+    border: '1px solid #ddd',
+  },
+  td: {
+    padding: '10px',
+    border: '1px solid #ddd',
+    textAlign: 'left',
+  },
+  tr: {
+    backgroundColor: '#fff',
   },
   form: {
     display: 'flex',
@@ -1374,6 +1320,39 @@ const addTourismGov = async (e) => {
   success: {
     color: 'green',
     marginTop: '10px',
+  },
+  //sidebar
+  sidebar: {
+    position: 'fixed',
+    top: '60px',
+    left: 0,
+    height: '100vh',
+    width: '50px', // Default width when collapsed
+    backgroundColor: 'rgba(15, 81, 50, 0.85)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start', // Ensure alignment starts from the left
+    padding: '10px 0',
+    overflowX: 'hidden',
+    transition: 'width 0.3s ease',
+    zIndex: 1000,
+  },
+  sidebarExpanded: {
+    width: '200px', // Width when expanded
+  },
+  icon: {
+    fontSize: '24px',
+    marginLeft: '15px', // Move icons slightly to the right
+    color: '#fff', // Icons are always white
+  },
+  label: {
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#fff',
+    opacity: 0, // Initially hidden
+    whiteSpace: 'nowrap', // Prevent label text from wrapping
+    transition: 'opacity 0.3s ease',
   },
   };
  
@@ -1448,31 +1427,13 @@ const addTourismGov = async (e) => {
     onClick={toggleModal} // Open modal on click
   />
 
-
-</div>
-
-    
-  </div>
-</header>
-      <div className="sidebar">
-        <ul>
-        <li onClick={() => navigate('/PromoCodeForm')}>Promo Codes</li>
-        <li onClick={() => navigate('/Complaints')}>Complaints</li>
-        <li onClick={() => navigate('/preftags')}>Preference Tags</li>
-        <li onClick={() => navigate('/docs')}>Docs</li>
-        <li onClick={() => navigate('/category')}>Categories</li>
-        <li onClick={() => navigate('/adminReport')}>Sales Report</li>
-
-  
-      
-        
-        <div style={{ position: 'relative', textAlign: 'right', padding: '10px' }}>
       {/* Notification Bell Icon */}
-      <FaBell
-        size={24}
-        style={{ cursor: 'pointer' }}
-        onClick={handleNotificationClick}
-      />
+<FaBell
+  size={24}
+  style={{ cursor: 'pointer', color: 'white' }}
+  onClick={handleNotificationClick}
+/>
+
 
       {/* Notification Count */}
       {notifications && notifications.length > 0 && (
@@ -1538,12 +1499,88 @@ const addTourismGov = async (e) => {
           )}
         </div>
       )}
-    </div>
-        </ul>
+</div>
+  </div>
+</header>
+
+
+
+ {/* Sidebar */}
+ <div
+        style={styles.sidebar}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.width = '200px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '1')
+          );
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.width = '60px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '0')
+          );
+        }}
+      >
+        <div style={styles.item} onClick={() => navigate('/PromoCodeForm')}>
+          <FaTag style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Promo Codes
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/Complaints')}>
+          <FaExclamationCircle style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Complaints
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/preftags')}>
+          <FaHeart style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Preference Tags
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/docs')}>
+          <FaFileAlt style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Documents
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/category')}>
+          <FaThList style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Categories
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/adminReport')}>
+          <FaBox  style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Sales Report
+          </span>   
+        </div>
+        <div style={styles.item} onClick={() => navigate('/DeletionRequest')}>
+          <FaTrashAlt  style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Deletion Requests
+          </span>   
+        </div>
+        <div style={styles.item} onClick={() => navigate('/AddProduct')}>
+          <FaPlus  style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Add Product
+          </span>   
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/EditProducts')}>
+          <FaEdit   style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Edit Products
+          </span>   
+        </div>
       </div>
 
+
+
       <div style={styles.headerContainer}>
-  
       <h2 style={styles.heading}>Users Statistics</h2>
       <FaChartBar style={styles.statisticsIcon} />
     </div>
@@ -1774,118 +1811,6 @@ const addTourismGov = async (e) => {
   </div>
 )}
 
-
-
-<div style={styles.container2}>
-      <div style={styles.card}>
-        <h3 style={styles.cardTitle}>
-          Add Product <Inventory2Icon style={styles.icon} />
-        </h3>
-        <form onSubmit={handleProductSubmit} style={styles.form}>
-          {/* Product Name */}
-          <div style={styles.formGroup}>
-            <label style={styles.label}>
-              <FaTag style={styles.icon} /> Product Name:
-            </label>
-            <input
-              type="text"
-              name="productName"
-              value={productFormData.productName}
-              onChange={handleProductInputChange}
-              required
-              style={styles.input}
-              placeholder="Enter product name"
-            />
-          </div>
-
-          {/* Description */}
-          <div style={styles.formGroup}>
-            <label style={styles.label}>
-              <FaInfoCircle style={styles.icon} /> Description:
-            </label>
-            <textarea
-              name="description"
-              value={productFormData.description}
-              onChange={handleProductInputChange}
-              required
-              style={styles.textarea}
-              placeholder="Enter product description"
-            />
-          </div>
-
-          {/* Price */}
-          <div style={styles.formGroup}>
-            <label style={styles.label}>
-              <FaDollarSign style={styles.icon} /> Price:
-            </label>
-            <input
-              type="number"
-              name="price"
-              value={productFormData.price}
-              onChange={handleProductInputChange}
-              required
-              style={styles.input}
-              placeholder="Enter product price"
-            />
-          </div>
-
-          {/* Stock */}
-          <div style={styles.formGroup}>
-            <label style={styles.label}>
-              <FaBox style={styles.icon} /> Stock:
-            </label>
-            <input
-              type="number"
-              name="stock"
-              value={productFormData.stock}
-              onChange={handleProductInputChange}
-              required
-              style={styles.input}
-              placeholder="Enter product stock"
-            />
-          </div>
-
-         {/* Image Upload */}
-         <div style={styles.formGroup}>
-            <label style={styles.label}>
-              <FaImage style={styles.icon} /> Image:
-            </label>
-            <div style={styles.fileUploadContainer}>
-              <strong style={styles.uploadLabel}>
-                Upload Product Image <AddPhotoAlternateIcon />
-              </strong>
-              <input
-                type="file"
-                id="file-input"
-                accept="image/*"
-                onChange={handleImageChange}
-                required
-                style={styles.fileInput}
-              />
-            </div>
-          </div>
-
-          {/* Image Preview */}
-          {imagePreview && (
-            <img
-              src={imagePreview}
-              alt="Product Preview"
-              style={styles.imagePreview}
-            />
-          )}
-          
-          {/* Submit Button */}
-          <button type="submit" style={styles.submitButton}>
-            Add Product
-          </button>
-        </form>
-
-        {/* Success and Error Messages */}
-        {errorMessage && <p style={styles.error}>{errorMessage}</p>}
-        {successMessage && <p style={styles.success}>{successMessage}</p>}
-      </div>
-    </div>
-
    {/* Search Product Section */}
 <div style={styles.card2}>
   <h3 style={styles.cardTitle}>
@@ -1910,7 +1835,6 @@ const addTourismGov = async (e) => {
       Search Product
     </button>
   </form>
-
   {/* Error and Success Messages for Search */}
   {getProductErrorMessage && <p style={styles.error}>{getProductErrorMessage}</p>}
 
@@ -2244,44 +2168,6 @@ const addTourismGov = async (e) => {
 )}
 
 
-      <h2 style={styles.heading}>Pending Account Deletion Requests</h2>
-{requests.length === 0 ? (
-  <p style={styles.noRequestsMessage}>No pending requests.</p>
-) : (
-  <ul style={styles.requestsList}>
-    {requests.map((request) => (
-      <li key={request._id} style={styles.requestItem}>
-        <div style={styles.requestDetails}>
-          <p style={styles.detail}>
-            <strong>Username:</strong> {request.Username}
-          </p>
-          <p style={styles.detail}>
-            <strong>Request Date:</strong> {new Date(request.requestDate).toLocaleDateString()}
-          </p>
-          <p style={styles.detail}>
-            <strong>Status:</strong> {request.status}
-          </p>
-        </div>
-        <div style={styles.buttonsContainer}>
-          <button
-            onClick={() => handleAccept(request._id)}
-            style={styles.acceptButton}
-          >
-            Accept
-          </button>
-          <button
-            onClick={() => handleReject(request._id)}
-            style={styles.rejectButton}
-          >
-            Reject
-          </button>
-        </div>
-      </li>
-    ))}
-  </ul>
-)}
-
-     
     </div>
   );
 };

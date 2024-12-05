@@ -24,13 +24,14 @@ const {getTouristIntroStatus,sendItineraryReminders,sendActivityReminders,getNot
   ,viewAllItinerariesTourist,viewAllHistoricalPlacesTourist,sortProductsByRatingTourist,sortItinPASC,getActivityByCategory,
   sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,
   getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity,
-  fileComplaint,getComplaintsByTourist,shareActivity,shareHistorical,shareMuseum,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,getBookedActivities,getActivityToShare,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,getWishlist,removeProductFromWishlist,addAddress,getAddresses,createOrder,payWithWallet,sendConfirmationEmail,applyPromoCode,getTouristOrders} = require("./Routes/touristController");
+  fileComplaint,getComplaintsByTourist,shareActivity,shareHistorical,shareMuseum,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,getBookedActivities,getActivityToShare,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,getWishlist,removeProductFromWishlist,addAddress,getAddresses,createOrder,payWithWallet,sendConfirmationEmail,applyPromoCode,getTouristOrders,
+  cancelOrder} = require("./Routes/touristController");
 
 //Advertiser
 const{requestOTPADV,resetPasswordADV,changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser,getTouristReportForActivity,filterActivitiesByMonth,loginAdvertiser,filterByActivity,getFilteredActivities}=require("./Routes/advertiserController");
 
 //Seller
-const{requestOTPS,resetPasswordS,viewMyProducts,deleteAllNotifications,getNotificationsForAdmin,checkAndNotifyOutOfStockAdmin,getNotificationsForSeller,checkAndNotifyOutOfStockSeller,changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller,filterByProduct,getFilteredProducts}=require("./Routes/sellerController");
+const{requestOTPS,resetPasswordS,viewMyProducts,deleteAllNotifications,getNotificationsForAdmin,checkAndNotifyOutOfStockAdmin,getNotificationsForSeller,checkAndNotifyOutOfStockSeller,changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller,filterByProduct,getFilteredProducts,updateProduct}=require("./Routes/sellerController");
 
 //Admin
 const{getPromoCodes,createPromoCode,getUserStatistics,replyToComplaint,rejectDeletionRequest,acceptDeletionRequest,getPendingDeletionRequests,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin,createCategory,
@@ -40,7 +41,7 @@ const{getPromoCodes,createPromoCode,getUserStatistics,replyToComplaint,rejectDel
 ,createPrefTag,updatePreftag,deletePreftag,getPrefTag,
 viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,
 tourismGovLogin,viewAllPrefTag,deleteAdmin,flagItinerary,flagTouristItinerary,
-flagActivity,getallActivities,getallTouristItineraries,getallItineraries,getComplaints,archiveProduct,unarchiveProduct,getFilteredP,viewAllProducts,actProfits,itinProfits}=require("./Routes/adminController");
+flagActivity,getallActivities,getallTouristItineraries,getallItineraries,getComplaints,archiveProduct,unarchiveProduct,getFilteredP,viewAllProducts,actProfits,itinProfits,getMyProducts}=require("./Routes/adminController");
 
 
 
@@ -192,6 +193,8 @@ app.post('/sendPaymentEmail',sendConfirmationEmail);
 app.patch('/applyPromoCode',applyPromoCode);
 app.get("/getTouristIntroStatus", getTouristIntroStatus);
 app.get('/getTouristOrders',getTouristOrders);
+app.patch('/cancelOrder',cancelOrder);
+
 
 
 
@@ -275,6 +278,7 @@ app.get('/filterByProduct',filterByProduct);
 app.get('/getFilteredProducts',getFilteredProducts);
 app.post('/requestOTPS',requestOTPS);
 app.post('/resetPasswordS',resetPasswordS); 
+app.patch("/updateProduct",updateProduct);
 
 
 //Admin
@@ -324,7 +328,7 @@ app.get('/getFilteredP',getFilteredP)
 app.get('/viewAllProducts',viewAllProducts);
 app.get('/actProfits',actProfits);
 app.get('/itinProfits',itinProfits);
-
+app.get("/getMyProducts",getMyProducts);
 
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);

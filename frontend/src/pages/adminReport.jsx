@@ -50,7 +50,8 @@ const AdminReport = () => {
             const response = await fetch(`http://localhost:8000/itinProfits`);
             if (response.ok) {
               const data = await response.json();
-              setItinProfits(data);
+              const x= data*0.1
+              setItinProfits(x);
               setIsLoading(false);
             } else {
               throw new Error('Failed to fetch itinerary profits');
@@ -69,7 +70,8 @@ const AdminReport = () => {
             const response = await fetch(`http://localhost:8000/actProfits`);
             if (response.ok) {
               const data = await response.json();
-              setActProfits(data);
+              let x= data*0.1
+              setActProfits(x);
               setIsLoading(false);
             } else {
               throw new Error('Failed to fetch activities profits');
@@ -124,7 +126,8 @@ const AdminReport = () => {
                 return item.product ? item.product : item;
               });
             const total = products.reduce((sum, product) => sum + product.sales, 0);
-            setTotalSales(total);
+            let b= total*0.1
+            setTotalSales(b);
           };
 
           const findMostSold = (x) => {

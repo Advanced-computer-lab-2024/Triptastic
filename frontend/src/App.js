@@ -55,7 +55,11 @@ import Preftags from './pages/preftags';
 import CreateTransportation from './pages/createTransportation';
 import Category from './pages/category';
 import TourGItinerary from './pages/TourGItinerary';
-import background from './images/back.webp'; // Replace with the path to your image
+import background from './images/back.webp'; // Replace with the path to your image 
+import DeletionRequests from './pages/DeletionRequest';
+import AddProduct from './pages/AddProduct';
+import EditProducts from './pages/EditProducts';
+
 
 
 
@@ -143,6 +147,9 @@ function App() {
             <Route path="/sellerReport" element={<SellerReport />} />
             <Route path="/my-itineraries" element={<TourGItinerary />} />
             <Route path="/adminReport" element={<AdminReport />} />
+            <Route path="/DeletionRequest" element={<DeletionRequests />} />
+            <Route path="/AddProduct" element={<AddProduct />} />
+            <Route path="/EditProducts" element={<EditProducts />} />
 
           </Routes>
         </Router>
