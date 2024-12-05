@@ -5,7 +5,8 @@ import { CurrencyContext } from '../pages/CurrencyContext';
 import logo from '../images/image.png'; // Replace with your logo path
 import { FaUserCircle,FaShoppingCart,FaRegFileAlt, FaDollarSign, FaStar, FaComments, FaWarehouse, FaChartBar,FaBars} from 'react-icons/fa';
 import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel,
-  FaClipboardList } from "react-icons/fa";
+  FaClipboardList,FaSearch } from "react-icons/fa";
+  
   import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
 const Products = () => {
   const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
@@ -17,8 +18,32 @@ const Products = () => {
   const [minPrice, setMinPrice] = useState(''); // State for minimum price
   const [maxPrice, setMaxPrice] = useState(''); // State for maximum price
   const navigate = useNavigate(); // Initialize useNavigate for navigation
+  const [fetchedProduct, setFetchedProduct] = useState(null);//new
+  const [errorMessage, setErrorMessage] = useState('');
 
   const username = localStorage.getItem('Username'); // Retrieve username from local storage
+  const [formData, setFormData] = useState({
+    Username: '',
+    points:'',
+    badge:'',
+    Email: '',
+    Password: '',
+    Nationality: '',
+    DOB: '',
+    Occupation: '',
+    Wallet: '',
+    title: '', 
+    body: '',  
+    date: ''  
+  });
+  
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
 
   const fetchProductsByRating = async () => {
     setLoading(true);
@@ -64,7 +89,36 @@ const Products = () => {
       setLoading(false);
     }
   };
-
+  const fetchProductByName = async (productName) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`http://localhost:8000/getProductTourist?productName=${productName}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const product = await response.json();
+  
+        // Check if the product exists and if it is archived
+        if (!product || product.archived === true) {
+          setErrorMessage('Product not found');
+          setFetchedProduct(null); // Clear the fetched product state
+        } else {
+          setFetchedProduct(product); // Store the fetched product
+          setErrorMessage(''); // Clear any previous error messages
+        }
+      } else {
+        throw new Error('Failed to fetch product');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while fetching the product');
+      console.error(error);
+    }
+    setLoading(false);
+  };
   const handleProfileRedirect = () => {
     const context = localStorage.getItem('context');
 
@@ -131,6 +185,11 @@ const Products = () => {
   };
   const handleViewWishlist = () => {
     navigate('/Wishlist'); // Navigate to Wishlist page
+  };
+   
+  const handleFetchProduct = () => {
+    const productName = formData.productName; // Assuming there's an input for productName
+    fetchProductByName(productName);
   };
   const handleFilterSubmit = (e) => {
     e.preventDefault(); // Prevent form submission from reloading the page
@@ -255,7 +314,36 @@ const Products = () => {
       </div>
 
 
-
+{/* Search Product by Name */}
+<div className="card" style={styles.card}>
+    <h3 style={styles.cardTitle}>Looking for a certain product?</h3>
+    <div style={styles.inputContainer}>
+      <input
+        type="text"
+        name="productName"
+        value={formData.productName}
+        onChange={handleInputChange}
+        placeholder="Enter product name"
+        style={styles.input}
+      />
+      <button onClick={handleFetchProduct} style={styles.iconButton}>
+        <i className="fas fa-search" style={styles.searchIcon}></i>
+        <FaSearch/>
+      </button>
+    </div>
+    {fetchedProduct && (
+      <div style={styles.productDetails}>
+        <h4 style={styles.sectionTitle}>Product Details</h4>
+        <p><strong>Name:</strong> {fetchedProduct.productName}</p>
+        <p><strong>Description:</strong> {fetchedProduct.description}</p>
+        <p>
+          <strong>Price:</strong> {(fetchedProduct.price * conversionRate).toFixed(2)} {selectedCurrency}
+        </p>
+        <p><strong>Stock:</strong> {fetchedProduct.stock}</p>
+        
+      </div>
+    )}
+  </div>
       <form onSubmit={handleFilterSubmit} style={styles.filterForm}>
   <div style={styles.filterGroup}>
     <input
