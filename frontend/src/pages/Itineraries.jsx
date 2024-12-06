@@ -9,6 +9,11 @@ import { FaBell,FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlan
   FaStar, } from "react-icons/fa";
 import logo from '../images/image.png';
 import itineraries from '../images/it.png';
+import IosShareIcon from '@mui/icons-material/IosShare';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import { FiCopy } from 'react-icons/fi'; // Import a copy icon
+import HotelIcon from '@mui/icons-material/Hotel';
+import MuseumIcon from '@mui/icons-material/Museum';
 
 
 const Itineraries = () => {
@@ -18,6 +23,8 @@ const Itineraries = () => {
   const [loading, setLoading] = useState(true);
   const [notificationRequested, setNotificationRequested] = useState({});
   const [shareableLink, setShareableLink] = useState('');
+  const [showEmailInput, setShowEmailInput] = useState(false);
+  const [expandedActivities, setExpandedActivities] = useState({});
   const [filters, setFilters] = useState({
     minBudget: '',
     maxBudget: '',
@@ -220,6 +227,7 @@ const Itineraries = () => {
       console.error("Error generating shareable link:", error);
     }
     };
+  
     const handleEmailInputChange = (e) => {
       setEmail(e.target.value);
     };
@@ -227,6 +235,8 @@ const Itineraries = () => {
     const handleShareMode = (itinerary) => {
       setItineraryToShare(itinerary);
       setIsEmailMode(!isEmailMode);
+      setShowEmailInput(true);
+
     };
     const handleProfileRedirect = () => {
       const context = localStorage.getItem('context');
@@ -281,6 +291,72 @@ const Itineraries = () => {
               </button>
             </div>
 
+            {/* Filter Section */}
+    <div style={styles.filterContainer}>
+      <form
+        style={styles.filterForm}
+        onSubmit={(e) => {
+          e.preventDefault();
+          fetchFilteredItineraries();
+        }}
+      >
+        <label style={styles.filterLabel}>
+          Min Budget:
+          <input
+            type="number"
+            name="minBudget"
+            value={filters.minBudget}
+            onChange={handleFilterChange}
+            style={styles.filterInput}
+          />
+        </label>
+        <label style={styles.filterLabel}>
+          Max Budget:
+          <input
+            type="number"
+            name="maxBudget"
+            value={filters.maxBudget}
+            onChange={handleFilterChange}
+            style={styles.filterInput}
+          />
+        </label>
+        <label style={styles.filterLabel}>
+          Date:
+          <input
+            type="date"
+            name="date"
+            value={filters.date}
+            onChange={handleFilterChange}
+            style={styles.filterInput}
+          />
+        </label>
+        <label style={styles.filterLabel}>
+          Preferences:
+          <input
+            type="text"
+            name="preferences"
+            placeholder='(e.g. beaches, shopping):'
+            value={filters.preferences}
+            onChange={handleFilterChange}
+            style={styles.filterInput}
+          />
+        </label>
+        <label style={styles.filterLabel}>
+                  Language:
+                  <input
+                    type="text"
+                    name="language"
+                    value={filters.language}
+                    onChange={handleFilterChange}
+                    style={styles.filterInput}
+                  />
+                </label>
+        <button style={styles.filterButton} type="submit">
+          Apply Filters
+        </button>
+      </form>
+    </div>
+
     </div>
 
    
@@ -310,13 +386,13 @@ const Itineraries = () => {
         }}
       >
         <div style={styles.item} onClick={() => navigate('/historical-locations')}>
-          <FaLandmark style={styles.icon} />
+          <FaUniversity style={styles.icon} />
           <span className="label" style={styles.label}>
-            Historical Loc
+            Historical Sites
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/museums')}>
-          <FaUniversity style={styles.icon} />
+          <MuseumIcon style={styles.icon} />
           <span className="label" style={styles.label}>
             Museums
           </span>
@@ -346,7 +422,7 @@ const Itineraries = () => {
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/book-hotels')}>
-          <FaHotel style={styles.icon} />
+          <HotelIcon style={styles.icon} />
           <span className="label" style={styles.label}>
             Book a Hotel
           </span>
@@ -375,72 +451,161 @@ const Itineraries = () => {
         ) : (
           <>
             
-  
-            {/* Filter Section */}
-            <div style={styles.section}>
-              <h3>Filter Itineraries</h3>
-              <form
-                style={styles.form}
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  fetchFilteredItineraries();
-                }}
-              >
-                <label style={styles.flabel}>
-                  Min Budget:
-                  <input
-                    type="number"
-                    name="minBudget"
-                    value={filters.minBudget}
-                    onChange={handleFilterChange}
-                    style={styles.input}
-                  />
-                </label>
-                <label style={styles.flabel}>
-                  Max Budget:
-                  <input
-                    type="number"
-                    name="maxBudget"
-                    value={filters.maxBudget}
-                    onChange={handleFilterChange}
-                    style={styles.input}
-                  />
-                </label>
-                <label style={styles.flabel}>
-                  Date:
-                  <input
-                    type="date"
-                    name="date"
-                    value={filters.date}
-                    onChange={handleFilterChange}
-                    style={styles.input}
-                  />
-                </label>
-                <label style={styles.flabel}>
-                  Preferences (e.g. beaches, shopping):
-                  <input
-                    type="text"
-                    name="preferences"
-                    value={filters.preferences}
-                    onChange={handleFilterChange}
-                    style={styles.input}
-                  />
-                </label>
-                <label style={styles.flabel}>
-                  Language:
-                  <input
-                    type="text"
-                    name="language"
-                    value={filters.language}
-                    onChange={handleFilterChange}
-                    style={styles.input}
-                  />
-                </label>
-                <button style={styles.button} type="submit">
-                  Apply Filters
-                </button>
-              </form>
-            </div>
+  {/* Itineraries List */}
+{itineraries.length > 0 ? (
+  <div
+    style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+      gap: '20px',
+    }}
+  >
+    {itineraries.map((itinerary, index) => (
+      <div
+        key={index}
+        style={{
+          position: 'relative',
+          backgroundColor: '#fff',
+          border: '1px solid #ddd',
+          borderRadius: '10px',
+          padding: '20px',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          transition: 'transform 0.2s ease',
+          overflow: 'visible',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'scale(1.03)';
+          e.currentTarget.style.boxShadow = '0 8px 12px rgba(0, 0, 0, 0.15)';
+          e.currentTarget.style.borderColor = '#0F5132';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+          e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+          e.currentTarget.style.borderColor = '#ddd';
+        }}
+      >
+        {/* Share Button */}
+        <button
+          onClick={() => handleShareMode(itinerary)}
+          style={{
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '20px',
+            color: '#0F5132',
+          }}
+        >
+          <IosShareIcon />
+        </button>
+       
+
+  {/* Share Dropdown */}
+{isEmailMode && itineraryToShare && itineraryToShare._id === itinerary._id && (
+  <div style={styles.shareDropdown}>
+    {/* Copy Link Option */}
+    <button
+       onClick={() => handleShare(itinerary._id, 'copy')}
+      style={styles.shareOption}
+    >
+      <FiCopy style={styles.shareOptionIcon} /> Copy Link
+    </button>
+   
+    {/* Share via Email Option */}
+    <button
+      onClick={() => {
+        setIsEmailMode(false); // First action
+      }}
+      style={styles.shareOption}
+    >
+      <MailOutlineIcon style={styles.shareOptionIcon} /> Share via Email
+    </button>
+
+    {/* Email Input Field */}
+    {showEmailInput && itineraryToShare && itineraryToShare._id === itinerary._id && (
+      <div style={{ marginTop: '10px' }}>
+        <input
+          type="email"
+          placeholder="Enter recipient's email"
+          value={email}
+          onChange={handleEmailInputChange}
+          style={styles.emailInput}
+        />
+        <button
+          onClick={() => handleShare(itinerary._id, 'email')}
+          style={{ ...styles.button, marginTop: '10px' }}
+        >
+          Send Email
+        </button>
+      </div>
+    )}
+  </div>
+)}
+        <div>
+          <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>
+            {itinerary.Activities.join(', ')}
+          </h3>
+          <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
+            <strong><FaMapMarkerAlt /> Locations:</strong> {itinerary.Locations.join(', ')}
+          </p>
+          <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
+            <strong><FaCalendar /> Date:</strong>{' '}
+            {new Date(itinerary.DatesTimes).toLocaleDateString()}
+          </p>
+          <p style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '8px' }}>
+            <strong><FaDollarSign /> Price:</strong> {(itinerary.Price * conversionRate).toFixed(2)}{' '}
+            {selectedCurrency}
+          </p>
+          <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
+            <strong><FaUserCircle />Tour Guide:</strong> {itinerary.TourGuide}
+          </p>
+          <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
+            <strong>Booking Open:</strong> {itinerary.bookingOpen ? 'Yes' : 'No'}
+            {!itinerary.bookingOpen && (
+              <FaBell
+                style={{ cursor: 'pointer', marginLeft: '10px', color: '#FFD700' }}
+                onClick={() => handleNotificationRequest(itinerary._id)}
+              />
+            )}
+          </p>
+        </div>
+        <a
+  href="#"
+  onClick={() => navigate(`/itineraries/${encodeURIComponent(itinerary._id)}`)}
+  style={styles.activityDetailsLink}
+>
+  {expandedActivities[itinerary._id] ? 'Hide Activity Details' : 'View Activity Details'}
+</a>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
+          <button
+            style={{
+              backgroundColor: '#0F5132',
+              color: '#fff',
+              padding: '10px 16px',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '14px',
+            }}
+            onClick={() => handleBooking(itinerary)}
+            disabled={itinerary.Booked}
+          >
+            Book
+          </button>
+         
+        </div>
+      </div>
+    ))}
+  </div>
+) : (
+  <p style={styles.noData}>No itineraries found.</p>
+)}
+
   
             {errorMessage && <p style={styles.error}>{errorMessage}</p>}
   
@@ -544,6 +709,124 @@ const Itineraries = () => {
   };
   
   const styles = {
+    shareButton: {
+      backgroundColor: 'transparent',
+      border: 'none',
+      fontSize: '1.5rem',
+      color: 'black',
+      cursor: 'pointer',
+      padding:'0px',
+      
+    
+    },
+    shareDropdown: {
+      position: 'absolute',
+      top: '60px',
+      right: '10px',
+      backgroundColor: '#fff',
+      border: '1px solid #ddd',
+      borderRadius: '8px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      padding: '10px',
+      width: '200px',
+    },
+    
+    shareOption: {
+      display: 'flex',
+      alignItems: 'center', // Align icon and text vertically
+      justifyContent: 'flex-start', // Align icon and text to the left
+      width: '100%',
+      padding: '10px',
+      backgroundColor: 'transparent',
+      border: 'none',
+      cursor: 'pointer',
+      fontSize: '1rem',
+      color: 'black', // Icon and text color
+      textDecoration: 'none',
+    },
+    shareOptionIcon: {
+      marginRight: '8px', // Space between the icon and text
+      fontSize: '1rem', // Ensure both icons are the same size
+    },
+    emailInput: {
+      padding: '8px',
+      fontSize: '12px',
+      width: '100%',
+      border: '1px solid #ddd',
+      borderRadius: '5px',
+    },
+
+
+
+
+   
+   
+    button: {
+      backgroundColor: '#0F5132',
+      color: '#fff',
+      border: 'none',
+      borderRadius: '5px',
+      padding: '10px 15px',
+      cursor: 'pointer',
+      fontSize: '12px',
+    },
+
+ 
+
+    
+    filterContainer: {
+      position: 'absolute',
+      bottom: '20px', // Place at the bottom of the image
+      left: '50%', // Center horizontally
+      transform: 'translateX(-50%)', // Center alignment adjustment
+      display: 'flex',
+      flexDirection: 'row', // Align items horizontally
+      gap: '15px', // Space between filters
+      backgroundColor: 'transparent', // Add a subtle background
+      padding: '20px',
+      borderRadius: '10px',
+    },
+    filterForm: {
+      display: 'flex',
+      flexDirection: 'row', // Align fields horizontally
+      gap: '10px',
+    },
+    filterLabel: {
+      display: 'flex',
+      flexDirection: 'column',
+      fontSize: '16px',
+      color: '#333',
+    },
+    filterInput: {
+      padding: '8px',
+      fontSize: '14px',
+      borderRadius: '35px',
+      border: '1px solid #ddd',
+    },
+    filterButton: {
+      padding: '5px 15px',
+      fontSize: '14px',
+      backgroundColor: '#0F5132',
+      color: 'white',
+      border: 'none',
+      borderRadius: '25px',
+      cursor: 'pointer',
+    },
+    item: {
+ 
+      padding: '10px 0',
+      
+    },
+  
+    activityDetailsLink: {
+      display: 'inline-block',
+      color: '#0F5132', // Blue color for hyperlink
+      textDecoration: 'underline', // Underline for hyperlink
+      cursor: 'pointer', // Pointer cursor
+      fontSize: '14px', // Adjust font size as needed
+      marginTop: '10px', // Add spacing above the link
+    },
+
     container2: {
       marginTop:'60px',
       fontFamily: 'Arial, sans-serif',
@@ -634,15 +917,7 @@ const Itineraries = () => {
       marginTop:'40px',
       background:'transparent'
     },
-    button: {
-      backgroundColor: '#0F5132',
-      color: 'white',
-      padding: '10px',
-      borderRadius: '5px',
-      border: 'none',
-      cursor: 'pointer',
-      marginTop: '10px',
-    },
+   
     list: {
       listStyleType: 'none',
       padding: 0,
