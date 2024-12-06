@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './promoCodeForm.css';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
-import { FaPercentage, FaCalendarAlt, FaTag ,FaArrowLeft} from 'react-icons/fa';
+import { FaPercentage, FaCalendarAlt, FaTag ,FaUserShield} from 'react-icons/fa';
 import { MdDiscount } from 'react-icons/md';
 import image from '../images/image.png';
 import {FaUser,FaBox, FaExclamationCircle, FaHeart, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
@@ -128,36 +128,28 @@ const PromoCodeForm = () => {
           </span>
         </div>
 
-        <div style={styles.item} onClick={() => navigate('/PromoCodeForm')}>
-          <FaTag style={styles.icon} />
+        <div style={styles.item} onClick={() => navigate('/manage')}>
+          <FaUserShield style={styles.icon} />
           <span className="label" style={styles.label}>
-            Promo Codes
+          Admin Panel
           </span>
         </div>
+        
         <div style={styles.item} onClick={() => navigate('/Complaints')}>
           <FaExclamationCircle style={styles.icon} />
           <span className="label" style={styles.label}>
            Complaints
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/preftags')}>
-          <FaHeart style={styles.icon} />
-          <span className="label" style={styles.label}>
-           Preference Tags
-          </span>
-        </div>
+
         <div style={styles.item} onClick={() => navigate('/docs')}>
           <FaFileAlt style={styles.icon} />
           <span className="label" style={styles.label}>
             Documents
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/category')}>
-          <FaThList style={styles.icon} />
-          <span className="label" style={styles.label}>
-           Categories
-          </span>
-        </div>
+
+
         <div style={styles.item} onClick={() => navigate('/adminReport')}>
           <FaBox  style={styles.icon} />
           <span className="label" style={styles.label}>
@@ -168,12 +160,6 @@ const PromoCodeForm = () => {
           <FaTrashAlt  style={styles.icon} />
           <span className="label" style={styles.label}>
             Deletion Requests
-          </span>   
-        </div>
-        <div style={styles.item} onClick={() => navigate('/AddProduct')}>
-          <FaPlus  style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Add Product
           </span>   
         </div>
 
@@ -191,6 +177,7 @@ const PromoCodeForm = () => {
           </span>   
         </div>
       </div>
+
 
       <h2 style={styles.heading}></h2>
     <div className="promo-container">
