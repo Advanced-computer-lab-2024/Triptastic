@@ -127,6 +127,7 @@ const DeletionRequests = () => {
     },
     acceptButton: {
       padding: '10px 15px',
+      fontSize: '13px',
       backgroundColor: '#0F5132',
       color: '#fff',
       border: 'none',
@@ -137,6 +138,8 @@ const DeletionRequests = () => {
     rejectButton: {
       padding: '10px 15px',
       backgroundColor: '#FF4D4D',
+      fontSize: '13px',
+
       color: '#fff',
       border: 'none',
       borderRadius: '5px',
