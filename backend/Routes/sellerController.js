@@ -1,6 +1,9 @@
 
+const touristModel = require('../Models/Tourist.js');
+const tourGuideModel = require('../Models/tourGuide.js'); // Adjust path as needed
+const advertiserModel = require('../Models/Advertiser.js');
 const sellerModel = require('../Models/Seller.js');
-const requestModel= require('../Models/Request.js');
+const tourismGovModel = require('../Models/tourismGov.js');const requestModel= require('../Models/Request.js');
 const productModel= require('../Models/Product.js');
 const adminModel = require('../Models/Admin.js');
 const notificationModel = require('../Models/Notification.js');
@@ -17,24 +20,36 @@ const createSeller = async (req, res) => {
   const taxationRegistryCard = req.files?.TaxationRegistryCard?.[0]?.path || null;
 
   try {
-      // Hash the password
-      const hashedPassword = await bcrypt.hash(Password, 10);
+    // Check if the username already exists in any model
+    const userExistsInTourist = await touristModel.findOne({ Username });
+    const userExistsInTourGuide = await tourGuideModel.findOne({ Username });
+    const userExistsInAdvertiser = await advertiserModel.findOne({ Username });
+    const userExistsInSeller = await sellerModel.findOne({ Username });
+    const userExistsInAdmin = await adminModel.findOne({ Username });
+    const userExistsInTourismGov = await tourismGovModel.findOne({ Username });
 
-      // Create the seller
-      const seller = await sellerModel.create({
-          Username,
-          Email,
-          Password: hashedPassword,
-          Id: idDocument,
-          TaxationRegistryCard: taxationRegistryCard,
-      });
+    if (userExistsInTourist || userExistsInTourGuide || userExistsInAdvertiser || userExistsInSeller || userExistsInAdmin || userExistsInTourismGov) {
+      return res.status(400).json({ error: 'Username already exists.' });
+    }
 
-      res.status(201).json({
-          message: 'Seller registered successfully',
-          seller,
-      });
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(Password, 10);
+
+    // Create the seller
+    const seller = await sellerModel.create({
+      Username,
+      Email,
+      Password: hashedPassword,
+      Id: idDocument,
+      TaxationRegistryCard: taxationRegistryCard,
+    });
+
+    res.status(201).json({
+      message: 'Seller registered successfully',
+      seller,
+    });
   } catch (error) {
-      res.status(400).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 };
 const loginSeller = async (req, res) => {

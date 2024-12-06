@@ -148,6 +148,10 @@ const BookHotels = () => {
   };
 
   const handleBooking = (index) => {
+    if(localStorage.getItem('context') === 'guest') {
+      alert('Please login to book a hotel.');
+      return;
+    }
     const updatedBookings = [...bookedHotels];
     updatedBookings[index] = true;
     setBookedHotels(updatedBookings);

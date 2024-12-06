@@ -176,7 +176,12 @@ const Itineraries = () => {
 
   const handleBooking = async (itinerary) => {
     const username = localStorage.getItem('Username'); // Assuming you store the username in local storage
+    if(localStorage.getItem('context') === 'guest') {
+      alert('Please login to book an itinerary');
+      return;
+    }
     try {
+     
       const response = await axios.post('http://localhost:8000/bookItinerary', {
         itineraryId: itinerary._id, // Use the itinerary ID
         Username: username,

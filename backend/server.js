@@ -25,7 +25,7 @@ const {getTouristIntroStatus,sendItineraryReminders,sendActivityReminders,getNot
   sortItinPDSC,sortActPASCRASC,sortActPASCRDSC,sortActPDSCRASC,sortActPDSCRDSC,filterMuseumsByTagsTourist,filterHistoricalLocationsByTagsTourist,
   getActivityByname,getTourist,updateTourist,viewAllMuseumsTourist,filterProductsByPriceRange,getUniqueHistoricalPeriods,searchMuseums,searchHistoricalLocations,filterItineraries,searchActivities,commentOnActivity,rateActivity,
   fileComplaint,getComplaintsByTourist,shareActivity,shareHistorical,shareMuseum,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,getBookedActivities,getActivityToShare,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,getWishlist,removeProductFromWishlist,addAddress,getAddresses,createOrder,payWithWallet,sendConfirmationEmail,applyPromoCode,getTouristOrders,
-  cancelOrder} = require("./Routes/touristController");
+  cancelOrder,clearCart} = require("./Routes/touristController");
 
 //Advertiser
 const{requestOTPADV,resetPasswordADV,changePasswordAdvertiser,createAdvertiser,getAdvertiser,updateAdvertiser,createActivity,getActivity,updateActivity,deleteActivity,viewActivitydetails,requestAccountDeletionAdvertiser,getPendingAdvertisers,createTransportation,settleDocsAdvertiser,getTouristReportForActivity,filterActivitiesByMonth,loginAdvertiser,filterByActivity,getFilteredActivities}=require("./Routes/advertiserController");
@@ -194,7 +194,7 @@ app.patch('/applyPromoCode',applyPromoCode);
 app.get("/getTouristIntroStatus", getTouristIntroStatus);
 app.get('/getTouristOrders',getTouristOrders);
 app.patch('/cancelOrder',cancelOrder);
-
+app.patch('/clearCart',clearCart);
 
 
 

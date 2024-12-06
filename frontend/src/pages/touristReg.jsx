@@ -300,8 +300,6 @@ const handleSubmit = async (e) => {
     return;
   }
 
-  
-
   // Define endpoint and payload based on role
   let endpoint = "";
   let payload;
@@ -407,7 +405,11 @@ const handleSubmit = async (e) => {
       navigate(redirectPath);
     } else {
       const errorData = await response.json();
-      setErrorMessage(errorData.error || "Registration failed");
+      if (errorData.error === "Username already exists.") {
+        alert("Username is already taken. Please choose another one.");
+      } else {
+        setErrorMessage(errorData.error || "Registration failed");
+      }
       setSuccessMessage("");
     }
   } catch (error) {
@@ -415,6 +417,7 @@ const handleSubmit = async (e) => {
     setErrorMessage("Something went wrong. Please try again later.");
   }
 };
+
 const handleRequestOTP = async (e) => {
   e.preventDefault();
   try {

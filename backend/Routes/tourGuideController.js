@@ -1,7 +1,10 @@
-const tourGuideModel = require('../Models/tourGuide.js');
-const itineraryModel = require('../Models/Itinerary.js');
+const touristModel = require('../Models/Tourist.js');
+const tourGuideModel = require('../Models/tourGuide.js'); // Adjust path as needed
+const advertiserModel = require('../Models/Advertiser.js');
+const sellerModel = require('../Models/Seller.js');
+const adminModel = require('../Models/Admin.js');
+const tourismGovModel = require('../Models/tourismGov.js');const itineraryModel = require('../Models/Itinerary.js');
 const touristItineraryModel= require('../Models/touristItinerary.js');
-const touristModel=require('../Models/Tourist.js');
 const requestModel= require('../Models/Request.js');
 const { default: mongoose } = require('mongoose');
 const ItinBookingModel = require('../Models/itinbookings.js');
@@ -14,24 +17,36 @@ const createTourGuide = async (req, res) => {
   const certificate = req.files?.Certificate?.[0]?.path || null;
 
   try {
-      // Hash the password
-      const hashedPassword = await bcrypt.hash(Password, 10);
+    // Check if the username already exists in any model
+    const userExistsInTourist = await touristModel.findOne({ Username });
+    const userExistsInTourGuide = await tourGuideModel.findOne({ Username });
+    const userExistsInAdvertiser = await advertiserModel.findOne({ Username });
+    const userExistsInSeller = await sellerModel.findOne({ Username });
+    const userExistsInAdmin = await adminModel.findOne({ Username });
+    const userExistsInTourismGov = await tourismGovModel.findOne({ Username });
 
-      // Create the tour guide
-      const tourGuide = await tourGuideModel.create({
-          Username,
-          Email,
-          Password: hashedPassword,
-          Id: idDocument,
-          Certificate: certificate,
-      });
+    if (userExistsInTourist || userExistsInTourGuide || userExistsInAdvertiser || userExistsInSeller || userExistsInAdmin || userExistsInTourismGov) {
+      return res.status(400).json({ error: 'Username already exists.' });
+    }
 
-      res.status(201).json({
-          message: 'Tour Guide registered successfully',
-          tourGuide,
-      });
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(Password, 10);
+
+    // Create the tour guide
+    const tourGuide = await tourGuideModel.create({
+      Username,
+      Email,
+      Password: hashedPassword,
+      Id: idDocument,
+      Certificate: certificate,
+    });
+
+    res.status(201).json({
+      message: 'Tour Guide registered successfully',
+      tourGuide,
+    });
   } catch (error) {
-      res.status(400).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 };
 const loginTourGuide = async (req, res) => {

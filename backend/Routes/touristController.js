@@ -1,4 +1,10 @@
 const touristModel = require('../Models/Tourist.js');
+const tourGuideModel = require('../Models/tourGuide.js'); // Adjust path as needed
+const advertiserModel = require('../Models/Advertiser.js');
+const sellerModel = require('../Models/Seller.js');
+const adminModel = require('../Models/Admin.js');
+const tourismGovModel = require('../Models/tourismGov.js');
+
 const historicalLocationModel = require('../Models/historicalLocation.js');
 const productModel= require('../Models/Product.js');
 const activitiesModel=require('../Models/Activities.js');
@@ -8,7 +14,6 @@ const TransportationModel = require('../Models/Transportation.js');
 const cartModel = require('../Models/Cart.js'); // Import the Cart model
 const { default: mongoose } = require('mongoose');
 const complaintModel = require('../Models/Complaint.js'); // Adjust the path based on your project structure
-const TourGuideModel = require('../Models/tourGuide.js'); // Adjust path as needed
 const requestModel = require('../Models/Request.js'); // Adjust path as needed
 const ItinBookingModel = require('../Models/itinbookings.js'); 
 const ActBookingModel = require('../Models/actBooking.js');
@@ -56,10 +61,24 @@ const getCurrencyRates = async (req, res) => {
 
 
 
+
+
 const createTourist = async (req, res) => {
-  const { Username, Email, Password, Nationality, DOB, Occupation,showIntro } = req.body;
+  const { Username, Email, Password, Nationality, DOB, Occupation, showIntro } = req.body;
 
   try {
+    // Check if the username already exists in any model
+    const userExistsInTourist = await touristModel.findOne({ Username });
+    const userExistsInTourGuide = await tourGuideModel.findOne({ Username });
+    const userExistsInAdvertiser = await advertiserModel.findOne({ Username });
+    const userExistsInSeller = await sellerModel.findOne({ Username });
+    const userExistsInAdmin = await adminModel.findOne({ Username });
+    const userExistsInTourismGov = await tourismGovModel.findOne({ Username });
+
+    if (userExistsInTourist || userExistsInTourGuide || userExistsInAdvertiser || userExistsInSeller || userExistsInAdmin || userExistsInTourismGov) {
+      return res.status(400).json({ error: 'Username already exists.' });
+    }
+
     // Hash the password
     const hashedPassword = await bcrypt.hash(Password, 10);
 
@@ -82,6 +101,7 @@ const createTourist = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
 const getTouristIntroStatus = async (req, res) => {
   const { Username } = req.query; // Get the user ID from request parameters
 
@@ -1405,7 +1425,7 @@ const submitFeedbackItinerary = async (req, res) => {
     };
 
     // Find the tour guide and update their feedback
-    const tourGuide = await TourGuideModel.findOne({ Username: tourGuideUsername });
+    const tourGuide = await tourGuideModel.findOne({ Username: tourGuideUsername });
 
     if (!tourGuide) {
       return res.status(404).json({ message: `Tour guide '${tourGuideUsername}' not found.` });
@@ -2636,7 +2656,7 @@ const createOrder = async (req, res) => {
       status: 'pending',
       paymentStatus: 'pending', // Initially set to pending
     });
-
+console.log(shippingAddress);
     // Save the new order to the database
     await newOrder.save();
 
@@ -2793,13 +2813,14 @@ const getTouristOrders = async (req, res) => {
     // Loop through each order and check if it's more than 3 days old
     for (let order of orders) {
       const orderDate = new Date(order.orderDate);
-      const daysDifference = currentDate.getDay() - orderDate.getDay();// Difference in days
-
+      const daysDifference = currentDate.getDate() - orderDate.getDate();  // Correct difference in days
+// console.log(order.shippingAddress);
       // If the order is more than 3 days old and its status is not already 'delivered', update it
       if (daysDifference > 2 && order.status !== 'delivered') {
         order.status = 'delivered';
         await order.save(); // Save the updated order
       }
+
     }
 
     // Return the updated orders
@@ -2810,6 +2831,30 @@ const getTouristOrders = async (req, res) => {
   }
 };
 
+const clearCart = async (req, res) => {
+  try {
+    const { username } = req.query;
+
+    if (!username) {
+      return res.status(400).json({ message: "Missing username in query" });
+    }
+
+    // Update the cart for the user, clearing the products array
+    const result = await cartModel.updateOne(
+      { Username: username }, // Find the user's cart
+      { $set: { products: [] } } // Set the `products` array to an empty array
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ message: "No cart found for this user" });
+    }
+
+    res.status(200).json({ message: "Cart cleared successfully" });
+  } catch (error) {
+    console.error("Error clearing cart:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 
 const cancelOrder = async (req, res) => {
@@ -2861,4 +2906,4 @@ const cancelOrder = async (req, res) => {
   ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
   shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,addToCartAndRemoveFromWishlist,
   getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,
-  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist,removeProductFromCart,requestNotification,requestNotificationItinerary,addAddress,getAddresses,createOrder,payWithWallet,sendConfirmationEmail,applyPromoCode,getTouristOrders,cancelOrder};
+  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist,removeProductFromCart,requestNotification,requestNotificationItinerary,addAddress,getAddresses,createOrder,payWithWallet,sendConfirmationEmail,applyPromoCode,getTouristOrders,cancelOrder,clearCart};
