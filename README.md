@@ -67,7 +67,6 @@ const createTourist = async (req, res) => {
   const { Username, Email, Password, Nationality, DOB, Occupation, showIntro } = req.body;
 
   try {
-    // Check if the username already exists in any model
     const userExistsInTourist = await touristModel.findOne({ Username });
     const userExistsInTourGuide = await tourGuideModel.findOne({ Username });
     const userExistsInAdvertiser = await advertiserModel.findOne({ Username });
@@ -79,10 +78,8 @@ const createTourist = async (req, res) => {
       return res.status(400).json({ error: 'Username already exists.' });
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(Password, 10);
 
-    // Create a new tourist with the hashed password
     const tourist = await touristModel.create({
       Username,
       Email,
