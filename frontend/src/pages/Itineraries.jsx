@@ -607,7 +607,100 @@ const Itineraries = () => {
 )}
 
   
-            
+            {errorMessage && <p style={styles.error}>{errorMessage}</p>}
+  
+            {/* Itineraries List */}
+            {itineraries.length > 0 ? (
+              <ul style={styles.list}>
+                {itineraries.map((itinerary) => (
+                  <li key={itinerary._id} style={styles.listItem}>
+                    <strong>Activities:</strong> {itinerary.Activities.join(', ')} <br />
+                    <strong><FaDollarSign /></strong> {selectedCurrency} {(itinerary.Price * conversionRate).toFixed(2)} <br />
+                    <strong><FaCalendar /></strong> {itinerary.DatesTimes} <br />
+                    <strong><FaMapMarkerAlt /></strong> {itinerary.Locations.join(', ')}<br />
+                    <strong><FaUserCircle/></strong> {itinerary.TourGuide}<br/>
+                  <strong>Booking Open:</strong> {itinerary.bookingOpen ? 'Yes' : 'No'}
+                  {!itinerary.bookingOpen && (
+                    <FaBell
+                      style={styles.bellIcon}
+                      onClick={() => handleNotificationRequest(itinerary._id)}
+                    />
+                  )}
+                <br/>
+                <div style={styles.buttonGroup}></div>
+                    <button
+                      style={styles.button}
+                      onClick={() => toggleItineraryDetails(itinerary._id)}
+                    >
+                      {expandedItineraries[itinerary._id] ? 'Hide Itinerary Details' : 'View Itinerary Details'}
+                    </button>
+                    <button
+                      style={styles.button}
+                      onClick={() => handleBooking(itinerary)}
+                      disabled={itinerary.Booked}
+                    >
+                      Book Ticket
+                    </button>
+                    {expandedItineraries[itinerary._id] && (
+                      <div style={styles.details}>
+                        <p>
+                          <strong><FaClock/>: </strong> {itinerary.DurationOfActivity}
+                        </p>
+                        <p>
+                          <strong><FaLanguage/>:</strong> {itinerary.Language}
+                        </p>
+                        <p>
+                          <strong><FaWheelchair/>:</strong> {itinerary.Accesibility}
+                        </p>
+                        <p>
+                          <strong><FaShuttleVan/>:</strong> {itinerary.pickUpDropOff}
+                        </p>
+                        <p>
+                          <strong>Booked:</strong> {itinerary.Booked ? 'Yes' : 'No'}
+                        </p>
+                        <div style={{ marginTop: '20px', padding: '10px', border: '1px solid #ddd', borderRadius: '5px', backgroundColor: '#f9f9f9' }}>
+      <h3>Feedback</h3>
+      {itinerary.feedback.length > 0 ? (
+        itinerary.feedback.map((f, idx) => (
+          <div key={idx} style={{ marginBottom: '10px' }}>
+            <p><strong>{f.touristUsername}</strong> rated {f.rating}/5 and commented:</p>
+            {f.comment && <p>{f.comment}</p>}
+          </div>
+        ))
+      ) : (
+        <p>No feedback yet.</p>
+      )}
+    </div>
+                      </div>
+                    )}
+                    {/* Share button and success message */}
+                    <button style={styles.button} onClick={() => handleShare(itinerary._id, 'copy')}>
+                      Copy Link
+                    </button>
+                    <button style={styles.button} onClick={() => handleShareMode(itinerary)}>
+                      Share via Email
+                    </button>
+                    {isEmailMode && itineraryToShare && itineraryToShare._id === itinerary._id && (
+                      <div style={styles.emailInputContainer}>
+                        <input
+                          style={styles.input}
+                          type="email"
+                          placeholder="Enter recipient's email"
+                          value={email}
+                          onChange={handleEmailInputChange}
+                        />
+                        <button style={styles.button} onClick={() => handleShare(itinerary._id, 'email')}>
+                          Send Email
+                        </button>
+                      </div>
+                    )}
+                    {copySuccess[itinerary._id] && <p style={styles.success}>{copySuccess[itinerary._id]}</p>}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p style={styles.noData}>No itineraries found.</p>
+            )}
           </>
         )}
       </div>

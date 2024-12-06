@@ -262,7 +262,7 @@ const ItineraryDetail = () => {
 
        
 
-          {/* Feedback Form */}
+          {/* Feedback Form
           <div style={styles.feedbackForm}>
             <h4>Leave Your Feedback</h4>
             <div style={styles.smileyContainer}>
@@ -292,7 +292,7 @@ const ItineraryDetail = () => {
               Submit Feedback
             </button>
             {feedbackSubmitted && <p style={styles.success}>Feedback submitted successfully!</p>}
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
