@@ -61,7 +61,7 @@ import AddProduct from './pages/AddProduct';
 import EditProducts from './pages/EditProducts';
 import UserStatistics from './pages/chart';
 import Flaged from './pages/flagged';
-
+import ManagementPage from './pages/manage';
 
 
 
@@ -153,6 +153,7 @@ function App() {
             <Route path="/EditProducts" element={<EditProducts />} />
             <Route path="/chart" element={<UserStatistics />} />
             <Route path="/flagged" element={<Flaged />} />
+            <Route path="/manage" element={<ManagementPage />} />
           </Routes>
         </Router>
       </Elements>

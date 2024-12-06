@@ -583,7 +583,8 @@ const styles = {
     backgroundColor: '#f4f4f4',
     borderRadius: '10px',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    marginTop: '90px', // Push content down to account for the header
+    marginTop: '90px', // Push content down to account for the 
+    
     
   },
       

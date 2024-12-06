@@ -136,6 +136,10 @@ const Products = () => {
   };
 
   const handleAddToCart = async (product) => {
+    if(localStorage.getItem('context') === 'guest') {
+      alert('Please login to add item to cart');
+      return;
+    }
     try {
       const response = await fetch(`http://localhost:8000/addProductToCart?Username=${username}`, {
         method: 'POST',
@@ -162,6 +166,10 @@ const Products = () => {
   };
 
   const handleAddToWishlist = async (product) => {
+    if(localStorage.getItem('context') === 'guest') {
+      alert('Please login to add item to wishlist');
+      return;
+    }
     try {
       const response = await fetch(`http://localhost:8000/addProductToWishlist`, {
         method: 'PATCH',
@@ -285,11 +293,11 @@ const Products = () => {
       onClick={handleProfileRedirect} // Navigate to profile
     />
     {/* Wishlist Icon */}
-    <div style={styles.wishlistIcon} onClick={() => navigate('/wishlist')}>
+    <div style={styles.wishlistIcon} onClick={() => localStorage.getItem('context') === 'guest'? alert("please login to access wish list") :navigate('/wishlist')}>
       <FaHeart style={styles.wishlistHeartIcon} />
     </div>
     {/* Cart Icon */}
-    <div style={styles.cartButton} onClick={() => navigate('/Cart')}>
+    <div style={styles.cartButton} onClick={() =>localStorage.getItem('context') === 'guest'? alert("please login to access cart") : navigate('/Cart')}>
       <FaShoppingCart style={styles.cartIcon} />
     </div>
   </div>

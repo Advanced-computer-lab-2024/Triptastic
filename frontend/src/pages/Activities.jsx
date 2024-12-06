@@ -38,6 +38,7 @@ const Activities = () => {
 
 
   const handleBookmarkToggle = (activityId) => {
+
     // Check if the activity is already bookmarked
     const alreadyBookmarked = bookmarkedActivities.some((activity) => activity._id === activityId);
   
@@ -167,6 +168,10 @@ const Activities = () => {
   };
 
   const handleBookmark = async (activityId) => {
+    if(localStorage.getItem('context') === 'guest') {
+      alert('Please login to bookmark activity');
+      return;
+    }
     try {
       // Check if the activity is already bookmarked
       if (bookmarkedActivities.some((activity) => activity._id === activityId)) {
@@ -337,6 +342,10 @@ const Activities = () => {
 
   const bookActivity = async (activityName) => {
     const username = localStorage.getItem('Username');
+    if(localStorage.getItem('context') === 'guest') {
+      alert('Please login to book activity');
+      return;
+    }
   
     if (!username) {
       alert("Please log in first");
@@ -455,7 +464,7 @@ return (
     position: 'absolute',
     left: '1400px', // Moves the bookmark button 20px from the right edge
   }}
-  onClick={() => navigate('/BookmarkedEvents')}
+  onClick={() =>localStorage.getItem('context') === 'guest'? alert("please login to access bookmarks") : navigate('/BookmarkedEvents')}
 >
   <FaBookmark style={{ fontSize: '20px', color: '#FFD700',marginBottom:'5px'}} />
 </button>
