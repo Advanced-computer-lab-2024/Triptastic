@@ -357,6 +357,13 @@ const BookFlights = () => {
     marginLeft: '15px',
     color: '#fff',
   },
+  iconn: {
+    fontSize: '20px',
+    marginLeft: '15px',
+    color: 'black',
+    fontWeight: 'bold',
+
+  },
   label: {
     cursor: 'pointer',
     fontSize: '16px',
@@ -514,7 +521,7 @@ const BookFlights = () => {
  <div style={styles.searchFormContainer}>
  <form onSubmit={handleSubmit} style={styles.searchForm}>
  <div style={styles.searchField}>
-      <FaPlaneDeparture style={styles.icon} />
+      <FaPlaneDeparture style={styles.iconn} />
       <select
         name="origin"
         value={flightDetails.origin}
@@ -538,7 +545,7 @@ const BookFlights = () => {
 
     {/* To: Dropdown */}
     <div style={styles.searchField}>
-      <FaPlaneArrival style={styles.icon} />
+      <FaPlaneArrival style={styles.iconn} />
       <select
         name="destination"
         value={flightDetails.destination}
@@ -565,7 +572,7 @@ const BookFlights = () => {
 
     {/* Date Input */}
     <div style={styles.searchField}>
-      <FaCalendarAlt style={styles.icon} />
+      <FaCalendarAlt style={styles.iconn} />
       <input
         type="date"
         name="date"
@@ -578,7 +585,7 @@ const BookFlights = () => {
 
     {/* Adults Input */}
     <div style={styles.searchField}>
-      <FaUser style={styles.icon} />
+      <FaUser style={styles.iconn} />
       <input
         type="number"
         name="adults"
@@ -593,7 +600,7 @@ const BookFlights = () => {
     </div>
    <button type="submit" disabled={loading} style={styles.searchButton}>
           {loading ? 'Searching...' : 'Search Flights'}
-          <FaSearch /> Search
+          <FaSearch />
         </button>
       </form>
 </div>
