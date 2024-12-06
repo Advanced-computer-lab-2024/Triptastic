@@ -153,7 +153,7 @@ This example shows how to add a new product to the website.
 
 ## License
 
-*Apache License 2.0
+Apache License 2.0
 
 Copyright [2024] [Triptastic]
 
@@ -167,5 +167,5 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
-limitations under the License.*
+limitations under the License.
 
