@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { FaTag, FaInfoCircle, FaDollarSign, FaBox, FaImage } from 'react-icons/fa';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
+import { FaArrowLeft, FaUser, FaExclamationCircle, FaHeart, FaFileAlt, FaTrashAlt, FaThList, FaPlus, FaEdit, FaFlag } from 'react-icons/fa';
+import image from '../images/image.png';
+import { useNavigate } from 'react-router-dom';
+
 
 const AddProduct = () => {
 
@@ -9,6 +13,8 @@ const AddProduct = () => {
     const [addingProduct, setAddingProduct] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const navigate = useNavigate();
+
 
     const handleProductSubmit = async (e) => {
         const Username = localStorage.getItem('Username'); // Assuming the Username is stored in local storage
@@ -38,14 +44,14 @@ const AddProduct = () => {
               stock: '',
               image: null // Reset image after submission
             });
+            setImagePreview(null); // Clear the image preview
             setAddingProduct(false);
           } else {
             const errorData = await response.json(); // Get error data from response
             throw new Error(`Failed to create product: ${errorData.error || response.statusText}`);
           }
         } catch (error) {
-          setErrorMessage(`An error occurred while creating the product: ${error.message}`);
-          console.error(error);
+          alert(`An error occurred while creating the product: ${error.message}`);          console.error(error);
         }
       };
 
@@ -102,10 +108,103 @@ const AddProduct = () => {
       
   return (
     <div style={styles.container2}>
+
+    {/* Header */}
+    <header style={styles.header2}>
+      <div style={styles.logoContainer2}>
+        <img src={image} alt="Logo" style={styles.logo2} />
+      </div>
+      <h1 style={styles.title2}>Add Product</h1>
+    </header>
+    {/* Sidebar */}
+    <div
+        style={styles.sidebar}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.width = '200px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '1')
+          );
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.width = '60px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '0')
+          );
+        }}
+      >
+
+<div style={styles.item} onClick={() => navigate('/adminPage')}>
+          <FaUser style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Admin Profile
+          </span>
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/PromoCodeForm')}>
+          <FaTag style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Promo Codes
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/Complaints')}>
+          <FaExclamationCircle style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Complaints
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/preftags')}>
+          <FaHeart style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Preference Tags
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/docs')}>
+          <FaFileAlt style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Documents
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/category')}>
+          <FaThList style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Categories
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/adminReport')}>
+          <FaBox  style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Sales Report
+          </span>   
+        </div>
+        <div style={styles.item} onClick={() => navigate('/DeletionRequest')}>
+          <FaTrashAlt  style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Deletion Requests
+          </span>   
+        </div>
+        <div style={styles.item} onClick={() => navigate('/AddProduct')}>
+          <FaPlus  style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Add Product
+          </span>   
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/EditProducts')}>
+          <FaEdit   style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Edit Products
+          </span>   
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/flagged')}>
+          <FaFlag   style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Flag Events
+          </span>   
+        </div>
+      </div>
+
       <div style={styles.card}>
-        <h3 style={styles.cardTitle}>
-          Add Product <Inventory2Icon style={styles.icon} />
-        </h3>
         <form onSubmit={handleProductSubmit} style={styles.form}>
           {/* Product Name */}
           <div style={styles.formGroup}>
@@ -224,7 +323,43 @@ const styles = {
         backgroundColor: '#f8f9fa',
         borderRadius: '10px',
         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        marginTop: '80px',
       },
+      header2: {
+        height:'60px',
+        position: 'fixed', // Make the header fixed
+        top: '0', // Stick to the top of the viewport
+        left: '0',
+        width: '100%', // Make it span the full width of the viewport
+        backgroundColor: '#0F5132', // Green background
+        color: 'white', // White text
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '10px 20px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for depth
+        zIndex: '1000', // Ensure it appears above other content
+      },
+    logoContainer2: {
+      marginBottom: '10px', // Space between the logo and the title
+    },
+    logo2: {
+      height: '60px',
+      width: '70px',
+      borderRadius: '10px',
+    
+    },
+    title2: {
+      fontSize: '24px',
+      fontWeight: 'bold',
+      color: 'white',
+      position: 'absolute', // Position the title independently
+      top: '50%', // Center vertically
+      left: '50%', // Center horizontally
+      transform: 'translate(-50%, -50%)', // Adjust for element's size
+      margin: '0',
+    },
+
       card: {
         backgroundColor: '#fff',
         padding: '20px',
@@ -328,6 +463,45 @@ const styles = {
         fontSize: '14px',
         textAlign: 'center',
       },
+          //sidebar
+    sidebar: {
+      position: 'fixed',
+      top: '60px',
+      left: 0,
+      height: '100vh',
+      width: '50px', // Default width when collapsed
+      backgroundColor: 'rgba(15, 81, 50, 0.85)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-start', // Ensure alignment starts from the left
+      padding: '10px 0',
+      overflowX: 'hidden',
+      transition: 'width 0.3s ease',
+      zIndex: 1000,
+    },
+    item: {
+      padding: '10px 0',
+    },
+    sidebarExpanded: {
+      width: '200px', // Width when expanded
+    },
+
+    label: {
+      cursor: 'pointer',
+      fontSize: '16px',
+      fontWeight: 'bold',
+      color: '#fff',
+      opacity: 0, // Initially hidden
+      whiteSpace: 'nowrap', // Prevent label text from wrapping
+      transition: 'opacity 0.3s ease',
+    },
+    icon: {
+      fontSize: '24px',
+      marginLeft: '15px', // Move icons slightly to the right
+      color: '#fff', // Icons are always white
+    },
+
+
 };
 
 export default AddProduct;

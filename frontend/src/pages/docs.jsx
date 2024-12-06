@@ -679,7 +679,6 @@ transition: 'background-color 0.3s ease',
 button2: {
   padding: '12px',
   fontSize: '16px',
-
   backgroundColor: '#0F5132',
   color: '#fff',
   border: 'none',
@@ -779,6 +778,6 @@ icon: {
       whiteSpace: 'nowrap', // Prevent label text from wrapping
       transition: 'opacity 0.3s ease',
     },
-    //
+    
 };
 export default Docs;
