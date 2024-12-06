@@ -372,7 +372,6 @@ const styles = {
   },
   heading: {
     fontSize: '24px',
-    fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: '20px',
     color: '#0F5132',
@@ -414,7 +413,6 @@ const styles = {
   button: {
     padding: '12px',
     fontSize: '16px',
-    fontWeight: 'bold',
     color: '#fff',
     backgroundColor: '#0F5132',
     border: 'none',
@@ -473,7 +471,6 @@ const styles = {
   button: {
     padding: '12px',
     fontSize: '16px',
-    fontWeight: 'bold',
     color: '#fff',
     backgroundColor: '#0F5132',
     border: 'none',
@@ -600,7 +597,6 @@ fontSize: '14px',
 button: {
 padding: '12px',
 fontSize: '16px',
-fontWeight: 'bold',
 backgroundColor: '#0F5132',
 color: '#fff',
 border: 'none',

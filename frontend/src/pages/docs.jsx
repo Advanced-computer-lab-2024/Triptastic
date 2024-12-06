@@ -467,7 +467,7 @@ const styles = {
   },
   button: {
     padding: '12px',
-    fontSize: '16px',
+    fontSize: '13px',
     fontWeight: 'bold',
     color: '#fff',
     border: 'none',
@@ -666,7 +666,7 @@ fontSize: '14px',
 },
 button: {
 padding: '12px',
-fontSize: '16px',
+fontSize: '12px',
 fontWeight: 'bold',
 backgroundColor: '#0F5132',
 color: '#fff',
@@ -679,7 +679,7 @@ transition: 'background-color 0.3s ease',
 button2: {
   padding: '12px',
   fontSize: '16px',
-  fontWeight: 'bold',
+
   backgroundColor: '#0F5132',
   color: '#fff',
   border: 'none',

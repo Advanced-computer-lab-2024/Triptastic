@@ -391,7 +391,6 @@ fontSize: '14px',
 button: {
 padding: '12px',
 fontSize: '16px',
-fontWeight: 'bold',
 backgroundColor: '#0F5132',
 color: '#fff',
 border: 'none',
