@@ -20,6 +20,7 @@ const Products = () => {
   const navigate = useNavigate(); // Initialize useNavigate for navigation
   const [fetchedProduct, setFetchedProduct] = useState(null);//new
   const [errorMessage, setErrorMessage] = useState('');
+  const [originalProducts, setOriginalProducts] = useState([]); // To store the original products fetched
 
   const username = localStorage.getItem('Username'); // Retrieve username from local storage
   const [formData, setFormData] = useState({
@@ -62,12 +63,9 @@ const Products = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const fetchProducts = async (minPrice = '', maxPrice = '') => {
+  };const fetchProducts = async (minPrice = '', maxPrice = '') => {  
     setLoading(true);
     setError('');
-
     try {
       let url = 'http://localhost:8000/viewProductsTourist'; // Default URL to fetch all products
       
@@ -75,50 +73,38 @@ const Products = () => {
       if (minPrice || maxPrice) {
         url = `http://localhost:8000/filterProductsByPriceRange?minPrice=${minPrice}&maxPrice=${maxPrice}`;
       }
-
+  
       const response = await fetch(url); // Fetch either all or filtered products based on the URL
       if (!response.ok) {
         throw new Error('Failed to fetch products');
       }
-
+  
       const data = await response.json();
-      setProducts(data);
+      setProducts(data); // Set all fetched products
+      setOriginalProducts(data); // Store original products for search functionality
     } catch (error) {
       setError(error.message);
     } finally {
       setLoading(false);
     }
   };
-  const fetchProductByName = async (productName) => {
-    setLoading(true);
-    try {
-      const response = await fetch(`http://localhost:8000/getProductTourist?productName=${productName}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+  const handleSearchProduct = (productName) => {
+    const lowercasedProductName = productName.toLowerCase(); // Case-insensitive search
   
-      if (response.ok) {
-        const product = await response.json();
+    // Filter the products based on the search query
+    const filteredProducts = originalProducts.filter(product => 
+      product.productName.toLowerCase().includes(lowercasedProductName)
+    );
   
-        // Check if the product exists and if it is archived
-        if (!product || product.archived === true) {
-          setErrorMessage('Product not found');
-          setFetchedProduct(null); // Clear the fetched product state
-        } else {
-          setFetchedProduct(product); // Store the fetched product
-          setErrorMessage(''); // Clear any previous error messages
-        }
-      } else {
-        throw new Error('Failed to fetch product');
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while fetching the product');
-      console.error(error);
+    if (filteredProducts.length > 0) {
+      setProducts(filteredProducts); // Set the filtered products to display
+      setErrorMessage(''); // Clear any previous error messages
+    } else {
+      setProducts([]); // Clear the products if no match
+      setErrorMessage('No product found with that name.');
     }
-    setLoading(false);
   };
+  
   const handleProfileRedirect = () => {
     const context = localStorage.getItem('context');
 
@@ -187,10 +173,8 @@ const Products = () => {
     navigate('/Wishlist'); // Navigate to Wishlist page
   };
    
-  const handleFetchProduct = () => {
-    const productName = formData.productName; // Assuming there's an input for productName
-    fetchProductByName(productName);
-  };
+ 
+  
   const handleFilterSubmit = (e) => {
     e.preventDefault(); // Prevent form submission from reloading the page
     fetchProducts(minPrice, maxPrice); // Fetch products based on the entered price range
@@ -314,63 +298,77 @@ const Products = () => {
       </div>
 
 
-{/* Search Product by Name */}
-<div className="card" style={styles.card}>
-    <h3 style={styles.cardTitle}>Looking for a certain product?</h3>
-    <div style={styles.inputContainer}>
-      <input
-        type="text"
-        name="productName"
-        value={formData.productName}
-        onChange={handleInputChange}
-        placeholder="Enter product name"
-        style={styles.input}
-      />
-      <button onClick={handleFetchProduct} style={styles.iconButton}>
-        <i className="fas fa-search" style={styles.searchIcon}></i>
-        <FaSearch/>
-      </button>
-    </div>
-    {fetchedProduct && (
-      <div style={styles.productDetails}>
-        <h4 style={styles.sectionTitle}>Product Details</h4>
-        <p><strong>Name:</strong> {fetchedProduct.productName}</p>
-        <p><strong>Description:</strong> {fetchedProduct.description}</p>
-        <p>
-          <strong>Price:</strong> {(fetchedProduct.price * conversionRate).toFixed(2)} {selectedCurrency}
-        </p>
-        <p><strong>Stock:</strong> {fetchedProduct.stock}</p>
-        
-      </div>
-    )}
-  </div>
-      <form onSubmit={handleFilterSubmit} style={styles.filterForm}>
-  <div style={styles.filterGroup}>
-    <input
-      type="number"
-      value={minPrice}
-      onChange={(e) => setMinPrice(e.target.value)}
-      placeholder="Min Price"
-      style={styles.filterInput}
-    />
-    <input
-      type="number"
-      value={maxPrice}
-      onChange={(e) => setMaxPrice(e.target.value)}
-      placeholder="Max Price"
-      style={styles.filterInput}
-    />
-    <button type="submit" style={styles.filterButton}>
-      Filter
-    </button>
-  </div>
-</form>
+      <div className="card" style={styles.card}>
+      <h3 style={{ 
+  fontSize: '18px', 
+  fontWeight: 'bold', 
+  marginTop: '20px',  // Adds space above the element
+  color: '#333' 
+}}>
 
+</h3>
+<div style={styles.container}>
+  <h3 style={styles.cardTitle}>Looking for a certain product?</h3>
+
+  <div style={styles.flexContainer}>
+    {/* Search Section */}
+    <div style={styles.searchContainer}>
+      <div style={styles.inputContainer}>
+        <input
+          type="text"
+          name="productName"
+          value={formData.productName}
+          onChange={handleInputChange}
+          placeholder="Enter product name"
+          style={styles.input}
+        />
+        <button onClick={() => handleSearchProduct(formData.productName)} style={styles.iconButton}>
+          <FaSearch />
+        </button>
+      </div>
+    </div>
+
+    {/* Filter Section */}
+    <form onSubmit={handleFilterSubmit} style={styles.filterForm}>
+      <div style={styles.filterGroup}>
+        <input
+          type="number"
+          value={minPrice}
+          onChange={(e) => setMinPrice(e.target.value)}
+          placeholder="Min Price"
+          style={styles.filterInput}
+        />
+        <input
+          type="number"
+          value={maxPrice}
+          onChange={(e) => setMaxPrice(e.target.value)}
+          placeholder="Max Price"
+          style={styles.filterInput}
+        />
+        <button type="submit" style={styles.filterButton}>
+          Filter
+        </button>
+      </div>
+    </form>
+  </div>
+
+  {/* Product Details */}
+  {fetchedProduct && (
+    <div style={styles.productDetails}>
+      <h4 style={styles.sectionTitle}>Product Details</h4>
+      <p><strong>Name:</strong> {fetchedProduct.productName}</p>
+      <p><strong>Description:</strong> {fetchedProduct.description}</p>
+      <p><strong>Price:</strong> {(fetchedProduct.price * conversionRate).toFixed(2)} {selectedCurrency}</p>
+      <p><strong>Stock:</strong> {fetchedProduct.stock}</p>
+    </div>
+  )}
+
+ </div>
 
       {products.length === 0 ? (
         <p>No products available.</p>
       ) : (
-<ul style={styles.productList}>
+ <ul style={styles.productList}>
   {products.map((product) => (
     <li key={product.productName} style={styles.productCard}>
       {product.image && (
@@ -398,19 +396,21 @@ const Products = () => {
           <button
   onClick={() => handleAddToWishlist(product)}
   style={styles.icons}
->
+ >
   <FaHeart style={styles.icons} />
 
-</button>
+ </button>
 
         </div>
       </div>
     </li>
   ))}
-</ul>
+ </ul>
 
       )}
     </div>
+    </div>
+
   );
 };
 
@@ -427,12 +427,15 @@ const styles = {
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
   },
   filterGroup: {
-    marginTop:'50px',
     display: 'flex',
-    gap: '10px',
     alignItems: 'center',
-    justifyContent: 'center',
-   // marginBottom: '20px',
+    gap: '10px',
+  },  flexContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center', // Ensures vertical alignment
+    gap: '20px',
+    flexWrap: 'wrap',
   },
   filterInput: {
     padding: '10px',
@@ -652,6 +655,7 @@ const styles = {
     padding: '10px 0',
     
   },
+  
   label: {
     cursor: 'pointer',
     fontSize: '16px',
@@ -663,6 +667,12 @@ const styles = {
   },
   labelVisible: {
     opacity: 1, // Fully visible when expanded
+  },
+  inputContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    margin: 0, // Reset margin to ensure alignment
   },
 };
 

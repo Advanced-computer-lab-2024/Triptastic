@@ -82,8 +82,13 @@ const [comments, setComments] = useState({});
     shopping: false,
     budget: ''
   });
-  const [isPreferencesVisible, setIsPreferencesVisible] = useState(true);
-
+  const [isPreferencesVisible, setIsPreferencesVisible] = useState(false);
+  useEffect(() => {
+    const preferencesSubmitted = localStorage.getItem('preferencesSubmitted');
+    if (!preferencesSubmitted) {
+      setIsPreferencesVisible(true); // Show preferences if not submitted
+    }
+  }, []);
   const navigate = useNavigate();
   useEffect(() => {
     fetchNotifications();
@@ -423,6 +428,8 @@ const [comments, setComments] = useState({});
       console.error(error);
     }
   };
+
+
   const fetchItineraries = async () => { 
     try {
       const response = await fetch('http://localhost:8000/getAllItineraries', {
@@ -435,14 +442,7 @@ const [comments, setComments] = useState({});
       if (response.ok) {
         const data = await response.json();
         console.log('Fetched Itineraries:', data);
-  
-        // Ensure data is an array
-        if (Array.isArray(data)) {
-          // Filter past itineraries here
-          filterPastItineraries(data);
-        } else {
-          console.error('Data fetched is not an array:', data);
-        }
+          
       } else {
         console.error('Failed to fetch itineraries. Status:', response.status, response.statusText);
       }
@@ -451,13 +451,7 @@ const [comments, setComments] = useState({});
     }
   };
   
-  const filterPastItineraries = (data) => {
-    const today = new Date();
-    const past = data.filter(itinerary => new Date(itinerary.DatesTimes) < today);
-    setPastItineraries(past); // Store past itineraries
-  };
-  
-  
+ 
  
   useEffect(() => {
     fetchItineraries();
@@ -621,7 +615,8 @@ const [comments, setComments] = useState({});
     } finally {
       setLoading(false);
     }
-  }; const fetchBookedItineraries = async () => {
+  }; 
+  const fetchBookedItineraries = async () => {
     setLoading(true);
     const username = localStorage.getItem('Username');
   
@@ -639,7 +634,11 @@ const [comments, setComments] = useState({});
       });
   
       if (response.status === 200) {
-        setBookedItineraries(response.data); // Store booked itineraries in state
+        const bookedItineraries = response.data;
+  
+        // Filter past itineraries
+        const pastItineraries = filterPastItineraries(bookedItineraries);
+        setBookedItineraries(pastItineraries); // Store only past itineraries in state
       } else {
         setErrorMessage('Failed to retrieve booked itineraries');
       }
@@ -651,6 +650,11 @@ const [comments, setComments] = useState({});
     }
   };
   
+  // Filter past itineraries
+  const filterPastItineraries = (itineraries) => {
+    const today = new Date();
+    return itineraries.filter(itinerary => new Date(itinerary.DatesTimes) < today);
+  };
   const submitFeedbackItinerary = async (Itinerary) => {
     const username = localStorage.getItem('Username');
   
@@ -822,6 +826,7 @@ const [comments, setComments] = useState({});
         setSuccessMessage('Preferences updated successfully!');
         setErrorMessage('');
         setIsPreferencesVisible(false); // Hide preferences section
+        localStorage.setItem('preferencesSubmitted', 'true'); // Save flag in localStorage
       } else {
         throw new Error('Failed to update preferences');
       }
@@ -830,14 +835,14 @@ const [comments, setComments] = useState({});
     }
   };
 
+
   const handlePreferenceChange = (e) => {
     const { name, type, value, checked } = e.target;
     setPreferences((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }));
-  };
-
+  }
 
 
   const handleDeleteRequest = async () => {
