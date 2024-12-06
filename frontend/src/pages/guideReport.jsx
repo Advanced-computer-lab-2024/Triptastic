@@ -65,6 +65,12 @@ const GuideReport = () => {
           );
         }}
       >
+         <div  class="profile"style={styles.item} onClick={() => navigate('/tour-guide-profile')}>
+          <FaUserCircle style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Profile
+          </span>
+        </div>
         <div  class="itineraries" style={styles.item} onClick={() => navigate('/my-itineraries')}>
           <FaMap style={styles.icon} />
           <span className="label" style={styles.label}>
@@ -75,12 +81,6 @@ const GuideReport = () => {
           <FaStar style={styles.icon} />
           <span className="label" style={styles.label}>
             Reviews
-          </span>
-        </div>
-        <div  class="profile"style={styles.item} onClick={() => navigate('/tour-guide-profile')}>
-          <FaUserCircle style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Profile
           </span>
         </div>
       
