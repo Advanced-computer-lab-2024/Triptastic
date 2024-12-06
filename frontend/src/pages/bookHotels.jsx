@@ -237,17 +237,21 @@ const BookHotels = () => {
   },
   icon: {
     fontSize: '24px',
-    marginLeft: '15px',
-    color: '#fff',
+    marginLeft: '15px', // Move icons slightly to the right
+    color: '#fff', // Icons are always white
   },
   label: {
     cursor: 'pointer',
     fontSize: '16px',
     fontWeight: 'bold',
     color: '#fff',
-    opacity: 0,
-    whiteSpace: 'nowrap',
+    opacity: 0, // Initially hidden
+    whiteSpace: 'nowrap', // Prevent label text from wrapping
     transition: 'opacity 0.3s ease',
+  },
+ 
+  item: {
+    padding: '10px 0',
   },
   container2: {
     marginTop:'60px',
