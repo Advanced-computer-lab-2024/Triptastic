@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useNavigate } from 'react-router-dom';
+
 import axios from "axios";
 import { CurrencyContext } from "../pages/CurrencyContext";
 import logo from "../images/image.png";
@@ -8,7 +10,16 @@ import SentimentDissatisfiedOutlinedIcon from "@mui/icons-material/SentimentDiss
 import SentimentNeutralOutlinedIcon from "@mui/icons-material/SentimentNeutralOutlined";
 import SentimentSatisfiedOutlinedIcon from "@mui/icons-material/SentimentSatisfiedOutlined";
 import SentimentVerySatisfiedOutlinedIcon from "@mui/icons-material/SentimentVerySatisfiedOutlined";
-import { useNavigate } from "react-router-dom";
+import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
+  FaClipboardList,FaStar,FaSearch, FaTrash, FaCartPlus} from "react-icons/fa";import './TouristProfile.css'; // Assuming you create a CSS file for styling
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import beach from '../images/beach.jpg';
+import historic from '../images/historic.jpg';
+import family from '../images/family.png';
+import shopping from '../images/shopping.jpg';
+import HotelIcon from '@mui/icons-material/Hotel';
+import MuseumIcon from '@mui/icons-material/Museum';
+
 
 const TouristOrders = () => {
   const { selectedCurrency, conversionRate, fetchConversionRate } =
@@ -19,6 +30,8 @@ const TouristOrders = () => {
   const [rating, setRating] = useState(0);
   const [productName, setProductName] = useState("");
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -42,7 +55,13 @@ const TouristOrders = () => {
     }
   };
 
+ 
   const submitReview = async (productName) => {
+    if (!review.trim()) {
+      alert("Review cannot be empty!");
+      return;
+    }
+
     try {
       const response = await axios.patch(
         "http://localhost:8000/addReviewToProduct",
@@ -54,40 +73,48 @@ const TouristOrders = () => {
       );
       if (response) {
         alert("Review submitted!");
+        setReview('');
+        setRating(0);
+        setShowModal(false); // Close modal after submitting review
       }
-      setReview("");
-      setRating(0);
     } catch (error) {
       console.error("Error submitting review:", error);
     }
   };
   const cancelOrder = async (orderNumber) => {
-    const touristUsername = localStorage.getItem("Username");
-    if (!touristUsername) {
-      console.error("No tourist username found");
-      return;
-    }
+    // Ask the user for confirmation
+    const isConfirmed = window.confirm("Are you sure you want to cancel this order?");
   
-    try {
-      const response = await axios.patch(
-        `http://localhost:8000/cancelOrder`,
-        {
-          orderNumber,
-          username: touristUsername,
-        }
-      );
-  
-      if (response.data) {
-        alert("Order successfully canceled!");
-        window.location.reload(); // Refresh the page after the alert
-      } else {
-        alert("Failed to cancel order.");
+    // If the user confirmed, proceed with the cancellation
+    if (isConfirmed) {
+      const touristUsername = localStorage.getItem("Username");
+      if (!touristUsername) {
+        console.error("No tourist username found");
+        return;
       }
-    } catch (error) {
-      console.error("Error canceling order:", error);
+  
+      try {
+        const response = await axios.patch(
+          `http://localhost:8000/cancelOrder`,
+          {
+            orderNumber,
+            username: touristUsername,
+          }
+        );
+  
+        if (response.data) {
+          alert("Order successfully canceled!");
+          window.location.reload(); // Refresh the page after the alert
+        } else {
+          alert("Failed to cancel order.");
+        }
+      } catch (error) {
+        console.error("Error canceling order:", error);
+      }
+    } else {
+      console.log("Order cancellation was canceled by the user.");
     }
   };
-  
   
 
   const renderSmileyRating = () => {
@@ -113,11 +140,16 @@ const TouristOrders = () => {
             {Smiley}
           </div>
         ))}
-<div style={styles.ratingDisplay}>
-  <span style={styles.ratingLabel}>Rating:</span>
-  <span style={styles.ratingValue}>{rating}/5</span>
-</div>      </div>
+        <div style={styles.ratingDisplay}>
+          <span style={styles.ratingLabel}>Rating:</span>
+          <span style={styles.ratingValue}>{rating}/5</span>
+        </div>
+      </div>
     );
+  };
+  const handleReviewClick = (product) => {
+    setProductName(product);
+    setShowModal(true); // Show modal when user clicks 'Leave a Review'
   };
 
   return (
@@ -132,55 +164,137 @@ const TouristOrders = () => {
           onClick={() => navigate("/tourist-profile")}
         />
       </header>
+      <div
+        style={styles.sidebar}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.width = '200px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '1')
+          );
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.width = '60px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '0')
+          );
+        }}
+      >
+        <div   style={styles.item} onClick={() => navigate('/historical-locations')}>
+          <FaUniversity style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Historical Sites
+          </span>
+        </div>
+        <div  style={styles.item} onClick={() => navigate('/museums')}>
+          <MuseumIcon style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Museums
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/products')}>
+          <FaBox style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Products
+          </span>
+        </div>
+        <div  style={styles.item} onClick={() => navigate('/itineraries')}>
+          <FaMap style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Itineraries
+          </span>
+        </div>
+        <div  style={styles.item} onClick={() => navigate('/activities')}>
+          <FaRunning style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Activities
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-flights')}>
+          <FaPlane style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Book Flights
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-hotels')}>
+          <HotelIcon style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Book a Hotel
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/book-transportation')}>
+          <FaBus style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Transportation
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
+          <FaClipboardList style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Past Orders
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
+          <FaStar style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Review Activities
+          </span>
+        </div>
+      </div>
+
+
+
+
+
+
       <div style={styles.content}>
-        {orders.length === 0 ? (
-          <p style={styles.noOrders}>No orders found</p>
-        ) : (
-          orders.map((order) => (
-            <div key={order.orderNumber} style={styles.orderCard}>
-              <h3 style={styles.orderTitle}>
-                Order #{order.orderNumber} <FaBoxOpen style={styles.icon} />
-              </h3>
-              <p style={styles.orderInfo}>
-                <FaShippingFast style={styles.icon} /> Status: {order.status}
-              </p>
-              <p style={styles.orderInfo}>
-                <FaDollarSign style={styles.icon} /> Total Price: {selectedCurrency}{" "}
-                {(order.totalPrice * conversionRate).toFixed(2)}
-              </p>
-              <p style={styles.orderInfo}>
-                <FaHome style={styles.icon} /> Shipping Address: {order.shippingAddress}
-              </p>
-              <div style={styles.productsContainer}>
-                <h4 style={styles.productsTitle}>Products in this Order</h4>
-                {order.products.map((product) => (
-                  <div key={product} style={styles.productItem}>
-                    <p>{product}</p>
-                    <button
-                      onClick={() => setProductName(product)}
-                      style={styles.reviewButton}
-                    >
-                      Leave a Review
-                    </button>
-                  </div>
-                ))}
-              </div>
-  
-              {/* Cancel Order Button */}
-              <div style={styles.buttonContainer}>
-                <button
-                  onClick={() => cancelOrder(order.orderNumber)}
-                  style={styles.cancelButton}
-                >
-                  Cancel Order
-                </button>
-              </div>
+      {orders.length === 0 ? (
+        <p style={styles.noOrders}>No orders found</p>
+      ) : (
+        orders.map((order) => (
+          <div key={order.orderNumber} style={styles.orderCard}>
+            <h3 style={styles.orderTitle}>
+              Order #{order.orderNumber} <FaBoxOpen style={styles.icon} />
+            </h3>
+            <p style={styles.orderInfo}>
+              <FaShippingFast style={styles.icon} /> Status: {order.status}
+            </p>
+            <p style={styles.orderInfo}>
+              <FaDollarSign style={styles.icon} /> Total Price: {selectedCurrency}{" "}
+              {(order.totalPrice * conversionRate).toFixed(2)}
+            </p>
+            <p style={styles.orderInfo}>
+              <FaHome style={styles.icon} /> Shipping Address: {order.shippingAddress}
+            </p>
+            <div style={styles.productsContainer}>
+              <h4 style={styles.productsTitle}>Products in this Order</h4>
+              {order.products.map((product) => (
+                <div key={product} style={styles.productItem}>
+                  <p>{product}</p>
+                  <button
+                    onClick={() => handleReviewClick(product)}
+                    style={styles.reviewButton}
+                  >
+                    Leave a Review
+                  </button>
+                </div>
+              ))}
             </div>
-          ))
-        )}
-  
-        {productName && (
-          <div style={styles.reviewContainer}>
+            <div style={styles.buttonContainer}>
+              <button
+                onClick={() => cancelOrder(order.orderNumber)}
+                style={styles.cancelButton}
+              >
+                Cancel Order
+              </button>
+            </div>
+          </div>
+        ))
+      )}
+
+      {/* Modal for submitting review */}
+      {showModal && (
+        <div style={styles.modalContainer}>
+          <div style={styles.modalContent}>
             <h3 style={styles.reviewTitle}>
               Submit Review for <span style={styles.productName}>{productName}</span>
             </h3>
@@ -197,19 +311,82 @@ const TouristOrders = () => {
               <button
                 onClick={() => submitReview(productName)}
                 style={styles.submitButton}
+                disabled={!review.trim()} // Disable button if review is empty
               >
                 Submit Review
               </button>
+              <button
+                onClick={() => setShowModal(false)} // Close modal on cancel
+                style={styles.cancelButton}
+              >
+                Cancel
+              </button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
+    </div>
+
   );
   
 };
 
 const styles = {
+  modalContainer: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: '20px',
+    borderRadius: '8px',
+    width: '400px',
+    textAlign: 'center',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  },
+  reviewTitle: {
+    fontSize: '20px',
+    fontWeight: 'bold',
+    marginBottom: '15px',
+  },
+  reviewInput: {
+    width: '100%',
+    height: '100px',
+    padding: '10px',
+    fontSize: '14px',
+    borderRadius: '4px',
+    border: '1px solid #ddd',
+    marginBottom: '10px',
+  },
+  submitButton: {
+    backgroundColor: '#0F5132',
+    color: '#fff',
+    padding: '10px 20px',
+    borderRadius: '4px',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '16px',
+    margin: '5px',
+  },
+  cancelButton: {
+    backgroundColor: '#dc3545',
+    color: '#fff',
+    padding: '10px 20px',
+    borderRadius: '4px',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '16px',
+    margin: '5px',
+  },
   container: {
     maxWidth: "1200px",
     margin: "0 auto",
@@ -242,12 +419,7 @@ const styles = {
     width: "70px",
     borderRadius: "10px",
   },
-  title: {
-    fontSize: "24px",
-    margin: 0,
-    fontWeight: "bold",
-    marginLeft: "30px",
-  },
+
   profileIcon: {
     fontSize: "30px",
     color: "white",
@@ -307,6 +479,8 @@ const styles = {
     cursor: "pointer",
     fontSize: "14px",
   },
+ 
+  
   reviewContainer: {
     backgroundColor: "#f9f9f9",
     padding: "20px",
@@ -315,29 +489,13 @@ const styles = {
     maxWidth: "600px",
     margin: "20px auto",
   },
-  reviewTitle: {
-    fontSize: "18px",
-    fontWeight: "bold",
-    color: "#0F5132",
-    marginBottom: "10px",
-  },
+
   productName: {
     fontSize: "16px",
     color: "#333",
     fontWeight: "500",
   },
-  reviewInput: {
-    width: "100%",
-    height: "40px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
-    padding: "10px",
-    fontSize: "14px",
-    color: "#333",
-    marginBottom: "15px",
-    resize: "none",
-    boxShadow: "inset 0 1px 3px rgba(0, 0, 0, 0.1)",
-  },
+  
   ratingContainer: {
     display: "flex",
     justifyContent: "center",
@@ -349,17 +507,53 @@ const styles = {
     justifyContent: "flex-end", // Align buttons to the right
     alignItems: "center",
   },
-  submitButton: {
-    backgroundColor: "#0F5132",
-    color: "#fff",
-    padding: "10px 20px",
-    borderRadius: "5px",
-    border: "none",
-    fontSize: "14px",
-    fontWeight: "bold",
-    cursor: "pointer",
-    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-    transition: "background-color 0.3s",
+ 
+  iconGroup: {
+    display: 'flex',
+    gap: '15px',
+  },
+  iconContainerHover: {
+    backgroundColor: '#084B24', // Background on hover
+  },
+  title: {
+    fontSize: '24px',
+    color: 'white',
+  },
+  icon: {
+    fontSize: '24px',
+    color: 'white',
+    cursor: 'pointer',
+  },
+  label: {
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#fff',
+    opacity: 0, // Initially hidden
+    whiteSpace: 'nowrap', // Prevent label text from wrapping
+    transition: 'opacity 0.3s ease',
+  },
+ 
+  item: {
+    padding: '10px 0',
+  },
+  sidebar: {
+    position: 'fixed',
+    top: '60px',
+    left: 0,
+    height: '100vh',
+    width: '50px', // Default width when collapsed
+    backgroundColor: 'rgba(15, 81, 50, 0.85)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    padding: '10px 0',
+    overflowX: 'hidden',
+    transition: 'width 0.3s ease',
+    zIndex: 1000,
+  },
+  sidebarExpanded: {
+    width: '200px', // Width when expanded
   },
   submitButtonHover: {
     backgroundColor: "#084B24",
@@ -394,10 +588,7 @@ const styles = {
     fontWeight: "500",
     fontSize: "14px",
   },
-  icon: {
-    marginRight: "5px",
-    color: "#0F5132",
-  },
+ 
 };
 
 export default TouristOrders;

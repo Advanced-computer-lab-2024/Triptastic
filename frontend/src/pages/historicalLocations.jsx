@@ -689,15 +689,16 @@ const styles = {
     backgroundColor: 'rgba(15, 81, 50, 0.85)',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'flex-start', // Ensure alignment starts from the left
+    alignItems: 'flex-start',
     padding: '10px 0',
     overflowX: 'hidden',
     transition: 'width 0.3s ease',
-    zIndex: 1000,
+    zIndex: 1000, // Keep sidebar above other elements
   },
   sidebarExpanded: {
     width: '200px', // Width when expanded
   },
+  
   iconContainer: {
     display: 'flex',
     alignItems: 'center',
@@ -793,6 +794,9 @@ const styles = {
     flexWrap: 'wrap',
     gap: '20px',
     justifyContent: 'space-between',
+    padding: '10px',
+    marginLeft: 'calc(50px + 10px)', // Add space for the sidebar (collapsed width + padding)
+    transition: 'margin-left 0.3s ease', // Smooth transition when sidebar expands
   },
   
 
@@ -805,21 +809,22 @@ const styles = {
   },
 
   
-    card: {
-      display: 'flex',
-      flexDirection: 'column', // Change to column for better layout
-      alignItems: 'center',
-      border: '1px solid #ddd',
-      borderRadius: '8px',
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-      overflow: 'hidden',
-      width: '100%',
-      maxWidth: "350px", // Adjust the width
-      padding: "10px", // Reduce padding for a shorter container
-      height: "450px",
-      backgroundColor: '#fff',
-      marginBottom: '20px',
-    },
+  card: {
+    display: 'flex',
+    flexDirection: 'column', // Change to column for better layout
+    alignItems: 'center',
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    overflow: 'hidden',
+    width: '100%',
+    maxWidth: "350px", // Adjust the width
+    padding: "10px", // Reduce padding for a shorter container
+    height: "450px",
+    backgroundColor: '#fff',
+    marginBottom: '10px', // Reduced margin for closer cards
+  },
+  
     image: {
       width: '100%', // Make the image take the full width of the card
       height: '380px', // Adjust the height for better visibility
