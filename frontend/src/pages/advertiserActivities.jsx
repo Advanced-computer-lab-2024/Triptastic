@@ -354,6 +354,12 @@ const handleGetActivity = async (e, Advertiser,name) => {
             );
           }}
         >
+            <div className="profile" style={styles.item} onClick={() => navigate('/advertiser-profile')}>
+            <FaUserCircle style={styles.iconn} />
+            <span className="label" style={styles.label}>
+              Profile
+            </span>
+          </div>
           <div className="activities" style={styles.item} onClick={() => navigate('/advertiser-Activities')}>
             <FaRunning style={styles.iconn} />
             <span className="label" style={styles.label}>
@@ -364,12 +370,6 @@ const handleGetActivity = async (e, Advertiser,name) => {
             <FaBus style={styles.iconn} />
             <span className="label" style={styles.label}>
               Transportation
-            </span>
-          </div>
-          <div className="profile" style={styles.item} onClick={() => navigate('/advertiser-profile')}>
-            <FaUserCircle style={styles.iconn} />
-            <span className="label" style={styles.label}>
-              Profile
             </span>
           </div>
         </div>

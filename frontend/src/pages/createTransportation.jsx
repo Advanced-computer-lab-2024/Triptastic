@@ -113,6 +113,12 @@ const CreateTransportation = () => {
             );
           }}
         >
+            <div className="profile" style={styles.item} onClick={() => navigate('/advertiser-profile')}>
+            <FaUserCircle style={styles.iconn} />
+            <span className="label" style={styles.label}>
+              Profile
+            </span>
+          </div>
           <div className="activities" style={styles.item} onClick={() => navigate('/advertiser-Activities')}>
             <FaRunning style={styles.iconn} />
             <span className="label" style={styles.label}>
@@ -125,12 +131,7 @@ const CreateTransportation = () => {
               Transportation
             </span>
           </div>
-          <div className="profile" style={styles.item} onClick={() => navigate('/advertiser-profile')}>
-            <FaUserCircle style={styles.iconn} />
-            <span className="label" style={styles.label}>
-              Profile
-            </span>
-          </div>
+         
         </div>
     
         <div className="transportation-form" style={styles.transportForm}>

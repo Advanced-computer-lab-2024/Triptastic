@@ -504,6 +504,12 @@ const [date, setDate] = useState('');
           );
         }}
       >
+         <div className="profile" style={styles.item} onClick={() => navigate('/advertiser-profile')}>
+            <FaUserCircle style={styles.icon} />
+            <span className="label" style={styles.label}>
+              Profile
+            </span>
+          </div>
         <div  class="activities" style={styles.item} onClick={() => navigate('/advertiser-Activities')}>
           <FaRunning style={styles.icon} />
           <span className="label" style={styles.label}>
@@ -516,12 +522,6 @@ const [date, setDate] = useState('');
             Transportation
           </span>
         </div>
-        <div className="profile" style={styles.item} onClick={() => navigate('/advertiser-profile')}>
-            <FaUserCircle style={styles.iconn} />
-            <span className="label" style={styles.label}>
-              Profile
-            </span>
-          </div>
       
       
      
