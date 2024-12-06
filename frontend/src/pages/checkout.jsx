@@ -209,6 +209,7 @@ const Checkout = () => {
       });
       if (response.ok) {
         const data = await response.json();
+        // console.log(data);
         setAddresses(data);
         setErrorMessage('');
       } else {
@@ -236,7 +237,9 @@ const Checkout = () => {
       navigate('/'); // Fallback to home
     }
   };
-
+  const formatAddress = (address) => {
+    return `${address.addressLine1}, ${address.addressLine2 ? address.addressLine2 + ', ' : ''}${address.city}, ${address.state} ${address.postalCode}, ${address.country}`;
+  };
   // Proceed to payment
   const handleProceedToPayment = async () => {
     if (!selectedAddress) {
@@ -244,40 +247,42 @@ const Checkout = () => {
       return;
     }
   
+  
     const total = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   
     const touristUsername = localStorage.getItem('Username'); // Assuming the tourist username is stored in localStorage
-    console.log(cartItems.map(item => item.name))
+  
     try {
       const response = await fetch('http://localhost:8000/createOrder', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          touristUsername:touristUsername, // Send the username instead of touristId
+          touristUsername: touristUsername, // Send the username instead of touristId
           products: cartItems.map(item => item.productName), // Send the product names instead of IDs
-          shippingAddress: selectedAddress,
-          totalPrice:total
+          shippingAddress: formatAddress(selectedAddress), // Send a formatted address string
+          totalPrice: total,
         }),
-      
       });
-      console.log(response.body);
   
-      const data = await response.json();
+      // Log the response body to the console
+      const responseData = await response.json();
+      console.log("Response Data:", responseData);
   
       if (response.ok) {
         // Order created successfully, proceed to payment
-        navigate(`/payment?amount=${total}`, {
+        navigate(`/Payment?amount=${total}`, {
           state: { from: '/Checkout', cartItems, selectedAddress }
         });
         setErrorMessage(''); // Clear any previous error messages
       } else {
-        setErrorMessage(data.message || 'Failed to create order');
+        setErrorMessage(responseData.message || 'Failed to create order');
       }
     } catch (error) {
       setErrorMessage('Error creating order');
-      console.error(error);
+      console.error("Error creating order:", error);
     }
   };
+  
   
   const handleCashOnDelivery = async () => {
     if (!selectedAddress) {
@@ -331,7 +336,7 @@ const Checkout = () => {
   <div style={styles.logoContainer}>
     <img src={logo} alt="Logo" style={styles.logo} />
   </div>
-  <h1 style={styles.title}>Tourist Profile</h1>
+  <h1 style={styles.title}>Checkout</h1>
   <div style={styles.headerIconsContainer}>
 
     {/* Profile Icon */}

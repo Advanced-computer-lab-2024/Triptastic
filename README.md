@@ -12,11 +12,23 @@
 - Known Issues: *Describe any known issues or bugs here.*
 - Last Updated: *Date of the last update or release.*
 
-## Code Style
+## Code Styles and Conventions
 
-*This project uses [code style] to ensure consistent code quality. Contributing developers should follow this style guide:*
+### Naming Conventions
+- Camel Case for Variables and Functions
+  - `loginTourist`, `createTourist`, `generateOTP`
+- Consistent Capitalization in Model Imports
+  - `const touristModel = require('../Models/Tourist.js')`
+- Descriptive and Meaningful Variable Names
+  - Clear naming that indicates purpose: `Username`, `Email`, `DOB`
 
-- [Link to style guide, if any]
+
+
+
+
+
+
+
 
 ## Screenshots
 
@@ -42,13 +54,88 @@
 
 ## Code Examples
 
-*Provide a simple code example to demonstrate how your project works.*
+### 1. **Tourist creation**
+This example shows how to create a new tourist.
+
+
+## Code Examples
+
+### 1. **Tourist creation**
+This example shows how to create a new tourist.
+
+const createTourist = async (req, res) => {
+  const { Username, Email, Password, Nationality, DOB, Occupation, showIntro } = req.body;
+
+  try {
+    const userExistsInTourist = await touristModel.findOne({ Username });
+    const userExistsInTourGuide = await tourGuideModel.findOne({ Username });
+    const userExistsInAdvertiser = await advertiserModel.findOne({ Username });
+    const userExistsInSeller = await sellerModel.findOne({ Username });
+    const userExistsInAdmin = await adminModel.findOne({ Username });
+    const userExistsInTourismGov = await tourismGovModel.findOne({ Username });
+
+    if (userExistsInTourist || userExistsInTourGuide || userExistsInAdvertiser || userExistsInSeller || userExistsInAdmin || userExistsInTourismGov) {
+      return res.status(400).json({ error: 'Username already exists.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(Password, 10);
+
+    const tourist = await touristModel.create({
+      Username,
+      Email,
+      Password: hashedPassword,
+      Nationality,
+      DOB,
+      Occupation,
+      showIntro
+    });
+
+    res.status(200).json({
+      message: 'Tourist registered successfully',
+      tourist,
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+
+
+
+### 2. **Adding a new product**
+This example shows how to add a new product to the website.
+
+
+ const createProductseller = async (req, res) => {
+  const { productName,description,price,rating,seller,review,stock } = req.body;
+  const image = req.file ? req.file.path : null;
+  try {
+    const product = await productModel.create({ productName,description,price,rating,seller,review,stock,image });
+    res.status(201).json(product);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+
+
+
+
+
 
 ## Installation
+
+*To install this project simply clone this repository and open it in vscode or your preferred text editor then open up 2 new terminals in your text editor.In the first terminal run cd backend then npm i and in the second terminal run cd frontend then npm i that should install all the necessary frameworks and libraries needed for you to run this project.*
+
+
+
+## API reference
 
 
 
 ## Tests
+
+
 
 
 
@@ -63,4 +150,19 @@
 
 ## License
 
+Apache License 2.0
+
+Copyright [2024] [Triptastic]
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 

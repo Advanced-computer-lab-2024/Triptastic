@@ -2656,7 +2656,7 @@ const createOrder = async (req, res) => {
       status: 'pending',
       paymentStatus: 'pending', // Initially set to pending
     });
-
+console.log(shippingAddress);
     // Save the new order to the database
     await newOrder.save();
 
@@ -2813,13 +2813,14 @@ const getTouristOrders = async (req, res) => {
     // Loop through each order and check if it's more than 3 days old
     for (let order of orders) {
       const orderDate = new Date(order.orderDate);
-      const daysDifference = currentDate.getDay() - orderDate.getDay();// Difference in days
-
+      const daysDifference = currentDate.getDate() - orderDate.getDate();  // Correct difference in days
+// console.log(order.shippingAddress);
       // If the order is more than 3 days old and its status is not already 'delivered', update it
       if (daysDifference > 2 && order.status !== 'delivered') {
         order.status = 'delivered';
         await order.save(); // Save the updated order
       }
+
     }
 
     // Return the updated orders
@@ -2830,6 +2831,30 @@ const getTouristOrders = async (req, res) => {
   }
 };
 
+const clearCart = async (req, res) => {
+  try {
+    const { username } = req.query;
+
+    if (!username) {
+      return res.status(400).json({ message: "Missing username in query" });
+    }
+
+    // Update the cart for the user, clearing the products array
+    const result = await cartModel.updateOne(
+      { Username: username }, // Find the user's cart
+      { $set: { products: [] } } // Set the `products` array to an empty array
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ message: "No cart found for this user" });
+    }
+
+    res.status(200).json({ message: "Cart cleared successfully" });
+  } catch (error) {
+    console.error("Error clearing cart:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 
 const cancelOrder = async (req, res) => {
@@ -2881,4 +2906,4 @@ const cancelOrder = async (req, res) => {
   ,commentOnActivity,rateActivity,fileComplaint,getComplaintsByTourist,
   shareActivity,shareMuseum,shareHistorical,addReviewToProduct,bookActivity,bookItinerary,shareItinerary,addToCartAndRemoveFromWishlist,
   getBookedItineraries,submitFeedback,cancelBookedItinerary,requestAccountDeletionTourist,cancelActivity,
-  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist,removeProductFromCart,requestNotification,requestNotificationItinerary,addAddress,getAddresses,createOrder,payWithWallet,sendConfirmationEmail,applyPromoCode,getTouristOrders,cancelOrder};
+  getBookedActivities,setPreferences,getTransportation,submitFeedbackItinerary,loginTourist,addProductToWishlist,removeProductFromWishlist,getWishlist,removeProductFromCart,requestNotification,requestNotificationItinerary,addAddress,getAddresses,createOrder,payWithWallet,sendConfirmationEmail,applyPromoCode,getTouristOrders,cancelOrder,clearCart};

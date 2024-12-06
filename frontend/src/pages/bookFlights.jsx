@@ -152,6 +152,10 @@ const BookFlights = () => {
   };
 
   const handleBooking = (flightId) => {
+    if(localStorage.getItem('context') === 'guest') {
+      alert('Please login to book flight');
+      return;
+    }
     setBookedFlightId(flightId);
   };
   
