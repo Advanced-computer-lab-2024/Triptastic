@@ -1654,6 +1654,23 @@ const styles = {
     overflowX: 'auto',
     gap: '20px',
     padding: '20px',
+  }, item: {
+ 
+    padding: '10px 0',
+    
+  },iconn: {
+    fontSize: '24px',
+    marginLeft: '15px', // Move icons slightly to the right
+    color: '#fff', // Icons are always white
+  },
+  label: {
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#fff',
+    opacity: 0, // Initially hidden
+    whiteSpace: 'nowrap', // Prevent label text from wrapping
+    transition: 'opacity 0.3s ease',
   },
   
    carouselItemStyle :{
