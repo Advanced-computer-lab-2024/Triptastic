@@ -62,8 +62,8 @@ This example shows how to create a new tourist.
 
 ### 1. **Tourist creation**
 This example shows how to create a new tourist.
-
 ```javascript
+
 const createTourist = async (req, res) => {
   const { Username, Email, Password, Nationality, DOB, Occupation, showIntro } = req.body;
 
@@ -102,11 +102,16 @@ const createTourist = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+```javascript
+
+
+
 
 ### 2. **Adding a new product**
 This example shows how to add a new product to the website.
 
- 
+ ```javascript
+
  const createProductseller = async (req, res) => {
   const { productName,description,price,rating,seller,review,stock } = req.body;
   const image = req.file ? req.file.path : null;
@@ -117,6 +122,8 @@ This example shows how to add a new product to the website.
     res.status(400).json({ error: error.message });
   }
 };
+```javascript
+
 
 
 
