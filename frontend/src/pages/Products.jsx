@@ -6,6 +6,9 @@ import logo from '../images/image.png'; // Replace with your logo path
 import { FaUserCircle,FaShoppingCart,FaRegFileAlt, FaDollarSign, FaStar, FaComments, FaWarehouse, FaChartBar,FaBars} from 'react-icons/fa';
 import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel,
   FaClipboardList,FaSearch } from "react-icons/fa";
+  import activity from '../images/shopping.jpg'; 
+  import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
   
   import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
 const Products = () => {
@@ -15,8 +18,7 @@ const Products = () => {
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [minPrice, setMinPrice] = useState(''); // State for minimum price
-  const [maxPrice, setMaxPrice] = useState(''); // State for maximum price
+
   const navigate = useNavigate(); // Initialize useNavigate for navigation
   const [fetchedProduct, setFetchedProduct] = useState(null);//new
   const [errorMessage, setErrorMessage] = useState('');
@@ -37,6 +39,17 @@ const Products = () => {
     body: '',  
     date: ''  
   });
+  const [range, setRange] = useState([0, 500]); // Default range for slider
+  const [minPrice, setMinPrice] = useState(range[0]); // Minimum price
+  const [maxPrice, setMaxPrice] = useState(range[1]); // Maximum price
+  const [minPrice2, setMinPrice2] = useState(''); // Minimum price
+  const [maxPrice2, setMaxPrice2] = useState(''); // Maximum price
+  const handleRangeChange = (value) => {
+    setRange(value); // Update the range dynamically as slider is adjusted
+    setMinPrice(value[0]); // Update the minimum price dynamically
+    setMaxPrice(value[1]); // Update the maximum price dynamically
+  };
+
   
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -176,6 +189,8 @@ const Products = () => {
  
   
   const handleFilterSubmit = (e) => {
+    console.log(`Filtering products with prices between ${range[0]} and ${range[1]}`);
+    const [minPrice, maxPrice] = range;
     e.preventDefault(); // Prevent form submission from reloading the page
     fetchProducts(minPrice, maxPrice); // Fetch products based on the entered price range
   };
@@ -194,6 +209,67 @@ const Products = () => {
   }
 
   return (
+    <div>
+    <div style={styles.container2}>
+    {/* Background Section */}
+    <div style={styles.background}>
+      <h1 style={styles.title}>Looking for a certain product?</h1>
+       {/* Search Section */}
+       <div style={styles.searchSection}>
+    
+      <div style={styles.searchForm}>
+        <input
+          type="text"
+          name="productName"
+          value={formData.productName}
+          onChange={handleInputChange}
+          placeholder="Enter product name"
+          style={styles.searchInput}
+        />
+        <button onClick={() => handleSearchProduct(formData.productName)} style={styles.searchButton}>
+          <FaSearch style={styles.searchIcon}/>
+        </button>
+   
+    </div>
+    </div>
+    <form onSubmit={handleFilterSubmit} style={styles.filterForm}>
+      <div style={styles.filterGroup}>
+        <h4 style={styles.priceRangeDisplay}>
+          Price Range: {minPrice} - {maxPrice}
+        </h4>
+        <div style={styles.sliderContainer}>
+        {/* Slider for Selecting Min and Max */}
+        <Slider
+          range
+          min={0} // Minimum slider value
+          max={1000} // Maximum slider value
+          step={1} // Step increment
+          value={range} // Bind slider value to range state
+          onChange={handleRangeChange} // Update range on slider movement
+          trackStyle={[{ backgroundColor: "#0F5123", height: 6 }]} // Custom track style
+          handleStyle={[
+            { backgroundColor: "#0F5123", borderColor: "#0F5123" },
+            { backgroundColor: "#0F5123", borderColor: "#0F5123" },
+          ]} // Custom handle style
+          railStyle={{ backgroundColor: "#d9d9d9", height: 6 }} // Custom rail style
+        />
+        </div>
+
+        <button type="submit" style={styles.filterButton}>
+          Filter
+        </button>
+      </div>
+    </form>
+   
+
+    </div>
+    </div>
+
+
+   
+
+
+
     <div style={styles.container}>
       
       <header style={styles.header}>
@@ -307,107 +383,133 @@ const Products = () => {
 }}>
 
 </h3>
-<div style={styles.container}>
-  <h3 style={styles.cardTitle}>Looking for a certain product?</h3>
 
-  <div style={styles.flexContainer}>
-    {/* Search Section */}
-    <div style={styles.searchContainer}>
-      <div style={styles.inputContainer}>
-        <input
-          type="text"
-          name="productName"
-          value={formData.productName}
-          onChange={handleInputChange}
-          placeholder="Enter product name"
-          style={styles.input}
-        />
-        <button onClick={() => handleSearchProduct(formData.productName)} style={styles.iconButton}>
-          <FaSearch />
-        </button>
-      </div>
-    </div>
+{/* Product List */}
+{products.length > 0 ? (
+  <div
+    style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+      gap: '20px',
+    }}
+  >
+    {products.map((product, index) => (
+      <div
+        key={index}
+        style={{
+          position: 'relative',
+          backgroundColor: '#fff',
+          border: '1px solid #ddd',
+          borderRadius: '10px',
+          padding: '20px',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          transition: 'transform 0.2s ease',
+          overflow: 'visible',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'scale(1.03)';
+          e.currentTarget.style.boxShadow = '0 8px 12px rgba(0, 0, 0, 0.15)';
+          e.currentTarget.style.borderColor = '#0F5132';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+          e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+          e.currentTarget.style.borderColor = '#ddd';
+        }}
+      >
+        {/* Product Image */}
+        {product.image && (
+          <img
+            src={`http://localhost:8000/${product.image.replace(/\\/g, '/')}`}
+            alt={product.productName}
+            style={{
+              width: '100%',
+              height: '200px',
+              objectFit: 'cover',
+              borderRadius: '8px',
+              marginBottom: '10px',
+            }}
+          />
+        )}
 
-    {/* Filter Section */}
-    <form onSubmit={handleFilterSubmit} style={styles.filterForm}>
-      <div style={styles.filterGroup}>
-        <input
-          type="number"
-          value={minPrice}
-          onChange={(e) => setMinPrice(e.target.value)}
-          placeholder="Min Price"
-          style={styles.filterInput}
-        />
-        <input
-          type="number"
-          value={maxPrice}
-          onChange={(e) => setMaxPrice(e.target.value)}
-          placeholder="Max Price"
-          style={styles.filterInput}
-        />
-        <button type="submit" style={styles.filterButton}>
-          Filter
-        </button>
+        {/* Product Information */}
+        <div>
+          <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>
+            {product.productName}
+          </h3>
+          <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
+            <strong><FaRegFileAlt /> Description:</strong> {product.description}
+          </p>
+          
+          <p style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '8px' }}>
+            <strong><FaDollarSign /> Price:</strong> {(product.price * conversionRate).toFixed(2)} {selectedCurrency}{' '}
+          </p>
+          <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
+            <strong><FaWarehouse /> Stock:</strong> {product.stock}
+          </p>
+          <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
+            <strong><FaStar /> Rating:</strong> {product.rating}
+          </p>
+          <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}
+          ><strong><FaChartBar /> Sales:</strong> {product.sales}
+          </p>
+
+          <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
+            <strong><FaComments /> Reviews:</strong> {product.review}
+          </p>
+        </div>
+
+        {/* Product Actions */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+          <button
+            onClick={() => handleAddToCart(product)}
+            style={{
+              backgroundColor: '#0F5132',
+              color: '#fff',
+              padding: '10px 16px',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '14px',
+            }}
+          >
+            <FaShoppingCart /> Add to Cart
+          </button>
+          <button
+            onClick={() => handleAddToWishlist(product)}
+            style={{
+              backgroundColor: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '20px',
+              color: '#f50057',
+            }}
+          >
+            <FaHeart />
+          </button>
+        </div>
       </div>
-    </form>
+    ))}
   </div>
+) : (
+  <p>No products available.</p>
+)}
 
-  {/* Product Details */}
-  {fetchedProduct && (
-    <div style={styles.productDetails}>
-      <h4 style={styles.sectionTitle}>Product Details</h4>
-      <p><strong>Name:</strong> {fetchedProduct.productName}</p>
-      <p><strong>Description:</strong> {fetchedProduct.description}</p>
-      <p><strong>Price:</strong> {(fetchedProduct.price * conversionRate).toFixed(2)} {selectedCurrency}</p>
-      <p><strong>Stock:</strong> {fetchedProduct.stock}</p>
-    </div>
-  )}
+ 
+    
+
+    
+
+
+
 
  </div>
 
-      {products.length === 0 ? (
-        <p>No products available.</p>
-      ) : (
- <ul style={styles.productList}>
-  {products.map((product) => (
-    <li key={product.productName} style={styles.productCard}>
-      {product.image && (
-        <img
-          src={`http://localhost:8000/${product.image.replace(/\\/g, '/')}`}
-          alt={product.productName}
-          style={styles.productImage}
-        />
-      )}
-      <div style={styles.productInfo}>
-        <h2 style={styles.productName}>{product.productName}</h2>
-        <p><strong><FaRegFileAlt /> Description
-     </strong> {product.description}</p>
-        <p><strong><FaDollarSign /> Price:</strong> {selectedCurrency}{' '}
-          {(product.price * conversionRate).toFixed(2)}
-        </p>
-        <p><strong><FaStar /> Rating:</strong> {product.rating}</p>
-        <p><strong><FaComments /> Review:</strong> {product.review}</p>
-        <p><strong><FaWarehouse /> Stock:</strong> {product.stock}</p>
-        <p><strong><FaChartBar /> Sales:</strong> {product.sales}</p>
-        <div style={styles.productActions}>
-          <button onClick={() => handleAddToCart(product)} style={styles.actionButton}>
-          <FaShoppingCart/>
-          </button>
-          <button
-  onClick={() => handleAddToWishlist(product)}
-  style={styles.icons}
- >
-  <FaHeart style={styles.icons} />
+   
 
- </button>
-
-        </div>
-      </div>
-    </li>
-  ))}
- </ul>
-
-      )}
     </div>
     </div>
 
@@ -416,6 +518,86 @@ const Products = () => {
 
 //styles
 const styles = {
+  container2: {
+    marginTop:'60px',
+    fontFamily: 'Arial, sans-serif',
+  },
+  background: {
+    position: 'relative',
+    backgroundImage:  `url(${activity})`, // Replace with your image path
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    height: '400px', // Adjust height as needed
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: 'white',
+  },
+  title: {
+    fontSize: '2.5rem',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: '20px',
+    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)',
+  },
+  searchSection: {
+    display: 'flex',
+    justifyContent: 'center', // Center the search section
+    marginTop: '50px', // Add spacing above the search bar
+    marginRight:'50px',
+  },
+  
+  searchForm: {
+    display: 'flex',
+    alignItems: 'center', // Align input, select, and button vertically
+    gap: '10px', // Add spacing between elements
+    width: '80%', // Adjust the width of the entire search form
+    maxWidth: '1200px', // Ensure responsiveness
+  },
+  
+  searchInput: {
+    flex: 1, // Expand the input field to take available space
+    padding: '12px 150px',
+    fontSize: '16px',
+    borderRadius: '30px',
+    border: '1px solid rgba(0, 0, 0, 0.2)',
+    outline: 'none',
+    backgroundColor: '#fff',
+    boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.1)',
+  },
+  
+  searchSelect: {
+    padding: '10px',
+    fontSize: '14px',
+    borderRadius: '30px',
+    border: '1px solid rgba(0, 0, 0, 0.2)',
+    outline: 'none',
+    backgroundColor: '#fff',
+    cursor: 'pointer',
+  },
+  
+  searchButton: {
+    padding: '12px 20px',
+    fontSize: '16px',
+    color: '#fff',
+    backgroundColor: 'transparent',
+    border: 'none',
+    borderRadius: '30px',
+    cursor: 'pointer',
+    display: 'flex', // Align icon inside the button
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  
+  searchIcon: {
+    fontSize: '26px', // Adjust the size of the search icon
+  },
+  sliderContainer: {
+    width: "500%", // Adjust the slider width to make it wider
+    maxWidth: "300px", // Set a maximum width for larger screens
+    margin: "0 30px", // Center the slider
+  },
   container: {
     //marginTop:'400px',
     maxWidth: '1200px',
@@ -426,21 +608,33 @@ const styles = {
     borderRadius: '10px',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
   },
-  filterGroup: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-  },  flexContainer: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center', // Ensures vertical alignment
-    gap: '20px',
-    flexWrap: 'wrap',
+  filterForm: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    padding: "10px",
   },
-  filterInput: {
-    padding: '10px',
-    border: '1px solid #ddd',
-    borderRadius: '5px',
+  filterGroup: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "20px",
+    width: "100%",
+  },
+  filterButton: {
+    padding: "10px 20px",
+    borderRadius: "15px",
+    border: "2px solid white",
+    backgroundColor: "transparent",
+    color: "white",
+    cursor: "pointer",
+    fontSize: "16px",
+
+  },
+  priceRangeDisplay: {
+    fontSize: "16px",
+    color: "#333",
+    fontWeight: "bold",
   },
   productCard: {
     display: 'flex',
@@ -565,18 +759,7 @@ const styles = {
   },
 
  
-  filterForm: {
-    margin: '20px 0',
-  },
-  filterButton: {
-    marginTop: '10px',
-    padding: '10px 20px',
-    backgroundColor: '#0F5132',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-  },
+  
   productList: {
     fontSize:'11px',
     listStyleType: 'none',
