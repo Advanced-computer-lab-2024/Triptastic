@@ -120,7 +120,7 @@ const Complaints = () => {
       <div style={styles.logoContainer}>
         <img src={image} alt="Logo" style={styles.logo} />
       </div>
-      <h1 style={styles.title2}>Complaints Management</h1>
+      <h1 style={styles.title2}>Complaints</h1>
     </header>
 
      {/* Sidebar */}

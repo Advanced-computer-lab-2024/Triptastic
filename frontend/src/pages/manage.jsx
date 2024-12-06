@@ -22,6 +22,19 @@ const ManagementPage = () => {
       {/* Tabs */}
       <div style={styles.tabs}>
       <button
+          style={activeTab === 'preftags' ? styles.activeTab : styles.inactiveTab}
+          onClick={() => setActiveTab('preftags')}
+        >
+          <FaTag style={styles.icon} /> Preference Tags
+        </button>
+        
+        <button
+          style={activeTab === 'categories' ? styles.activeTab : styles.inactiveTab}
+          onClick={() => setActiveTab('categories')}
+        >
+          <FaThList style={styles.icon} /> Categories
+        </button>
+      <button
   style={activeTab === 'promoCode' ? styles.activeTab : styles.inactiveTab}
   onClick={() => setActiveTab('promoCode')}
 >
@@ -36,18 +49,7 @@ const ManagementPage = () => {
           <FaPlus style={styles.tabIcon} /> Add Product
         </button>
 
-        <button
-          style={activeTab === 'preftags' ? styles.activeTab : styles.inactiveTab}
-          onClick={() => setActiveTab('preftags')}
-        >
-          <FaTag style={styles.icon} /> Preference Tags
-        </button>
-        <button
-          style={activeTab === 'categories' ? styles.activeTab : styles.inactiveTab}
-          onClick={() => setActiveTab('categories')}
-        >
-          <FaThList style={styles.icon} /> Categories
-        </button>
+
       </div>
 
       {/* Content */}
