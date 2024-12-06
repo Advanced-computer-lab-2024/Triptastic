@@ -526,6 +526,8 @@ const BookFlights = () => {
         <option value="LAX">Los Angeles International Airport (LAX)</option>
         <option value="LHR">London Heathrow Airport (LHR)</option>
         <option value="CDG">Charles de Gaulle Airport (CDG)</option>
+        <option value="FRA"> Frankfurt International Airport (FRA)</option>
+        <option value="CAI"> Cairo International Airport (CAI)</option>
       </select>
     </div>
 
@@ -551,6 +553,9 @@ const BookFlights = () => {
         <option value="ICN">Incheon International Airport (ICN)</option>
         <option value="SIN">Singapore Changi Airport (SIN)</option>
         <option value="ORD">O'Hare International Airport (ORD)</option>
+        <option value="FRA"> Frankfurt International Airport (FRA)</option>
+        <option value="CAI"> Cairo International Airport (CAI)</option>
+
       </select>
     </div>
 

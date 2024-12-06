@@ -594,6 +594,7 @@ const styles = {
     marginTop:'60px',
     fontFamily: 'Arial, sans-serif',
   },
+ 
   background: {
     position: 'relative',
     backgroundImage:  `url(${historicallocation})`, // Replace with your image path
@@ -794,9 +795,6 @@ const styles = {
     flexWrap: 'wrap',
     gap: '20px',
     justifyContent: 'space-between',
-    padding: '10px',
-    marginLeft: 'calc(50px + 10px)', // Add space for the sidebar (collapsed width + padding)
-    transition: 'margin-left 0.3s ease', // Smooth transition when sidebar expands
   },
   
 
@@ -809,22 +807,21 @@ const styles = {
   },
 
   
-  card: {
-    display: 'flex',
-    flexDirection: 'column', // Change to column for better layout
-    alignItems: 'center',
-    border: '1px solid #ddd',
-    borderRadius: '5px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-    overflow: 'hidden',
-    width: '100%',
-    maxWidth: "350px", // Adjust the width
-    padding: "10px", // Reduce padding for a shorter container
-    height: "450px",
-    backgroundColor: '#fff',
-    marginBottom: '10px', // Reduced margin for closer cards
-  },
-  
+    card: {
+      display: 'flex',
+      flexDirection: 'column', // Change to column for better layout
+      alignItems: 'center',
+      border: '1px solid #ddd',
+      borderRadius: '8px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      overflow: 'hidden',
+      width: '100%',
+      maxWidth: "350px", // Adjust the width
+      padding: "10px", // Reduce padding for a shorter container
+      height: "450px",
+      backgroundColor: '#fff',
+      marginBottom: '20px',
+    },
     image: {
       width: '100%', // Make the image take the full width of the card
       height: '380px', // Adjust the height for better visibility
