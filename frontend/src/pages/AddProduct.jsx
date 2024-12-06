@@ -134,71 +134,71 @@ const AddProduct = () => {
       >
 
 <div style={styles.item} onClick={() => navigate('/adminPage')}>
-          <FaUser style={styles.icon} />
-          <span className="label" style={styles.label}>
+          <FaUser style={styles.icon2} />
+          <span className="label" style={styles.label2}>
            Admin Profile
           </span>
         </div>
 
         <div style={styles.item} onClick={() => navigate('/PromoCodeForm')}>
-          <FaTag style={styles.icon} />
-          <span className="label" style={styles.label}>
+          <FaTag style={styles.icon2} />
+          <span className="label" style={styles.label2}>
             Promo Codes
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/Complaints')}>
-          <FaExclamationCircle style={styles.icon} />
-          <span className="label" style={styles.label}>
+          <FaExclamationCircle style={styles.icon2} />
+          <span className="label" style={styles.label2}>
            Complaints
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/preftags')}>
-          <FaHeart style={styles.icon} />
-          <span className="label" style={styles.label}>
+          <FaHeart style={styles.icon2} />
+          <span className="label" style={styles.label2}>
            Preference Tags
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/docs')}>
-          <FaFileAlt style={styles.icon} />
-          <span className="label" style={styles.label}>
+          <FaFileAlt style={styles.icon2} />
+          <span className="label" style={styles.label2}>
             Documents
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/category')}>
-          <FaThList style={styles.icon} />
-          <span className="label" style={styles.label}>
+          <FaThList style={styles.icon2} />
+          <span className="label" style={styles.label2}>
            Categories
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/adminReport')}>
-          <FaBox  style={styles.icon} />
-          <span className="label" style={styles.label}>
+          <FaBox  style={styles.icon2} />
+          <span className="label" style={styles.label2}>
             Sales Report
           </span>   
         </div>
         <div style={styles.item} onClick={() => navigate('/DeletionRequest')}>
-          <FaTrashAlt  style={styles.icon} />
-          <span className="label" style={styles.label}>
+          <FaTrashAlt  style={styles.icon2} />
+          <span className="label" style={styles.label2}>
             Deletion Requests
           </span>   
         </div>
         <div style={styles.item} onClick={() => navigate('/AddProduct')}>
-          <FaPlus  style={styles.icon} />
-          <span className="label" style={styles.label}>
+          <FaPlus  style={styles.icon2} />
+          <span className="label" style={styles.label2}>
             Add Product
           </span>   
         </div>
 
         <div style={styles.item} onClick={() => navigate('/EditProducts')}>
-          <FaEdit   style={styles.icon} />
-          <span className="label" style={styles.label}>
+          <FaEdit   style={styles.icon2} />
+          <span className="label" style={styles.label2}>
             Edit Products
           </span>   
         </div>
 
         <div style={styles.item} onClick={() => navigate('/flagged')}>
-          <FaFlag   style={styles.icon} />
-          <span className="label" style={styles.label}>
+          <FaFlag   style={styles.icon2} />
+          <span className="label" style={styles.label2}>
             Flag Events
           </span>   
         </div>
@@ -486,7 +486,7 @@ const styles = {
       width: '200px', // Width when expanded
     },
 
-    label: {
+    label2: {
       cursor: 'pointer',
       fontSize: '16px',
       fontWeight: 'bold',
@@ -495,7 +495,7 @@ const styles = {
       whiteSpace: 'nowrap', // Prevent label text from wrapping
       transition: 'opacity 0.3s ease',
     },
-    icon: {
+    icon2: {
       fontSize: '24px',
       marginLeft: '15px', // Move icons slightly to the right
       color: '#fff', // Icons are always white
