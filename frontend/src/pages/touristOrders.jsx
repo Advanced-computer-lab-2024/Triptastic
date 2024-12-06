@@ -37,24 +37,31 @@ const TouristOrders = () => {
   useEffect(() => {
     fetchOrders();
   }, []);
-
   const fetchOrders = async () => {
     const touristUsername = localStorage.getItem("Username");
     if (!touristUsername) {
       console.error("No tourist username found");
       return;
     }
-
+  
     try {
       const response = await axios.get(
         `http://localhost:8000/getTouristOrders?tourist=${touristUsername}`
       );
-      setOrders(response.data);
+  
+      // Log the fetched order details to the console
+      console.log("Fetched Orders (Raw):", response.data);
+  
+  
+      setOrders(response.data); // Set the formatted orders state
     } catch (error) {
       console.error("Error fetching orders:", error);
     }
   };
-
+  
+  const formatAddress = (address) => {
+    return `${address.addressLine1}, ${address.addressLine2 ? address.addressLine2 + ', ' : ''}${address.city}, ${address.state} ${address.postalCode}, ${address.country}`;
+  };
  
   const submitReview = async (productName) => {
     if (!review.trim()) {
@@ -263,8 +270,10 @@ const TouristOrders = () => {
               {(order.totalPrice * conversionRate).toFixed(2)}
             </p>
             <p style={styles.orderInfo}>
-              <FaHome style={styles.icon} /> Shipping Address: {order.shippingAddress}
-            </p>
+  <FaHome style={styles.icon} /> Shipping Address: {order.shippingAddress}
+</p>
+
+
             <div style={styles.productsContainer}>
               <h4 style={styles.productsTitle}>Products in this Order</h4>
               {order.products.map((product) => (
