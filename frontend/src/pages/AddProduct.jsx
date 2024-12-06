@@ -134,57 +134,57 @@ const AddProduct = () => {
       >
 
 <div style={styles.item} onClick={() => navigate('/adminPage')}>
-          <FaUser style={styles.icon} />
-          <span className="label" style={styles.label}>
+          <FaUser style={styles.icon2} />
+          <span className="label" style={styles.label2}>
            Admin Profile
           </span>
         </div>
 
         <div style={styles.item} onClick={() => navigate('/manage')}>
-          <FaUserShield style={styles.icon} />
-          <span className="label" style={styles.label}>
+          <FaUserShield style={styles.icon2} />
+          <span className="label" style={styles.label2}>
           Admin Panel
           </span>
         </div>
         
         <div style={styles.item} onClick={() => navigate('/Complaints')}>
-          <FaExclamationCircle style={styles.icon} />
-          <span className="label" style={styles.label}>
+          <FaExclamationCircle style={styles.icon2} />
+          <span className="label" style={styles.label2}>
            Complaints
           </span>
         </div>
 
         <div style={styles.item} onClick={() => navigate('/docs')}>
-          <FaFileAlt style={styles.icon} />
-          <span className="label" style={styles.label}>
+          <FaFileAlt style={styles.icon2} />
+          <span className="label" style={styles.label2}>
             Documents
           </span>
         </div>
 
 
         <div style={styles.item} onClick={() => navigate('/adminReport')}>
-          <FaBox  style={styles.icon} />
-          <span className="label" style={styles.label}>
+          <FaBox  style={styles.icon2} />
+          <span className="label" style={styles.label2}>
             Sales Report
           </span>   
         </div>
         <div style={styles.item} onClick={() => navigate('/DeletionRequest')}>
-          <FaTrashAlt  style={styles.icon} />
-          <span className="label" style={styles.label}>
+          <FaTrashAlt  style={styles.icon2} />
+          <span className="label" style={styles.label2}>
             Deletion Requests
           </span>   
         </div>
 
         <div style={styles.item} onClick={() => navigate('/EditProducts')}>
-          <FaEdit   style={styles.icon} />
-          <span className="label" style={styles.label}>
+          <FaEdit   style={styles.icon2} />
+          <span className="label" style={styles.label2}>
             Edit Products
           </span>   
         </div>
 
         <div style={styles.item} onClick={() => navigate('/flagged')}>
-          <FaFlag   style={styles.icon} />
-          <span className="label" style={styles.label}>
+          <FaFlag   style={styles.icon2} />
+          <span className="label" style={styles.label2}>
             Flag Events
           </span>   
         </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaEdit, FaSave, FaBox, FaDollarSign, FaTasks } from 'react-icons/fa';
+import { FaEdit, FaSave, FaBox, FaUserShield, FaTasks } from 'react-icons/fa';
 import { FaArrowLeft, FaTag, FaUser, FaExclamationCircle, FaHeart, FaFileAlt, FaTrashAlt, FaThList, FaPlus, FaFlag } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import image from '../images/image.png';
@@ -152,6 +152,7 @@ const EditProducts = () => {
         }}
       >
 
+
 <div style={styles.item} onClick={() => navigate('/adminPage')}>
           <FaUser style={styles.icon} />
           <span className="label" style={styles.label}>
@@ -159,36 +160,28 @@ const EditProducts = () => {
           </span>
         </div>
 
-        <div style={styles.item} onClick={() => navigate('/PromoCodeForm')}>
-          <FaTag style={styles.icon} />
+        <div style={styles.item} onClick={() => navigate('/manage')}>
+          <FaUserShield style={styles.icon} />
           <span className="label" style={styles.label}>
-            Promo Codes
+          Admin Panel
           </span>
         </div>
+        
         <div style={styles.item} onClick={() => navigate('/Complaints')}>
           <FaExclamationCircle style={styles.icon} />
           <span className="label" style={styles.label}>
            Complaints
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/preftags')}>
-          <FaHeart style={styles.icon} />
-          <span className="label" style={styles.label}>
-           Preference Tags
-          </span>
-        </div>
+
         <div style={styles.item} onClick={() => navigate('/docs')}>
           <FaFileAlt style={styles.icon} />
           <span className="label" style={styles.label}>
             Documents
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/category')}>
-          <FaThList style={styles.icon} />
-          <span className="label" style={styles.label}>
-           Categories
-          </span>
-        </div>
+
+
         <div style={styles.item} onClick={() => navigate('/adminReport')}>
           <FaBox  style={styles.icon} />
           <span className="label" style={styles.label}>
@@ -199,12 +192,6 @@ const EditProducts = () => {
           <FaTrashAlt  style={styles.icon} />
           <span className="label" style={styles.label}>
             Deletion Requests
-          </span>   
-        </div>
-        <div style={styles.item} onClick={() => navigate('/AddProduct')}>
-          <FaPlus  style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Add Product
           </span>   
         </div>
 
@@ -222,6 +209,7 @@ const EditProducts = () => {
           </span>   
         </div>
       </div>
+
     
   
       <h1 style={styles.heading}>

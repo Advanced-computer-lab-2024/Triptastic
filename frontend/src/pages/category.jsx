@@ -175,13 +175,8 @@ const deleteCategory = async (e) => {
         }}
       >
 
+
 <div style={styles.item} onClick={() => navigate('/adminPage')}>
-          <FaUser style={styles.icon} />
-          <span className="label" style={styles.label}>
-           Admin Profile
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/adminPage')}>
           <FaUser style={styles.icon} />
           <span className="label" style={styles.label}>
            Admin Profile
@@ -237,6 +232,7 @@ const deleteCategory = async (e) => {
           </span>   
         </div>
       </div>
+
 
 
       <div style={styles.cardsContainer}>
