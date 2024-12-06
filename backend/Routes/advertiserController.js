@@ -1,4 +1,8 @@
-  const advertiserModel = require('../Models/Advertiser.js');
+const tourGuideModel = require('../Models/tourGuide.js'); // Adjust path as needed
+const advertiserModel = require('../Models/Advertiser.js');
+const sellerModel = require('../Models/Seller.js');
+const adminModel = require('../Models/Admin.js');
+const tourismGovModel = require('../Models/tourismGov.js');
 const activitiescategoryModel = require('../Models/Activitiescategory.js');
 const activitiesModel = require('../Models/Activities.js');
 const PreferenceTagsModel = require('../Models/PreferenceTags.js');
@@ -11,30 +15,44 @@ const jwt = require('jsonwebtoken');
 const { default: mongoose } = require('mongoose');
 const nodemailer = require('nodemailer');
 
+
+
 const createAdvertiser = async (req, res) => {
   const { Username, Email, Password } = req.body;
   const idDocument = req.files?.Id?.[0]?.path || null;
   const taxationRegistryCard = req.files?.TaxationRegistryCard?.[0]?.path || null;
 
   try {
-      // Hash the password
-      const hashedPassword = await bcrypt.hash(Password, 10);
+    // Check if the username already exists in any model
+    const userExistsInTourist = await touristModel.findOne({ Username });
+    const userExistsInTourGuide = await tourGuideModel.findOne({ Username });
+    const userExistsInAdvertiser = await advertiserModel.findOne({ Username });
+    const userExistsInSeller = await sellerModel.findOne({ Username });
+    const userExistsInAdmin = await adminModel.findOne({ Username });
+    const userExistsInTourismGov = await tourismGovModel.findOne({ Username });
 
-      // Create the advertiser
-      const advertiser = await advertiserModel.create({
-          Username,
-          Email,
-          Password: hashedPassword,
-          Id: idDocument,
-          TaxationRegistryCard: taxationRegistryCard,
-      });
+    if (userExistsInTourist || userExistsInTourGuide || userExistsInAdvertiser || userExistsInSeller || userExistsInAdmin || userExistsInTourismGov) {
+      return res.status(400).json({ error: 'Username already exists.' });
+    }
 
-      res.status(201).json({
-          message: 'Advertiser registered successfully',
-          advertiser,
-      });
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(Password, 10);
+
+    // Create the advertiser
+    const advertiser = await advertiserModel.create({
+      Username,
+      Email,
+      Password: hashedPassword,
+      Id: idDocument,
+      TaxationRegistryCard: taxationRegistryCard,
+    });
+
+    res.status(201).json({
+      message: 'Advertiser registered successfully',
+      advertiser,
+    });
   } catch (error) {
-      res.status(400).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 };
 
