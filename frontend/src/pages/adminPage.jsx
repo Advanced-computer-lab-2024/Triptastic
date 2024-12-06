@@ -1781,6 +1781,46 @@ loadingText: {
       </div>
 
 
+ 
+      <div style={styles.userStatsContainer}>    
+<div style={styles.profitSummary}>
+    <div
+      style={{
+        display: 'flex', // Flexbox for alignment
+        alignItems: 'center', // Vertical alignment
+        justifyContent: 'center', // Horizontal alignment
+        gap: '10px', // Space between title and icon
+      }}
+    >
+      <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0' }}>
+        User Statistics
+      </h2>
+      <FaChartBar style={{ fontSize: '24px', color: '#0F5132' }} />
+</div>
+</div>
+
+  {statsError && <p style={styles.errorText}>{statsError}</p>}
+  {statistics ? (
+    <div style={styles.contentRow}>
+      {/* Total Users Box */}
+      <div style={styles.totalUsersBox}>
+        <p style={styles.totalUsersTitle}>Total Users</p>
+        <p style={styles.totalUsersValue}>{statistics.totalUsers}</p>
+      </div>
+
+      {/* Chart */}
+      <div style={styles.chartContainer}>
+        
+        <UserStatistics statistics={statistics} />
+     
+      </div>
+    </div>
+  ) : (
+    <p style={styles.loadingText}>Fetching statistics...</p>
+  )}
+</div>
+
+
 
     
       <div style={styles.profitSummary}>
@@ -1847,46 +1887,7 @@ loadingText: {
   </div>
 )}
 
-  
-<div style={styles.userStatsContainer}>    
-<div style={styles.profitSummary}>
-    <div
-      style={{
-        display: 'flex', // Flexbox for alignment
-        alignItems: 'center', // Vertical alignment
-        justifyContent: 'center', // Horizontal alignment
-        gap: '10px', // Space between title and icon
-      }}
-    >
-      <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0' }}>
-        User Statistics
-      </h2>
-      <FaChartBar style={{ fontSize: '24px', color: '#0F5132' }} />
-</div>
-</div>
-
-  {statsError && <p style={styles.errorText}>{statsError}</p>}
-  {statistics ? (
-    <div style={styles.contentRow}>
-      {/* Total Users Box */}
-      <div style={styles.totalUsersBox}>
-        <p style={styles.totalUsersTitle}>Total Users</p>
-        <p style={styles.totalUsersValue}>{statistics.totalUsers}</p>
-      </div>
-
-      {/* Chart */}
-      <div style={styles.chartContainer}>
-        
-        <UserStatistics statistics={statistics} />
-     
-      </div>
-    </div>
-  ) : (
-    <p style={styles.loadingText}>Fetching statistics...</p>
-  )}
-</div>
-
-
+ 
 
 {/* Modal for Admin Settings */}
 {modalOpen && (
