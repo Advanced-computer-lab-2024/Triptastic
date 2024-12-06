@@ -31,6 +31,8 @@ const MuseumDetail = () => {
           throw new Error('Museum not found');
         }
         const data = await response.json();
+        console.log(data);
+
         setMuseum(data);
       } catch (error) {
         setErrorMessage(error.message);
@@ -299,23 +301,6 @@ const styles = {
   labelVisible: {
     opacity: 1, // Fully visible when expanded
   },
-  labelVisible: {
-    opacity: 1, // Fully visible when expanded
-  },
-  logoContainer: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  logo: {
-    height: '60px',
-    width: '70px',
-    borderRadius: '10px',
-  },
-  profileIcon:{
-    fontSize: '40px',
-    cursor: 'pointer',
-
-  },
  
   logoContainer: {
     display: 'flex',
@@ -331,6 +316,7 @@ const styles = {
     cursor: 'pointer',
 
   },
+ 
   container: {
     display: 'flex',
     flexDirection: 'column',
@@ -344,9 +330,6 @@ const styles = {
     fontFamily: 'Arial, sans-serif',
     marginTop:'50px',
   },
-
-  
-
   
   title: {
     fontSize: '22px',
