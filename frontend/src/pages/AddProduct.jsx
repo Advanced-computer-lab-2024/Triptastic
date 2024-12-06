@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaTag, FaInfoCircle, FaDollarSign, FaBox, FaImage } from 'react-icons/fa';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
-import { FaArrowLeft, FaUser, FaExclamationCircle, FaHeart, FaFileAlt, FaTrashAlt, FaThList, FaPlus, FaEdit, FaFlag } from 'react-icons/fa';
+import { FaArrowLeft, FaUser, FaExclamationCircle, FaUserShield,FaHeart, FaFileAlt, FaTrashAlt, FaThList, FaPlus, FaEdit, FaFlag } from 'react-icons/fa';
 import image from '../images/image.png';
 import { useNavigate } from 'react-router-dom';
 
@@ -134,75 +134,62 @@ const AddProduct = () => {
       >
 
 <div style={styles.item} onClick={() => navigate('/adminPage')}>
-          <FaUser style={styles.icon2} />
-          <span className="label" style={styles.label2}>
+          <FaUser style={styles.icon} />
+          <span className="label" style={styles.label}>
            Admin Profile
           </span>
         </div>
 
-        <div style={styles.item} onClick={() => navigate('/PromoCodeForm')}>
-          <FaTag style={styles.icon2} />
-          <span className="label" style={styles.label2}>
-            Promo Codes
+        <div style={styles.item} onClick={() => navigate('/manage')}>
+          <FaUserShield style={styles.icon} />
+          <span className="label" style={styles.label}>
+          Admin Panel
           </span>
         </div>
+        
         <div style={styles.item} onClick={() => navigate('/Complaints')}>
-          <FaExclamationCircle style={styles.icon2} />
-          <span className="label" style={styles.label2}>
+          <FaExclamationCircle style={styles.icon} />
+          <span className="label" style={styles.label}>
            Complaints
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/preftags')}>
-          <FaHeart style={styles.icon2} />
-          <span className="label" style={styles.label2}>
-           Preference Tags
-          </span>
-        </div>
+
         <div style={styles.item} onClick={() => navigate('/docs')}>
-          <FaFileAlt style={styles.icon2} />
-          <span className="label" style={styles.label2}>
+          <FaFileAlt style={styles.icon} />
+          <span className="label" style={styles.label}>
             Documents
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/category')}>
-          <FaThList style={styles.icon2} />
-          <span className="label" style={styles.label2}>
-           Categories
-          </span>
-        </div>
+
+
         <div style={styles.item} onClick={() => navigate('/adminReport')}>
-          <FaBox  style={styles.icon2} />
-          <span className="label" style={styles.label2}>
+          <FaBox  style={styles.icon} />
+          <span className="label" style={styles.label}>
             Sales Report
           </span>   
         </div>
         <div style={styles.item} onClick={() => navigate('/DeletionRequest')}>
-          <FaTrashAlt  style={styles.icon2} />
-          <span className="label" style={styles.label2}>
+          <FaTrashAlt  style={styles.icon} />
+          <span className="label" style={styles.label}>
             Deletion Requests
-          </span>   
-        </div>
-        <div style={styles.item} onClick={() => navigate('/AddProduct')}>
-          <FaPlus  style={styles.icon2} />
-          <span className="label" style={styles.label2}>
-            Add Product
           </span>   
         </div>
 
         <div style={styles.item} onClick={() => navigate('/EditProducts')}>
-          <FaEdit   style={styles.icon2} />
-          <span className="label" style={styles.label2}>
+          <FaEdit   style={styles.icon} />
+          <span className="label" style={styles.label}>
             Edit Products
           </span>   
         </div>
 
         <div style={styles.item} onClick={() => navigate('/flagged')}>
-          <FaFlag   style={styles.icon2} />
-          <span className="label" style={styles.label2}>
+          <FaFlag   style={styles.icon} />
+          <span className="label" style={styles.label}>
             Flag Events
           </span>   
         </div>
       </div>
+
 
       <div style={styles.card}>
         <form onSubmit={handleProductSubmit} style={styles.form}>
