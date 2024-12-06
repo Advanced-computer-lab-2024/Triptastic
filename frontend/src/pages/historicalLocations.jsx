@@ -120,7 +120,7 @@ const HistoricalLocations = () => {
   // Filter historical places by tag
   const handleFilter = async () => {
     setLoading(true);
-    setErrorMessage('');
+    setErrorMessage(''); // Optional: Clear any previous error state
     try {
       const response = await fetch(`http://localhost:8000/filterHistoricalLocationsByTagsTourist?Types=${selectedTag}`, {
         method: 'GET',
@@ -128,29 +128,31 @@ const HistoricalLocations = () => {
           'Content-Type': 'application/json',
         },
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
-        setErrorMessage(errorData.error || 'No historical locations found with the specified tag type.');
+        const errorMessage = errorData.error || 'No historical locations found with the specified tag type.';
+        alert(errorMessage);
         return;
       }
-
+  
       let data = await response.json();
       console.log(`Filter ${selectedTag} Response:`, data);
       if (!Array.isArray(data)) {
         data = [data];
       }
-
+  
       setHistoricalPlaces(data);
     } 
     catch (error) {
       console.error('Error filtering historical locations:', error);
-      setErrorMessage("No historical locations found with the specified tag type.");
+      alert("No historical locations found with the specified tag type.");
     } 
     finally {
       setLoading(false);
     }
   };
+  
 
   // Search historical places by name or tag
   const handleSearch = async (query) => {
@@ -353,13 +355,15 @@ const HistoricalLocations = () => {
    <div style={{ position: 'relative', textAlign: 'center' }}>
   <button
     onClick={() => setFilterVisible(!filterVisible)}
+    placeholder='Filter Historical Locations'
+
     style={{
       padding: '8px 16px',
       fontSize: '1rem',
       color: '#333',
       backgroundColor: '#fff',
       border: '1px solid #ccc',
-      borderRadius: '4px',
+      borderRadius: '30px',
       cursor: 'pointer',
       boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
       transition: 'background-color 0.3s, box-shadow 0.3s',
@@ -385,7 +389,7 @@ const HistoricalLocations = () => {
         transform: 'translateX(-50%)',
         padding: '10px',
         backgroundColor: '#f9f9f9',
-        borderRadius: '8px',
+        borderRadius: '30px',
         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
         textAlign: 'center',
         width: '280px',
@@ -397,6 +401,7 @@ const HistoricalLocations = () => {
         style={{
           display: 'block',
           marginBottom: '10px',
+          borderRadius: '30px',
           fontSize: '1rem',
           fontWeight: 'bold',
           color: '#333',
@@ -414,7 +419,7 @@ const HistoricalLocations = () => {
         style={{
           padding: '8px',
           fontSize: '1rem',
-          borderRadius: '4px',
+          borderRadius: '30px',
           border: '1px solid #ccc',
           marginBottom: '10px',
           width: '100%',
@@ -436,7 +441,7 @@ const HistoricalLocations = () => {
           color: '#333',
           backgroundColor: '#fff',
           border: '1px solid #ccc',
-          borderRadius: '4px',
+          borderRadius: '50px',
           cursor: selectedTag ? 'pointer' : 'not-allowed',
           opacity: selectedTag ? '1' : '0.6',
           width: '100%',
@@ -451,9 +456,12 @@ const HistoricalLocations = () => {
 
   </>
 )}
+      </div>
+
 
           </div>
         </div>
+        <div style={styles.container}>
 
         {/* Header Section */}
         <header style={styles.header}>
@@ -467,7 +475,6 @@ const HistoricalLocations = () => {
             onClick={handleProfileRedirect}
           />
         </header>
-      </div>
 
 
       {loading ? (
@@ -577,6 +584,8 @@ const HistoricalLocations = () => {
 
 }
 </div>
+</div>
+
   );};
 
 
@@ -655,13 +664,6 @@ const styles = {
   },
   searchIcon: {
     fontSize: '25px', // Adjust icon size
-  },
-  
-  container: {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '20px',
-    fontFamily: 'Arial, sans-serif',
   },
   header: {
     height:'60px',
@@ -878,6 +880,12 @@ const styles = {
     shareOptionIcon: {
       marginRight: "8px", // Space between the icon and text
       fontSize: "1.0rem", // Ensure both icons are the same size
+    },
+    container: {
+      maxWidth: '1200px',
+      margin: '0 auto',
+      padding: '20px',
+      fontFamily: 'Arial, sans-serif',
     },
     };
     
