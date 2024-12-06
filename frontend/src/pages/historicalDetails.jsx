@@ -66,7 +66,7 @@ const HistoricalDetail = () => {
   <div style={styles.logoContainer}>
     <img src={logo} alt="Logo" style={styles.logo} />
   </div>
-  <h1 style={{fontSize:'24px',margintop:'20px',marginRight:'700px'}}>Historical Location Details</h1>  
+  <h1 style={{fontSize:'24px',margintop:'20px',marginRight:'580px'}}>Historical Location Details</h1>  
 
 </header>
 
