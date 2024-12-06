@@ -502,7 +502,12 @@ const handleViewReport = async (itineraryId) => {
             (label) => (label.style.opacity = '0')
           );
         }}
-      >
+      >   <div  class="profile" style={styles.item} onClick={() => navigate('/tour-guide-profile')}>
+      <FaUserCircle style={styles.icon} />
+      <span className="label" style={styles.label}>
+        Profile
+      </span>
+    </div>
         <div  class="itineraries" style={styles.item} onClick={() => navigate('/my-itineraries')}>
           <FaMap style={styles.icon} />
           <span className="label" style={styles.label}>

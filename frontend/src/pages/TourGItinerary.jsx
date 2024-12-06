@@ -440,6 +440,12 @@ const [touristItineraryData, setTouristItineraryData] = useState({
           );
         }}
       >
+         <div  class="profile"style={styles.item} onClick={() => navigate('/tour-guide-profile')}>
+          <FaUserCircle style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            Profile
+          </span>
+        </div>
         <div  class="itineraries" style={styles.item} onClick={() => navigate('/my-itineraries')}>
           <FaMap style={styles.iconn} />
           <span className="label" style={styles.label}>
@@ -450,12 +456,6 @@ const [touristItineraryData, setTouristItineraryData] = useState({
           <FaStar style={styles.iconn} />
           <span className="label" style={styles.label}>
             Reviews
-          </span>
-        </div>
-        <div  class="profile"style={styles.item} onClick={() => navigate('/tour-guide-profile')}>
-          <FaUserCircle style={styles.iconn} />
-          <span className="label" style={styles.label}>
-            Profile
           </span>
         </div>
       
