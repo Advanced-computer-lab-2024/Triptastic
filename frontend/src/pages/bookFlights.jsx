@@ -183,17 +183,12 @@ const BookFlights = () => {
 
 
   const styles = {
-  container: {
-    maxWidth: '800px',
-    margin: '0 auto',
-    padding: '20px',
-    backgroundColor: '#f9f9f9',
-    borderRadius: '12px',
-    boxShadow: '0 6px 10px rgba(0, 0, 0, 0.1)',
-    fontFamily: 'Arial, sans-serif',
-    color: '#333',
-    paddingTop: '100px', // Avoid overlap with the header
-  },
+    container: {
+      maxWidth: '900px',
+      margin: '0 auto',
+      padding: '20px',
+      fontFamily: 'Arial, sans-serif',
+    },
   
   header: {
     height:'60px',
@@ -254,67 +249,7 @@ const BookFlights = () => {
     fontSize: '16px',
     cursor: 'pointer',
   },
-  flightsContainer: {
-    marginTop: '20px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px',
-  },
-  flightCard: {
-    backgroundColor: '#fff',
-    borderRadius: '12px',
-    boxShadow: '0 6px 10px rgba(0, 0, 0, 0.1)',
-    padding: '20px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '10px',
-  },
-  flightHeader: {
-    fontSize: '18px',
-    fontWeight: 'bold',
-  },
-  flightRoute: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: '10px',
-  },
-  flightPoint: {
-    textAlign: 'center',
-  },
-  iataCode: {
-    fontSize: '16px',
-    fontWeight: 'bold',
-  },
-  flightTime: {
-    fontSize: '14px',
-    color: '#555',
-  },
-  flightDuration: {
-    fontSize: '14px',
-    color: '#666',
-    marginTop: '5px',
-  },
-  flightPrice: {
-    fontSize: '14px',
-    color: '#666',
-    marginTop: '5px',
-  },
-  bookButton: {
-    backgroundColor: '#0F5132',
-    color: 'white',
-    padding: '10px',
-    border: 'none',
-    borderRadius: '6px',
-    fontSize: '16px',
-    cursor: 'pointer',
-  },
-  bookedStatus: {
-    color: '#0F5132',
-    fontWeight: 'bold',
-    fontSize: '16px',
-    textAlign: 'center',
-  },
+ 
   errorMessage: {
     color: 'red',
     textAlign: 'center',
@@ -349,11 +284,6 @@ const BookFlights = () => {
     cursor: 'pointer',
     transition: 'background-color 0.3s ease',
   },
-  icon: {
-    fontSize: '24px',
-    marginLeft: '15px', // Move icons slightly to the right
-    color: '#fff', // Icons are always white
-  },
   label: {
     cursor: 'pointer',
     fontSize: '16px',
@@ -367,12 +297,28 @@ const BookFlights = () => {
   item: {
     padding: '10px 0',
   },
+  searchFormContainer: {
+    marginTop: '20px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  searchFormHeading: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: '15px',
+    textAlign: 'center',
+    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)',
+
+  },
   searchForm: {
     display: 'flex',
     gap: '10px',
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.5)', // Transparent background
     padding: '15px',
-    borderRadius: '10px',
+    borderRadius: '50px', // Circular corners
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
   },
   searchField: {
@@ -381,8 +327,8 @@ const BookFlights = () => {
     gap: '10px',
     padding: '10px',
     border: '1px solid #ddd',
-    borderRadius: '5px',
-    backgroundColor: '#f9f9f9',
+    borderRadius: '50px',
+    backgroundColor: 'transparent',
   },
   input: {
     border: 'none',
@@ -390,35 +336,257 @@ const BookFlights = () => {
     backgroundColor: 'transparent',
     fontSize: '14px',
     width: '150px',
+    color: '#333',
   },
   searchButton: {
-    backgroundColor: '#0F5132',
+    backgroundColor: 'transparent',
     color: 'white',
     border: 'none',
-    borderRadius: '5px',
+    borderRadius: '50px',
     padding: '10px 20px',
     cursor: 'pointer',
     fontSize: '16px',
+    fontWeight: 'bold',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)',
+
+
+  },
+  iconn: {
+    fontSize: '18px',
+    color: '#333',
+  },
+  flightsContainer: {
+    marginTop: '20px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '20px',
+    padding: '20px',
+  },
+  flightCard: {
+    backgroundColor: '#fdfdfd',
+    borderRadius: '15px',
+    boxShadow: '0 8px 15px rgba(0, 0, 0, 0.1)',
+    padding: '25px',
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '15px',
+    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+    cursor: 'pointer',
+  },
+  flightCardHover: {
+    transform: 'scale(1.02)',
+    boxShadow: '0 12px 20px rgba(0, 0, 0, 0.15)',
+  },
+  flightHeader: {
+    fontSize: '20px',
+    fontWeight: '600',
+    color: 'black',
+    marginBottom: '10px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+  },
+  flightRoute: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    position: 'relative',
+  },
+  connectionLine: {
+    flex: 1,
+    height: '2px',
+    backgroundColor: '#ddd',
+    margin: '0 20px',
+    position: 'relative',
+  },
+  connectionIcon: {
+    position: 'absolute',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    top: '-10px',
+    fontSize: '14px',
+    color: '#666',
+  },
+  flightPoint: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    color: '#555',
+  },
+  iataCode: {
+    fontSize: '18px',
+    fontWeight: '600',
+    color: '#333',
+  },
+  flightTime: {
+    fontSize: '14px',
+    color: '#777',
+  },
+  flightDuration: {
+    fontSize: '15px',
+    color: '#666',
+    margin: '5px 0',
     display: 'flex',
     alignItems: 'center',
     gap: '5px',
   },
-  flightsContainer: {
-    marginTop: '20px',
-    display: 'grid',
-    gap: '20px',
+  flightPrice: {
+    fontSize: '18px',
+    fontWeight: '700',
+    color: '#0F5132',
+    textAlign: 'right',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '5px',
   },
-  flightCard: {
-    backgroundColor: '#fff',
-    padding: '20px',
-    borderRadius: '10px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+  bookButton: {
+    backgroundColor: '#0F5132',
+    color: 'white',
+    border: 'none',
+    borderRadius: '8px',
+    padding: '10px 15px',
+    fontSize: '14px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    transition: 'background-color 0.3s ease',
+  },
+  bookButtonHover: {
+    backgroundColor: '#0A3D23',
+  },
+  bookedStatus: {
+    color: '#0F5132',
+    fontWeight: 'bold',
+    fontSize: '14px',
+    textAlign: 'center',
+  },
+ 
+  container2: {
+    marginTop:'60px',
+    fontFamily: 'Arial, sans-serif',
+  },
+  background: {
+    position: 'relative',
+    backgroundImage:  `url(${flight})`, // Replace with your image path
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    height: '400px', // Adjust height as needed
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: 'white',
+  },
+  icons: {
+    fontSize: '24px',
+    marginLeft: '15px', // Move icons slightly to the right
+    color: '#fff', // Icons are always white
   },
 };
 
   
 
   return (
+    <div style={styles.container2}>
+    {/* Background Section */}
+    <div style={styles.background}>
+  {/* Search Form */}
+  <h2 style={styles.searchFormHeading}>
+    Where to next, {localStorage.getItem("Username")}?
+  </h2>
+<div style={styles.searchFormContainer}>
+  <form onSubmit={handleSubmit} style={styles.searchForm}>
+    {/* Origin Dropdown */}
+    <div style={styles.searchField}>
+      <FaPlaneDeparture style={styles.iconn} />
+      <select
+        name="origin"
+        value={flightDetails.origin}
+        onChange={handleInputChange}
+        style={styles.input}
+        required
+      >
+        <option value="" disabled>Select Origin</option>
+        <option value="JFK">John F. Kennedy International Airport (JFK)</option>
+        <option value="LHR">London Heathrow Airport (LHR)</option>
+        <option value="DXB">Dubai International Airport (DXB)</option>
+        <option value="ATL">Hartsfield-Jackson Atlanta International Airport (ATL)</option>
+        <option value="ORD">O'Hare International Airport (ORD)</option>
+        <option value="LAX">Los Angeles International Airport (LAX)</option>
+        <option value="LHR">London Heathrow Airport (LHR)</option>
+        <option value="CDG">Charles de Gaulle Airport (CDG)</option>
+      </select>
+    </div>
+
+    {/* Destination Dropdown */}
+    <div style={styles.searchField}>
+      <FaPlaneArrival style={styles.iconn} />
+      <select
+        name="destination"
+        value={flightDetails.destination}
+        onChange={handleInputChange}
+        style={styles.input}
+        required
+      >
+        <option value="" disabled>Select Destination</option>
+        <option value="LAX">Los Angeles International Airport (LAX)</option>
+        <option value="FCO">Fiumicino Airport (FCO)</option>
+        <option value="LHR">London Heathrow Airport (LHR)</option>
+        <option value="DXB">Dubai International Airport (DXB)</option>
+        <option value="JFK">John F. Kennedy International Airport (JFK)</option>
+        <option value="SYD">Sydney Kingsford Smith Airport (SYD)</option>
+        <option value="CDG">Charles de Gaulle Airport (CDG)</option>
+        <option value="BKK">Suvarnabhumi Airport (BKK)</option>
+        <option value="ICN">Incheon International Airport (ICN)</option>
+        <option value="SIN">Singapore Changi Airport (SIN)</option>
+        <option value="ORD">O'Hare International Airport (ORD)</option>
+      </select>
+    </div>
+
+    {/* Date Input */}
+    <div style={styles.searchField}>
+      <FaCalendarAlt style={styles.iconn} />
+      <input
+        type="date"
+        name="date"
+        value={flightDetails.date}
+        onChange={handleInputChange}
+        style={styles.input}
+        required
+      />
+    </div>
+
+    {/* Adults Input */}
+    <div style={styles.searchField}>
+      <FaUser style={styles.iconn} />
+      <input
+        type="number"
+        name="adults"
+        value={flightDetails.adults}
+        onChange={handleInputChange}
+        placeholder="1 Traveler"
+        min="1"
+        max="10"
+        style={styles.input}
+        required
+      />
+    </div>
+
+    {/* Submit Button */}
+    <button type="submit" disabled={loading} style={styles.searchButton}>
+      {loading ? 'Searching...' : 'Search Flights'}
+      <FaSearch />
+    </button>
+  </form>
+</div>
+</div>
     <div style={styles.container}>
       {/* Header */}
       <header style={styles.header}>
@@ -450,202 +618,139 @@ const BookFlights = () => {
         }}
       >
         <div style={styles.item} onClick={() => navigate('/historical-locations')}>
-          <FaLandmark style={styles.icon} />
+          <FaLandmark style={styles.icons} />
           <span className="label" style={styles.label}>
-            Historical Loc
+            Historical Sites
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/museums')}>
-          <FaUniversity style={styles.icon} />
+          <FaUniversity style={styles.icons} />
           <span className="label" style={styles.label}>
             Museums
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/products')}>
-          <FaBox style={styles.icon} />
+          <FaBox style={styles.icons} />
           <span className="label" style={styles.label}>
             Products
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/itineraries')}>
-          <FaMap style={styles.icon} />
+          <FaMap style={styles.icons} />
           <span className="label" style={styles.label}>
             Itineraries
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/activities')}>
-          <FaRunning style={styles.icon} />
+          <FaRunning style={styles.icons} />
           <span className="label" style={styles.label}>
             Activities
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/book-flights')}>
-          <FaPlane style={styles.icon} />
+          <FaPlane style={styles.icons} />
           <span className="label" style={styles.label}>
             Book Flights
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/book-hotels')}>
-          <FaHotel style={styles.icon} />
+          <FaHotel style={styles.icons} />
           <span className="label" style={styles.label}>
             Book a Hotel
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/book-transportation')}>
-          <FaBus style={styles.icon} />
+          <FaBus style={styles.icons} />
           <span className="label" style={styles.label}>
            Transportation
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
-          <FaClipboardList style={styles.icon} />
+          <FaClipboardList style={styles.icons} />
           <span className="label" style={styles.label}>
             Past Orders
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
-          <FaStar style={styles.icon} />
+          <FaStar style={styles.icons} />
           <span className="label" style={styles.label}>
             Review Activities
           </span>
         </div>
       </div>
       
-      {/* Search Form */}
- <div style={styles.searchFormContainer}>
- <form onSubmit={handleSubmit} style={styles.searchForm}>
- <div style={styles.searchField}>
-      <FaPlaneDeparture style={styles.icon} />
-      <select
-        name="origin"
-        value={flightDetails.origin}
-        onChange={handleInputChange}
-        style={styles.input}
-        required
-      >
-        <option value="" disabled>Select Origin</option>
-        {/* Add options for the origin */}
-        <option value="JFK">John F. Kennedy International Airport (JFK)</option>
-        <option value="LHR">London Heathrow Airport (LHR)</option>
-        <option value="DXB">Dubai International Airport (DXB)</option>
-        <option value="ATL">Hartsfield-Jackson Atlanta International Airport (ATL)</option>
-        <option value="ORD">O'Hare International Airport (ORD)</option>
-        <option value="LAX">Los Angeles International Airport (LAX)</option>
-        <option value="LHR">London Heathrow Airport (LHR)</option>
-        <option value="CDG">Charles de Gaulle Airport (CDG)</option>
-        {/* Add more options as needed */}
-      </select>
-    </div>
-
-    {/* To: Dropdown */}
-    <div style={styles.searchField}>
-      <FaPlaneArrival style={styles.icon} />
-      <select
-        name="destination"
-        value={flightDetails.destination}
-        onChange={handleInputChange}
-        style={styles.input}
-        required
-      >
-        <option value="" disabled>Select Destination</option>
-        {/* Add options for the destination */}
-        <option value="LAX">Los Angeles International Airport (LAX)</option>
-        <option value="FCO">Fiumicino Airport (FCO)</option>
-        <option value="LHR">London Heathrow Airport (LHR)</option>
-        <option value="DXB">Dubai International Airport (DXB)</option>
-        <option value="JFK">John F. Kennedy International Airport (JFK)</option>
-        <option value="SYD">Sydney Kingsford Smith Airport (SYD)</option>
-        <option value="CDG">Charles de Gaulle Airport (CDG)</option>
-        <option value="BKK">Suvarnabhumi Airport (BKK)</option>
-        <option value="ICN">Incheon International Airport (ICN)</option>
-        <option value="SIN">Singapore Changi Airport (SIN)</option>
-        <option value="ORD">O'Hare International Airport (ORD)</option>
-        {/* Add more options as needed */}
-      </select>
-    </div>
-
-    {/* Date Input */}
-    <div style={styles.searchField}>
-      <FaCalendarAlt style={styles.icon} />
-      <input
-        type="date"
-        name="date"
-        value={flightDetails.date}
-        onChange={handleInputChange}
-        style={styles.input}
-        required
-      />
-    </div>
-
-    {/* Adults Input */}
-    <div style={styles.searchField}>
-      <FaUser style={styles.icon} />
-      <input
-        type="number"
-        name="adults"
-        value={flightDetails.adults}
-        onChange={handleInputChange}
-        placeholder="1 Traveler"
-        min="1"
-        max="10"
-        style={styles.input}
-        required
-      />
-    </div>
-   <button type="submit" disabled={loading} style={styles.searchButton}>
-          {loading ? 'Searching...' : 'Search Flights'}
-          <FaSearch /> Search
-        </button>
-      </form>
-</div>
        
 
       {flights.length > 0 && (
   <div style={styles.flightsContainer}>
     {flights.map((flight, index) => (
-      <div key={index} style={styles.flightCard}>
-        <div style={styles.flightHeader}>Flight #{flight.id}</div>
-        
+      <div
+        key={index}
+        style={styles.flightCard} // Only use the base card style
+      >
+        {/* Flight Header */}
+        <div style={styles.flightHeader}>
+          <FaPlane style={{ color: '#0F5132', fontSize: '20px' }} />
+          Flight #{flight.id}
+        </div>
+
+        {/* Flight Route */}
         <div style={styles.flightRoute}>
+          {/* Departure */}
           <div style={styles.flightPoint}>
-            <FaPlaneDeparture style={styles.icon2} />
+            <FaPlaneDeparture style={{ color: '#0F5132', fontSize: '18px' }} />
             <span style={styles.iataCode}>{flight.itineraries[0].segments[0].departure.iataCode}</span>
             <span style={styles.flightTime}>
               {formatTime(flight.itineraries[0].segments[0].departure.at)}
             </span>
           </div>
-          <div style={styles.connectionLine}>
-  <span style={styles.connectionIcon}>✈</span>
-</div>
+
+          {/* Connection Line */}
+          <div style={styles.connectionLine}></div>
+
+          {/* Arrival */}
           <div style={styles.flightPoint}>
-            <FaPlaneArrival style={styles.icon2} />
+            <FaPlaneArrival style={{ color: '#0F5132', fontSize: '18px' }} />
             <span style={styles.iataCode}>{flight.itineraries[0].segments[0].arrival.iataCode}</span>
             <span style={styles.flightTime}>
               {formatTime(flight.itineraries[0].segments[0].arrival.at)}
             </span>
           </div>
         </div>
+
+        {/* Duration */}
         <p style={styles.flightDuration}>
-  Duration: {formatDuration(flight.itineraries[0].segments[0].duration)}
-</p>
-        <p style={styles.flightPrice}>
-          Price: {selectedCurrency} {(flight.price.total * conversionRate).toFixed(2)}
+          ⏱ Duration: {formatDuration(flight.itineraries[0].segments[0].duration)}
         </p>
-        {bookedFlightId === flight.id ? (
-          <p style={styles.bookedStatus}>Booked!</p>
-        ) : (
-          <button onClick={() => handleBooking(flight.id)} style={styles.bookButton}>
-            Book Now
-          </button>
-        )}
+
+        {/* Price and Booking Button */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '15px' }}>
+          <p style={styles.flightPrice}>
+            💲 {selectedCurrency} {(flight.price.total * conversionRate).toFixed(2)}
+          </p>
+          {bookedFlightId === flight.id ? (
+            <p style={styles.bookedStatus}>✔ Booked!</p>
+          ) : (
+            <button
+              onClick={() => handleBooking(flight.id)}
+              style={styles.bookButton}
+            >
+              <FaPlane /> Book Now
+            </button>
+          )}
+        </div>
       </div>
     ))}
   </div>
 )}
 
 
+
+
       {error && <p style={styles.errorMessage}>Error: {error}</p>}
     </div>
+    </div>
+
   );
 };
 

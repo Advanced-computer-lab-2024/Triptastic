@@ -1,4 +1,5 @@
 const adminModel = require('../Models/Admin.js');
+
 const activitiescategoryModel = require('../Models/Activitiescategory.js');
 const prefTagModel = require('../Models/PreferenceTags.js');
 const productModel= require('../Models/Product.js');
@@ -59,21 +60,32 @@ const tourismGovLogin = async (req, res) => {
 
 
 const createAdmin = async (req, res) => {
-    const { Username, Password ,Email} = req.body;
+  const { Username, Password, Email } = req.body;
 
-    try {
-        const existingAdmin = await adminModel.findOne({ Username });
-        
-        if (existingAdmin) {
-            return res.status(400).json({ error: "Username already exists" });
-        }
+  try {
+    // Check if the username already exists in any model
+    const userExistsInTourist = await touristModel.findOne({ Username });
+    const userExistsInTourGuide = await tourGuideModel.findOne({ Username });
+    const userExistsInAdvertiser = await advertiserModel.findOne({ Username });
+    const userExistsInSeller = await sellerModel.findOne({ Username });
+    const userExistsInAdmin = await adminModel.findOne({ Username });
+    const userExistsInTourismGov = await tourismGovModel.findOne({ Username });
 
-        const admin = await adminModel.create({ Username, Password ,Email});
-        res.status(201).json(admin);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
+    if (userExistsInTourist || userExistsInTourGuide || userExistsInAdvertiser || userExistsInSeller || userExistsInAdmin || userExistsInTourismGov) {
+      return res.status(400).json({ error: 'Username already exists.' });
     }
-}
+
+    // Create the admin without bcrypt
+    const admin = await adminModel.create({ Username, Password, Email });
+
+    res.status(201).json({
+      message: 'Admin registered successfully',
+      admin,
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
 const createCategory = async (req, res) => {
     const { Name } = req.body;

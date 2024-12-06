@@ -1,4 +1,10 @@
 const touristModel = require('../Models/Tourist.js');
+const tourGuideModel = require('../Models/tourGuide.js'); // Adjust path as needed
+const advertiserModel = require('../Models/Advertiser.js');
+const sellerModel = require('../Models/Seller.js');
+const adminModel = require('../Models/Admin.js');
+const tourismGovModel = require('../Models/tourismGov.js');
+
 const historicalLocationModel = require('../Models/historicalLocation.js');
 const productModel= require('../Models/Product.js');
 const activitiesModel=require('../Models/Activities.js');
@@ -8,7 +14,6 @@ const TransportationModel = require('../Models/Transportation.js');
 const cartModel = require('../Models/Cart.js'); // Import the Cart model
 const { default: mongoose } = require('mongoose');
 const complaintModel = require('../Models/Complaint.js'); // Adjust the path based on your project structure
-const TourGuideModel = require('../Models/tourGuide.js'); // Adjust path as needed
 const requestModel = require('../Models/Request.js'); // Adjust path as needed
 const ItinBookingModel = require('../Models/itinbookings.js'); 
 const ActBookingModel = require('../Models/actBooking.js');
@@ -56,10 +61,24 @@ const getCurrencyRates = async (req, res) => {
 
 
 
+
+
 const createTourist = async (req, res) => {
-  const { Username, Email, Password, Nationality, DOB, Occupation,showIntro } = req.body;
+  const { Username, Email, Password, Nationality, DOB, Occupation, showIntro } = req.body;
 
   try {
+    // Check if the username already exists in any model
+    const userExistsInTourist = await touristModel.findOne({ Username });
+    const userExistsInTourGuide = await tourGuideModel.findOne({ Username });
+    const userExistsInAdvertiser = await advertiserModel.findOne({ Username });
+    const userExistsInSeller = await sellerModel.findOne({ Username });
+    const userExistsInAdmin = await adminModel.findOne({ Username });
+    const userExistsInTourismGov = await tourismGovModel.findOne({ Username });
+
+    if (userExistsInTourist || userExistsInTourGuide || userExistsInAdvertiser || userExistsInSeller || userExistsInAdmin || userExistsInTourismGov) {
+      return res.status(400).json({ error: 'Username already exists.' });
+    }
+
     // Hash the password
     const hashedPassword = await bcrypt.hash(Password, 10);
 
@@ -82,6 +101,7 @@ const createTourist = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
 const getTouristIntroStatus = async (req, res) => {
   const { Username } = req.query; // Get the user ID from request parameters
 
@@ -1405,7 +1425,7 @@ const submitFeedbackItinerary = async (req, res) => {
     };
 
     // Find the tour guide and update their feedback
-    const tourGuide = await TourGuideModel.findOne({ Username: tourGuideUsername });
+    const tourGuide = await tourGuideModel.findOne({ Username: tourGuideUsername });
 
     if (!tourGuide) {
       return res.status(404).json({ message: `Tour guide '${tourGuideUsername}' not found.` });
