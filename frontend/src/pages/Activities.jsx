@@ -453,7 +453,7 @@ return (
   style={{
     ...styles.navigationButton,
     position: 'absolute',
-    left: '1310px', // Moves the bookmark button 20px from the right edge
+    left: '1420px', // Moves the bookmark button 20px from the right edge
   }}
   onClick={() => navigate('/BookmarkedEvents')}
 >

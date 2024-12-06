@@ -71,6 +71,28 @@ const PaymentPage = () => {
     }
   };
   
+  const clearCart = async () => { 
+    const username = localStorage.getItem("Username");
+    if (!username) {
+      console.error("No username found");
+      return;
+    }
+    try {
+      const response = await fetch(`http://localhost:8000/clearCart?username=${username}`, {
+        method: "PATCH", // Use PATCH as defined in the backend
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to clear the cart");
+      }
+  
+      const data = await response.json();
+      console.log("Cart cleared:", data.message);
+    } catch (error) {
+      console.error("Error clearing cart:", error.message);
+    }
+  };
+  
   
 
   const handleSubmit = async (event) => {
@@ -102,6 +124,7 @@ const PaymentPage = () => {
         if (result.error) {
           setError(`Payment failed: ${result.error.message}`);
         } else if (result.paymentIntent.status === 'succeeded') {
+          await clearCart();
           paymentSuccess = true;
         }
       } else if (paymentMethod === 'wallet') {
@@ -119,6 +142,8 @@ const PaymentPage = () => {
       }
 
       if (paymentSuccess) {
+        await clearCart();
+
         alert('Payment succeeded! Thank you for your purchase.');
 
         const previousPage = localStorage.getItem('previousPage');
