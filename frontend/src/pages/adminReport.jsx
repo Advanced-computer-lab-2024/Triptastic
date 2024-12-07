@@ -2,6 +2,20 @@ import React, { useState, useEffect, useContext } from 'react';
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
 import { FaUserCircle,FaFilter,FaSyncAlt} from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import { FaShoppingCart,FaRegFileAlt, FaDollarSign, FaStar, FaComments, FaWarehouse, FaChartBar,FaBars} from 'react-icons/fa';
+import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel,
+  FaClipboardList,FaSearch,FaArchive,FaUserShield } from "react-icons/fa";
+  import activity from '../images/shopping.jpg'; 
+  import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
+import LockResetIcon from '@mui/icons-material/LockReset';
+import { FaTag, FaInfoCircle } from "react-icons/fa";
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import Inventory2Icon from '@mui/icons-material/Inventory2';
+  import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
+  import { FaUser,FaExclamationCircle, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
 
 const AdminReport = () => {
     const [Products, setProducts] = useState([]);
@@ -28,7 +42,7 @@ const AdminReport = () => {
         setIsLoading(true);
         if (Username) {
           try {
-            const response = await fetch(`http://localhost:8000/viewAllProducts`);
+            const response = await fetch(`http://localhost:8000/viewMyProducts?seller=${Username}`);
             if (response.ok) {
               const data = await response.json();
               setProducts(data);
@@ -82,9 +96,9 @@ const AdminReport = () => {
         }
       };
 
-      const filterByProduct = async (productId) => { //returns object {date, quantity}
+      const filterByProduct = async (name) => { //returns object {date, quantity}
         try{
-          const response = await fetch(`http://localhost:8000/filterByProduct?productId=${productId}`);
+          const response = await fetch(`http://localhost:8000/filterByProduct?productName=${name}`);
           if (response.ok) {
             const data = await response.json();
             setDatesQuant(data);
@@ -105,10 +119,10 @@ const AdminReport = () => {
         };
 
         const fetchFilteredProducts = async (date) => {// returns object of {product, quantity}
-            
+          const Username = localStorage.getItem('Username');
             setIsLoading(true);
             try{
-            const response = await fetch(`http://localhost:8000/getFilteredP?date=${date}`);
+            const response = await fetch(`http://localhost:8000/getFilteredP?Username=${Username}&date=${date}`);
             if (response.ok) {
                 const data = await response.json();
                 setProductQuantity(data);
@@ -176,7 +190,7 @@ const AdminReport = () => {
             const handleFilterChange = (event) => {
                 const selectedProduct = Products.find(product => product._id === event.target.value);
                 if (selectedProduct) {
-                  filterByProduct(selectedProduct._id);
+                  filterByProduct(selectedProduct.productName);
                   setFilteredP(true);
                   setFilterP(selectedProduct);
                 }
@@ -200,6 +214,84 @@ return (
                 />
             </div>
         </header>
+        <div
+        style={styles.sidebar}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.width = '200px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '1')
+          );
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.width = '60px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '0')
+          );
+        }}
+      >
+
+<div style={styles.item} onClick={() => navigate('/adminPage')}>
+          <FaUser style={styles.iconn} />
+          <span className="label" style={styles.label}>
+           Admin Profile
+          </span>
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/manage')}>
+          <FaUserShield style={styles.iconn} />
+          <span className="label" style={styles.label}>
+          Admin Panel
+          </span>
+        </div>
+        
+        <div style={styles.item} onClick={() => navigate('/Complaints')}>
+          <FaExclamationCircle style={styles.iconn} />
+          <span className="label" style={styles.label}>
+           Complaints
+          </span>
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/docs')}>
+          <FaFileAlt style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            Documents
+          </span>
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/adminReport')}>
+          <FaBox  style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            Sales Report
+          </span>   
+        </div>
+        <div style={styles.item} onClick={() => navigate('/DeletionRequest')}>
+          <FaTrashAlt  style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            Deletion Requests
+          </span>   
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/EditProducts')}>
+          <FaEdit   style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            Edit Products
+          </span>   
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/flagged')}>
+          <FaFlag   style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            Flag Events
+          </span>   
+        </div>
+        <div style={styles.item} onClick={() => navigate('/products_admin')}>
+          <FaBox  style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            View Products
+          </span>   
+        </div>
+      </div>
+
 
 {/* Main Content Section */}
 <div style={styles.content}>
@@ -253,7 +345,6 @@ return (
             <p><strong>Product Name:</strong> {filterP.productName}</p>
             <p><strong>Price:</strong> ${filterP.price}</p>
             <p><strong>Sales:</strong> {filterP.sales}</p>
-            <p><strong>Total Quantity Sold:</strong> {count}</p>
         </div>
 
         {/* Render purchase dates */}
@@ -261,7 +352,6 @@ return (
             {DatesQuant.map((dateQuant, index) => (
                 <li key={index} style={styles.dateListItem}>
                     <p><strong>Date:</strong> {new Date(dateQuant.createdAt).toLocaleDateString()}</p>
-                    <p><strong>Quantity Sold:</strong> {dateQuant.quantity}</p>
                 </li>
             ))}
         </ul>
@@ -273,14 +363,12 @@ return (
     <div style={styles.filteredProductCard}>
         <h3 style={styles.filteredProductTitle}>Filtered Products</h3>
         <ul style={styles.dateList}>
-            {productQuantity.map(({ product, quantity }) => (
-                <li key={product._id} style={styles.dateListItem}>
-                    <p><strong>Product Name:</strong> {product.productName}</p>
-                    <p><strong>Price:</strong> ${product.price}</p>
-                    <p><strong>Quantity Sold on this Date:</strong> {quantity}</p>
-                </li>
-            ))}
-        </ul>
+        {productQuantity.map((product, index) => (
+                 <li key={index}>
+               <h2>Product: {product}</h2>
+                          </li>
+               ))}
+                 </ul>
     </div>
 )}
 
@@ -354,6 +442,20 @@ const styles = {
       padding: '10px 10px',
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
       zIndex: '1000',
+  }, item: {
+ 
+    padding: '10px 0',
+    
+  },
+  
+  label: {
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#fff',
+    opacity: 0, // Initially hidden
+    whiteSpace: 'nowrap', // Prevent label text from wrapping
+    transition: 'opacity 0.3s ease',
   },
   logoContainer: {
       display: 'flex',
@@ -525,6 +627,13 @@ icon: {
   transition: 'color 0.3s ease',
   marginTop: '10px', // Nudges the icon downward slightly
 },
+iconn: {
+  fontSize: '24px',
+  marginLeft: '15px', // Move icons slightly to the right
+  color: '#fff',
+  opacity:1,
+   // Icons are always white
+},
 pageTitle: {
   fontSize: '24px',
   fontWeight: 'bold',
@@ -661,6 +770,23 @@ filterSelect: {
         fontSize: '16px',
         lineHeight: '1.4',
         color: '#555',
+    }, sidebar: {
+      position: 'fixed',
+      top: '60px',
+      left: 0,
+      height: '100vh',
+      width: '50px', // Default width when collapsed
+      backgroundColor: 'rgba(15, 81, 50, 0.85)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-start', // Ensure alignment starts from the left
+      padding: '10px 0',
+      overflowX: 'hidden',
+      transition: 'width 0.3s ease',
+      zIndex: 1000,
+    },
+    sidebarExpanded: {
+      width: '200px', // Width when expanded
     },
 
 };
