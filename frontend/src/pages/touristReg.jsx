@@ -264,11 +264,11 @@ const handleLoginSubmit = async (e) => {
           localStorage.setItem('Occupation', data.user.Occupation);
           navigate('/tour-guide-profile');
         } else if (loginDataList[i].url === 'http://localhost:8000/AdminLogin') {
-          localStorage.setItem('Username', formData.Username);
+          localStorage.setItem('Username', signInFormData.Username);
           localStorage.setItem('context', 'admin');
           navigate('/AdminPage');
         } else if (loginDataList[i].url === 'http://localhost:8000/tourismGovLogin') {
-          localStorage.setItem('Username', formData.Username);
+          localStorage.setItem('Username', signInFormData.Username);
           localStorage.setItem('context', 'tourismGov');
           navigate('/tourism-gov');
         }
