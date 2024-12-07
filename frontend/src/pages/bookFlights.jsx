@@ -28,6 +28,30 @@ const BookFlights = () => {
     });
   };
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  
+  const totalPages = Math.ceil(flights.length / itemsPerPage);
+  
+  const paginatedFlights = flights.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+  
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top
+    }
+  };
+  
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top
+    }
+  };
+  
   const formatDate = (date) => {
     const d = new Date(date);
     const year = d.getFullYear();
@@ -493,6 +517,44 @@ const BookFlights = () => {
     marginLeft: '15px', // Move icons slightly to the right
     color: '#fff', // Icons are always white
   },
+  pagination: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '15px',
+    marginTop: '20px',
+  },
+  
+  paginationButton: {
+    backgroundColor: '#0F5132',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    padding: '10px 20px',
+    cursor: 'pointer',
+    fontSize: '14px',
+    transition: 'background-color 0.3s ease',
+  },
+  
+  paginationButtonDisabled: {
+    backgroundColor: '#ccc',
+    color: '#666',
+    border: 'none',
+    borderRadius: '5px',
+    padding: '10px 20px',
+    cursor: 'not-allowed',
+    fontSize: '14px',
+  },
+  
+  pageInfo: {
+    fontSize: '16px',
+    color: '#333',
+  },
+  noFlightsText: {
+    textAlign: 'center',
+    fontSize: '16px',
+    color: '#777',
+  },
 };
 
   
@@ -503,7 +565,7 @@ const BookFlights = () => {
     <div style={styles.background}>
   {/* Search Form */}
   <h2 style={styles.searchFormHeading}>
-    Where to next, {localStorage.getItem("Username")}?
+    Where to next, Traveler?
   </h2>
 <div style={styles.searchFormContainer}>
   <form onSubmit={handleSubmit} style={styles.searchForm}>
@@ -689,69 +751,93 @@ const BookFlights = () => {
       </div>
       
        
-
-      {flights.length > 0 && (
-  <div style={styles.flightsContainer}>
-    {flights.map((flight, index) => (
-      <div
-        key={index}
-        style={styles.flightCard} // Only use the base card style
-      >
-        {/* Flight Header */}
-        <div style={styles.flightHeader}>
-          <FaPlane style={{ color: '#0F5132', fontSize: '20px' }} />
-          Flight #{flight.id}
+      <div style={styles.flightsContainer}>
+  {paginatedFlights.map((flight, index) => (
+    <div
+      key={index}
+      style={{
+        ...styles.flightCard,
+        position: 'relative',
+        backgroundColor: '#fff',
+        border: '1px solid #ddd',
+        borderRadius: '10px',
+        padding: '15px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        transition: 'transform 0.3s ease',
+        overflow: 'hidden',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'scale(1.03)';
+        e.currentTarget.style.boxShadow = '0 8px 12px rgba(0, 0, 0, 0.15)';
+        e.currentTarget.style.borderColor = '#0F5132';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'scale(1)';
+        e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+        e.currentTarget.style.borderColor = '#ddd';
+      }}
+    >
+      {/* Flight Details */}
+      <div style={styles.flightHeader}>
+        <FaPlane style={{ color: '#0F5132', fontSize: '20px' }} />
+        Flight #{flight.id}
+      </div>
+      <div style={styles.flightRoute}>
+        <div style={styles.flightPoint}>
+          <FaPlaneDeparture style={{ color: '#0F5132', fontSize: '18px' }} />
+          <span style={styles.iataCode}>{flight.itineraries[0].segments[0].departure.iataCode}</span>
+          <span style={styles.flightTime}>
+            {formatTime(flight.itineraries[0].segments[0].departure.at)}
+          </span>
         </div>
-
-        {/* Flight Route */}
-        <div style={styles.flightRoute}>
-          {/* Departure */}
-          <div style={styles.flightPoint}>
-            <FaPlaneDeparture style={{ color: '#0F5132', fontSize: '18px' }} />
-            <span style={styles.iataCode}>{flight.itineraries[0].segments[0].departure.iataCode}</span>
-            <span style={styles.flightTime}>
-              {formatTime(flight.itineraries[0].segments[0].departure.at)}
-            </span>
-          </div>
-
-          {/* Connection Line */}
-          <div style={styles.connectionLine}></div>
-
-          {/* Arrival */}
-          <div style={styles.flightPoint}>
-            <FaPlaneArrival style={{ color: '#0F5132', fontSize: '18px' }} />
-            <span style={styles.iataCode}>{flight.itineraries[0].segments[0].arrival.iataCode}</span>
-            <span style={styles.flightTime}>
-              {formatTime(flight.itineraries[0].segments[0].arrival.at)}
-            </span>
-          </div>
-        </div>
-
-        {/* Duration */}
-        <p style={styles.flightDuration}>
-          ⏱ Duration: {formatDuration(flight.itineraries[0].segments[0].duration)}
-        </p>
-
-        {/* Price and Booking Button */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '15px' }}>
-          <p style={styles.flightPrice}>
-            💲 {selectedCurrency} {(flight.price.total * conversionRate).toFixed(2)}
-          </p>
-          {bookedFlightId === flight.id ? (
-            <p style={styles.bookedStatus}>✔ Booked!</p>
-          ) : (
-            <button
-              onClick={() => handleBooking(flight.id)}
-              style={styles.bookButton}
-            >
-              <FaPlane /> Book Now
-            </button>
-          )}
+        <div style={styles.connectionLine}></div>
+        <div style={styles.flightPoint}>
+          <FaPlaneArrival style={{ color: '#0F5132', fontSize: '18px' }} />
+          <span style={styles.iataCode}>{flight.itineraries[0].segments[0].arrival.iataCode}</span>
+          <span style={styles.flightTime}>
+            {formatTime(flight.itineraries[0].segments[0].arrival.at)}
+          </span>
         </div>
       </div>
-    ))}
+      <p style={styles.flightDuration}>
+        ⏱ Duration: {formatDuration(flight.itineraries[0].segments[0].duration)}
+      </p>
+      <div style={styles.flightFooter}>
+        <p style={styles.flightPrice}>
+          💲 {selectedCurrency} {(flight.price.total * conversionRate).toFixed(2)}
+        </p>
+        <button onClick={() => handleBooking(flight.id)} style={styles.bookButton}>
+          <FaPlane /> Book Now
+        </button>
+      </div>
+    </div>
+  ))}
+
+  {/* Pagination */}
+  <div style={styles.pagination}>
+    <button
+      onClick={handlePreviousPage}
+      disabled={currentPage === 1}
+      style={currentPage === 1 ? styles.paginationButtonDisabled : styles.paginationButton}
+    >
+      Previous
+    </button>
+    <span style={styles.pageInfo}>
+      Page {currentPage} of {totalPages}
+    </span>
+    <button
+      onClick={handleNextPage}
+      disabled={currentPage === totalPages}
+      style={currentPage === totalPages ? styles.paginationButtonDisabled : styles.paginationButton}
+    >
+      Next
+    </button>
   </div>
-)}
+</div>
+
 
 
 
