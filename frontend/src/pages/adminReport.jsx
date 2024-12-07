@@ -2,6 +2,20 @@ import React, { useState, useEffect, useContext } from 'react';
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
 import { FaUserCircle,FaFilter,FaSyncAlt} from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import { FaShoppingCart,FaRegFileAlt, FaDollarSign, FaStar, FaComments, FaWarehouse, FaChartBar,FaBars} from 'react-icons/fa';
+import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel,
+  FaClipboardList,FaSearch,FaArchive,FaUserShield } from "react-icons/fa";
+  import activity from '../images/shopping.jpg'; 
+  import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
+import LockResetIcon from '@mui/icons-material/LockReset';
+import { FaTag, FaInfoCircle } from "react-icons/fa";
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import Inventory2Icon from '@mui/icons-material/Inventory2';
+  import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
+  import { FaUser,FaExclamationCircle, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
 
 const AdminReport = () => {
     const [Products, setProducts] = useState([]);
@@ -200,6 +214,84 @@ return (
                 />
             </div>
         </header>
+        <div
+        style={styles.sidebar}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.width = '200px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '1')
+          );
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.width = '60px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '0')
+          );
+        }}
+      >
+
+<div style={styles.item} onClick={() => navigate('/adminPage')}>
+          <FaUser style={styles.iconn} />
+          <span className="label" style={styles.label}>
+           Admin Profile
+          </span>
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/manage')}>
+          <FaUserShield style={styles.iconn} />
+          <span className="label" style={styles.label}>
+          Admin Panel
+          </span>
+        </div>
+        
+        <div style={styles.item} onClick={() => navigate('/Complaints')}>
+          <FaExclamationCircle style={styles.iconn} />
+          <span className="label" style={styles.label}>
+           Complaints
+          </span>
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/docs')}>
+          <FaFileAlt style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            Documents
+          </span>
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/adminReport')}>
+          <FaBox  style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            Sales Report
+          </span>   
+        </div>
+        <div style={styles.item} onClick={() => navigate('/DeletionRequest')}>
+          <FaTrashAlt  style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            Deletion Requests
+          </span>   
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/EditProducts')}>
+          <FaEdit   style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            Edit Products
+          </span>   
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/flagged')}>
+          <FaFlag   style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            Flag Events
+          </span>   
+        </div>
+        <div style={styles.item} onClick={() => navigate('/products_admin')}>
+          <FaBox  style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            View Products
+          </span>   
+        </div>
+      </div>
+
 
 {/* Main Content Section */}
 <div style={styles.content}>
@@ -354,6 +446,20 @@ const styles = {
       padding: '10px 10px',
       boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
       zIndex: '1000',
+  }, item: {
+ 
+    padding: '10px 0',
+    
+  },
+  
+  label: {
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#fff',
+    opacity: 0, // Initially hidden
+    whiteSpace: 'nowrap', // Prevent label text from wrapping
+    transition: 'opacity 0.3s ease',
   },
   logoContainer: {
       display: 'flex',
@@ -525,6 +631,13 @@ icon: {
   transition: 'color 0.3s ease',
   marginTop: '10px', // Nudges the icon downward slightly
 },
+iconn: {
+  fontSize: '24px',
+  marginLeft: '15px', // Move icons slightly to the right
+  color: '#fff',
+  opacity:1,
+   // Icons are always white
+},
 pageTitle: {
   fontSize: '24px',
   fontWeight: 'bold',
@@ -661,6 +774,23 @@ filterSelect: {
         fontSize: '16px',
         lineHeight: '1.4',
         color: '#555',
+    }, sidebar: {
+      position: 'fixed',
+      top: '60px',
+      left: 0,
+      height: '100vh',
+      width: '50px', // Default width when collapsed
+      backgroundColor: 'rgba(15, 81, 50, 0.85)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-start', // Ensure alignment starts from the left
+      padding: '10px 0',
+      overflowX: 'hidden',
+      transition: 'width 0.3s ease',
+      zIndex: 1000,
+    },
+    sidebarExpanded: {
+      width: '200px', // Width when expanded
     },
 
 };
