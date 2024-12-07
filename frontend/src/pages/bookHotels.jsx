@@ -156,8 +156,48 @@ const BookHotels = () => {
     updatedBookings[index] = true;
     setBookedHotels(updatedBookings);
   };
+  const [currentPage, setCurrentPage] = useState(1);
+const itemsPerPage = 5; // Adjust this number based on how many items you want per page
+const totalPages = Math.ceil(hotels.length / itemsPerPage);
+const currentHotels = hotels.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+const handleNextPage = () => {
+  if (currentPage < totalPages) {
+    setCurrentPage((prevPage) => prevPage + 1);
+    scrollToTop();
+
+  }
+};
+
+const handlePreviousPage = () => {
+  if (currentPage > 1) {
+    setCurrentPage((prevPage) => prevPage - 1);
+    scrollToTop();
+
+  }
+};
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
 
   const styles = {
+    paginationButton: {
+      padding: '10px 20px',
+      margin: '10px',
+      border: 'none',
+      borderRadius: '5px',
+      fontSize: '16px',
+      cursor: 'pointer',
+    },
+    paginationButtonActive: {
+      backgroundColor: '#0F5132',
+      color: '#fff',
+    },
+    paginationButtonDisabled: {
+      backgroundColor: '#ddd',
+      color: '#999',
+      cursor: 'not-allowed',
+    },
   container: {
     display: 'flex',
     justifyContent: 'center',
@@ -507,6 +547,7 @@ const BookHotels = () => {
 {hotels.length > 0 && (
   <div style={{ maxWidth: '800px', margin: '20px auto' }}>
     <h2 style={{ textAlign: 'center', color: '#333', marginBottom: '20px' }}>Available Offers</h2>
+    
     <div
       style={{
         display: 'grid',
@@ -514,7 +555,7 @@ const BookHotels = () => {
         gap: '20px',
       }}
     >
-      {hotels.map((hotel, index) => (
+      {currentHotels.map((hotel, index) => (
         <div
           key={index}
           style={{
@@ -538,7 +579,6 @@ const BookHotels = () => {
             e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
             e.currentTarget.style.borderColor = '#ddd';
           }}
-          
         >
           <div>
             <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>
@@ -548,29 +588,24 @@ const BookHotels = () => {
               <strong>Hotel ID:</strong> {hotel.hotel.hotelId}
             </p>
             <div style={{ marginTop: '10px', fontSize: '14px', color: '#555' }}>
-  <strong>Amenities:</strong> {hotel.hotel.amenities ? hotel.hotel.amenities.join(', ') : 'Standard'}
-</div>
-
-<p style={{ fontSize: '16px', fontWeight: 'bold', color: '#0F5132', marginTop: '10px' }}>
-  {hotel.offers && hotel.offers[0]?.price?.total
-    ? `Price: $${hotel.offers[0].price.total}`
-    : 'Price: Contact for details'}
-</p>
-<div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-  <FaWifi
-
-   title="Free Wi-Fi" style={{ color: '#0F5132', fontSize: '20px' }} />
-  <FaCoffee title="Breakfast Included" style={{ color: '#FFD700', fontSize: '20px' }} />
-  <FaCar title="Parking Available" style={{ color: '#007bff', fontSize: '20px' }} />
-</div>
-
-
-                      <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                           <FaStar style={{ color: '#FFD700' }} />
-                             <span style={{ fontSize: '14px', color: '#555' }}>
-                                  {hotel.hotel.userRating ? `${hotel.hotel.userRating} / 5` : 'No ratings available'}
-                                       </span>
-                          </div>
+              <strong>Amenities:</strong> {hotel.hotel.amenities ? hotel.hotel.amenities.join(', ') : 'Standard'}
+            </div>
+            <p style={{ fontSize: '16px', fontWeight: 'bold', color: '#0F5132', marginTop: '10px' }}>
+              {hotel.offers && hotel.offers[0]?.price?.total
+                ? `Price: $${hotel.offers[0].price.total}`
+                : 'Price: Contact for details'}
+            </p>
+            <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+              <FaWifi title="Free Wi-Fi" style={{ color: '#0F5132', fontSize: '20px' }} />
+              <FaCoffee title="Breakfast Included" style={{ color: '#FFD700', fontSize: '20px' }} />
+              <FaCar title="Parking Available" style={{ color: '#007bff', fontSize: '20px' }} />
+            </div>
+            <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <FaStar style={{ color: '#FFD700' }} />
+              <span style={{ fontSize: '14px', color: '#555' }}>
+                {hotel.hotel.userRating ? `${hotel.hotel.userRating} / 5` : 'No ratings available'}
+              </span>
+            </div>
           </div>
           {bookedHotels[index] ? (
             <p
@@ -604,10 +639,53 @@ const BookHotels = () => {
           )}
         </div>
       ))}
-       <Tooltip id="amenities-tooltip" place="top" />
+    </div>
+
+    {/* Pagination Controls */}
+    <div style={{ marginTop: '20px', textAlign: 'center' }}>
+      <button
+        onClick={() => {
+          handlePreviousPage();
+          window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top
+        }}
+        disabled={currentPage === 1}
+        style={{
+          padding: '10px 20px',
+          marginRight: '10px',
+          backgroundColor: currentPage === 1 ? '#ddd' : '#0F5132',
+          color: currentPage === 1 ? '#999' : '#fff',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+        }}
+      >
+        Previous
+      </button>
+      <span style={{ fontSize: '16px', margin: '0 10px' }}>
+        Page {currentPage} of {totalPages}
+      </span>
+      <button
+        onClick={() => {
+          handleNextPage();
+          window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top
+        }}
+        disabled={currentPage === totalPages}
+        style={{
+          padding: '10px 20px',
+          marginLeft: '10px',
+          backgroundColor: currentPage === totalPages ? '#ddd' : '#0F5132',
+          color: currentPage === totalPages ? '#999' : '#fff',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+        }}
+      >
+        Next
+      </button>
     </div>
   </div>
 )}
+
 
     </div>
     </div>
