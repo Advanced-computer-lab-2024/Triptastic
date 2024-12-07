@@ -867,18 +867,7 @@ const SellerProduct = () => {
   )}
 </p>
 <p style={styles.cardDetails}>
-  <strong>Rating:</strong>{" "}
-  {editProductId === product._id ? (
-    <input
-      type="number"
-      name="rating"
-      value={editProductData.rating}
-      onChange={handleInputChange2}
-      style={styles.input}
-    />
-  ) : (
-    product.rating
-  )}
+  <strong>Rating:</strong> {product.rating}
 </p>
 <p style={styles.cardDetails}>
   <strong>Status:</strong>{" "}
