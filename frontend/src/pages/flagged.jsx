@@ -8,6 +8,19 @@ const Flaged = () => {
   const [flagItineraryMessage, setFlagItineraryMessage] = useState('');
   const [flagMessage, setFlagMessage] = useState('');
   const [activeSection, setActiveSection] = useState('itineraries');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Adjust as needed
+  const getPaginatedData = (data) => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return data.slice(startIndex, endIndex);
+  };
+
+const handlePageChange = (newPage) => {
+  setCurrentPage(newPage);
+};
+
+
 
   const handleFlagTouristItinerary = async (id) => {
     try {
@@ -116,95 +129,216 @@ const Flaged = () => {
     getActivities();
   }, []);
 
+
   return (
     <div style={styles.container}>
-      <div style={styles.buttonGroup}>
-        <button
-          style={activeSection === 'itineraries' ? styles.activeButton : styles.button}
-          onClick={() => setActiveSection('itineraries')}
-        >
-          Itineraries
-        </button>
-        <button
-          style={activeSection === 'tourist' ? styles.activeButton : styles.button}
-          onClick={() => setActiveSection('tourist')}
-        >
-          Tourist Itineraries
-        </button>
-        <button
-          style={activeSection === 'activities' ? styles.activeButton : styles.button}
-          onClick={() => setActiveSection('activities')}
-        >
-          Activities
-        </button>
-      </div>
-
-      {activeSection === 'itineraries' && (
-        <div style={styles.section}>
-          <h2 style={styles.heading}>Itineraries</h2>
-          {Itineraries.length > 0 ? (
-            Itineraries.map((itinerary) => (
-              <div key={itinerary._id} style={styles.card}>
-                <h4>Locations:</h4>
-                <p>{itinerary.Locations.join(', ')}</p>
-                <p>Dates: {itinerary.DatesTimes}</p>
-                <button style={styles.flagButton} onClick={() => handleFlagItinerary(itinerary._id)}>
-                  Flag Itinerary
-                </button>
-              </div>
-            ))
-          ) : (
-            <p>No itineraries found.</p>
-          )}
-          {flagItineraryMessage && <p style={styles.message}>{flagItineraryMessage}</p>}
-        </div>
-      )}
-
-      {activeSection === 'tourist' && (
-        <div style={styles.section}>
-          <h2 style={styles.heading}>Tourist Itineraries</h2>
-          {touristItineraries.length > 0 ? (
-            touristItineraries.map((itinerary) => (
-              <div key={itinerary._id} style={styles.card}>
-                <h4>Activities:</h4>
-                <p>{itinerary.Activities.join(', ')}</p>
-                <p>Locations: {itinerary.Locations.join(', ')}</p>
-                <button
-                  style={styles.flagButton}
-                  onClick={() => handleFlagTouristItinerary(itinerary._id)}
-                >
-                  Flag Tourist Itinerary
-                </button>
-              </div>
-            ))
-          ) : (
-            <p>No tourist itineraries found.</p>
-          )}
-          {flagTouristItineraryMessage && <p style={styles.message}>{flagTouristItineraryMessage}</p>}
-        </div>
-      )}
-
-      {activeSection === 'activities' && (
-        <div style={styles.section}>
-          <h2 style={styles.heading}>Activities</h2>
-          {Activities.length > 0 ? (
-            Activities.map((activity) => (
-              <div key={activity._id} style={styles.card}>
-                <h4>Name:</h4>
-                <p>{activity.Name}</p>
-                <p>Category: {activity.Category}</p>
-                <button style={styles.flagButton} onClick={() => handleFlagActivity(activity._id)}>
-                  Flag Activity
-                </button>
-              </div>
-            ))
-          ) : (
-            <p>No activities found.</p>
-          )}
-          {flagMessage && <p style={styles.message}>{flagMessage}</p>}
-        </div>
-      )}
+      
+    <div style={styles.buttonGroup}>
+      
+      <button
+        style={activeSection === 'itineraries' ? styles.activeButton : styles.button}
+        onClick={() => {
+          setActiveSection('itineraries');
+          setCurrentPage(1); // Reset page
+        }}
+      >
+        Itineraries
+      </button>
+      <button
+        style={activeSection === 'tourist' ? styles.activeButton : styles.button}
+        onClick={() => {
+          setActiveSection('tourist');
+          setCurrentPage(1); // Reset page
+        }}
+      >
+        Tourist Itineraries
+      </button>
+      <button
+        style={activeSection === 'activities' ? styles.activeButton : styles.button}
+        onClick={() => {
+          setActiveSection('activities');
+          setCurrentPage(1); // Reset page
+        }}
+      >
+        Activities
+      </button>
     </div>
+
+    {activeSection === 'itineraries' && (
+      <div style={styles.section}>
+            <div style={styles.paginationContainer}>
+      <button
+        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+        disabled={currentPage === 1}
+        style={styles.paginationButton}
+      >
+        Previous
+      </button>
+      <p style={{ margin: '0 10px', fontSize: '16px' }}>
+        Page {currentPage} of {Math.ceil(Itineraries.length / itemsPerPage)}
+      </p>
+      <button
+        onClick={() =>
+          setCurrentPage((prev) =>
+            Math.min(prev + 1, Math.ceil(Itineraries.length / itemsPerPage))
+          )
+        }
+        disabled={currentPage === Math.ceil(Itineraries.length / itemsPerPage)}
+        style={styles.paginationButton}
+      >
+        Next
+      </button>
+    </div>
+        <h2 style={styles.heading}>Itineraries</h2>
+        {getPaginatedData(Itineraries).map((itinerary) => (
+          <div key={itinerary._id} style={styles.card}>
+            <h4>Locations:</h4>
+            <p>{itinerary.Locations.join(', ')}</p>
+            <p>Dates: {itinerary.DatesTimes}</p>
+            <button style={styles.flagButton} onClick={() => handleFlagItinerary(itinerary._id)}>
+              Flag Itinerary
+            </button>
+          </div>
+        ))}
+        {flagItineraryMessage && <p style={styles.message}>{flagItineraryMessage}</p>}
+      </div>
+    )}
+
+    {activeSection === 'tourist' && (
+      <div style={styles.section}>
+        {/* Pagination Above Cards */}
+<div style={styles.paginationContainer}>
+  <button
+    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+    disabled={currentPage === 1}
+    style={styles.paginationButton}
+  >
+    Previous
+  </button>
+  <p style={{ margin: '0 10px', fontSize: '16px' }}>
+    Page {currentPage} of{' '}
+    {Math.ceil(
+      activeSection === 'itineraries'
+        ? Itineraries.length / itemsPerPage
+        : activeSection === 'tourist'
+        ? touristItineraries.length / itemsPerPage
+        : Activities.length / itemsPerPage
+    )}
+  </p>
+  <button
+    onClick={() =>
+      setCurrentPage((prev) =>
+        Math.min(
+          prev + 1,
+          Math.ceil(
+            activeSection === 'itineraries'
+              ? Itineraries.length / itemsPerPage
+              : activeSection === 'tourist'
+              ? touristItineraries.length / itemsPerPage
+              : Activities.length / itemsPerPage
+          )
+        )
+      )
+    }
+    disabled={
+      currentPage ===
+      Math.ceil(
+        activeSection === 'itineraries'
+          ? Itineraries.length / itemsPerPage
+          : activeSection === 'tourist'
+          ? touristItineraries.length / itemsPerPage
+          : Activities.length / itemsPerPage
+      )
+    }
+    style={styles.paginationButton}
+  >
+    Next
+  </button>
+</div>
+        <h2 style={styles.heading}>Tourist Itineraries</h2>
+        {getPaginatedData(touristItineraries).map((itinerary) => (
+          <div key={itinerary._id} style={styles.card}>
+            <h4>Activities:</h4>
+            <p>{itinerary.Activities.join(', ')}</p>
+            <p>Locations: {itinerary.Locations.join(', ')}</p>
+            <button
+              style={styles.flagButton}
+              onClick={() => handleFlagTouristItinerary(itinerary._id)}
+            >
+              Flag Tourist Itinerary
+            </button>
+          </div>
+        ))}
+        {flagTouristItineraryMessage && <p style={styles.message}>{flagTouristItineraryMessage}</p>}
+      </div>
+    )}
+
+    {activeSection === 'activities' && (
+      <div style={styles.section}>
+        {/* Pagination Above Cards */}
+<div style={styles.paginationContainer}>
+  <button
+    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+    disabled={currentPage === 1}
+    style={styles.paginationButton}
+  >
+    Previous
+  </button>
+  <p style={{ margin: '0 10px', fontSize: '16px' }}>
+    Page {currentPage} of{' '}
+    {Math.ceil(
+      activeSection === 'itineraries'
+        ? Itineraries.length / itemsPerPage
+        : activeSection === 'tourist'
+        ? touristItineraries.length / itemsPerPage
+        : Activities.length / itemsPerPage
+    )}
+  </p>
+  <button
+    onClick={() =>
+      setCurrentPage((prev) =>
+        Math.min(
+          prev + 1,
+          Math.ceil(
+            activeSection === 'itineraries'
+              ? Itineraries.length / itemsPerPage
+              : activeSection === 'tourist'
+              ? touristItineraries.length / itemsPerPage
+              : Activities.length / itemsPerPage
+          )
+        )
+      )
+    }
+    disabled={
+      currentPage ===
+      Math.ceil(
+        activeSection === 'itineraries'
+          ? Itineraries.length / itemsPerPage
+          : activeSection === 'tourist'
+          ? touristItineraries.length / itemsPerPage
+          : Activities.length / itemsPerPage
+      )
+    }
+    style={styles.paginationButton}
+  >
+    Next
+  </button>
+</div>
+        <h2 style={styles.heading}>Activities</h2>
+        {getPaginatedData(Activities).map((activity) => (
+          <div key={activity._id} style={styles.card}>
+            <h4>Name:</h4>
+            <p>{activity.Name}</p>
+            <p>Category: {activity.Category}</p>
+            <button style={styles.flagButton} onClick={() => handleFlagActivity(activity._id)}>
+              Flag Activity
+            </button>
+          </div>
+        ))}
+        {flagMessage && <p style={styles.message}>{flagMessage}</p>}
+      </div>
+    )}
+  </div>
   );
 };
 
@@ -215,6 +349,27 @@ const styles = {
     margin: '0 auto',
     padding: '20px',
   },
+  paginationContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: '20px',
+  },
+  paginationButton: {
+    padding: '10px 20px',
+    margin: '0 10px',
+    borderRadius: '5px',
+    border: 'none',
+    backgroundColor: '#0F5132',
+    color: '#fff',
+    cursor: 'pointer',
+    fontSize: '14px',
+  },
+  activePaginationButton: {
+    backgroundColor: '#007BFF',
+    color: '#fff',
+  },
+  
   buttonGroup: {
     display: 'flex',
     justifyContent: 'center',
