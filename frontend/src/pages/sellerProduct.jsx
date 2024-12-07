@@ -29,6 +29,7 @@ import { Tooltip } from "react-tooltip"; // Updated import
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 
 const SellerProduct = () => {
+    const [showCreateModal, setShowCreateModal] = useState(false);
   const [sellerProducts, setSellerProducts] = useState([]);
   const [error, setError] = useState("");
   const [seller, setSeller] = useState(localStorage.getItem("Username") || "");
@@ -103,17 +104,7 @@ const SellerProduct = () => {
     }));
   };
 
-  const handleLogoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const logoPreviewURL = URL.createObjectURL(file);
-      setModalLogoPreview(logoPreviewURL); // Update the modal-specific preview
-      setFormData((prevData) => ({
-        ...prevData,
-        Logo: file, // Store the file for uploading
-      }));
-    }
-  };
+  
 
   const addNotification = (message) => {
     setNotifications((prevNotifications) => [
@@ -269,48 +260,7 @@ const SellerProduct = () => {
     setLoading(false);
   };
 
-  const handleUpdate = async () => {
-    setUpdating(true);
-
-    const formDataToSubmit = new FormData();
-    formDataToSubmit.append("Username", formData.Username);
-    formDataToSubmit.append("Email", formData.Email);
-    formDataToSubmit.append("Password", formData.Password);
-    formDataToSubmit.append("Name", formData.Name);
-    formDataToSubmit.append("Description", formData.Description);
-
-    if (formData.Logo) {
-      formDataToSubmit.append("Logo", formData.Logo);
-    }
-
-    try {
-      const response = await fetch("http://localhost:8000/updateSeller", {
-        method: "PATCH",
-        body: formDataToSubmit,
-      });
-
-      if (response.ok) {
-        const updatedSeller = await response.json();
-        setSellerInfo(updatedSeller);
-        setErrorMessage("");
-        alert("Information updated successfully!");
-
-        // Update and persist the logo URL
-        if (updatedSeller.logo) {
-          const logoURL = updatedSeller.logo;
-          setLogo(logoURL);
-          localStorage.setItem("logo", logoURL);
-        }
-      } else {
-        throw new Error("Failed to update seller information");
-      }
-    } catch (error) {
-      setErrorMessage("An error occurred while updating seller information");
-      console.error(error);
-    }
-    setUpdating(false);
-  };
-
+  
   const handleProductInputChange = (e) => {
     const { name, value } = e.target;
     setProductFormData((prevData) => ({
@@ -378,69 +328,8 @@ const SellerProduct = () => {
     }
   };
 
-  const handleDeleteRequest = async () => {
-    const Username = localStorage.getItem("Username");
-    setWaiting(true);
-    setRequestSent(false);
-    try {
-      const response = await fetch(
-        `http://localhost:8000/requestAccountDeletionSeller?Username=${Username}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
-      if (response.ok) {
-        setRequestSent(true);
-        alert(
-          "Your account deletion request has been submitted and is pending approval."
-        );
-      } else {
-        setRequestSent(false);
-        alert(data.msg);
-      }
-    } catch (error) {
-      alert("Error deleting account");
-    } finally {
-      setWaiting(false);
-    }
-  };
-
-  const handlePasswordChange = async () => {
-    setChangingPassword(true);
-    const Username = localStorage.getItem("Username");
-
-    try {
-      const response = await fetch(
-        "http://localhost:8000/changePasswordSeller",
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            Username,
-            currentPassword,
-            newPassword,
-          }),
-        }
-      );
-
-      if (response.ok) {
-        setPasswordMessage("Password changed successfully");
-        setCurrentPassword("");
-        setNewPassword("");
-      } else {
-        const data = await response.json();
-        setPasswordMessage(data.error || "Failed to change password");
-      }
-    } catch (error) {
-      setPasswordMessage("An error occurred while changing the password");
-      console.error(error);
-    }
-    setChangingPassword(false);
-  };
+  
+  
   const getProductByName = async (e) => {
     e.preventDefault();
     console.log("Search function triggered");
@@ -660,24 +549,14 @@ const SellerProduct = () => {
           <img src={image} alt="Logo" style={styles.logo} />
         </div>
 
-        <h1 style={styles.title}>Seller Profile</h1>
+        <h1 style={styles.title}>Seller Products</h1>
 
         {/* Icons Container */}
         <div style={styles.iconContainer}>
-          {/* Notification Bell */}
-          <FaBell
-            title="Notifications"
-            size={22}
-            style={styles.icon}
-            onClick={handleNotificationClick}
-          />
-
-          {/* Profile Icon */}
-          <ManageAccountsIcon
-            title="Edit Profile"
-            style={styles.profileIcon}
-            onClick={() => setShowDropdown((prev) => !prev)} // Toggle dropdown
-          />
+          
+        <button style={styles.createButton} onClick={() => setShowCreateModal(true)}>
+    <FaPlus style={styles.createIcon} /> Add Product
+  </button>
 
           {/* Logout Icon */}
           <LogoutOutlinedIcon
@@ -685,158 +564,10 @@ const SellerProduct = () => {
             onClick={() => navigate("/Guest")}
           />
 
-          {showDropdown && (
-            <div style={styles.dropdownMenu}>
-              <div
-                style={styles.dropdownItem}
-                onClick={() => {
-                  setShowDropdown(false); // Close dropdown
-                  toggleModal(); // Open Edit Profile modal
-                }}
-              >
-                Edit Profile
-              </div>
-              <div
-                style={styles.dropdownItem}
-                onClick={() => {
-                  setShowDropdown(false); // Close dropdown
-                  togglePasswordModal(); // Open Change Password modal
-                }}
-              >
-                Change Password
-              </div>
-            </div>
-          )}
+         
         </div>
-
-        {/* Notification Bell Icon */}
-
-        {/* Notification Count */}
-        {notifications && notifications.length > 0 && (
-          <span
-            style={{
-              position: "absolute",
-              top: 0,
-              right: 150,
-              backgroundColor: "#ff4d4d",
-              color: "white",
-              borderRadius: "50%",
-              width: "20px",
-              height: "20px",
-              fontSize: "12px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
-            }}
-          >
-            {notifications.length}
-          </span>
-        )}
-
-        {/* Notifications Dropdown */}
-        {showNotifications && (
-          <div
-            style={{
-              position: "absolute",
-              top: "50px",
-              right: "70px",
-              backgroundColor: "white",
-              border: "1px solid #ddd",
-              borderRadius: "8px",
-              boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
-              width: "320px",
-              maxHeight: "400px",
-              overflowY: "auto", // Enable vertical scrolling
-              overflowX: "hidden",
-              zIndex: 1000,
-            }}
-          >
-            <div
-              style={{
-                padding: "10px",
-                fontWeight: "bold",
-                borderBottom: "1px solid #f0f0f0",
-              }}
-            >
-              Notifications
-            </div>
-            <ul
-              style={{
-                listStyle: "none",
-                padding: "0",
-                margin: "0",
-                flexDirection: "column", // Stack items vertically
-                gap: "10px",
-              }}
-            >
-              {notifications &&
-                notifications.map((notification) => (
-                  <li
-                    key={notification.id}
-                    style={{
-                      display: "flex",
-                      flexDirection: "row", // Align icon and text horizontally
-                      alignItems: "flex-start", // Align icon with the top of the text
-                      backgroundColor: "#f9f9f9", // Light background for each item
-                      border: "1px solid #ddd", // Add subtle border
-                      borderRadius: "5px", // Rounded corners
-                      padding: "10px", // Add padding inside each item
-                      borderBottom: "1px solid #f0f0f0",
-                      padding: "10px",
-                      fontSize: "10px",
-                    }}
-                  >
-                    <MdNotificationImportant
-                      size={20}
-                      style={{ marginRight: "10px", color: "#ff9800" }}
-                    />
-                    <div style={{ flex: 1 }}>
-                      <p style={{ margin: 0, fontWeight: "500" }}>
-                        {notification.message}
-                      </p>
-                      <p
-                        style={{
-                          margin: "5px 0 0",
-                          fontSize: "12px",
-                          color: "#888",
-                        }}
-                      >
-                        {new Date(notification.createdAt).toLocaleDateString(
-                          "en-US",
-                          {
-                            month: "long",
-                            day: "numeric",
-                            year: "numeric",
-                          }
-                        )}{" "}
-                        at{" "}
-                        {new Date(notification.createdAt).toLocaleTimeString(
-                          "en-US",
-                          {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          }
-                        )}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-            </ul>
-            {!notifications || notifications.length === 0 ? (
-              <div
-                style={{
-                  padding: "20px",
-                  textAlign: "center",
-                  color: "#888",
-                  fontSize: "14px",
-                }}
-              >
-                No new notifications
-              </div>
-            ) : null}
-          </div>
-        )}
+       
+           
       </header>
       {/* Sidebar */}
       <div
@@ -886,87 +617,98 @@ const SellerProduct = () => {
         </div>
       </div>
 
-      {/* Add Product Section */}
-      <div style={styles.card}>
-        <h3 style={styles.cardTitle}>
-          Add Product <Inventory2Icon />
-        </h3>
-        <form onSubmit={handleProductSubmit} style={styles.form}>
-          <input
-            type="text"
-            placeholder="Product Name"
-            name="productName"
-            value={productFormData.productName}
-            onChange={handleProductInputChange}
-            required
-            style={styles.input}
-          />
-          <textarea
-            placeholder="Description"
-            name="description"
-            value={productFormData.description}
-            onChange={handleProductInputChange}
-            required
-            style={styles.textarea}
-          />
-          <input
-            type="number"
-            placeholder="Price"
-            name="price"
-            value={productFormData.price}
-            onChange={handleProductInputChange}
-            required
-            style={styles.input}
-          />
-          <input
-            type="number"
-            placeholder="Stock"
-            name="stock"
-            value={productFormData.stock}
-            onChange={handleProductInputChange}
-            required
-            style={styles.input}
-          />
-          <div style={styles.fileUploadContainer}>
-            <label style={styles.fileLabel} htmlFor="file-upload">
-              <strong
-                style={{
-                  color: "#0F5132",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "5px",
-                  cursor: "pointer",
-                }}
-              >
-                Upload Product Image
-                <AddPhotoAlternateIcon style={styles.iconButton} />
-              </strong>
-            </label>
+    {/* Add Product Modal */}
+    {showCreateModal && (
+      <div style={styles.modalOverlay}>
+        <div style={styles.modalContent}>
+          <h3 style={styles.cardTitle}>
+            Add Product <Inventory2Icon />
+          </h3>
 
+          {/* Close Modal Icon */}
+          <HighlightOffOutlinedIcon
+            onClick={() => setShowCreateModal(false)}
+            style={styles.cancelIcon}
+          />
+
+          <form onSubmit={handleProductSubmit} style={styles.form}>
             <input
-              id="file-upload"
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
+              type="text"
+              placeholder="Product Name"
+              name="productName"
+              value={productFormData.productName}
+              onChange={handleProductInputChange}
               required
-              style={styles.fileInput}
+              style={styles.input}
             />
+            <textarea
+              placeholder="Description"
+              name="description"
+              value={productFormData.description}
+              onChange={handleProductInputChange}
+              required
+              style={styles.textarea}
+            />
+            <input
+              type="number"
+              placeholder="Price"
+              name="price"
+              value={productFormData.price}
+              onChange={handleProductInputChange}
+              required
+              style={styles.input}
+            />
+            <input
+              type="number"
+              placeholder="Stock"
+              name="stock"
+              value={productFormData.stock}
+              onChange={handleProductInputChange}
+              required
+              style={styles.input}
+            />
+            <div style={styles.fileUploadContainer}>
+              <label style={styles.fileLabel} htmlFor="file-upload">
+                <strong
+                  style={{
+                    color: "#0F5132",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "5px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Upload Product Image
+                  <AddPhotoAlternateIcon style={styles.iconButton} />
+                </strong>
+              </label>
 
-            {imagePreview && (
-              <img
-                src={imagePreview}
-                alt="Product Preview"
-                style={styles.imagePreview}
+              <input
+                id="file-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                required
+                style={styles.fileInput}
               />
-            )}
-          </div>
-          <button type="submit" style={styles.submitButton}>
-            Submit Product
-          </button>
-        </form>
+
+              {imagePreview && (
+                <img
+                  src={imagePreview}
+                  alt="Product Preview"
+                  style={styles.imagePreview}
+                />
+              )}
+            </div>
+            <button type="submit" style={styles.submitButton}>
+              Submit Product
+            </button>
+          </form>
+        </div>
       </div>
+    )}
       <div style={styles.card}>
-        <h3 style={styles.cardTitle}>Search Product to Archive</h3>
+        <h3 style={styles.cardTitle}>Search Product</h3>
         <form onSubmit={getProductByName} style={styles.formSearch}>
           <input
             type="text"
@@ -981,7 +723,6 @@ const SellerProduct = () => {
             Search
           </button>
         </form>
-        <h1 style={styles.cardTitle}>My Products</h1>
         {loading && <p>Loading...</p>}
         {error && <p style={styles.error}>{error}</p>}
         <div style={styles.card}>
@@ -1038,281 +779,177 @@ const SellerProduct = () => {
           </div>
         )}
       </div>
-        {sellerProducts.length === 0 && !loading ? (
-          <p>No products found.</p>
-        ) : (
-          <table style={styles.table}>
-            <thead>
-              <tr>
-                <th style={styles.th}>Product Name</th>
-                <th style={styles.th}>Description</th>
-                <th style={styles.th}>Price</th>
-                <th style={styles.th}>Stock</th>
-                <th style={styles.th}>Rating</th>
-                <th style={styles.th}>Archived</th>
-                <th style={styles.th}></th> {/* Add a column for buttons */}
-              </tr>
-            </thead>
-            <tbody>
-              {sellerProducts.map((product) => (
-                <tr key={product._id} style={styles.tr}>
-                  <td style={styles.td}>
-                    {editProductId === product._id ? (
-                      <input
-                        type="text"
-                        name="productName"
-                        value={editProductData.productName}
-                        onChange={handleInputChange2}
-                      />
-                    ) : (
-                      product.productName
-                    )}
-                  </td>
-                  <td style={styles.td}>
-                    {editProductId === product._id ? (
-                      <input
-                        type="text"
-                        name="description"
-                        value={editProductData.description}
-                        onChange={handleInputChange2}
-                      />
-                    ) : (
-                      product.description
-                    )}
-                  </td>
-                  <td style={styles.td}>
-                    {editProductId === product._id ? (
-                      <input
-                        type="number"
-                        name="price"
-                        value={editProductData.price}
-                        onChange={handleInputChange2}
-                      />
-                    ) : (
-                      `$${product.price}`
-                    )}
-                  </td>
-                  <td style={styles.td}>
-                    {editProductId === product._id ? (
-                      <input
-                        type="number"
-                        name="stock"
-                        value={editProductData.stock}
-                        onChange={handleInputChange2}
-                      />
-                    ) : (
-                      product.stock
-                    )}
-                  </td>
-                  <td style={styles.td}>
-                    {editProductId === product._id ? (
-                      <input
-                        type="number"
-                        name="rating"
-                        value={editProductData.rating}
-                        onChange={handleInputChange2}
-                      />
-                    ) : (
-                      product.rating
-                    )}
-                  </td>
-                  <td style={styles.td}>
-            {product.archived ? (
-              <span style={{ color: "green" }}>Archived</span>
-            ) : (
-              <span style={{ color: "red" }}>Unarchived</span>
-            )}
-          </td>
-                  <td style={styles.td}>
-                    {editProductId === product._id ? (
-                      <button
-                        style={styles.button}
-                        onClick={() => handleSaveProduct(product._id)}
-                      >
-                        Save
-                      </button>
-                    ) : (
-                      <button
-                        style={styles.button}
-                        onClick={() => handleProductEdit(product._id)}
-                      >
-                        Edit
-                      </button>
-                    )}
-                    <button
-                      type="button" // Prevent form submission
+      {sellerProducts.length === 0 && !loading ? (
+  <p>No products found.</p>
+) : (
+  <div style={styles.cardContainer}>
+    {sellerProducts.map((product) => (
+      <div
+        key={product._id}
+        style={{
+          ...styles.card,
+          position: "relative",
+          backgroundColor: "#fff",
+          border: "1px solid #ddd",
+          borderRadius: "10px",
+          padding: "15px",
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          transition: "transform 0.3s ease",
+          overflow: "hidden",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = "scale(1.03)";
+          e.currentTarget.style.boxShadow =
+            "0 8px 12px rgba(0, 0, 0, 0.15)";
+          e.currentTarget.style.borderColor = "#0F5132";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = "scale(1)";
+          e.currentTarget.style.boxShadow =
+            "0 4px 6px rgba(0, 0, 0, 0.1)";
+          e.currentTarget.style.borderColor = "#ddd";
+        }}
+      >
+       <h4 style={styles.cardTitle}>
+  {editProductId === product._id ? (
+    <input
+      type="text"
+      name="productName"
+      value={editProductData.productName}
+      onChange={handleInputChange2}
+      style={styles.input}
+    />
+  ) : (
+    product.productName
+  )}
+</h4>
+<p style={styles.cardDescription}>
+  {editProductId === product._id ? (
+    <textarea
+      name="description"
+      value={editProductData.description}
+      onChange={handleInputChange2}
+      style={styles.textarea}
+    />
+  ) : (
+    product.description
+  )}
+</p>
+<p style={styles.cardDetails}>
+  <strong>Price:</strong>{" "}
+  {editProductId === product._id ? (
+    <input
+      type="number"
+      name="price"
+      value={editProductData.price}
+      onChange={handleInputChange2}
+      style={styles.input}
+    />
+  ) : (
+    `$${product.price}`
+  )}
+</p>
+<p style={styles.cardDetails}>
+  <strong>Stock:</strong>{" "}
+  {editProductId === product._id ? (
+    <input
+      type="number"
+      name="stock"
+      value={editProductData.stock}
+      onChange={handleInputChange2}
+      style={styles.input}
+    />
+  ) : (
+    product.stock
+  )}
+</p>
+<p style={styles.cardDetails}>
+  <strong>Rating:</strong> {product.rating}
+</p>
+<p style={styles.cardDetails}>
+  <strong>Status:</strong>{" "}
+  <span
+    style={{
+      color: product.archived ? "green" : "red",
+      fontWeight: "500",
+    }}
+  >
+    {product.archived ? "Archived" : "Unarchived"}
+  </span>
+</p>
+        <div style={styles.buttonContainer}>
+          {editProductId === product._id ? (
+            <button
+              style={styles.saveButton}
+              onClick={() => handleSaveProduct(product._id)}
+            >
+              Save
+            </button>
+          ) : (
+            <button
+              style={styles.editButton}
+              onClick={() => handleProductEdit(product._id)}
+            >
+              Edit
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() =>
+              product.archived
+                ? unarchiveProduct(product.productName)
+                : archiveProduct(product.productName)
+            }
+            style={styles.archiveToggleButton}
+          >
+            {product.archived ? "Unarchive" : "Archive"}
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+)}
 
-                      onClick={() => archiveProduct(product.productName)}
-                      style={styles.unarchiveButton}
-                    >
-                      <FaArchive /> Archive
-                    </button>
-                    <button
-                      type="button" // Prevent form submission
 
-                      onClick={() => unarchiveProduct(product.productName)}
-                      style={styles.unarchiveButton}
-                      disabled={product.archived === false} // Disable if already unarchived
-                    >
-                      <HiOutlineArchiveBoxXMark /> Unarchive
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
       </div>
 
     
 
-      {/* Modal for Editing Profile */}
-      {modalOpen && (
-        <div style={styles.modalOverlay}>
-          <div style={styles.modalContent}>
-            <h2 style={styles.modalContentH2}>Edit Profile</h2>
-            <HighlightOffOutlinedIcon
-              onClick={toggleModal}
-              style={styles.cancelIcon} // Apply cancel icon style
-            />
+     
 
-            <div style={styles.photoSection}>
-              {logo && (
-                <img
-                  src={`http://localhost:8000/${logo.replace(/\\/g, "/")}`}
-                  alt="Seller Logo"
-                  className="logo"
-                  style={styles.profilePhoto}
-                />
-              )}
-              <label style={styles.photoLabel}>
-                Update Photo
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleLogoChange}
-                  style={styles.fileInput}
-                />
-              </label>
-              <h3>{sellerInfo.Username}</h3>
-            </div>
-
-            <label style={styles.modalContentLabel}>Email</label>
-            <input
-              type="email"
-              name="Email"
-              value={formData.Email}
-              onChange={handleInputChange}
-              style={styles.modalContentTextarea}
-            />
-
-            <label style={styles.modalContentLabel}>Name</label>
-            <input
-              type="text"
-              name="Name"
-              value={formData.Name}
-              onChange={handleInputChange}
-              style={styles.modalContentTextarea}
-            />
-
-            <label style={styles.modalContentLabel}>Description</label>
-            <textarea
-              name="Description"
-              value={formData.Description}
-              onChange={handleInputChange}
-              style={styles.modalContentInput}
-            />
-
-            <div style={styles.modalButtonsContainer}>
-              <button
-                onClick={handleUpdate}
-                disabled={updating}
-                style={{
-                  ...styles.modalContentButton,
-                  ...(updating ? { opacity: 0.6, cursor: "not-allowed" } : {}),
-                }}
-              >
-                {updating ? "Updating..." : "Save Changes"}
-              </button>
-
-              <button
-                onClick={handleDeleteRequest}
-                disabled={waiting || requestSent}
-                style={{
-                  ...styles.modalContentButton,
-                  backgroundColor: "#dc3545",
-                  ...(waiting || requestSent
-                    ? { opacity: 0.6, cursor: "not-allowed" }
-                    : {}),
-                }}
-              >
-                {waiting
-                  ? "Waiting..."
-                  : requestSent
-                  ? "Request Sent"
-                  : "Delete Account"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Password Modal */}
-      {showPasswordModal && (
-        <div style={styles.modalOverlay}>
-          <div style={styles.modalContent}>
-            <h2 style={styles.modalContentH2}>Change Password</h2>
-            <HighlightOffOutlinedIcon
-              onClick={togglePasswordModal}
-              style={styles.cancelpasswordIcon}
-            />
-            {passwordMessage && (
-              <p
-                style={{
-                  color: passwordMessage.includes("successfully")
-                    ? "green"
-                    : "red",
-                  marginBottom: "15px", // Add spacing below the message
-                }}
-              >
-                {passwordMessage}
-              </p>
-            )}
-            <input
-              type="password"
-              placeholder="Enter Current Password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              style={styles.modalContentInput}
-            />
-            <input
-              type="password"
-              placeholder="Enter New Password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              style={styles.modalContentInput}
-            />
-
-            <div style={styles.modalButtonsContainer}>
-              <button
-                onClick={handlePasswordChange}
-                style={{
-                  ...styles.modalContentButton,
-                  backgroundColor: "#0F5132",
-                }}
-              >
-                Change Password
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+     
       <Tooltip id="amenities-tooltip" place="top" />
     </div>
   );
 };
 
 const styles = {
+    createButton: {
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        backgroundColor: "#0F5132",
+        color: "white",
+        padding: "10px 20px",
+        borderRadius: "5px",
+        border: "none",
+        cursor: "pointer",
+        fontSize: "16px",
+        fontWeight: "bold",
+        transition: "background-color 0.3s ease",
+        marginTop:'-1px'
+      },
+      
+      createButtonHover: {
+        backgroundColor: "#084B24", // Darker green on hover
+      },
+      
+      createIcon: {
+        fontSize: "20px",
+      },
   sidebar: {
     position: "fixed",
     top: "60px",
@@ -1561,7 +1198,7 @@ const styles = {
     cursor: "pointer", // Ensure it acts as a button
     position: "absolute", // Position it correctly in the modal
     right: "500px", // Adjust placement
-    top: "100px", // Adjust placement
+    top: "190px", // Adjust placement
   },
   cancelpasswordIcon: {
     color: "#0F5132", // Set the color of the icon
@@ -1571,44 +1208,48 @@ const styles = {
     right: "490px", // Adjust placement
     top: "280px", // Adjust placement
   },
-  card: {
-    backgroundColor: "#fff",
-    padding: "20px",
-    borderRadius: "10px",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-  },
   cardTitle: {
-    fontSize: "20px",
-    fontWeight: "bold",
-    marginBottom: "15px",
-    display: "flex",
-    alignItems: "center",
-    gap: "5px",
+    fontSize: "18px", // Smaller font size for professional appearance
+    fontWeight: "600", // Slightly bold for prominence
     color: "#0F5132",
+    lineHeight: "1.4", // Good readability
+  },
+  cardDescription: {
+    fontSize: "12px", // Smaller font for compact look
+    color: "#555",
+    marginBottom: "10px",
+    lineHeight: "1.4",
+  },
+  cardDetails: {
+    fontSize: "14px", // Maintain uniform font size for details
+    color: "#444",
+    marginBottom: "5px",
+    lineHeight: "1.4",
+  },
+  input: {
+    padding: "4px 8px",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    fontSize: "18px",
+    width: "100%",
+  },
+  textarea: {
+    padding: "4px 8px",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    fontSize: "18px",
+    width: "100%",
+    resize: "vertical",
   },
   form: {
     display: "flex",
     flexDirection: "column",
     gap: "15px",
-    width: "80%", // Maintain consistent form width
+    width: "100%", // Maintain consistent form width
     alignItems: "center", // Center-align the form
     margin: "0 auto", // Center the form on the page
   },
-  input: {
-    width: "100%", // Ensure inputs span the full width of the form
-    padding: "10px",
-    border: "1px solid #ddd",
-    borderRadius: "5px",
-    fontSize: "16px",
-  },
-  textarea: {
-    width: "100%", // Ensure the textarea matches input width
-    padding: "10px",
-    border: "1px solid #ddd",
-    borderRadius: "5px",
-    fontSize: "16px",
-    resize: "none",
-  },
+ 
   fileUploadContainer: {
     display: "flex",
     flexDirection: "column",
@@ -1697,24 +1338,55 @@ const styles = {
     fontWeight: "bold",
     marginBottom: "10px",
   },
-  archiveButton: {
-    backgroundColor: "#dc3545",
-    color: "white",
-    padding: "10px 15px",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
+  cardContainer: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+    gap: "20px",
+    padding: "20px",
+  },
+  card: {
+    backgroundColor: "#fff",
+    border: "1px solid #ddd",
+    borderRadius: "10px",
+    padding: "20px",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    transition: "transform 0.2s ease",
+  },
+
+  buttonContainer: {
+    display: "flex",
+    gap: "8px",
     marginTop: "10px",
   },
-  unarchiveButton: {
+  editButton: {
     backgroundColor: "#0F5132",
-    color: "white",
-    padding: "10px 15px",
+    color: "#fff",
+    padding: "5px 8px",
     border: "none",
-    borderRadius: "5px",
+    borderRadius: "4px",
     cursor: "pointer",
-    marginTop: "10px",
-    marginLeft: "10px",
+    fontSize: "12px",
+  },
+  saveButton: {
+    backgroundColor: "#0F5132",
+    color: "#fff",
+    padding: "5px 8px",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontSize: "12px",
+  },
+  archiveToggleButton: {
+    backgroundColor: "#dc3545",
+    color: "#fff",
+    padding: "5px 8px",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    fontSize: "12px",
   },
   table: {
     width: "100%",

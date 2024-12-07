@@ -145,7 +145,6 @@ const AttendedActivitiesPage = () => {
           onClick={() => navigate("/tourist-profile")}
         />
       </header>
-      <div className="tourist-profile-container" style={{ marginTop: '120px' }}>
       {/* Sidebar */}
       <div
         style={styles.sidebar}
@@ -222,7 +221,6 @@ const AttendedActivitiesPage = () => {
             Review Activities
           </span>
         </div>
-      </div>
       </div>
       <div style={styles.content}>
         {errorMessage && <p style={styles.error}>{errorMessage}</p>}
