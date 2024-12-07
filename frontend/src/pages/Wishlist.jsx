@@ -264,6 +264,8 @@ const styles = {
     fontSize: '24px',
     color: 'white',
     cursor: 'pointer',
+    marginLeft: '15px', // Move icons slightly to the right
+
   },
   wishlistContent: {
       padding: '0', // Ensure no padding
