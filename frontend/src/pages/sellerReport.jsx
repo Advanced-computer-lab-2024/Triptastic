@@ -524,7 +524,7 @@ const styles = {
     iconContainerHover: {
       backgroundColor: '#084B24', // Background on hover
     },
-    icon: {
+    iconn: {
       fontSize: '24px',
       marginLeft: '15px', // Move icons slightly to the right
       color: '#fff', // Icons are always white
