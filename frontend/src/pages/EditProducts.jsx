@@ -1,14 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { FaEdit, FaSave, FaBox, FaUserShield, FaTasks } from 'react-icons/fa';
-import { FaArrowLeft, FaTag, FaUser, FaExclamationCircle, FaHeart, FaFileAlt, FaTrashAlt, FaThList, FaPlus, FaFlag } from 'react-icons/fa';
+import { FaEdit, FaSave, FaBox, FaUserShield, FaTasks, FaArchive } from 'react-icons/fa';
+import { FaArrowLeft, FaTag, FaUser, FaExclamationCircle, FaHeart, FaFileAlt, FaTrashAlt, FaThList, FaPlus, FaFlag,FaSearch } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import image from '../images/image.png';
+import { HiOutlineArchiveBoxXMark } from "react-icons/hi2";
 
 const EditProducts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [myProducts, setMyProducts] = useState([]);
+  const [productSearchResult, setProductSearchResult] = useState(null);
+  const [productNameToSearch, setProductNameToSearch] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
   const [editProductId, setEditProductId] = useState(null);
+  const [productNameToArchive, setProductNameToArchive] = useState(''); // New state variable
+
   const [editProductData, setEditProductData] = useState({
     productName: '',
     description: '',
@@ -73,7 +80,132 @@ const EditProducts = () => {
       rating: product.rating,
     });
   };
-
+  
+  const getProductByName = async (e) => {
+    e.preventDefault();
+    console.log("Search function triggered");
+  
+  
+    setLoading(true);
+    setError('');
+    setSuccessMessage('');
+    setProductSearchResult(null);
+  
+    try {
+      const response = await fetch(`http://localhost:8000/getProduct?productName=${productNameToSearch}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const product = await response.json();
+        console.log(productSearchResult);
+        setProductSearchResult(product);
+        setProductNameToArchive(product.productName); // Store product name for archiving
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error || 'Product not found.');
+      }
+    } catch (error) {
+      setError('An error occurred while searching for the product.');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };const archiveProduct = async (productName) => {
+    if (!productName) {
+      setError('No product selected to archive.');
+      return;
+    }
+  
+    setLoading(true);
+    setError('');
+    setSuccessMessage('');
+  
+    try {
+      const response = await fetch(`http://localhost:8000/archiveProduct/${productName}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const result = await response.json();
+        setSuccessMessage(`Product "${productName}" archived successfully.`);
+        console.log(`Archived product: ${productName}`);
+  
+        // Update product list state to reflect the archive
+        setMyProducts((prevProducts) =>
+          prevProducts.map((product) =>
+            product.productName === productName
+              ? { ...product, archived: true }
+              : product
+          )
+        );
+  
+        // Reset search result to null after archiving
+        setProductSearchResult(null);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error || 'Failed to archive product.');
+      }
+    } catch (error) {
+      setError('An error occurred while archiving the product.');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const unarchiveProduct = async (productName) => {
+    if (!productName) {
+      setError('No product selected to unarchive.');
+      return;
+    }
+  
+    setLoading(true);
+    setError('');
+    setSuccessMessage('');
+  
+    try {
+      const response = await fetch(`http://localhost:8000/unarchiveProduct/${productName}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const result = await response.json();
+        setSuccessMessage(`Product "${productName}" unarchived successfully.`);
+        console.log(`Unarchived product: ${productName}`);
+  
+        // Update product list state to reflect the unarchive
+        setMyProducts((prevProducts) =>
+          prevProducts.map((product) =>
+            product.productName === productName
+              ? { ...product, archived: false }
+              : product
+          )
+        );
+  
+        // Reset search result to null after unarchiving
+        setProductSearchResult(null);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error || 'Failed to unarchive product.');
+      }
+    } catch (error) {
+      setError('An error occurred while unarchiving the product.');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   const fetchMyProducts = async () => {
     const Username = localStorage.getItem('Username');
     try {
@@ -136,7 +268,7 @@ const EditProducts = () => {
       </header>
 
           {/* Sidebar */}
-    <div
+          <div
         style={styles.sidebar}
         onMouseEnter={(e) => {
           e.currentTarget.style.width = '200px';
@@ -151,7 +283,6 @@ const EditProducts = () => {
           );
         }}
       >
-
 
 <div style={styles.item} onClick={() => navigate('/adminPage')}>
           <FaUser style={styles.icon} />
@@ -181,7 +312,6 @@ const EditProducts = () => {
           </span>
         </div>
 
-
         <div style={styles.item} onClick={() => navigate('/adminReport')}>
           <FaBox  style={styles.icon} />
           <span className="label" style={styles.label}>
@@ -208,14 +338,74 @@ const EditProducts = () => {
             Flag Events
           </span>   
         </div>
+        <div style={styles.item} onClick={() => navigate('/products_admin')}>
+          <FaBox  style={styles.icon} />
+          <span className="label" style={styles.label}>
+            View Products
+          </span>   
+        </div>
       </div>
-
     
   
       <h1 style={styles.heading}>
         <FaTasks style={styles.headingIcon} /> Manage My Products
       </h1>
-  
+    {/* Search Product Section */}
+    <div style={styles.card}>
+    <h3 style={styles.cardTitle}>Search Product to Archive</h3>
+    <form onSubmit={getProductByName} style={styles.formSearch}>
+      <input
+        type="text"
+        placeholder="Enter Product Name"
+        value={productNameToSearch}
+        onChange={(e) => setProductNameToSearch(e.target.value)}
+        required
+        style={styles.input}
+      />
+      <button type="submit" style={styles.searchButton} disabled={loading}>
+        <FaSearch style={{ marginRight: '5px' }} />
+        Search
+      </button>
+    </form>
+    {error && <p style={styles.errorMessage}>{error}</p>}
+    {successMessage && (
+      <p style={styles.successMessage}>{successMessage}</p>
+    )}
+    {productSearchResult && (
+      <div style={styles.searchResult}>
+        <h4 style={styles.resultTitle}>Product Details</h4>
+        <p><strong>Name:</strong> {productSearchResult.productName}</p>
+        <p><strong>Description:</strong> {productSearchResult.description}</p>
+        <p><strong>Price:</strong> {productSearchResult.price}</p>
+        <p><strong>Rating:</strong> {productSearchResult.rating}</p>
+        <p><strong>Seller:</strong> {productSearchResult.seller}</p>
+        <p>
+          <strong>Archived:</strong>{' '}
+          {productSearchResult.archived !== undefined
+            ? productSearchResult.archived.toString()
+            : 'N/A'}
+        </p>
+        <button
+      onClick={() => archiveProduct(productSearchResult.productName)}
+      disabled={loading || productSearchResult.unarchived}
+      style={styles.archiveButton}
+    >
+      <FaArchive style={{ marginRight: '5px' }} />
+      Archive Product
+    </button>
+
+    {/* Unarchive Product Button */}
+    <button
+      onClick={() => unarchiveProduct(productSearchResult.productName)}
+      disabled={loading || !productSearchResult.archived}
+      style={styles.unarchiveButton}
+    >
+      <HiOutlineArchiveBoxXMark style={{ marginRight: '5px' }} />
+      Unarchive Product
+    </button>
+      </div>
+    )}
+  </div>
       {/* Pagination at the top */}
       <div style={styles.paginationWrapper}>
         {renderPagination()}
@@ -273,6 +463,7 @@ const EditProducts = () => {
                       style={styles.input}
                       placeholder="Rating"
                     />
+                    
                     <button
                       style={styles.buttonSave}
                       onClick={() => handleSaveProduct(product._id)}
@@ -298,14 +489,23 @@ const EditProducts = () => {
     <strong>Rating:</strong> {product.rating}
   </p>
 </div>
+<button
+  style={styles.archiveButton}
+  onClick={() => archiveProduct(product.productName)}
+  disabled={product.archived} // Disable if already archived
+>
+  <FaArchive /> Archive
+</button>
+<button
+  style={styles.unarchiveButton}
+  onClick={() => unarchiveProduct(product.productName)}
+  disabled={!product.archived} // Disable if not archived
+>
+  <HiOutlineArchiveBoxXMark /> Unarchive
+</button>
 
-                    <button
-                      style={styles.buttonEdit}
-                      onClick={() => handleProductEdit(product._id)}
-                    >
-                      <FaEdit /> Edit
-                    </button>
                   </>
+                    
                 )}
               </div>
             ))}
@@ -346,16 +546,19 @@ const styles = {
   cardGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-    gap: '20px',
+    gap: '14px',
   },
+  
+
   card: {
     backgroundColor: '#fff',
-    padding: '20px',
+    padding: '8px',
     borderRadius: '10px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
     textAlign: 'center',
   },
   productName: {
+
     fontSize: '18px',
     fontWeight: 'bold',
     marginBottom: '10px',
@@ -373,6 +576,7 @@ const styles = {
     borderRadius: '5px',
   },
   textarea: {
+    
     width: '100%',
     padding: '10px',
     marginBottom: '10px',
@@ -383,7 +587,6 @@ const styles = {
   buttonEdit: {
     padding: '10px',
     fontSize: '14px',
-    fontWeight: 'bold',
     backgroundColor: '#0F5132',
     color: '#fff',
     border: 'none',
@@ -394,7 +597,6 @@ const styles = {
   buttonSave: {
     padding: '10px',
     fontSize: '14px',
-    fontWeight: 'bold',
     backgroundColor: '#28a745',
     color: '#fff',
     border: 'none',
@@ -411,7 +613,6 @@ const styles = {
   paginationButton: {
     padding: '10px 15px',
     fontSize: '14px',
-    fontWeight: 'bold',
     backgroundColor: '#0F5132',
     color: '#fff',
     border: 'none',
@@ -427,21 +628,27 @@ const styles = {
     color: '#0F5132',
     marginBottom: '10px',
   },
+  productDescription: {
+    fontFamily: "'Roboto', sans-serif", // Example: Roboto font
+    fontSize: '20px',
+    marginBottom: '10px',
+  },
+
   productDetailsContainer: {
     display: 'flex',
     flexDirection: 'column', // Stack the details vertically
     alignItems: 'flex-start', // Align items to the left
-    gap: '5px', // Add space between each detail
-    marginTop: '10px',
+    gap: '0px', // Add space between each detail
+    marginTop: '5px',
   },
   productDetail: {
-    fontFamily: "'Courier New', monospace",
+    fontFamily: "'Roboto', sans-serif", // Example: Roboto font
     fontSize: '20px',
     color: '#333',
-    lineHeight: '1.5', // Ensures consistent spacing between lines
+    lineHeight: '1.2', // Ensures consistent spacing between lines
   },
   price: {
-    fontFamily: "'Courier New', monospace",
+    fontFamily:  "'Roboto', sans-serif", // Example: Roboto font
     marginLeft: '5px', // Ensure small consistent spacing
 
   },

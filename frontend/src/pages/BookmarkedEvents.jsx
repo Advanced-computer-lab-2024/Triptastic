@@ -203,6 +203,7 @@ const styles = {
   icon: {
     fontSize: '24px',
     color: 'white',
+    marginLeft: '15px', // Move icons slightly to the right
     cursor: 'pointer',
   },
   label: {

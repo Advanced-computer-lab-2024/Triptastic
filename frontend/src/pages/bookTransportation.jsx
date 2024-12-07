@@ -2,12 +2,17 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { CurrencyContext } from '../pages/CurrencyContext';
-import { FaBus, FaPlane, FaTrain, FaMoneyBillWave, FaMapMarkerAlt, FaLocationArrow, FaClock ,FaDollarSign, FaArrowCircleLeft,FaUserCircle,FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaHotel, FaShoppingCart,
+import { FaBus, FaPlane,FaCar,FaShip, FaTrain, FaMoneyBillWave, FaMapMarkerAlt, FaLocationArrow, FaClock ,FaDollarSign, FaArrowCircleLeft,FaUserCircle,FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaHotel, FaShoppingCart,
   FaClipboardList,
   FaStar, } from 'react-icons/fa'; // Icons for transport types
 import { AiOutlineCheckCircle, AiOutlineWarning } from 'react-icons/ai'; // Icons for messages
 import logo from '../images/image.png';
-
+import bus from '../images/transportation.webp';
+import MuseumIcon from '@mui/icons-material/Museum';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import NearMeIcon from '@mui/icons-material/NearMe';
+import DepartureBoardIcon from '@mui/icons-material/DepartureBoard';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 const BookTransportation = () => {
   const navigate = useNavigate(); // For navigation
   const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
@@ -37,6 +42,10 @@ const BookTransportation = () => {
 
   // Handle the book button click
   const handleBook = () => {
+    if(localStorage.getItem('context') === 'guest') {
+      alert('Please login to book transportation');
+      return;
+    }
     setSuccessMessage('Transportation has been booked successfully!');
   };
 
@@ -58,14 +67,15 @@ const BookTransportation = () => {
   };
 
   return (
+    <div style={styles.container2}>
+    {/* Background Section */}
+    <div style={styles.background}>
+      <h1 style={styles.searchFormHeading}>Seamless Journeys, Anytime, Anywhere!</h1>
+    </div>
+  
     <div style={styles.container}>
       {/* Header Section */}
       <header style={styles.header}>
-        <FaArrowCircleLeft
-          style={styles.backIcon}
-          onClick={handleProfileRedirect}
-
-        />
         <img src={logo} alt="Logo" style={styles.logo} /> {/* Add your logo here */}
         <h1 style={styles.title}>Book Your Transportation</h1>
         <FaUserCircle style={styles.profileIcon} onClick={handleProfileRedirect} />
@@ -88,13 +98,13 @@ const BookTransportation = () => {
         }}
       >
         <div style={styles.item} onClick={() => navigate('/historical-locations')}>
-          <FaLandmark style={styles.icon} />
+          <FaUniversity style={styles.icon} />
           <span className="label" style={styles.label}>
-            Historical Loc
+            Historical Sites
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/museums')}>
-          <FaUniversity style={styles.icon} />
+          <MuseumIcon style={styles.icon} />
           <span className="label" style={styles.label}>
             Museums
           </span>
@@ -148,21 +158,6 @@ const BookTransportation = () => {
           </span>
         </div>
       </div>
-
-      {/* Currency Selector */}
-      <div style={styles.currencySelector}>
-        <label htmlFor="currency" style={styles.clabel}>
-          <FaMoneyBillWave style={styles.cicon} /> Select Currency:
-        </label>
-        <select id="currency" onChange={handleCurrencyChange} style={styles.select}>
-        <option value="EGP">EGP</option>
-
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="GBP">GBP</option>
-        </select>
-      </div>
-
       {/* Error and Success Messages */}
       {error && (
         <div style={styles.errorMessage}>
@@ -175,31 +170,104 @@ const BookTransportation = () => {
         </div>
       )}
 
-      {/* Transportations List */}
-      <div style={styles.transportList}>
-        {transportations.map((transportation) => (
-          <div key={transportation._id} style={styles.transportCard}>
-            {/* Dynamic Icon for Transportation Type */}
-            <div style={styles.cardHeader}>
-              {transportation.type === 'Bus' && <FaBus style={styles.cardIcon} />}
-              {transportation.type === 'Plane' && <FaPlane style={styles.cardIcon} />}
-              {transportation.type === 'Train' && <FaTrain style={styles.cardIcon} />}
-              <h2 style={styles.cardTitle}>
-                {transportation.type} - {transportation.company.name}
-              </h2>
-            </div>
-            <p><strong><FaMapMarkerAlt /> Origin:</strong> {transportation.origin}</p>
-            <p><strong><FaLocationArrow /> Destination:</strong> {transportation.destination}</p>
-            <p><strong><FaClock /> Departure Time:</strong> {new Date(transportation.departureTime).toLocaleString()}</p>
-            <p><strong><FaClock /> Arrival Time:</strong> {new Date(transportation.arrivalTime).toLocaleString()}</p>
-            <p>
-              <strong><FaDollarSign /> Price:</strong> {selectedCurrency} {(transportation.price * conversionRate).toFixed(2)}
-            </p>
-            <button onClick={handleBook} style={styles.bookButton}>Book</button>
-          </div>
-        ))}
+ {/* Transportations List */}
+<div style={styles.transportList}>
+  {transportations.map((transportation) => (
+    <div
+      key={transportation._id}
+      style={{
+        ...styles.transportCard,
+        position: 'relative',
+        backgroundColor: '#fff',
+        border: '1px solid #ddd',
+        borderRadius: '10px',
+        padding: '15px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        transition: 'transform 0.3s ease',
+        overflow: 'hidden',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'scale(1.03)';
+        e.currentTarget.style.boxShadow = '0 8px 12px rgba(0, 0, 0, 0.15)';
+        e.currentTarget.style.borderColor = '#0F5132';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'scale(1)';
+        e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+        e.currentTarget.style.borderColor = '#ddd';
+      }}
+    >
+      {/* Card Header */}
+      <div style={styles.cardHeader}>
+        {transportation.type === 'Bus' && <FaBus style={styles.cardIcon} />}
+        {transportation.type === 'Train' && <FaTrain style={styles.cardIcon} />}
+        {transportation.type === 'Taxi' && <FaCar style={styles.cardIcon} />}
+        {transportation.type === 'Boat' && <FaShip style={styles.cardIcon} />}
+        <h3 style={styles.cardTitle}>
+          {transportation.type} - {transportation.company.name}
+        </h3>
       </div>
+
+      <div style={styles.cardContent}>
+  <p style={styles.cardText}>
+    <NearMeIcon style={styles.cardInfoIcon} />
+    <span>
+      <span style={styles.cardBoldText}>Origin:</span>
+      <span style={styles.cardValueText}>{transportation.origin}</span>
+    </span>
+  </p>
+  <p style={styles.cardText}>
+    <LocationOnIcon style={styles.cardInfoIcon} />
+    <span>
+      <span style={styles.cardBoldText}>Destination:</span>
+      <span style={styles.cardValueText}>{transportation.destination}</span>
+    </span>
+  </p>
+  <p style={styles.cardText}>
+    <DepartureBoardIcon style={styles.cardInfoIcon} />
+    <span>
+      <span style={styles.cardBoldText}>Departure:</span>
+      <span style={styles.cardValueText}>
+        {new Date(transportation.departureTime).toLocaleString()}
+      </span>
+    </span>
+  </p>
+  <p style={styles.cardText}>
+    <AccessTimeIcon style={styles.cardInfoIcon} />
+    <span>
+      <span style={styles.cardBoldText}>Arrival:</span>
+      <span style={styles.cardValueText}>
+        {new Date(transportation.arrivalTime).toLocaleString()}
+      </span>
+    </span>
+  </p>
+  <p style={styles.cardText}>
+    <FaDollarSign style={styles.cardInfoIcon} />
+    <span>
+      <span style={styles.cardBoldText}>Price:</span>
+      <span style={styles.cardValueText}>
+        {selectedCurrency} {(transportation.price * conversionRate).toFixed(2)}
+      </span>
+    </span>
+  </p>
+</div>
+
+
+
+      {/* Book Button */}
+      <button onClick={handleBook} style={styles.bookButton}>Book Now</button>
     </div>
+  ))}
+</div>
+
+
+
+    </div>
+    </div>
+
   );
 };
 
@@ -207,15 +275,45 @@ export default BookTransportation;
 
 // Inline Styles
 const styles = {
-  container: {
+  searchFormHeading: {
+    fontSize: '35px',
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: '15px',
+    textAlign: 'center',
+    textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)',
+
+  },
+  container2: {
     marginTop:'60px',
-    fontFamily: 'Montserrat, sans-serif',
-    fontSize:"15px",
-    backgroundColor: '#f9f9f9',
-    minHeight: '100vh',
+    fontFamily: 'Arial, sans-serif',
+  },
+  background: {
+    position: 'relative',
+    backgroundImage: `url(${bus})`, // Replace with your image path
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    height: '400px', // Adjust height as needed
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: 'white',
+    zIndex: 1, // Ensure content is above the overlay
+    overflow: 'hidden', // To ensure content doesn’t spill out
+  },
+  item: {
+ 
+    padding: '10px 0',
+    
+  },
+  container: {
+
+    maxWidth: '1000px',
+    margin: '0 auto',
     padding: '20px',
-    color: '#333',
-    margin:'100px'
+    fontFamily: 'Arial, sans-serif',
+  
   },
   header: {
     height:'60px',
@@ -242,17 +340,11 @@ const styles = {
     borderRadius: '10px',
   },
   profileIcon: {
-    fontSize: '40px',
+    fontSize: '30px',
     color: 'white',
     cursor: 'pointer',
     borderRadius: '20px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-  },
-  backIcon: {
-    fontSize: '24px',
-    color: '#fff',
-    cursor: 'pointer',
-    marginRight: '10px',
   },
  
   title: {
@@ -261,55 +353,83 @@ const styles = {
     textAlign: 'center',
     flex: 1,
   },
-  currencySelector: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    margin: '20px 0',
-  },
-  clabel: {
-    fontWeight: 'bold',
-    marginRight: '10px',
-  },
-  select: {
-    padding: '5px 10px',
-    borderRadius: '5px',
-    border: '1px solid #ddd',
-  },
   transportList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px',
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+    gap: '20px',
+    padding: '20px',
   },
   transportCard: {
-    backgroundColor: '#fff',
-    padding: '15px',
-    borderRadius: '8px',
-    boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
-    border: '1px solid #ddd',
+    backgroundColor: '#ffffff',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    padding: '20px',
+    transition: 'transform 0.3s, box-shadow 0.3s',
+    cursor: 'pointer',
+  },
+  transportCardHover: {
+    transform: 'translateY(-5px)',
+    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)',
   },
   cardHeader: {
     display: 'flex',
     alignItems: 'center',
-    marginBottom: '10px',
+    marginBottom: '15px',
+    gap: '10px',
   },
   cardIcon: {
     fontSize: '24px',
-    marginRight: '10px',
     color: '#0F5132',
   },
   cardTitle: {
-    fontSize: '18px',
+    fontSize: '16px',
     fontWeight: 'bold',
+    color: '#333',
+  },
+  cardContent: {
+    padding: '10px 15px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px', // Consistent spacing between rows
+  },
+  cardText: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px', // Gap between icon and text
+    fontSize: '14px', // Balanced font size
+    lineHeight: '1.6', // Improved line spacing
+    color: '#2C3E50', // Neutral dark gray for readability
+  },
+  cardInfoIcon: {
+    color: '#0F5132', // Consistent green for icons
+    fontSize: '16px', // Slightly smaller icons
+    flexShrink: 0, // Prevent shrinking
+  },
+  cardBoldText: {
+    fontWeight: 'bold', // Medium weight for labels
+    color: '#333', // Calm dark green
+    marginRight: '10px', // Space between label and value
+  },
+  cardValueText: {
+    fontWeight: 'bold', // Medium weight for labels
+
+    color: '#0F5132', // Slightly muted gray-blue for a soothing effect
+    textTransform: 'none', // Natural casing (no forced uppercase)
+    fontSize: '16px', // Same size as label
   },
   bookButton: {
+    marginTop: '15px',
     backgroundColor: '#0F5132',
-    color: '#fff',
-    padding: '10px 10px',
+    color: 'white',
+    padding: '5px 10px',
     border: 'none',
-    borderRadius: '5px',
+    borderRadius: '20px',
+    fontSize: '14px',
     cursor: 'pointer',
-    fontWeight: 'bold',
+    transition: 'background-color 0.3s',
+  },
+  bookButtonHover: {
+    backgroundColor: '#084B24',
   },
   errorMessage: {
     color: 'red',

@@ -57,18 +57,14 @@ const SellerReport = () => {
           }
         }
       };
-      const filterByProduct = async (productId) => { //returns object {date, quantity}
+      const filterByProduct = async (productName) => { //returns object {date}
         try{
-          const response = await fetch(`http://localhost:8000/filterByProduct?productId=${productId}`);
+          const response = await fetch(`http://localhost:8000/filterByProduct?productName=${productName}`);
           if (response.ok) {
             const data = await response.json();
             setDatesQuant(data);
             //fucntion to add all the quantities
-            let sum=0;
-            data.forEach(element => {
-                sum+=element.quantity;
-            });
-            setCount(sum);
+            console.log(data);
           }
           else {
             console.error('Failed to fetch data');
@@ -78,7 +74,7 @@ const SellerReport = () => {
             console.error('Error fetching data:', error);
           }
         };
-        const fetchFilteredProducts = async (date) => {// returns object of {product, quantity}
+        const fetchFilteredProducts = async (date) => {// returns array of products}
             const Username = localStorage.getItem('Username');
             setIsLoading(true);
             try{
@@ -142,7 +138,7 @@ const SellerReport = () => {
             const handleFilterChange = (event) => {
                 const selectedProduct = Products.find(product => product._id === event.target.value);
                 if (selectedProduct) {
-                  filterByProduct(selectedProduct._id);
+                  filterByProduct(selectedProduct.productName);
                   setFilteredP(true);
                   setFilterP(selectedProduct);
                 }
@@ -235,7 +231,6 @@ const SellerReport = () => {
     <p>Name: {filterP.productName}</p>
     <p>Price: {filterP.price}</p>
     <p>Sales: {filterP.sales}</p>
-    <p>Times purchased: {count}</p>
 
     {/* Render purchase dates */}
     <ul>
@@ -247,15 +242,7 @@ const SellerReport = () => {
       ))}
     </ul>
 
-    {/* Render dates with quantities */}
-    <ul>
-      {DatesQuant.map((dateQuant, index) => (
-        <li key={index}>
-          {/* Accessing `createdAt` and `quantity` fields */}
-          <p>Purchased at {new Date(dateQuant.createdAt).toLocaleTimeString()}: {dateQuant.quantity} times</p>
-        </li>
-      ))}
-    </ul>
+  
 
 
   </div>
@@ -269,14 +256,12 @@ const SellerReport = () => {
             <div>
                 <h3>Filtered products</h3>
                 <ul>
-                {productQuantity.map(({ product, quantity }) => (
-                 <li key={product._id}>
-                      <h2>{product.productName}</h2>
-                      <p>Price: ${product.price}</p>
-                      <p>Quantity sold on this date: {quantity}</p>
-                 </li>
-                     ))}
-                </ul>
+             {productQuantity.map((product, index) => (
+                 <li key={index}>
+               <h2>Product: {product}</h2>
+                          </li>
+               ))}
+                 </ul>
 
            </div>
 
@@ -524,7 +509,7 @@ const styles = {
     iconContainerHover: {
       backgroundColor: '#084B24', // Background on hover
     },
-    icon: {
+    iconn: {
       fontSize: '24px',
       marginLeft: '15px', // Move icons slightly to the right
       color: '#fff', // Icons are always white

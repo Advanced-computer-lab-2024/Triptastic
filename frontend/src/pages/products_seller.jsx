@@ -5,19 +5,28 @@ import { CurrencyContext } from '../pages/CurrencyContext';
 import logo from '../images/image.png'; // Replace with your logo path
 import { FaUserCircle,FaShoppingCart,FaRegFileAlt, FaDollarSign, FaStar, FaComments, FaWarehouse, FaChartBar,FaBars} from 'react-icons/fa';
 import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel,
-  FaClipboardList,FaSearch } from "react-icons/fa";
+  FaClipboardList,FaSearch,FaArchive,FaUserShield } from "react-icons/fa";
   import activity from '../images/shopping.jpg'; 
   import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
-  
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
+import LockResetIcon from '@mui/icons-material/LockReset';
+import { FaTag, FaInfoCircle } from "react-icons/fa";
+import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import Inventory2Icon from '@mui/icons-material/Inventory2';
   import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
-const Products = () => {
+  import { FaUser,FaExclamationCircle, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
+
+const Productssel = () => {
   const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [productNameToArchive, setProductNameToArchive] = useState(''); // New state variable
+  const [successMessage, setSuccessMessage] = useState('');
 
   const navigate = useNavigate(); // Initialize useNavigate for navigation
   const [fetchedProduct, setFetchedProduct] = useState(null);//new
@@ -76,7 +85,8 @@ const Products = () => {
     } finally {
       setLoading(false);
     }
-  };const fetchProducts = async (minPrice = '', maxPrice = '') => {  
+  };
+  const fetchProducts = async (minPrice = '', maxPrice = '') => {  
     setLoading(true);
     setError('');
     try {
@@ -135,6 +145,82 @@ const Products = () => {
     }
   };
 
+  const archiveProduct = async () => {
+    if (!productNameToArchive) {
+      setErrorMessage('No product selected to archive.');
+      return;
+    }
+  
+    setLoading(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+  
+    try {
+      const response = await fetch(`http://localhost:8000/archiveProduct/${productNameToArchive}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const result = await response.json();
+        setSuccessMessage(`Product "${productNameToArchive}" archived successfully.`);
+  
+        // Update the productSearchResult state to reflect the new archived status
+        setProducts(prevProduct => ({
+          ...prevProduct,
+          archived: result.product.archived, // Ensure this matches the response structure
+        }));
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Failed to archive product.');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while archiving the product.');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const unarchiveProduct = async () => {
+    if (!productNameToArchive) {
+      setErrorMessage('No product selected to unarchive.');
+      return;
+    }
+  
+    setLoading(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+  
+    try {
+      const response = await fetch(`http://localhost:8000/unarchiveProduct/${productNameToArchive}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        const result = await response.json();
+        setSuccessMessage(`Product "${productNameToArchive}" unarchived successfully.`);
+  
+        // Update the productSearchResult state to reflect the new archived status
+        setProducts(prevProduct => ({
+          ...prevProduct,
+          archived: result.product.archived, // Ensure this matches the response structure
+        }));
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Failed to unarchive product.');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while unarchiving the product.');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleAddToCart = async (product) => {
     if(localStorage.getItem('context') === 'guest') {
       alert('Please login to add item to cart');
@@ -194,26 +280,7 @@ const Products = () => {
     navigate('/Wishlist'); // Navigate to Wishlist page
   };
    
-  const [currentPage, setCurrentPage] = useState(1);
-const itemsPerPage = 8; // Customize the number of items per page
-const totalPages = Math.ceil(products.length / itemsPerPage);
-const currentProducts = products.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-const scrollToTop = () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-};
-const handleNextPage = () => {
-  if (currentPage < totalPages) {
-    setCurrentPage((prevPage) => prevPage + 1);
-    scrollToTop();
-  }
-};
-
-const handlePreviousPage = () => {
-  if (currentPage > 1) {
-    setCurrentPage((prevPage) => prevPage - 1);
-    scrollToTop();
-  }
-};
+ 
   
   const handleFilterSubmit = (e) => {
     console.log(`Filtering products with prices between ${range[0]} and ${range[1]}`);
@@ -257,6 +324,7 @@ const handlePreviousPage = () => {
         </button>
    
     </div>
+    
     </div>
     <form onSubmit={handleFilterSubmit} style={styles.filterForm}>
       <div style={styles.filterGroup}>
@@ -321,96 +389,63 @@ const handlePreviousPage = () => {
       alt="Profile Icon"
       style={styles.profileIcon}
       onClick={handleProfileRedirect} // Navigate to profile
-    />
-    {/* Wishlist Icon */}
-    <div style={styles.wishlistIcon} onClick={() => localStorage.getItem('context') === 'guest'? alert("please login to access wish list") :navigate('/wishlist')}>
-      <FaHeart style={styles.wishlistHeartIcon} />
-    </div>
-    {/* Cart Icon */}
-    <div style={styles.cartButton} onClick={() =>localStorage.getItem('context') === 'guest'? alert("please login to access cart") : navigate('/Cart')}>
-      <FaShoppingCart style={styles.cartIcon} />
-    </div>
+    />   
   </div>
 </header>
+<div
+          style={styles.sidebar}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.width = '200px';
+            Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+              (label) => (label.style.opacity = '1')
+            );
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.width = '50px';
+            Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+              (label) => (label.style.opacity = '0')
+            );
+          }}
+        >
+            <div className="profile" style={styles.item} onClick={() => navigate('/seller-profile')}>
+            <FaUserCircle style={styles.iconn} />
+            <span className="label" style={styles.label}>
+              My products
+            </span>
+          </div>
+          <div className="products" style={styles.item} onClick={() => navigate('/products_seller')}>
+            <FaBox style={styles.iconn} />
+            <span className="label" style={styles.label}>
+              All Products
+            </span>
+          </div>
+          <div className="my products" style={styles.item} onClick={() => navigate('/sellerProduct')}>
+            <FaPlus style={styles.iconn} />
+            <span className="label" style={styles.label}>
+               My Products
+       </span>
+          </div>
+         
+        </div>
 
- {/* Sidebar */}
- <div
-        style={styles.sidebar}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.width = '200px';
-          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
-            (label) => (label.style.opacity = '1')
-          );
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.width = '60px';
-          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
-            (label) => (label.style.opacity = '0')
-          );
-        }}
-      >
-        <div style={styles.item} onClick={() => navigate('/historical-locations')}>
-          <FaLandmark style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Historical Sites
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/museums')}>
-          <FaUniversity style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Museums
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/products')}>
-          <FaBox style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Products
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/itineraries')}>
-          <FaMap style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Itineraries
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/activities')}>
-          <FaRunning style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Activities
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/book-flights')}>
-          <FaPlane style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Book Flights
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/book-hotels')}>
-          <FaHotel style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Book a Hotel
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/book-transportation')}>
-          <FaBus style={styles.icon} />
-          <span className="label" style={styles.label}>
-           Transportation
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
-          <FaClipboardList style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Past Orders
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
-          <FaStar style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Review Activities
-          </span>
-        </div>
-      </div>
 
+ 
+      <div style={styles.userStatsContainer}>    
+<div style={styles.profitSummary}>
+    <div
+      style={{
+        display: 'flex', // Flexbox for alignment
+        alignItems: 'center', // Vertical alignment
+        justifyContent: 'center', // Horizontal alignment
+        gap: '10px', // Space between title and icon
+      }}
+    >
+      <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0' }}>
+        User Statistics
+      </h2>
+      <FaChartBar style={{ fontSize: '24px', color: '#0F5132' }} />
+</div>
+</div>
 
       <div className="card" style={styles.card}>
       <h3 style={{ 
@@ -422,165 +457,99 @@ const handlePreviousPage = () => {
 
 </h3>
 
+{/* Product List */}
+{products.length > 0 ? (
+  <div
+    style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+      gap: '20px',
+    }}
+  >
+    {products.map((product, index) => (
+      <div
+        key={index}
+        style={{
+          position: 'relative',
+          backgroundColor: '#fff',
+          border: '1px solid #ddd',
+          borderRadius: '10px',
+          padding: '20px',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          transition: 'transform 0.2s ease',
+          overflow: 'visible',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'scale(1.03)';
+          e.currentTarget.style.boxShadow = '0 8px 12px rgba(0, 0, 0, 0.15)';
+          e.currentTarget.style.borderColor = '#0F5132';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+          e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+          e.currentTarget.style.borderColor = '#ddd';
+        }}
+      >
+        {/* Product Image */}
+        {product.image && (
+          <img
+            src={`http://localhost:8000/${product.image.replace(/\\/g, '/')}`}
+            alt={product.productName}
+            style={{
+              width: '100%',
+              height: '200px',
+              objectFit: 'cover',
+              borderRadius: '8px',
+              marginBottom: '10px',
+            }}
+          />
+        )}
 
-    <div>
-      {/* Product List */}
-      {currentProducts.length > 0 ? (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '20px',
-          }}
-        >
-          {currentProducts.map((product, index) => (
-            <div
-              key={index}
-              style={{
-                position: 'relative',
-                backgroundColor: '#fff',
-                border: '1px solid #ddd',
-                borderRadius: '10px',
-                padding: '20px',
-                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                transition: 'transform 0.2s ease',
-                overflow: 'visible',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'scale(1.03)';
-                e.currentTarget.style.boxShadow = '0 8px 12px rgba(0, 0, 0, 0.15)';
-                e.currentTarget.style.borderColor = '#0F5132';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
-                e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
-                e.currentTarget.style.borderColor = '#ddd';
-              }}
-            >
-              {/* Product Image */}
-              {product.image && (
-                <img
-                  src={`http://localhost:8000/${product.image.replace(/\\/g, '/')}`}
-                  alt={product.productName}
-                  style={{
-                    width: '100%',
-                    height: '200px',
-                    objectFit: 'cover',
-                    borderRadius: '8px',
-                    marginBottom: '10px',
-                  }}
-                />
-              )}
+        {/* Product Information */}
+        <div>
+          <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>
+            {product.productName}
+          </h3>
+          <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
+            <strong><FaRegFileAlt /> Description:</strong> {product.description}
+          </p>
+          
+          <p style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '8px' }}>
+            <strong><FaDollarSign /> Price:</strong> {(product.price * conversionRate).toFixed(2)} {selectedCurrency}{' '}
+          </p>
+          <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
+            <strong><FaWarehouse /> Stock:</strong> {product.stock}
+          </p>
+          <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
+            <strong><FaStar /> Rating:</strong> {product.rating}
+          </p>
+          <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}
+          ><strong><FaChartBar /> Sales:</strong> {product.sales}
+          </p>
 
-              {/* Product Information */}
-              <div>
-                <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>
-                  {product.productName}
-                </h3>
-                <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
-                  <strong><FaRegFileAlt /> Description:</strong> {product.description}
-                </p>
-                <p style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '8px' }}>
-                  <strong><FaDollarSign /> Price:</strong> {(product.price * conversionRate).toFixed(2)} {selectedCurrency}
-                </p>
-                <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
-                  <strong><FaWarehouse /> Stock:</strong> {product.stock}
-                </p>
-                <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
-                  <strong><FaStar /> Rating:</strong> {product.rating}
-                </p>
-                <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
-                  <strong><FaChartBar /> Sales:</strong> {product.sales}
-                </p>
-                <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
-                  <strong><FaComments /> Reviews:</strong> {product.review}
-                </p>
-              </div>
-
-              {/* Product Actions */}
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginTop: '10px',
-                }}
-              >
-                <button
-                  onClick={() => handleAddToCart(product)}
-                  style={{
-                    backgroundColor: '#0F5132',
-                    color: '#fff',
-                    padding: '10px 16px',
-                    border: 'none',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                  }}
-                >
-                  <FaShoppingCart /> Add to Cart
-                </button>
-                <button
-                  onClick={() => handleAddToWishlist(product)}
-                  style={{
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '20px',
-                    color: '#f50057',
-                  }}
-                >
-                  <FaHeart />
-                </button>
-              </div>
-            </div>
-          ))}
+          <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
+            <strong><FaComments /> Reviews:</strong> {product.review}
+          </p>
         </div>
-      ) : (
-        <p>No products available.</p>
-      )}
 
-      {/* Pagination Controls */}
-      <div style={{ marginTop: '20px', textAlign: 'center' }}>
-        <button
-          onClick={handlePreviousPage}
-          disabled={currentPage === 1}
-          style={{
-            padding: '10px 20px',
-            marginRight: '10px',
-            backgroundColor: currentPage === 1 ? '#ddd' : '#0F5132',
-            color: currentPage === 1 ? '#999' : '#fff',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-          }}
-        >
-          Previous
-        </button>
-        <span style={{ fontSize: '16px', margin: '0 10px' }}>
-          Page {currentPage} of {totalPages}
-        </span>
-        <button
-          onClick={handleNextPage}
-          disabled={currentPage === totalPages}
-          style={{
-            padding: '10px 20px',
-            marginLeft: '10px',
-            backgroundColor: currentPage === totalPages ? '#ddd' : '#0F5132',
-            color: currentPage === totalPages ? '#999' : '#fff',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-          }}
-        >
-          Next
-        </button>
+        {/* Product Actions */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+          
+         
+        </div>
       </div>
-    </div>
-  
+    ))}
+  </div>
+) : (
+  <p>No products available.</p>
+)}
+
+ 
+    
+
     
 
 
@@ -591,6 +560,8 @@ const handlePreviousPage = () => {
    
 
     </div>
+    </div>
+
     </div>
 
   );
@@ -917,7 +888,7 @@ const styles = {
   iconContainerHover: {
     backgroundColor: '#084B24', // Background on hover
   },
-  icon: {
+  iconn: {
     fontSize: '24px',
     marginLeft: '15px', // Move icons slightly to the right
     color: '#fff',
@@ -950,4 +921,4 @@ const styles = {
   },
 };
 
-export default Products;
+export default Productssel;

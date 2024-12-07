@@ -4,11 +4,7 @@ import { FaBell,FaChartBar,FaBox ,FaUserShield } from 'react-icons/fa'; // Impor
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
-import LockResetIcon from '@mui/icons-material/LockReset';
-import { FaTag, FaInfoCircle, FaDollarSign ,FaSearch} from "react-icons/fa";
-import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
-import Inventory2Icon from '@mui/icons-material/Inventory2';
-import { FaUser,FaExclamationCircle, FaHeart, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
+import { FaUser,FaExclamationCircle, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
 import UserStatistics from './chart';
 
 
@@ -52,9 +48,6 @@ const AdminPage = () => {
   const [notifications, setNotifications] = useState([]); // Initialize as an empty array
   const [myProducts, setMyProducts] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
-
-
-
   const [complaintIdToSearch, setComplaintIdToSearch] = useState('');
   const [complaintDetails, setComplaintDetails] = useState(null);
   const [complaintLoading, setComplaintLoading] = useState(false);
@@ -1684,8 +1677,7 @@ loadingText: {
 
 
 
- {/* Sidebar */}
- <div
+<div
         style={styles.sidebar}
         onMouseEnter={(e) => {
           e.currentTarget.style.width = '200px';
@@ -1729,7 +1721,6 @@ loadingText: {
           </span>
         </div>
 
-
         <div style={styles.item} onClick={() => navigate('/adminReport')}>
           <FaBox  style={styles.icon} />
           <span className="label" style={styles.label}>
@@ -1756,8 +1747,13 @@ loadingText: {
             Flag Events
           </span>   
         </div>
+        <div style={styles.item} onClick={() => navigate('/products_admin')}>
+          <FaBox  style={styles.icon} />
+          <span className="label" style={styles.label}>
+            View Products
+          </span>   
+        </div>
       </div>
-
 
  
       <div style={styles.userStatsContainer}>    
