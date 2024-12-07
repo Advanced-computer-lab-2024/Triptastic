@@ -1,368 +1,383 @@
-import React, { useState, useEffect, useContext } from 'react';
-import './TouristProfile.css'; // Assuming you create a CSS file for styling
-import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { CurrencyContext } from '../pages/CurrencyContext';
-import logo from '../images/image.png'; // Adjust the path based on your folder structure
-import beach from '../images/beach.jpg';
-import historic from '../images/historic.jpg';
-import family from '../images/family.png';
-import shopping from '../images/shopping.jpg';
-import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
+import React, { useState, useEffect, useContext } from "react";
+import "./TouristProfile.css"; // Assuming you create a CSS file for styling
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useNavigate,
+} from "react-router-dom";
+import axios from "axios";
+import { CurrencyContext } from "../pages/CurrencyContext";
+import logo from "../images/image.png"; // Adjust the path based on your folder structure
+import beach from "../images/beach.jpg";
+import historic from "../images/historic.jpg";
+import family from "../images/family.png";
+import shopping from "../images/shopping.jpg";
+import {
+  FaLandmark,
+  FaUniversity,
+  FaBox,
+  FaMap,
+  FaRunning,
+  FaBus,
+  FaPlane,
+  FaHotel,
+  FaShoppingCart,
   FaClipboardList,
-  FaStar, FaDollarSign,FaSearch} from "react-icons/fa";
-  import MuseumIcon from '@mui/icons-material/Museum';
+  FaStar,
+  FaDollarSign,
+  FaSearch,
+} from "react-icons/fa";
+import MuseumIcon from "@mui/icons-material/Museum";
 
-import { FaBell,FaUserCircle} from 'react-icons/fa';
-import { MdNotificationImportant } from 'react-icons/md';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import { FaBell, FaUserCircle } from "react-icons/fa";
+import { MdNotificationImportant } from "react-icons/md";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import "intro.js/introjs.css"; // Import Intro.js styles
 import introJs from "intro.js";
-import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
-
-
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 
 const TouristProfile = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [upcomingItineraries,setUpcomingItineraries]= useState([]);
+  const [upcomingItineraries, setUpcomingItineraries] = useState([]);
 
   const [touristInfo, setTouristInfo] = useState(null);
   const [complaints, setComplaints] = useState([]); // New state for complaints
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false); // Track update status
-  const [Itineraries,setItineraries]= useState('');
-  const [showingItineraries,setShowingItineraries]=useState(false);
-  const [bookedItineraries, setBookedItineraries] = useState([]);// State for booked itineraries
-  const [showingBookedItineraries, setShowingBookedItineraries]= useState(false); // State for showing booked itineraries
-  const [showingBookedActivities, setShowingBookedActivities]= useState(false); // State for showing booked activities
-  const [bookedActivities, setBookedActivities]= useState([]); // State for booked activities
+  const [Itineraries, setItineraries] = useState("");
+  const [showingItineraries, setShowingItineraries] = useState(false);
+  const [bookedItineraries, setBookedItineraries] = useState([]); // State for booked itineraries
+  const [showingBookedItineraries, setShowingBookedItineraries] =
+    useState(false); // State for showing booked itineraries
+  const [showingBookedActivities, setShowingBookedActivities] = useState(false); // State for showing booked activities
+  const [bookedActivities, setBookedActivities] = useState([]); // State for booked activities
   const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(''); // Initialize successMessage
-  const [fetchedProduct, setFetchedProduct] = useState(null);//new
+  const [successMessage, setSuccessMessage] = useState(""); // Initialize successMessage
+  const [fetchedProduct, setFetchedProduct] = useState(null); //new
   const [ratingsI, setRatingsI] = useState({});
-const [commentsI, setCommentsI] = useState({});
-const [ratings, setRatings] = useState({});
-const [comments, setComments] = useState({});
+  const [commentsI, setCommentsI] = useState({});
+  const [ratings, setRatings] = useState({});
+  const [comments, setComments] = useState({});
 
   const [requestSent, setRequestSent] = useState(false); // Track if request was successfully sent
   const [waiting, setWaiting] = useState(false);
 
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmNewPassword, setConfirmNewPassword] = useState('');
-  const [passwordChangeMessage, setPasswordChangeMessage] = useState('');
-  const [passwordChangeError, setPasswordChangeError] = useState('');
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [passwordChangeMessage, setPasswordChangeMessage] = useState("");
+  const [passwordChangeError, setPasswordChangeError] = useState("");
   const [changingPassword, setChangingPassword] = useState(false);
   const [pastItineraries, setPastItineraries] = useState([]);
   const [showPastItineraries, setShowPastItineraries] = useState(false);
 
-  localStorage.setItem('context', 'tourist');
-  const { selectedCurrency, conversionRate, fetchConversionRate } = useContext(CurrencyContext);
+  localStorage.setItem("context", "tourist");
+  const { selectedCurrency, conversionRate, fetchConversionRate } =
+    useContext(CurrencyContext);
 
   const [formData, setFormData] = useState({
-    Username: '',
-    points:'',
-    badge:'',
-    Email: '',
-    Password: '',
-    Nationality: '',
-    DOB: '',
-    Occupation: '',
-    Wallet: '',
-    title: '', 
-    body: '',  
-    date: ''  
+    Username: "",
+    points: "",
+    badge: "",
+    Email: "",
+    Password: "",
+    Nationality: "",
+    DOB: "",
+    Occupation: "",
+    Wallet: "",
+    title: "",
+    body: "",
+    date: "",
   });
-  
+
   const [preferences, setPreferences] = useState({
     historicAreas: false,
     beaches: false,
     familyFriendly: false,
     shopping: false,
-    budget: ''
+    budget: "",
   });
-  const [isPreferencesVisible, setIsPreferencesVisible] = useState(false);
-  useEffect(() => {
-    const preferencesSubmitted = localStorage.getItem('preferencesSubmitted');
-    if (!preferencesSubmitted) {
-      setIsPreferencesVisible(true); // Show preferences if not submitted
-    }
-  }, []);
+ 
   const navigate = useNavigate();
   useEffect(() => {
     fetchNotifications();
+  }, []);
+  useEffect(() => {
+    fetchBookedItineraries();
+    fetchBookedActivities(); // Fetch booked itineraries when the component mounts
+    sendReminders();
+    sendItineraryReminders();
+  }, []); // Empty dependency array means this runs once after the first render
 
-      }, []);
-      useEffect(() => {
-        fetchBookedItineraries();
-        fetchBookedActivities(); // Fetch booked itineraries when the component mounts
-        sendReminders();
-        sendItineraryReminders();
-      }, []); // Empty dependency array means this runs once after the first render
-      
-      const fetchNotifications = async () => {
-        const username = localStorage.getItem('Username'); // Assuming username is stored in local storage
-        if (!username) return;
-    
-        try {
-          const response = await axios.get(
-            `http://localhost:8000/getNotifications?username=${username}`
-          );
-          if (response.status === 200) {
-            setNotifications(response.data.notifications);
-            const unread = response.data.notifications.filter((n) => !n.read).length;
-            setUnreadCount(unread);
-          }
-        } catch (error) {
-          console.error('Error fetching notifications:', error);
+  const fetchNotifications = async () => {
+    const username = localStorage.getItem("Username"); // Assuming username is stored in local storage
+    if (!username) return;
+
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/getNotifications?username=${username}`
+      );
+      if (response.status === 200) {
+        setNotifications(response.data.notifications);
+        const unread = response.data.notifications.filter(
+          (n) => !n.read
+        ).length;
+        setUnreadCount(unread);
+      }
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+  useEffect(() => {
+    const checkIntroStatus = async () => {
+      const Username = localStorage.getItem("Username");
+
+      try {
+        // Fetch the intro status from the backend
+        const response = await fetch(
+          `http://localhost:8000/getTouristIntroStatus?Username=${Username}`
+        );
+        const data = await response.json();
+
+        if (response.ok && data.showIntro) {
+          // Show the Intro.js tutorial
+          startIntro();
         }
-      };
-      useEffect(() => {
-        const checkIntroStatus = async () => {
-          const Username = localStorage.getItem('Username');
-      
-          
-      
-          try {
-            // Fetch the intro status from the backend
-            const response = await fetch(
-              `http://localhost:8000/getTouristIntroStatus?Username=${Username}`
-            );
-            const data = await response.json();
-      
-            if (response.ok && data.showIntro) {
-              // Show the Intro.js tutorial
-              startIntro();
-            }
-          } catch (error) {
-            console.error('Failed to fetch intro status:', error);
-          }
-        };
-      
-        checkIntroStatus();
-      }, []); // Add an empty dependency array to ensure it runs only on mount
-      
-      const startIntro = () => {        // Check if the intro has already been shown
-          introJs()
-            .setOptions({
-              steps: [
-                {
-                  element: document.querySelector(".guest-header h1"),
-                  intro: "Welcome to our vacation planning platform! Let us show you around.",
-                },
-                {
-                  element: document.querySelector(".museums"),
-                  intro: "You can start exploring museums by clicking here.",
-                 
-                  position: "top",
-                },
-                {
-                  element: document.querySelector(".historical"),
-                  intro: "Interested in historical locations? This button will take you there.",
-                  position: "top",
+      } catch (error) {
+        console.error("Failed to fetch intro status:", error);
+      }
+    };
 
-                },
-                {
-                  element: document.querySelector(".itineraries"),
-                  intro: "Looking for itineraries? Click here to find various vacation plans.",
-                  position: "top",
+    checkIntroStatus();
+  }, []); // Add an empty dependency array to ensure it runs only on mount
 
-                },
-                {
-                  element: document.querySelector(".activities"),
-                  intro: "Explore exciting activities by clicking here.",
-                  position: "top",
+  const startIntro = () => {
+    // Check if the intro has already been shown
+    introJs()
+      .setOptions({
+        steps: [
+          {
+            element: document.querySelector(".guest-header h1"),
+            intro:
+              "Welcome to our vacation planning platform! Let us show you around.",
+          },
+          {
+            element: document.querySelector(".museums"),
+            intro: "You can start exploring museums by clicking here.",
 
-                },
-                {
-                  element: document.querySelector(".flights"),
-                  intro: "Looking for flights? Click here to find options.",
-                  position: "top",
-
-                },
-                {
-                  element: document.querySelector(".hotels"),
-                  intro: "Find the best hotels at great prices here.",
-                  position: "top",
-
-                },
-                {
-                  element: document.querySelector(".transportation"),
-                  intro: "Need transportation? Explore your options here.",
-                  position: "top",
-
-                },
-                {
-                  element: document.querySelector(".products"),
-                  intro: "Shop for anything you need by clicking here.",
-                  position: "top",
-
-                },
-              ],
-            
-            })
-            .oncomplete(() => {
-              // Mark intro as completed
-              localStorage.setItem("introShown", "true");
-            })
-            .onexit(() => {
-              // Mark intro as completed even if user exits
-              localStorage.setItem("introShown", "true");
-            })
-            .start();
-          
-        
-          };
-      
-      // Mark notifications as read
-      const markNotificationsAsRead = async () => {
-        const username = localStorage.getItem('Username');
-        if (!username) return;
-    
-        try {
-          await axios.patch(
-            `http://localhost:8000/markNotificationsRead?username=${username}`
-          );
-          setUnreadCount(0);
-        } catch (error) {
-          console.error('Error marking notifications as read:', error);
-        }
-      };
-    
-      // Handle click on the notification bell
-      const handleNotificationClick = () => {
-        setShowNotifications((prev) => !prev);
-        if (unreadCount > 0) markNotificationsAsRead();
-      };
-      const sendItineraryReminders = async () => {
-        const username = localStorage.getItem('Username');
-        if (!username) {
-          alert('Username not found.');
-          return;
-        }
-      
-        try {
-          const response = await fetch(`http://localhost:8000/sendItineraryReminders?username=${username}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-      
-          if (response.ok) {
-            const data = await response.json();
-            //alert('Reminders sent successfully.');
-            console.log('Notifications:', data.notificationsSent);
-          } else {
-            const errorData = await response.json();
-            alert(errorData.message || 'Error sending reminders.');
-          }
-        } catch (error) {
-          console.error('Error sending reminders:', error);
-          alert('Failed to send reminders.');
-        }
-      };
-      const sendReminders = async () => {
-        const username = localStorage.getItem('Username');
-        if (!username) {
-          alert('Username not found.');
-          return;
-        }
-      
-        try {
-          const response = await fetch(`http://localhost:8000/sendActivityReminders?username=${username}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-      
-          if (response.ok) {
-            const data = await response.json();
-            //alert('Reminders sent successfully.');
-            console.log('Notifications:', data.notificationsSent);
-          } else {
-            const errorData = await response.json();
-            alert(errorData.message || 'Error sending reminders.');
-          }
-        } catch (error) {
-          console.error('Error sending reminders:', error);
-          alert('Failed to send reminders.');
-        }
-      };
-      
-      
-      const toggleMenu = () => {
-        setIsMenuOpen(!isMenuOpen);
-      };
-
-
-  const handleViewItineraries=()=>{
-    setShowingItineraries( prev=>!prev);
-  }
-  const toggleViewBookedActivites = () => {
-    setShowingBookedActivities((prev) => !prev);
-  }
-
-  const handleViewBookedItineraries = () => {
-    setShowingBookedItineraries(prev => !prev);
+            position: "top",
+          },
+          {
+            element: document.querySelector(".historical"),
+            intro:
+              "Interested in historical locations? This button will take you there.",
+            position: "top",
+          },
+          {
+            element: document.querySelector(".itineraries"),
+            intro:
+              "Looking for itineraries? Click here to find various vacation plans.",
+            position: "top",
+          },
+          {
+            element: document.querySelector(".activities"),
+            intro: "Explore exciting activities by clicking here.",
+            position: "top",
+          },
+          {
+            element: document.querySelector(".flights"),
+            intro: "Looking for flights? Click here to find options.",
+            position: "top",
+          },
+          {
+            element: document.querySelector(".hotels"),
+            intro: "Find the best hotels at great prices here.",
+            position: "top",
+          },
+          {
+            element: document.querySelector(".transportation"),
+            intro: "Need transportation? Explore your options here.",
+            position: "top",
+          },
+          {
+            element: document.querySelector(".products"),
+            intro: "Shop for anything you need by clicking here.",
+            position: "top",
+          },
+        ],
+      })
+      .oncomplete(() => {
+        // Mark intro as completed
+        localStorage.setItem("introShown", "true");
+      })
+      .onexit(() => {
+        // Mark intro as completed even if user exits
+        localStorage.setItem("introShown", "true");
+      })
+      .start();
   };
 
- 
+  // Mark notifications as read
+  const markNotificationsAsRead = async () => {
+    const username = localStorage.getItem("Username");
+    if (!username) return;
+
+    try {
+      await axios.patch(
+        `http://localhost:8000/markNotificationsRead?username=${username}`
+      );
+      setUnreadCount(0);
+    } catch (error) {
+      console.error("Error marking notifications as read:", error);
+    }
+  };
+
+  // Handle click on the notification bell
+  const handleNotificationClick = () => {
+    setShowNotifications((prev) => !prev);
+    if (unreadCount > 0) markNotificationsAsRead();
+  };
+  const sendItineraryReminders = async () => {
+    const username = localStorage.getItem("Username");
+    if (!username) {
+      alert("Username not found.");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:8000/sendItineraryReminders?username=${username}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        //alert('Reminders sent successfully.');
+        console.log("Notifications:", data.notificationsSent);
+      } else {
+        const errorData = await response.json();
+        alert(errorData.message || "Error sending reminders.");
+      }
+    } catch (error) {
+      console.error("Error sending reminders:", error);
+      alert("Failed to send reminders.");
+    }
+  };
+  const sendReminders = async () => {
+    const username = localStorage.getItem("Username");
+    if (!username) {
+      alert("Username not found.");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:8000/sendActivityReminders?username=${username}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        //alert('Reminders sent successfully.');
+        console.log("Notifications:", data.notificationsSent);
+      } else {
+        const errorData = await response.json();
+        alert(errorData.message || "Error sending reminders.");
+      }
+    } catch (error) {
+      console.error("Error sending reminders:", error);
+      alert("Failed to send reminders.");
+    }
+  };
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleViewItineraries = () => {
+    setShowingItineraries((prev) => !prev);
+  };
+  const toggleViewBookedActivites = () => {
+    setShowingBookedActivities((prev) => !prev);
+  };
+
+  const handleViewBookedItineraries = () => {
+    setShowingBookedItineraries((prev) => !prev);
+  };
+
   const handleCurrencyChange = (event) => {
     fetchConversionRate(event.target.value);
   };
   const handlePasswordChange = async (e) => {
     e.preventDefault();
-    
+
     if (newPassword !== confirmNewPassword) {
-      setPasswordChangeError('New passwords do not match.');
+      setPasswordChangeError("New passwords do not match.");
       return;
     }
-  
+
     setChangingPassword(true);
-    setPasswordChangeError('');
-    setPasswordChangeMessage('');
-  
+    setPasswordChangeError("");
+    setPasswordChangeMessage("");
+
     try {
-      const username = localStorage.getItem('Username'); // Assuming the username is saved in localStorage
-      const response = await axios.patch('http://localhost:8000/changePasswordTourist', {
-        Username: username,
-        currentPassword: currentPassword,
-        newPassword: newPassword,
-      });
-  
+      const username = localStorage.getItem("Username"); // Assuming the username is saved in localStorage
+      const response = await axios.patch(
+        "http://localhost:8000/changePasswordTourist",
+        {
+          Username: username,
+          currentPassword: currentPassword,
+          newPassword: newPassword,
+        }
+      );
+
       if (response.status === 200) {
-        setPasswordChangeMessage('Password changed successfully!');
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmNewPassword('');
+        setPasswordChangeMessage("Password changed successfully!");
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmNewPassword("");
       } else {
-        setPasswordChangeError('Failed to change password.');
+        setPasswordChangeError("Failed to change password.");
       }
     } catch (error) {
-      setPasswordChangeError(error.response?.data?.error || 'An error occurred.');
+      setPasswordChangeError(
+        error.response?.data?.error || "An error occurred."
+      );
     } finally {
       setChangingPassword(false);
     }
   };
-  
+
   const fetchTouristInfo = async () => {
     setLoading(true);
-    const Username = localStorage.getItem('Username');
-    
+    const Username = localStorage.getItem("Username");
+
     if (Username) {
       try {
-        const response = await fetch(`http://localhost:8000/getTourist?Username=${Username}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-        });
+        const response = await fetch(
+          `http://localhost:8000/getTourist?Username=${Username}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (response.ok) {
           const data = await response.json();
@@ -371,115 +386,123 @@ const [comments, setComments] = useState({});
             data.Wallet = (data.Wallet * conversionRate).toFixed(2);
             setTouristInfo(data);
             setFormData(data); // Pre-fill the form with current data
-            setErrorMessage('');
+            setErrorMessage("");
           } else {
-            setErrorMessage('No tourist information found.');
+            setErrorMessage("No tourist information found.");
           }
         } else {
-          throw new Error('Failed to fetch tourist information');
+          throw new Error("Failed to fetch tourist information");
         }
       } catch (error) {
-        setErrorMessage('An error occurred while fetching tourist information');
+        setErrorMessage("An error occurred while fetching tourist information");
         console.error(error);
       }
     } else {
-      setErrorMessage('No tourist information found.');
+      setErrorMessage("No tourist information found.");
     }
     setLoading(false);
   };
   const handleCancelActivityBooking = async (id) => {
-    const username = localStorage.getItem('Username');
+    const username = localStorage.getItem("Username");
     try {
-      const response = await fetch(`http://localhost:8000/cancelBookedActivity/${id}?username=${username}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetch(
+        `http://localhost:8000/cancelBookedActivity/${id}?username=${username}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.ok) {
-        alert('Activity booking cancelled successfully!');
-        setErrorMessage('');
+        alert("Activity booking cancelled successfully!");
+        setErrorMessage("");
         fetchBookedActivities(); // Refresh booked activities after cancelling one
       } else {
-        throw new Error('Failed to cancel activity booking');
+        throw new Error("Failed to cancel activity booking");
       }
     } catch (error) {
-      setErrorMessage('An error occurred while cancelling activity booking');
+      setErrorMessage("An error occurred while cancelling activity booking");
       console.error(error);
     }
   };
-  const handleCancelItineraryBooking = async (id) => { 
-    const username = localStorage.getItem('Username');
+  const handleCancelItineraryBooking = async (id) => {
+    const username = localStorage.getItem("Username");
     try {
-      const response = await fetch(`http://localhost:8000/cancelBookedItinerary/${id}?username=${username}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetch(
+        `http://localhost:8000/cancelBookedItinerary/${id}?username=${username}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.ok) {
-        alert('Itinerary booking cancelled successfully!');
-        setErrorMessage('');
+        alert("Itinerary booking cancelled successfully!");
+        setErrorMessage("");
         fetchBookedItineraries(); // Refresh booked itineraries after cancelling one
       } else {
-        throw new Error('Failed to cancel itinerary booking');
+        throw new Error("Failed to cancel itinerary booking");
       }
     } catch (error) {
-      setErrorMessage('An error occurred while cancelling itinerary booking');
+      setErrorMessage("An error occurred while cancelling itinerary booking");
       console.error(error);
     }
   };
 
-
-  const fetchItineraries = async () => { 
+  const fetchItineraries = async () => {
     try {
-      const response = await fetch('http://localhost:8000/getAllItineraries', {
-        method: 'GET',
+      const response = await fetch("http://localhost:8000/getAllItineraries", {
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
-  
+
       if (response.ok) {
         const data = await response.json();
-        console.log('Fetched Itineraries:', data);
-          
+        console.log("Fetched Itineraries:", data);
       } else {
-        console.error('Failed to fetch itineraries. Status:', response.status, response.statusText);
+        console.error(
+          "Failed to fetch itineraries. Status:",
+          response.status,
+          response.statusText
+        );
       }
     } catch (error) {
-      console.error('Error during fetch:', error);
+      console.error("Error during fetch:", error);
     }
   };
-  
- 
- 
+
   useEffect(() => {
     fetchItineraries();
   }, []);
   // New function to fetch complaints
 
-  
   const fetchComplaints = async () => {
     setLoading(true);
-    const Username = localStorage.getItem('Username');
+    const Username = localStorage.getItem("Username");
     try {
-      const response = await fetch(`http://localhost:8000/getComplaintsByTourist?username=${Username}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const response = await fetch(
+        `http://localhost:8000/getComplaintsByTourist?username=${Username}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
         setComplaints(data); // Set complaints state
-        setErrorMessage('');
+        setErrorMessage("");
       } else {
-        throw new Error('Failed to fetch complaints');
+        throw new Error("Failed to fetch complaints");
       }
     } catch (error) {
-      setErrorMessage('');
+      setErrorMessage("");
       console.error(error);
     }
     setLoading(false);
@@ -490,15 +513,13 @@ const [comments, setComments] = useState({});
     fetchComplaints(); // Fetch complaints when the component loads
   }, []);
 
-
-
   const handleUpdate = async () => {
     setUpdating(true);
     try {
-      const response = await fetch('http://localhost:8000/updateTourist', {
-        method: 'PATCH',
+      const response = await fetch("http://localhost:8000/updateTourist", {
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
@@ -506,13 +527,13 @@ const [comments, setComments] = useState({});
       if (response.ok) {
         const updatedTourist = await response.json();
         setTouristInfo(updatedTourist);
-        setErrorMessage('');
-        alert('Information updated successfully!');
+        setErrorMessage("");
+        alert("Information updated successfully!");
       } else {
-        throw new Error('Failed to update tourist information');
+        throw new Error("Failed to update tourist information");
       }
     } catch (error) {
-      setErrorMessage('An error occurred while updating tourist information');
+      setErrorMessage("An error occurred while updating tourist information");
       console.error(error);
     }
     setUpdating(false);
@@ -522,43 +543,47 @@ const [comments, setComments] = useState({});
   const fetchProductByName = async (productName) => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:8000/getProductTourist?productName=${productName}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-  
+      const response = await fetch(
+        `http://localhost:8000/getProductTourist?productName=${productName}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
       if (response.ok) {
         const product = await response.json();
-  
+
         // Check if the product exists and if it is archived
         if (!product || product.archived === true) {
-          setErrorMessage('Product not found');
+          setErrorMessage("Product not found");
           setFetchedProduct(null); // Clear the fetched product state
         } else {
           setFetchedProduct(product); // Store the fetched product
-          setErrorMessage(''); // Clear any previous error messages
+          setErrorMessage(""); // Clear any previous error messages
         }
       } else {
-        throw new Error('Failed to fetch product');
+        throw new Error("Failed to fetch product");
       }
     } catch (error) {
-      setErrorMessage('An error occurred while fetching the product');
+      setErrorMessage("An error occurred while fetching the product");
       console.error(error);
     }
     setLoading(false);
   };
- 
 
   const handleSubmitComplaint = async (e) => {
     e.preventDefault();
 
     try {
-      const username = localStorage.getItem('Username'); // Retrieve username from localStorage
+      const username = localStorage.getItem("Username"); // Retrieve username from localStorage
 
       if (!username) {
-        setErrorMessage('Username not found in localStorage. Please log in again.');
+        setErrorMessage(
+          "Username not found in localStorage. Please log in again."
+        );
         return; // Exit the function if username is not found
       }
 
@@ -569,86 +594,107 @@ const [comments, setComments] = useState({});
       };
 
       // Construct the URL with the username as a query parameter
-      const response = await fetch(`http://localhost:8000/fileComplaint?username=${username}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(complaintData), // Send form data
-      });
+      const response = await fetch(
+        `http://localhost:8000/fileComplaint?username=${username}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(complaintData), // Send form data
+        }
+      );
 
       if (response.ok) {
-        alert('Complaint filed successfully!');
-        setErrorMessage('');
-        setFormData((prev) => ({ ...prev, ...complaintData, title: '', body: '', date: '' ,Reply:''}));
+        alert("Complaint filed successfully!");
+        setErrorMessage("");
+        setFormData((prev) => ({
+          ...prev,
+          ...complaintData,
+          title: "",
+          body: "",
+          date: "",
+          Reply: "",
+        }));
         fetchComplaints(); // Refresh complaints after filing a new one
       } else {
         const errorData = await response.json();
-        setErrorMessage(errorData.error || 'Failed to file complaint');
+        setErrorMessage(errorData.error || "Failed to file complaint");
       }
     } catch (error) {
-      setErrorMessage('Something went wrong. Please try again later.');
+      setErrorMessage("Something went wrong. Please try again later.");
     }
   };
   const fetchBookedActivities = async () => {
     setLoading(true);
-    const username = localStorage.getItem('Username');
+    const username = localStorage.getItem("Username");
 
     if (!username) {
-      setErrorMessage('Username not found in localStorage. Please log in again.');
+      setErrorMessage(
+        "Username not found in localStorage. Please log in again."
+      );
       setLoading(false);
       return; // Exit if username is not found
     }
 
     try {
-      const response = await axios.get(`http://localhost:8000/getBookedActivities?username=${username}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming token is stored in local storage
-        },
-      });
+      const response = await axios.get(
+        `http://localhost:8000/getBookedActivities?username=${username}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // Assuming token is stored in local storage
+          },
+        }
+      );
 
       if (response.status === 200) {
-        setBookedActivities(response.data); 
+        setBookedActivities(response.data);
       } else {
-        setErrorMessage('Failed to retrieve booked activities');
+        setErrorMessage("Failed to retrieve booked activities");
       }
     } catch (err) {
-      setErrorMessage('Something went wrong. Please try again later.');
+      setErrorMessage("Something went wrong. Please try again later.");
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }; 
+  };
   const fetchBookedItineraries = async () => {
     setLoading(true);
-    const username = localStorage.getItem('Username');
-  
+    const username = localStorage.getItem("Username");
+
     if (!username) {
-      setErrorMessage('Username not found in localStorage. Please log in again.');
+      setErrorMessage(
+        "Username not found in localStorage. Please log in again."
+      );
       setLoading(false);
       return; // Exit if username is not found
     }
-  
+
     try {
-      const response = await axios.get(`http://localhost:8000/getBookedItineraries?username=${username}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming token is stored in local storage
-        },
-      });
-  
+      const response = await axios.get(
+        `http://localhost:8000/getBookedItineraries?username=${username}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // Assuming token is stored in local storage
+          },
+        }
+      );
+
       if (response.status === 200) {
         const bookedItineraries = response.data;
 
         // Filter past itineraries
         const pastItineraries = filterPastItineraries(bookedItineraries);
         setPastItineraries(pastItineraries);
-        const upcomingItineraries= filterUpcmoingItineraries(bookedItineraries);
+        const upcomingItineraries =
+          filterUpcmoingItineraries(bookedItineraries);
         setUpcomingItineraries(upcomingItineraries);
       } else {
-        setErrorMessage('Failed to retrieve booked itineraries');
+        setErrorMessage("Failed to retrieve booked itineraries");
       }
     } catch (err) {
-      setErrorMessage('Something went wrong. Please try again later.');
+      setErrorMessage("Something went wrong. Please try again later.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -656,887 +702,1002 @@ const [comments, setComments] = useState({});
   };
   const filterUpcmoingItineraries = (itineraries) => {
     const today = new Date();
-    return itineraries.filter(itinerary => new Date(itinerary.DatesTimes) > today);
+    return itineraries.filter(
+      (itinerary) => new Date(itinerary.DatesTimes) > today
+    );
   };
   // Filter past itineraries
   const filterPastItineraries = (itineraries) => {
     const today = new Date();
-    return itineraries.filter(itinerary => new Date(itinerary.DatesTimes) < today);
+    return itineraries.filter(
+      (itinerary) => new Date(itinerary.DatesTimes) < today
+    );
   };
   const submitFeedbackItinerary = async (Itinerary) => {
-    const username = localStorage.getItem('Username');
-  
+    const username = localStorage.getItem("Username");
+
     console.log("Submitting feedback for itinerary:", Itinerary); // Log itinerary details
-  
+
     // Check if the itinerary is in the past
     const itineraryEndDate = new Date(Itinerary.DatesTimes);
     const currentDate = new Date();
-  
+
     console.log("Itinerary end date:", itineraryEndDate); // Log end date
     console.log("Current date:", currentDate); // Log current date
-  
+
     if (itineraryEndDate > currentDate) {
-      setErrorMessage('You cannot submit feedback for an upcoming itinerary.');
-      setSuccessMessage('');
+      setErrorMessage("You cannot submit feedback for an upcoming itinerary.");
+      setSuccessMessage("");
       return;
     }
-  
+
     const rating = ratingsI[Itinerary._id];
     const comment = commentsI[Itinerary._id];
-  
+
     console.log("Rating for itinerary:", rating); // Log rating
     console.log("Comment for itinerary:", comment); // Log comment
-  
+
     if (!rating) {
-      setErrorMessage('Please provide a rating.');
+      setErrorMessage("Please provide a rating.");
       return;
     }
-  
+
     try {
-      console.log("Submitting to server with rating:", rating, "and comment:", comment);
-  
+      console.log(
+        "Submitting to server with rating:",
+        rating,
+        "and comment:",
+        comment
+      );
+
       const response = await axios.post(
         `http://localhost:8000/submitFeedbackItinerary?username=${username}`,
         {
           itineraryId: Itinerary._id,
           rating,
-          comment: comment || '',
+          comment: comment || "",
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
-  
+
       console.log("Server response:", response.data); // Log server response
-  
+
       if (response.status === 200) {
-        setSuccessMessage('Feedback submitted successfully!');
-        setErrorMessage('');
-  
+        setSuccessMessage("Feedback submitted successfully!");
+        setErrorMessage("");
+
         // Clear rating and comment
         setRatingsI((prev) => ({ ...prev, [Itinerary._id]: "" }));
         setCommentsI((prev) => ({ ...prev, [Itinerary._id]: "" }));
       }
     } catch (err) {
-      console.error('Feedback submission error:', err); // Log error details
-      setErrorMessage(err.response?.data?.message || 'Failed to submit feedback');
-      setSuccessMessage('');
+      console.error("Feedback submission error:", err); // Log error details
+      setErrorMessage(
+        err.response?.data?.message || "Failed to submit feedback"
+      );
+      setSuccessMessage("");
     }
   };
   const submitFeedback = async (Itinerary) => {
-    const username = localStorage.getItem('Username');
+    const username = localStorage.getItem("Username");
     const tourGuideUsername = Itinerary.TourGuide; // This should be the tour guide's username, ensure it's valid
-  
+
     console.log("Submitting tour guide feedback for itinerary:", Itinerary);
-  
+
     const itineraryEndDate = new Date(Itinerary.DatesTimes);
     const currentDate = new Date();
-  
+
     if (itineraryEndDate > currentDate) {
-      setErrorMessage('You cannot submit feedback for an upcoming itinerary.');
-      setSuccessMessage('');
+      setErrorMessage("You cannot submit feedback for an upcoming itinerary.");
+      setSuccessMessage("");
       return;
     }
-  
+
     const rating = ratings[Itinerary._id];
     const comment = comments[Itinerary._id];
-  
+
     if (!rating) {
-      setErrorMessage('Please provide a rating.');
+      setErrorMessage("Please provide a rating.");
       return;
     }
-  
+
     try {
-      console.log("Submitting to server with rating:", rating, "and comment:", comment);
+      console.log(
+        "Submitting to server with rating:",
+        rating,
+        "and comment:",
+        comment
+      );
       const response = await axios.post(
         `http://localhost:8000/submitFeedback?username=${username}`,
         {
           itineraryId: Itinerary._id,
           tourGuideUsername: tourGuideUsername, // Pass the tour guide's username here
           rating,
-          comment: comment || '', // If no comment, send an empty string
+          comment: comment || "", // If no comment, send an empty string
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`, // Use token for auth
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // Use token for auth
           },
         }
       );
-  
+
       if (response.status === 200) {
         console.log("Server response:", response.data);
-        setSuccessMessage('Feedback submitted successfully!');
-        setErrorMessage('');
-  
+        setSuccessMessage("Feedback submitted successfully!");
+        setErrorMessage("");
+
         setRatings((prev) => ({ ...prev, [Itinerary._id]: "" }));
         setComments((prev) => ({ ...prev, [Itinerary._id]: "" }));
       }
     } catch (err) {
-      console.error('Feedback submission error:', err);
-      setErrorMessage(err.response?.data?.message || 'Failed to submit feedback');
-      setSuccessMessage('');
+      console.error("Feedback submission error:", err);
+      setErrorMessage(
+        err.response?.data?.message || "Failed to submit feedback"
+      );
+      setSuccessMessage("");
     }
   };
-  
-  
+
   const handleRatingChangeI = (itinerary, value) => {
     setRatingsI((prevRatings) => ({
       ...prevRatings,
       [itinerary._id]: value,
     }));
     console.log(`Updating rating for itinerary ID ${itinerary._id}: ${value}`);
-
   };
-  
+
   const handleCommentChangeI = (itinerary, value) => {
     setCommentsI((prevComments) => ({
       ...prevComments,
       [itinerary._id]: value,
     }));
     console.log(`Updating comment for itinerary ID ${itinerary._id}: ${value}`);
-
   };
-  
+
   const handleRatingChange = (itinerary, value) => {
     setRatings((prevRatings) => ({
       ...prevRatings,
-      [itinerary._id]: value,  // Use the itinerary ID as the key for ratings
+      [itinerary._id]: value, // Use the itinerary ID as the key for ratings
     }));
-  
+
     console.log(`Updating rating for itinerary ${itinerary._id}: ${value}`);
   };
-  
+
   const handleCommentChange = (itinerary, value) => {
     setComments((prevComments) => ({
       ...prevComments,
-      [itinerary._id]: value,  // Use the itinerary ID as the key for comments
+      [itinerary._id]: value, // Use the itinerary ID as the key for comments
     }));
-  
+
     console.log(`Updating comment for itinerary ${itinerary._id}: ${value}`);
   };
-  
-  
   const submitPreferences = async () => {
     try {
-      const username = localStorage.getItem('Username');
-
-      const response = await fetch(`http://localhost:8000/setPreferences?username=${username}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(preferences),
-      });
-
+      const username = localStorage.getItem("Username");
+  
+      if (!username) {
+        throw new Error("Username not found in localStorage");
+      }
+  
+      const response = await fetch(
+        `http://localhost:8000/setPreferences?username=${username}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(preferences),
+        }
+      );
+  
       if (response.ok) {
-        setSuccessMessage('Preferences updated successfully!');
-        setErrorMessage('');
+        setSuccessMessage("Preferences updated successfully!");
+        setErrorMessage("");
         setIsPreferencesVisible(false); // Hide preferences section
-        localStorage.setItem('preferencesSubmitted', 'true'); // Save flag in localStorage
+  
+        // Save a flag specific to the user in localStorage
+        localStorage.setItem(`${username}_preferencesSubmitted`, "true");
       } else {
-        throw new Error('Failed to update preferences');
+        throw new Error("Failed to update preferences");
       }
     } catch (error) {
-      setErrorMessage('An error occurred while updating preferences');
+      setErrorMessage("An error occurred while updating preferences");
+      console.error(error);
     }
   };
-
-
+  
   const handlePreferenceChange = (e) => {
     const { name, type, value, checked } = e.target;
     setPreferences((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: type === "checkbox" ? checked : value,
     }));
-  }
-
+  };
+  
+  const [isPreferencesVisible, setIsPreferencesVisible] = useState(false);
+  
+  useEffect(() => {
+    const username = localStorage.getItem("Username");
+  
+    if (username) {
+      const preferencesSubmitted = localStorage.getItem(
+        `${username}_preferencesSubmitted`
+      );
+  
+      // Show preferences only if they haven't been submitted for this user
+      setIsPreferencesVisible(!preferencesSubmitted);
+    }
+  }, []);
+  
 
   const handleDeleteRequest = async () => {
-    const Username = localStorage.getItem('Username');
+    const Username = localStorage.getItem("Username");
     setWaiting(true);
     setRequestSent(false); // Reset request sent state when initiating new request
     try {
-        const response = await fetch(`http://localhost:8000/requestAccountDeletionTourist?Username=${Username}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                
-            }
-            
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setRequestSent(true); // Set to true when the request is successfully sent
-          alert('Your account deletion request has been submitted and is pending approval.');
-        } else {
-          setRequestSent(false); // Reset to allow another deletion request
-          alert(data.msg); // Show the rejection message
-         }
- 
-        
+      const response = await fetch(
+        `http://localhost:8000/requestAccountDeletionTourist?Username=${Username}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      if (response.ok) {
+        setRequestSent(true); // Set to true when the request is successfully sent
+        alert(
+          "Your account deletion request has been submitted and is pending approval."
+        );
+      } else {
+        setRequestSent(false); // Reset to allow another deletion request
+        alert(data.msg); // Show the rejection message
+      }
     } catch (error) {
-        alert('Error deleting account');
-    }
-    finally {
+      alert("Error deleting account");
+    } finally {
       setWaiting(false); // Stop waiting regardless of outcome
-  }
-  
+    }
 
-  // Show success message
-  setSuccessMessage('Feedback submitted successfully!');
-  
-  // Clear success message after 3 seconds
-  setTimeout(() => setSuccessMessage(''), 3000);
-};
-useEffect(() => {
-  if (Itineraries && Itineraries._id) {
-    // Update past itineraries with feedbackSubmitted flag
-    setPastItineraries((prevPastItineraries) =>
-      prevPastItineraries.map((item) =>
-        item._id === Itineraries._id
-          ? {
-              ...item,
-              feedbackSubmitted: true,
-              rating: '',
-              comment: '',
-            }
-          : item
-      )
-    );
-  }
-}, [Itineraries]); // Only update when 'Itineraries' changes
+    // Show success message
+    setSuccessMessage("Feedback submitted successfully!");
 
-  
+    // Clear success message after 3 seconds
+    setTimeout(() => setSuccessMessage(""), 3000);
+  };
+  useEffect(() => {
+    if (Itineraries && Itineraries._id) {
+      // Update past itineraries with feedbackSubmitted flag
+      setPastItineraries((prevPastItineraries) =>
+        prevPastItineraries.map((item) =>
+          item._id === Itineraries._id
+            ? {
+                ...item,
+                feedbackSubmitted: true,
+                rating: "",
+                comment: "",
+              }
+            : item
+        )
+      );
+    }
+  }, [Itineraries]); // Only update when 'Itineraries' changes
+
   const SidebarMenu = () => {
     const navigate = useNavigate();
-    
-  
-  
   };
 
+  return (
+    <div style={{marginLeft:"40px",marginTop:"50px"}}>
+      {/* Header Section */}
+      <header style={styles.header}>
+        <div style={styles.logoContainer}>
+          <img src={logo} alt="Logo" style={styles.logo} />
+        </div>
+        <h1 style={styles.title}>Tourist Profile</h1>
+        <div style={styles.headerIconsContainer}>
+          {/* Notification Bell */}
+          <div
+            style={styles.notificationButton}
+            onClick={handleNotificationClick}
+          >
+            <FaBell style={styles.notificationIcon} />
+            {unreadCount > 0 && (
+              <span style={styles.notificationBadge}>{unreadCount}</span>
+            )}
+          </div>
 
- 
+          {/* Profile Icon */}
+          <ManageAccountsIcon
+            alt="Profile Icon"
+            style={styles.profileIcon}
+            onClick={() => navigate("/touristSettings")}
+          />
 
+          {/* Cart Icon */}
+          <div style={styles.cartButton} onClick={() => navigate("/Cart")}>
+            <FaShoppingCart style={styles.cartIcon} />
+          </div>
+          {/* Logout Icon */}
+          <div style={styles.logoutButton} onClick={() => navigate("/Guest")}>
+            <LogoutOutlinedIcon style={styles.logoutIcon} />
+          </div>
+        </div>
+      </header>
 
-return (
-  <div>
-    {/* Header Section */}
-    <header style={styles.header}>
-      <div style={styles.logoContainer}>
-        <img src={logo} alt="Logo" style={styles.logo} />
-      </div>
-      <h1 style={styles.title}>Tourist Profile</h1>
-      <div style={styles.headerIconsContainer}>
-        {/* Notification Bell */}
-        <div
-          style={styles.notificationButton}
-          onClick={handleNotificationClick}
-        >
-          <FaBell style={styles.notificationIcon} />
-          {unreadCount > 0 && (
-            <span style={styles.notificationBadge}>{unreadCount}</span>
+      {/* Notification Dropdown */}
+      {showNotifications && (
+        <div style={styles.notificationDropdown}>
+          <h3 style={styles.dropdownHeader}>Notifications</h3>
+          {notifications.length > 0 ? (
+            notifications.map((notification, index) => (
+              <div key={index} style={styles.notificationItem}>
+                <li
+                  key={notification.id}
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "flex-start",
+                    backgroundColor: "#f9f9f9",
+                    border: "1px solid #ddd",
+                    borderRadius: "5px",
+                    padding: "10px",
+                    borderBottom: "1px solid #f0f0f0",
+                    fontSize: "10px",
+                  }}
+                >
+                  <MdNotificationImportant
+                    size={50}
+                    style={{ marginRight: "10px", color: "#ff9800" }}
+                  />
+                  <p>{notification.message}</p>
+                </li>
+                <span style={styles.notificationDate}>
+                  {new Date(notification.date).toLocaleString()}
+                </span>
+              </div>
+            ))
+          ) : (
+            <p style={styles.noNotifications}>No notifications available</p>
           )}
         </div>
+      )}
 
-        {/* Profile Icon */}
-        <ManageAccountsIcon
-          alt="Profile Icon"
-          style={styles.profileIcon}
-          onClick={() => navigate('/touristSettings')}
-        />
-
-        {/* Cart Icon */}
-        <div style={styles.cartButton} onClick={() => navigate('/Cart')}>
-          <FaShoppingCart style={styles.cartIcon} />
-        </div>
-           {/* Logout Icon */}
-   <div style={styles.logoutButton} onClick={()=>navigate('/Guest')}>
-     <LogoutOutlinedIcon style={styles.logoutIcon} />
-   </div>
-      </div>
-    </header>
-
-    {/* Notification Dropdown */}
-    {showNotifications && (
-      <div style={styles.notificationDropdown}>
-        <h3 style={styles.dropdownHeader}>Notifications</h3>
-        {notifications.length > 0 ? (
-          notifications.map((notification, index) => (
-            <div key={index} style={styles.notificationItem}>
-              <li
-                key={notification.id}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'flex-start',
-                  backgroundColor: '#f9f9f9',
-                  border: '1px solid #ddd',
-                  borderRadius: '5px',
-                  padding: '10px',
-                  borderBottom: '1px solid #f0f0f0',
-                  fontSize: '10px',
-                }}
-              >
-                <MdNotificationImportant
-                     size={50}
-                  style={{ marginRight: '10px', color: '#ff9800' }}
-                />
-                <p>{notification.message}</p>
-              </li>
-              <span style={styles.notificationDate}>
-                {new Date(notification.date).toLocaleString()}
-              </span>
-            </div>
-          ))
-        ) : (
-          <p style={styles.noNotifications}>No notifications available</p>
-        )}
-      </div>
-    )}
-
-    {/* Main Content */}
-    <div className="tourist-profile-container" style={{ marginTop: '120px' }}>
+      {/* Main Content */}
       {/* Sidebar */}
       <div
         style={styles.sidebar}
         onMouseEnter={(e) => {
-          e.currentTarget.style.width = '200px';
-          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
-            (label) => (label.style.opacity = '1')
+          e.currentTarget.style.width = "200px";
+          Array.from(e.currentTarget.querySelectorAll(".label")).forEach(
+            (label) => (label.style.opacity = "1")
           );
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.width = '60px';
-          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
-            (label) => (label.style.opacity = '0')
+          e.currentTarget.style.width = "60px";
+          Array.from(e.currentTarget.querySelectorAll(".label")).forEach(
+            (label) => (label.style.opacity = "0")
           );
         }}
       >
-        <div className="historical" style={styles.item} onClick={() => navigate('/historical-locations')}>
+        <div
+          className="historical"
+          style={styles.item}
+          onClick={() => navigate("/historical-locations")}
+        >
           <FaLandmark style={styles.iconn} />
           <span className="label" style={styles.label}>
             Historical Loc
           </span>
         </div>
-        <div className="museums" style={styles.item} onClick={() => navigate('/museums')}>
+        <div
+          className="museums"
+          style={styles.item}
+          onClick={() => navigate("/museums")}
+        >
           <MuseumIcon style={styles.iconn} />
           <span className="label" style={styles.label}>
             Museums
           </span>
         </div>
-        <div className="products" style={styles.item} onClick={() => navigate('/products')}>
+        <div
+          className="products"
+          style={styles.item}
+          onClick={() => navigate("/products")}
+        >
           <FaBox style={styles.iconn} />
           <span className="label" style={styles.label}>
             Products
           </span>
         </div>
-        <div className="itineraries" style={styles.item} onClick={() => navigate('/itineraries')}>
+        <div
+          className="itineraries"
+          style={styles.item}
+          onClick={() => navigate("/itineraries")}
+        >
           <FaMap style={styles.iconn} />
           <span className="label" style={styles.label}>
             Itineraries
           </span>
         </div>
-        <div className="activities" style={styles.item} onClick={() => navigate('/activities')}>
+        <div
+          className="activities"
+          style={styles.item}
+          onClick={() => navigate("/activities")}
+        >
           <FaRunning style={styles.iconn} />
           <span className="label" style={styles.label}>
             Activities
           </span>
         </div>
-        <div className="flights" style={styles.item} onClick={() => navigate('/book-flights')}>
+        <div
+          className="flights"
+          style={styles.item}
+          onClick={() => navigate("/book-flights")}
+        >
           <FaPlane style={styles.iconn} />
           <span className="label" style={styles.label}>
             Book Flights
           </span>
         </div>
-        <div className="hotels" style={styles.item} onClick={() => navigate('/book-hotels')}>
+        <div
+          className="hotels"
+          style={styles.item}
+          onClick={() => navigate("/book-hotels")}
+        >
           <FaHotel style={styles.iconn} />
           <span className="label" style={styles.label}>
             Book a Hotel
           </span>
         </div>
-        <div className="transportation" style={styles.item} onClick={() => navigate('/book-transportation')}>
+        <div
+          className="transportation"
+          style={styles.item}
+          onClick={() => navigate("/book-transportation")}
+        >
           <FaBus style={styles.iconn} />
           <span className="label" style={styles.label}>
-           Transportation
+            Transportation
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
+        <div style={styles.item} onClick={() => navigate("/tourist-orders")}>
           <FaClipboardList style={styles.iconn} />
           <span className="label" style={styles.label}>
             Past Orders
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
+        <div
+          style={styles.item}
+          onClick={() => navigate("/AttendedActivitiesPage")}
+        >
           <FaStar style={styles.iconn} />
           <span className="label" style={styles.label}>
             Review Activities
           </span>
         </div>
       </div>
-      </div>
 
       <div>
-   {isPreferencesVisible && (
-    <div className="preferences-section" style={{ margin: '20px 0', textAlign: 'center' }}>
-      <h3 style={{ fontSize: '18px', marginBottom: '20px', color: '#333' }}>
-        Select Your Vacation Preferences
-      </h3>
-      <div className="carousel-container" style={styles.carouselContainerStyle}>
-        {/* Historic Areas */}
-        <div
-          className="carousel-item"
-          style={{
-            position: "relative",
-            width: "450px",
-            height: "290px",
-            border: "1px solid #ddd",
-            borderRadius: "15px",
-            flexShrink: 0,
-            backgroundColor: "#fff",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-            overflow: "hidden",
-          }}
-        >
-          <img
-            src={historic}
-            alt="Historic Areas"
-            style={{
-              width: "100%",
-              height: "250px",
-              objectFit: "cover",
-              borderTopLeftRadius: "15px",
-              borderTopRightRadius: "15px",
-            }}
-          />
+        {isPreferencesVisible && (
           <div
-            style={{
-              padding: "10px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
+            className="preferences-section"
+            style={{ margin: "20px 0", textAlign: "center" }}
           >
-            <label
-              style={{
-                fontSize: "16px",
-                fontWeight: "bold",
-                marginBottom: "0",
-                marginRight: "10px",
-                color: "#0F5132",
-                display: "flex",
-                alignItems: "center",
-              }}
+            <h3
+              style={{ fontSize: "18px", marginBottom: "20px", color: "#333" }}
             >
-              Historic Areas
-              <input
-                type="checkbox"
-                name="historicAreas"
-                checked={preferences.historicAreas}
-                onChange={handlePreferenceChange}
+              Select Your Vacation Preferences
+            </h3>
+            <div
+              className="carousel-container"
+              style={styles.carouselContainerStyle}
+            >
+              {/* Historic Areas */}
+              <div
+                className="carousel-item"
                 style={{
-                  width: "20px",
-                  height: "20px",
-                  cursor: "pointer",
-                  marginLeft: "10px",
+                  position: "relative",
+                  width: "450px",
+                  height: "290px",
+                  border: "1px solid #ddd",
+                  borderRadius: "15px",
+                  flexShrink: 0,
+                  backgroundColor: "#fff",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  overflow: "hidden",
                 }}
-              />
-            </label>
-          </div>
-        </div>
+              >
+                <img
+                  src={historic}
+                  alt="Historic Areas"
+                  style={{
+                    width: "100%",
+                    height: "250px",
+                    objectFit: "cover",
+                    borderTopLeftRadius: "15px",
+                    borderTopRightRadius: "15px",
+                  }}
+                />
+                <div
+                  style={{
+                    padding: "10px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <label
+                    style={{
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      marginBottom: "0",
+                      marginRight: "10px",
+                      color: "#0F5132",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    Historic Areas
+                    <input
+                      type="checkbox"
+                      name="historicAreas"
+                      checked={preferences.historicAreas}
+                      onChange={handlePreferenceChange}
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        cursor: "pointer",
+                        marginLeft: "10px",
+                      }}
+                    />
+                  </label>
+                </div>
+              </div>
 
-        {/* Beaches */}
-        <div
-          className="carousel-item"
-          style={{
-            position: "relative",
-            width: "450px",
-            height: "290px",
-            border: "1px solid #ddd",
-            borderRadius: "15px",
-            flexShrink: 0,
-            backgroundColor: "#fff",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-            overflow: "hidden",
-          }}
-        >
-          <img
-            src={beach}
-            alt="Beaches"
-            style={{
-              width: "100%",
-              height: "250px",
-              objectFit: "cover",
-              borderTopLeftRadius: "15px",
-              borderTopRightRadius: "15px",
-            }}
-          />
-          <div
-            style={{
-              padding: "10px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <label
-              style={{
-                fontSize: "16px",
-                fontWeight: "bold",
-                marginBottom: "0",
-                marginRight: "10px",
-                color: "#0F5132",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              Beaches
-              <input
-                type="checkbox"
-                name="beaches"
-                checked={preferences.beaches}
-                onChange={handlePreferenceChange}
+              {/* Beaches */}
+              <div
+                className="carousel-item"
                 style={{
-                  width: "20px",
-                  height: "20px",
-                  cursor: "pointer",
-                  marginLeft: "10px",
+                  position: "relative",
+                  width: "450px",
+                  height: "290px",
+                  border: "1px solid #ddd",
+                  borderRadius: "15px",
+                  flexShrink: 0,
+                  backgroundColor: "#fff",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  overflow: "hidden",
                 }}
-              />
-            </label>
-          </div>
-        </div>
+              >
+                <img
+                  src={beach}
+                  alt="Beaches"
+                  style={{
+                    width: "100%",
+                    height: "250px",
+                    objectFit: "cover",
+                    borderTopLeftRadius: "15px",
+                    borderTopRightRadius: "15px",
+                  }}
+                />
+                <div
+                  style={{
+                    padding: "10px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <label
+                    style={{
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      marginBottom: "0",
+                      marginRight: "10px",
+                      color: "#0F5132",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    Beaches
+                    <input
+                      type="checkbox"
+                      name="beaches"
+                      checked={preferences.beaches}
+                      onChange={handlePreferenceChange}
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        cursor: "pointer",
+                        marginLeft: "10px",
+                      }}
+                    />
+                  </label>
+                </div>
+              </div>
 
-        {/* Family-Friendly */}
-        <div
-          className="carousel-item"
-          style={{
-            position: "relative",
-            width: "450px",
-            height: "290px",
-            border: "1px solid #ddd",
-            borderRadius: "15px",
-            flexShrink: 0,
-            backgroundColor: "#fff",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-            overflow: "hidden",
-          }}
-        >
-          <img
-            src={family}
-            alt="Family-Friendly"
-            style={{
-              width: "100%",
-              height: "250px",
-              objectFit: "cover",
-              borderTopLeftRadius: "15px",
-              borderTopRightRadius: "15px",
-            }}
-          />
-          <div
-            style={{
-              padding: "10px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <label
-              style={{
-                fontSize: "16px",
-                fontWeight: "bold",
-                marginBottom: "0",
-                marginRight: "10px",
-                color: "#0F5132",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              Family-Friendly
-              <input
-                type="checkbox"
-                name="familyFriendly"
-                checked={preferences.familyFriendly}
-                onChange={handlePreferenceChange}
+              {/* Family-Friendly */}
+              <div
+                className="carousel-item"
                 style={{
-                  width: "20px",
-                  height: "20px",
-                  cursor: "pointer",
-                  marginLeft: "10px",
+                  position: "relative",
+                  width: "450px",
+                  height: "290px",
+                  border: "1px solid #ddd",
+                  borderRadius: "15px",
+                  flexShrink: 0,
+                  backgroundColor: "#fff",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  overflow: "hidden",
                 }}
-              />
-            </label>
-          </div>
-        </div>
+              >
+                <img
+                  src={family}
+                  alt="Family-Friendly"
+                  style={{
+                    width: "100%",
+                    height: "250px",
+                    objectFit: "cover",
+                    borderTopLeftRadius: "15px",
+                    borderTopRightRadius: "15px",
+                  }}
+                />
+                <div
+                  style={{
+                    padding: "10px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <label
+                    style={{
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      marginBottom: "0",
+                      marginRight: "10px",
+                      color: "#0F5132",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    Family-Friendly
+                    <input
+                      type="checkbox"
+                      name="familyFriendly"
+                      checked={preferences.familyFriendly}
+                      onChange={handlePreferenceChange}
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        cursor: "pointer",
+                        marginLeft: "10px",
+                      }}
+                    />
+                  </label>
+                </div>
+              </div>
 
-        {/* Shopping */}
-        <div
-          className="carousel-item"
-          style={{
-            position: "relative",
-            width: "450px",
-            height: "290px",
-            border: "1px solid #ddd",
-            borderRadius: "15px",
-            flexShrink: 0,
-            backgroundColor: "#fff",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-            overflow: "hidden",
-          }}
-        >
-          <img
-            src={shopping}
-            alt="Shopping"
-            style={{
-              width: "100%",
-              height: "250px",
-              objectFit: "cover",
-              borderTopLeftRadius: "15px",
-              borderTopRightRadius: "15px",
-            }}
-          />
-          <div
-            style={{
-              padding: "10px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <label
-              style={{
-                fontSize: "16px",
-                fontWeight: "bold",
-                marginBottom: "0",
-                marginRight: "10px",
-                color: "#0F5132",
-                display: "flex",
-                alignItems: "center",
-              }}
+              {/* Shopping */}
+              <div
+                className="carousel-item"
+                style={{
+                  position: "relative",
+                  width: "450px",
+                  height: "290px",
+                  border: "1px solid #ddd",
+                  borderRadius: "15px",
+                  flexShrink: 0,
+                  backgroundColor: "#fff",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  overflow: "hidden",
+                }}
+              >
+                <img
+                  src={shopping}
+                  alt="Shopping"
+                  style={{
+                    width: "100%",
+                    height: "250px",
+                    objectFit: "cover",
+                    borderTopLeftRadius: "15px",
+                    borderTopRightRadius: "15px",
+                  }}
+                />
+                <div
+                  style={{
+                    padding: "10px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <label
+                    style={{
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      marginBottom: "0",
+                      marginRight: "10px",
+                      color: "#0F5132",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    Shopping
+                    <input
+                      type="checkbox"
+                      name="shopping"
+                      checked={preferences.shopping}
+                      onChange={handlePreferenceChange}
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        cursor: "pointer",
+                        marginLeft: "10px",
+                      }}
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* Budget Selection */}
+            <div
+              className="budget-selection"
+              style={{ marginTop: "30px", textAlign: "center" }}
             >
-              Shopping
-              <input
-                type="checkbox"
-                name="shopping"
-                checked={preferences.shopping}
+              <label
+                style={{
+                  fontWeight: "bold",
+                  marginRight: "10px",
+                  fontSize: "16px",
+                }}
+              >
+                Budget:
+              </label>
+              <select
+                name="budget"
+                value={preferences.budget}
                 onChange={handlePreferenceChange}
                 style={{
-                  width: "20px",
-                  height: "20px",
-                  cursor: "pointer",
-                  marginLeft: "10px",
+                  padding: "10px",
+                  fontSize: "16px",
+                  border: "1px solid #ddd",
+                  borderRadius: "5px",
                 }}
-              />
-            </label>
+              >
+                <option value="">Select</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+              <button
+                onClick={submitPreferences}
+                style={{
+                  marginTop: "30px",
+                  padding: "12px 20px",
+                  backgroundColor: "#0F5132",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  fontSize: "16px",
+                }}
+              >
+                Save Preferences
+              </button>
+              {successMessage && (
+                <p style={{ color: "#0F5132" }}>{successMessage}</p>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
-      {/* Budget Selection */}
-      <div className="budget-selection" style={{ marginTop: "30px", textAlign: "center" }}>
-        <label style={{ fontWeight: "bold", marginRight: "10px", fontSize: "16px" }}>
-          Budget:
-        </label>
-        <select
-          name="budget"
-          value={preferences.budget}
-          onChange={handlePreferenceChange}
-          style={{
-            padding: "10px",
-            fontSize: "16px",
-            border: "1px solid #ddd",
-            borderRadius: "5px",
-          }}
-        >
-          <option value="">Select</option>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
+      {/* Dashboard Section */}
+      <div
+        className="dashboard-section"
+        style={{
+          padding: "20px",
+          fontFamily: "Arial, sans-serif",
+          marginTop: "40px",
+        }}
+      >
+        <div>
+          <h3 style={styles.cardTitle}>Your Upcoming Booked Itineraries</h3>
+          {upcomingItineraries.length > 0 ? (
+            upcomingItineraries.map((itinerary) => (
+              <div key={itinerary._id} style={styles.itineraryCard}>
+                <h4>Activities Included: {itinerary.Activities.join(", ")}</h4>
+                <p>Locations: {itinerary.Locations.join(", ")}</p>
+                <p>
+                  Price: {(itinerary.price * conversionRate).toFixed(2)}{" "}
+                  {selectedCurrency}
+                </p>
+                <p>Tour Guide: {itinerary.TourGuide}</p>
+                <p>Date: {itinerary.DatesTimes}</p>
+
+                <button
+                  onClick={() => handleCancelItineraryBooking(itinerary._id)}
+                  style={styles.cancelButton}
+                >
+                  Cancel Booking (2 days before)
+                </button>
+              </div>
+            ))
+          ) : (
+            <p style={styles.emptyMessage}>
+              You have no booked upcoming itineraries.
+            </p>
+          )}
+        </div>
         <button
-          onClick={submitPreferences}
+          onClick={() => setShowPastItineraries(!showPastItineraries)}
           style={{
-            marginTop: "30px",
-            padding: "12px 20px",
+            marginTop: "20px",
+            padding: "10px 20px",
             backgroundColor: "#0F5132",
             color: "#fff",
             border: "none",
             borderRadius: "5px",
             cursor: "pointer",
-            fontSize: "16px",
           }}
         >
-          Save Preferences
+          {showPastItineraries
+            ? "Hide Past Itineraries"
+            : "Show Past Itineraries"}
         </button>
-        {successMessage && <p style={{ color: "#0F5132" }}>{successMessage}</p>}
+
+        {showPastItineraries && (
+          <div
+            className="card"
+            style={{
+              marginTop: "20px",
+              padding: "10px",
+              backgroundColor: "#f9f9f9",
+              borderRadius: "5px",
+            }}
+          >
+            <h3 style={{ fontSize: "18px", marginBottom: "10px" }}>
+              Past Itineraries
+            </h3>
+            {pastItineraries.length > 0 ? (
+              pastItineraries.map((itinerary) => (
+                <div
+                  key={itinerary._id}
+                  style={{
+                    marginBottom: "10px",
+                    padding: "10px",
+                    border: "1px solid #ddd",
+                    borderRadius: "5px",
+                  }}
+                >
+                  <h4>
+                    Activities Included: {itinerary.Activities.join(", ")}
+                  </h4>
+                  <p>Locations: {itinerary.Locations.join(", ")}</p>
+                  <p>
+                    Price: {(itinerary.price * conversionRate).toFixed(2)}{" "}
+                    {selectedCurrency}
+                  </p>
+                  <p>Tour Guide: {itinerary.TourGuide}</p>
+                  <p>Date: {itinerary.DatesTimes}</p>
+
+                  {!itinerary.feedbackSubmitted && (
+                    <div style={styles.feedbackSection}>
+                      <h4>Leave Feedback on Itinerary</h4>
+                      <input
+                        type="number"
+                        placeholder="Rating"
+                        value={ratingsI[itinerary._id] || ""} // Ensure correct binding
+                        onChange={(e) =>
+                          handleRatingChangeI(itinerary, e.target.value)
+                        }
+                        style={styles.input}
+                        min="1"
+                        max="5"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Comment"
+                        value={commentsI[itinerary._id] || ""} // Ensure correct binding
+                        onChange={(e) =>
+                          handleCommentChangeI(itinerary, e.target.value)
+                        }
+                        style={styles.input}
+                      />
+                      <button
+                        onClick={() => submitFeedbackItinerary(itinerary)}
+                        style={styles.button}
+                      >
+                        Submit Feedback
+                      </button>
+                    </div>
+                  )}
+
+                  <div style={styles.feedbackSection}>
+                    <h4>Leave Feedback on Tour Guide</h4>
+                    <input
+                      type="number"
+                      placeholder="Rating"
+                      value={ratings[itinerary._id] || ""} // Ensure correct binding
+                      onChange={(e) =>
+                        handleRatingChange(itinerary, e.target.value)
+                      }
+                      style={styles.input}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Comment"
+                      value={comments[itinerary._id] || ""} // Ensure correct binding
+                      onChange={(e) =>
+                        handleCommentChange(itinerary, e.target.value)
+                      }
+                      style={styles.input}
+                    />
+                    <button
+                      onClick={() => submitFeedback(itinerary)}
+                      style={styles.button}
+                    >
+                      Submit Feedback
+                    </button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p style={styles.emptyMessage}>You have no past itineraries</p>
+            )}
+          </div>
+        )}
+
+        <div className="card" style={styles.card}>
+          <h3 style={styles.cardTitle}>Your Upcoming Booked Activities</h3>
+          {bookedActivities.length > 0 ? (
+            bookedActivities.map((Activity) => (
+              <div key={Activity._id} style={styles.activityCard}>
+                <h4>Activity Name: {Activity.name}</h4>
+                <p>Category: {Activity.Category}</p>
+                <p>
+                  Price: {(Activity.price * conversionRate).toFixed(2)}{" "}
+                  {selectedCurrency}
+                </p>
+                <p>Date: {Activity.date}</p>
+                <p>Location: {Activity.Location}</p>
+                <button
+                  onClick={() => handleCancelActivityBooking(Activity._id)}
+                  style={styles.cancelButton}
+                >
+                  Cancel Booking (2 days before)
+                </button>
+              </div>
+            ))
+          ) : (
+            <p style={styles.emptyMessage}>
+              You have no upcoming booked activities.
+            </p>
+          )}
+        </div>
+
+        {successMessage && <div style={styles.success}>{successMessage}</div>}
       </div>
     </div>
-     )}
-     </div>
-
-    {/* Dashboard Section */}
-    <div className="dashboard-section" style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <div>
-        <h3 style={styles.cardTitle}>Your Upcoming Booked Itineraries</h3>
-        {upcomingItineraries.length > 0 ? (
-          upcomingItineraries.map((itinerary) => (
-            <div key={itinerary._id} style={styles.itineraryCard}>
-              <h4>Activities Included: {itinerary.Activities.join(", ")}</h4>
-              <p>Locations: {itinerary.Locations.join(", ")}</p>
-              <p>Price: {(itinerary.price * conversionRate).toFixed(2)} {selectedCurrency}</p>
-              <p>Tour Guide: {itinerary.TourGuide}</p>
-              <p>Date: {itinerary.DatesTimes}</p>
-
-              <button
-                onClick={() => handleCancelItineraryBooking(itinerary._id)}
-                style={styles.cancelButton}
-              >
-                Cancel Booking (2 days before)
-              </button>
-            </div>
-          ))
-        ) : (
-          <p style={styles.emptyMessage}>You have no booked upcoming itineraries.</p>
-        )}
-      </div>
-      <button
-  onClick={() => setShowPastItineraries(!showPastItineraries)}
-  style={{
-    marginTop: "20px",
-    padding: "10px 20px",
-    backgroundColor: "#0F5132",
-    color: "#fff",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-  }}
->
-  {showPastItineraries ? "Hide Past Itineraries" : "Show Past Itineraries"}
-</button>
-
-{showPastItineraries && (
-  <div
-    className="card"
-    style={{
-      marginTop: "20px",
-      padding: "10px",
-      backgroundColor: "#f9f9f9",
-      borderRadius: "5px",
-    }}
-  >
-    <h3 style={{ fontSize: "18px", marginBottom: "10px" }}>Past Itineraries</h3>
-    {pastItineraries.length > 0 ? (
-      pastItineraries.map((itinerary) => (
-        <div
-          key={itinerary._id}
-          style={{
-            marginBottom: "10px",
-            padding: "10px",
-            border: "1px solid #ddd",
-            borderRadius: "5px",
-          }}
-        >
-          <h4>Activities Included: {itinerary.Activities.join(", ")}</h4>
-          <p>Locations: {itinerary.Locations.join(", ")}</p>
-          <p>Price: {(itinerary.price * conversionRate).toFixed(2)} {selectedCurrency}</p>
-          <p>Tour Guide: {itinerary.TourGuide}</p>
-          <p>Date: {itinerary.DatesTimes}</p>
-
-          {!itinerary.feedbackSubmitted && (
-            <div style={styles.feedbackSection}>
-              <h4>Leave Feedback on Itinerary</h4>
-              <input
-                type="number"
-                placeholder="Rating"
-                value={ratingsI[itinerary._id] || ""} // Ensure correct binding
-                onChange={(e) => handleRatingChangeI(itinerary, e.target.value)}
-                style={styles.input}
-                min="1"
-                max="5"
-              />
-              <input
-                type="text"
-                placeholder="Comment"
-                value={commentsI[itinerary._id] || ""} // Ensure correct binding
-                onChange={(e) => handleCommentChangeI(itinerary, e.target.value)}
-                style={styles.input}
-              />
-              <button
-                onClick={() => submitFeedbackItinerary(itinerary)}
-                style={styles.button}
-              >
-                Submit Feedback
-              </button>
-            </div>
-          )}
-
-          <div style={styles.feedbackSection}>
-            <h4>Leave Feedback on Tour Guide</h4>
-            <input
-              type="number"
-              placeholder="Rating"
-              value={ratings[itinerary._id] || ""} // Ensure correct binding
-              onChange={(e) => handleRatingChange(itinerary, e.target.value)}
-              style={styles.input}
-            />
-            <input
-              type="text"
-              placeholder="Comment"
-              value={comments[itinerary._id] || ""} // Ensure correct binding
-              onChange={(e) => handleCommentChange(itinerary, e.target.value)}
-              style={styles.input}
-            />
-            <button onClick={() => submitFeedback(itinerary)} style={styles.button}>
-              Submit Feedback
-            </button>
-          </div>
-        </div>
-      ))
-    ) : (
-      <p style={styles.emptyMessage}>You have no past itineraries</p>
-    )}
-  </div>
-)}
-
-<div className="card" style={styles.card}>
-  <h3 style={styles.cardTitle}>Your Upcoming Booked Activities</h3>
-  {bookedActivities.length > 0 ? (
-    bookedActivities.map((Activity) => (
-      <div key={Activity._id} style={styles.activityCard}>
-        <h4>Activity Name: {Activity.name}</h4>
-        <p>Category: {Activity.Category}</p>
-        <p>
-          Price: {(Activity.price * conversionRate).toFixed(2)} {selectedCurrency}
-        </p>
-        <p>Date: {Activity.date}</p>
-        <p>Location: {Activity.Location}</p>
-        <button
-          onClick={() => handleCancelActivityBooking(Activity._id)}
-          style={styles.cancelButton}
-        >
-          Cancel Booking (2 days before)
-        </button>
-      </div>
-    ))
-  ) : (
-    <p style={styles.emptyMessage}>You have no upcoming booked activities.</p>
-  )}
-</div>
-
-{successMessage && <div style={styles.success}>{successMessage}</div>}
-</div>
-</div>
-
-);};
+  );
+};
 const styles = {
-  carouselContainerStyle : {
-    display: 'flex',
-    overflowX: 'scroll',
-    padding: '10px',
-    gap: '10px',
-    backgroundColor: '#f4f4f4',
-    borderRadius: '10px',
+  carouselContainerStyle: {
+    display: "flex",
+    overflowX: "scroll",
+    padding: "10px",
+    gap: "10px",
+    backgroundColor: "#f4f4f4",
+    borderRadius: "10px",
   },
   card: {
     backgroundColor: "#fff",
@@ -1624,244 +1785,238 @@ const styles = {
     marginTop: "10px",
   },
   container: {
-    maxWidth: '800px',
-    margin: '20px auto',
-    padding: '20px',
-    backgroundColor: '#f4f4f4',
-    borderRadius: '10px',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    maxWidth: "800px",
+    margin: "20px auto",
+    padding: "20px",
+    backgroundColor: "#f4f4f4",
+    borderRadius: "10px",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
   },
   header: {
-    height:'60px',
-    position: 'fixed', // Make the header fixed
-    top: '0', // Stick to the top of the viewport
-    left: '0',
-    width: '100%', // Make it span the full width of the viewport
-    backgroundColor: '#0F5132', // Green background
-    color: 'white', // White text
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '10px 20px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for depth
-    zIndex: '1000', // Ensure it appears above other content
+    height: "60px",
+    position: "fixed", // Make the header fixed
+    top: "0", // Stick to the top of the viewport
+    left: "0",
+    width: "100%", // Make it span the full width of the viewport
+    backgroundColor: "#0F5132", // Green background
+    color: "white", // White text
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "10px 20px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Add shadow for depth
+    zIndex: "1000", // Ensure it appears above other content
   },
   headerIconsContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '20px', // Spacing between the icons
+    display: "flex",
+    alignItems: "center",
+    gap: "20px", // Spacing between the icons
   },
   logoContainer: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
   },
-   carouselContainerStyle : {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    overflowX: 'auto',
-    gap: '20px',
-    padding: '20px',
-  }, item: {
- 
-    padding: '10px 0',
-    
-  },iconn: {
-    fontSize: '24px',
-    marginLeft: '15px', // Move icons slightly to the right
-    color: '#fff', // Icons are always white
+  carouselContainerStyle: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    overflowX: "auto",
+    gap: "20px",
+    padding: "20px",
+  },
+  item: {
+    padding: "10px 0",
+  },
+  iconn: {
+    fontSize: "24px",
+    marginLeft: "15px", // Move icons slightly to the right
+    color: "#fff", // Icons are always white
   },
   label: {
-    cursor: 'pointer',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: '#fff',
+    cursor: "pointer",
+    fontSize: "16px",
+    fontWeight: "bold",
+    color: "#fff",
     opacity: 0, // Initially hidden
-    whiteSpace: 'nowrap', // Prevent label text from wrapping
-    transition: 'opacity 0.3s ease',
-  },
-  
-   carouselItemStyle :{
-    position: 'relative',
-    width: '450px',
-    height: '290px',
-    border: '1px solid #ddd',
-    borderRadius: '15px',
-    backgroundColor: '#fff',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-    overflow: 'hidden',
-  },
-  logo: {
-    height: '60px',
-    width: '70px',
-    borderRadius: '10px',
-  },
-  
-  notificationButton: {
-    position: 'relative',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  notificationIcon: {
-    fontSize: '24px',
-    color: 'white',
-  },
-  notificationBadge: {
-    position: 'absolute',
-    top: '-5px',
-    right: '-5px',
-    backgroundColor: 'red',
-    color: 'white',
-    borderRadius: '50%',
-    padding: '5px',
-    fontSize: '12px',
-  },
-  profileIcon: {
-    fontSize: '30px',
-    color: 'white',
-    cursor: 'pointer',
-  },
-  notificationDropdown: {
- 
-   
-    backgroundColor: '#fff',
-  
- 
-      position: 'absolute',
-      top: '40px',
-      right: '0px',
-   
-      border: '1px solid #ddd',
-      borderRadius: '8px',
-      boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
-      width: '320px',
-      maxHeight: '400px',
-      overflowY: 'auto', // Enable vertical scrolling
-      overflowX: 'hidden',
-      zIndex: 1000,
-   
-  },
-  dropdownHeader: {
-    padding: '10px',
-    borderBottom: '1px solid #ddd',
-    fontWeight: 'bold',
-  },
-  logoutIcon: {
-    cursor:'pointer'
-  },
-  notificationItem: {
-    padding: '10px',
-   
-    borderBottom: '1px solid #ddd',
-    padding: '20px',
-    textAlign: 'center',
-    color: '#888',
-    fontSize: '5px',
-  },
-  notificationDate: {
-    fontSize: '12px',
-    color: '#666',
-  },
-  noNotifications: {
-    padding: '10px',
-    color: '#666',
-    textAlign: 'center',
-  },
-  actionButtons: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-end',
-    marginTop: '10px',
-  
-  },
- title: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    color: 'white',
-    margin: 0,
-    marginLeft:'60px'
+    whiteSpace: "nowrap", // Prevent label text from wrapping
+    transition: "opacity 0.3s ease",
   },
 
-  
-  addButton: {
-    marginTop: '10px',
-    padding: '10px 20px',
-    backgroundColor: '#0F5132',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
+  carouselItemStyle: {
+    position: "relative",
+    width: "450px",
+    height: "290px",
+    border: "1px solid #ddd",
+    borderRadius: "15px",
+    backgroundColor: "#fff",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    overflow: "hidden",
   },
-  
+  logo: {
+    height: "60px",
+    width: "70px",
+    borderRadius: "10px",
+  },
+
+  notificationButton: {
+    position: "relative",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  notificationIcon: {
+    fontSize: "24px",
+    color: "white",
+  },
+  notificationBadge: {
+    position: "absolute",
+    top: "-5px",
+    right: "-5px",
+    backgroundColor: "red",
+    color: "white",
+    borderRadius: "50%",
+    padding: "5px",
+    fontSize: "12px",
+  },
+  profileIcon: {
+    fontSize: "30px",
+    color: "white",
+    cursor: "pointer",
+  },
+  notificationDropdown: {
+    backgroundColor: "#fff",
+
+    position: "absolute",
+    top: "40px",
+    right: "0px",
+
+    border: "1px solid #ddd",
+    borderRadius: "8px",
+    boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
+    width: "320px",
+    maxHeight: "400px",
+    overflowY: "auto", // Enable vertical scrolling
+    overflowX: "hidden",
+    zIndex: 1000,
+  },
+  dropdownHeader: {
+    padding: "10px",
+    borderBottom: "1px solid #ddd",
+    fontWeight: "bold",
+  },
+  logoutIcon: {
+    cursor: "pointer",
+  },
+  notificationItem: {
+    padding: "10px",
+
+    borderBottom: "1px solid #ddd",
+    padding: "20px",
+    textAlign: "center",
+    color: "#888",
+    fontSize: "5px",
+  },
+  notificationDate: {
+    fontSize: "12px",
+    color: "#666",
+  },
+  noNotifications: {
+    padding: "10px",
+    color: "#666",
+    textAlign: "center",
+  },
+  actionButtons: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-end",
+    marginTop: "10px",
+  },
+  title: {
+    fontSize: "24px",
+    fontWeight: "bold",
+    color: "white",
+    margin: 0,
+    marginLeft: "60px",
+  },
+
+  addButton: {
+    marginTop: "10px",
+    padding: "10px 20px",
+    backgroundColor: "#0F5132",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+  },
+
   sidebar: {
-    position: 'fixed',
-    top: '60px',
+    position: "fixed",
+    top: "60px",
     left: 0,
-    height: '100vh',
-    width: '50px', // Default width when collapsed
-    backgroundColor: 'rgba(15, 81, 50, 0.85)',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start', // Ensure alignment starts from the left
-    padding: '10px 0',
-    overflowX: 'hidden',
-    transition: 'width 0.3s ease',
+    height: "100vh",
+    width: "50px", // Default width when collapsed
+    backgroundColor: "rgba(15, 81, 50, 0.85)",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start", // Ensure alignment starts from the left
+    padding: "10px 0",
+    overflowX: "hidden",
+    transition: "width 0.3s ease",
     zIndex: 1000,
   },
   sidebarExpanded: {
-    width: '200px', // Width when expanded
+    width: "200px", // Width when expanded
   },
   iconContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-start', // Align items to the left
-    padding: '10px',
-    width: '100%', // Take full width of the sidebar
-    color: '#fff',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s ease',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-start", // Align items to the left
+    padding: "10px",
+    width: "100%", // Take full width of the sidebar
+    color: "#fff",
+    cursor: "pointer",
+    transition: "background-color 0.3s ease",
   },
   iconContainerHover: {
-    backgroundColor: '#084B24', // Background on hover
+    backgroundColor: "#084B24", // Background on hover
   },
   icon: {
-    fontSize: '24px',
-    marginLeft: '15px', // Move icons slightly to the right
-    color: '#fff', // Icons are always white
+    fontSize: "24px",
+    marginLeft: "15px", // Move icons slightly to the right
+    color: "#fff", // Icons are always white
   },
   label: {
-    cursor: 'pointer',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: '#fff',
+    cursor: "pointer",
+    fontSize: "16px",
+    fontWeight: "bold",
+    color: "#fff",
     opacity: 0, // Initially hidden
-    whiteSpace: 'nowrap', // Prevent label text from wrapping
-    transition: 'opacity 0.3s ease',
+    whiteSpace: "nowrap", // Prevent label text from wrapping
+    transition: "opacity 0.3s ease",
   },
   labelVisible: {
     opacity: 1, // Fully visible when expanded
   },
   cartButton: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-   
-    color: '#fff',
-    cursor: 'pointer',
-   
-    transition: 'background-color 0.3s ease',
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+
+    color: "#fff",
+    cursor: "pointer",
+
+    transition: "background-color 0.3s ease",
   },
   cartButtonHover: {
-    backgroundColor: '#e6e6e6', // Change background on hover
+    backgroundColor: "#e6e6e6", // Change background on hover
   },
   cartIcon: {
-    fontSize: '25px',
+    fontSize: "25px",
   },
   cartLabel: {
-    fontSize: '16px',
-    fontWeight: 'bold',
+    fontSize: "16px",
+    fontWeight: "bold",
   },
 };
-export default TouristProfile;
+export default TouristProfile;
