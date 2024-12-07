@@ -42,7 +42,11 @@ const BookTransportation = () => {
 
   // Handle the book button click
   const handleBook = () => {
-    alert('Transportation has been booked successfully!');
+    if(localStorage.getItem('context') === 'guest') {
+      alert('Please login to book transportation');
+      return;
+    }
+    setSuccessMessage('Transportation has been booked successfully!');
   };
 
   const handleCurrencyChange = (event) => {

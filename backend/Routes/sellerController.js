@@ -680,20 +680,21 @@ const viewMyProducts = async (req, res) => {
   }
 };
 const filterByProduct = async (req, res) => {
-  const { productId } = req.query;
+  const { productName } = req.query;
   try{
-    const x=await OrdersModel.find({product: productId});
-    const r= x.map(x=> ({ createdAt: x.createdAt, quantity: x.quantity }));
+    const x=await OrdersModel.find({ products: { $in: [productName] } })
+    const r= x.map(x=> ({ createdAt: x.createdAt }));
     res.status(200).json(r);
   }
   catch(error){
      res.status(400).json({error: error.message});
   }
 };
-const getFilteredProducts = async (req, res) => { //filtered by date
+const getFilteredProducts = async (req, res) => {
+//filtered by date
   const { date, Username } = req.query;
 
-  if (!date) {
+  if (!date || !Username) {
     return res.status(400).json({ error: 'Date and Username are required' });
   }
 
@@ -713,22 +714,23 @@ const getFilteredProducts = async (req, res) => { //filtered by date
     // Set the time for the end of the day
     endDate.setUTCHours(23, 59, 59, 999);
 
-    // Query for bookings within the date range and populate the itineraryID field
+    // Query for orders within the date range
     const orders = await OrdersModel.find({
       createdAt: {
         $gte: startDate,
         $lte: endDate
       }
-    }).populate('product');
+    });
 
-    // Extract itineraries from the populated bookings and filter by TourGuide
-     const productsQuantity = orders
-      .map(order => ({product: order.product, quantity: order.quantity}))
-      .filter(item => item.product.seller === Username);
-    res.status(200).json(productsQuantity);
+    // Extract products from the orders and filter by seller
+    const productNames = orders.flatMap(order => order.products);
+    const products = await productModel.find({ productName: { $in: productNames }, seller: Username });
+    const r= products.map(x=> ( x.productName));
+    res.status(200).json(r);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
+  
 };
 
  module.exports = {resetPasswordS,requestOTPS,viewMyProducts,deleteAllNotifications,getNotificationsForAdmin,checkAndNotifyOutOfStockAdmin,getNotificationsForSeller,checkAndNotifyOutOfStockSeller,incrementProductSales,viewProductSales ,changePasswordSeller,createSeller,updateSeller,getSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller,filterByProduct,getFilteredProducts,updateProduct};
