@@ -24,20 +24,22 @@ const MyMuseums = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedMuseum, setSelectedMuseum] = useState(null); // State for selecting a museum for viewing/editing
   const [viewOnly, setViewOnly] = useState(false); // State to control view vs. edit mode
-  const [formData, setFormData] = useState({
-    Name: '',
-    Description: '',
-    Location: '',
-    OpeningHours: '',
-    TicketPrices: { Foreigner: '', Student: '', Native: '' },
-    Tags: { HistoricalPeriod: '' }
-  });
+  const [showDeletePopup, setShowDeletePopup] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen
   ] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpen2, setIsModalOpen2] = useState(false);
   const handleMyLocations = () => navigate('/tourism-gov');
   const handleMyMuseums = () => navigate('/my-museums');
+  const toggleViewDetails = (locationName) => {
+    if (selectedLocation === locationName) {
+      setSelectedLocation(null); // Hide details if already selected
+    } else {
+      setSelectedLocation(locationName); // Show details for the selected location
+    }
+  };
+  
   // Fetch museums on component mount
   useEffect(() => {
     const fetchMyMuseums = async () => {
@@ -61,6 +63,201 @@ const MyMuseums = () => {
 
     fetchMyMuseums();
   }, []);
+  const [formData, setFormData] = useState({
+    Name: '',
+    Description: '',
+    Location: '',
+    OpeningHours: '',
+    TicketPrices: {
+      Foreigner: '',
+      Student: '',
+      Native: ''
+    },
+    Tags: {
+      HistoricalPeriod: ''
+    },
+    image: ''
+  });
+
+  const [locations, setLocations] = useState([]); // Stores all museums
+  const [successMessage, setSuccessMessage] = useState('');
+  const [viewData, setViewData] = useState(null);
+  const [isUpdating, setIsUpdating] = useState(false); // Tracks whether we are in update mode
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+
+  const handleTagsChange = (e) => {
+    const { value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      Tags: {
+        ...prevData.Tags,
+        HistoricalPeriod: value // Update only the HistoricalPeriod field inside Tags
+      }
+    }));
+  };
+
+  const handleTicketPricesChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      TicketPrices: {
+        ...prevData.TicketPrices,
+        [name]: value
+      }
+    }));
+  };
+
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    try {
+      // Retrieve the tourism governor's username from local storage
+      const tourismGovernor = localStorage.getItem('Username') || '';
+  
+      const response = await fetch('http://localhost:8000/createmuseum', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...formData, TourismGovernor: tourismGovernor }) // Include the TourismGovernor
+      });
+  
+      if (response.ok) {
+        const result = await response.json();
+        alert(`Museum "${result.Name}" created successfully!`);
+        setLocations((prevLocations) => [...prevLocations, result]); // Add new museum to the list
+  
+        // Reset form after successful creation
+        setFormData({
+          Name: '',
+          Description: '',
+          Location: '',
+          OpeningHours: '',
+          TicketPrices: {
+            Foreigner: '',
+            Student: '',
+            Native: ''
+          },
+          Tags: {
+            HistoricalPeriod: ''
+          },
+          image: ''
+        });
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Failed to create museum.');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while creating the museum.');
+      console.error(error);
+    }
+  };
+  
+
+  const handleGetMuseum = async (e, name) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`http://localhost:8000/getmuseum?Name=${name}`, {
+        method: 'GET',
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setFormData(result);
+        setSuccessMessage(`Museum "${result.Name}" retrieved successfully!`);
+        setViewData(result);
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Failed to retrieve museum.');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while retrieving the museum.');
+      console.error(error);
+    }
+  };
+
+  const handleDeleteMuseum = async (name) => {
+    try {
+      const response = await fetch(`http://localhost:8000/deletemuseum?Name=${name}`, {
+        method: 'DELETE',
+      });
+  
+      if (response.ok) {
+        alert(`Museum "${name}" deleted successfully!`);
+        setViewData(null);
+       
+        setMuseums((prevMuseums) => prevMuseums.filter((museum) => museum.Name !== name));
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Failed to delete museum.');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while deleting the museum.');
+      console.error(error);
+    }
+  };
+  const handleUpdateClick = (e, museum) => {
+    e.preventDefault();
+    setIsUpdating(true); // Set update mode to true
+    setFormData(museum); // Pre-fill the form with the data of the location to update
+    setIsModalOpen2(true);
+    //setSuccessMessage(`Editing location "${location.Name}"`); // Fixed backticks
+  };
+
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`http://localhost:8000/updatemuseum`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        const updatedMuseum = await response.json();
+        alert(`Museum "${updatedMuseum.Name}" updated successfully!`);
+        
+
+       // Update the locations state
+      setMuseums((prevLocations) =>
+        prevLocations.map((loc) =>
+          loc.Name === updatedMuseum.Name ? updatedMuseum : loc
+        )
+      );
+        setIsUpdating(false); // Exit update mode
+        setFormData({
+          Name: '',
+          Description: '',
+          Location: '',
+          OpeningHours: '',
+          TicketPrices: {
+            Foreigner: '',
+            Student: '',
+            Native: ''
+          },
+          Tags: {
+            HistoricalPeriod: ''
+          },
+          image: ''
+        });
+      } else {
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'Failed to update museum.');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while updating the museum.');
+      console.error(error);
+    }
+  };
 
   const handleView = async (name) => {
     setViewOnly(true); // Set view mode
@@ -108,31 +305,7 @@ const MyMuseums = () => {
     }
   };
 
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch('http://localhost:8000/updateMuseum', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
-        const updatedMuseum = await response.json();
-        setMuseums((prevMuseums) =>
-          prevMuseums.map((museum) =>
-            museum.Name === updatedMuseum.Name ? updatedMuseum : museum
-          )
-        );
-        setSelectedMuseum(null); // Clear form after update
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(errorData.error || 'Failed to update museum.');
-      }
-    } catch (error) {
-      setErrorMessage('An error occurred while updating the museum.');
-    }
-  };
+ 
 
   const handleDelete = async (name) => {
     try {
@@ -141,13 +314,32 @@ const MyMuseums = () => {
       });
 
       if (response.ok) {
+
         setMuseums((prevMuseums) => prevMuseums.filter((museum) => museum.Name !== name));
+        alert('museum deleted successfully')
       } else {
         setErrorMessage('Failed to delete the museum.');
       }
     } catch (error) {
       setErrorMessage('An error occurred while deleting the museum.');
     }
+  };
+  const resetFormData = () => {
+    setFormData({
+      Name: '',
+      Description: '',
+      Location: '',
+      OpeningHours: '',
+      TicketPrices: {
+        Foreigner: '',
+        Student: '',
+        Native: ''
+      },
+      Tags: {
+        Types: ''
+      },
+      image: ''
+    });
   };
 
   return (
@@ -189,123 +381,375 @@ const MyMuseums = () => {
 <h1 style={styles.title}>Tourism Governor Profile</h1>
 
 <div style={styles.headerIcons}>
- <button style={styles.createButton} onClick={() => setIsCreateModalOpen(true)} data-tooltip-id="create-location-tooltip"
-data-tooltip-content="Create Historical Location"  >
+ <button style={styles.createButton} onClick={() => setIsCreateModalOpen(true)} data-tooltip-id="create-Museum-tooltip"
+data-tooltip-content="Create Museum"  >
    <FaPlus style={styles.createIcon} /> 
    
  </button>
- <ReactTooltip id="create-location-tooltip" />
- <LockResetIcon
-   style={styles.lockIcon}
-   onClick={() => setIsModalOpen(true)}
- />
+ <ReactTooltip id="create-Museum-tooltip" />
+
  <LogoutOutlinedIcon
    style={styles.logoutIcon}
    onClick={() => navigate('/Guest')}
  />
 </div>
-</header>      <h1>My Museums</h1>
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      {museums.length === 0 ? (
-        <p>No museums found.</p>
-      ) : (
-        <ul>
-          {museums.map((museum) => (
-            <li key={museum.Name}>
-              <strong>{museum.Name}</strong>: {museum.Description} ({museum.Location})
-              <button onClick={() => handleView(museum.Name)}>View</button>
-              <button onClick={() => handleEdit(museum.Name)}>Edit</button>
-              <button onClick={() => handleDelete(museum.Name)}>Delete</button>
-            </li>
-          ))}
-        </ul>
-      )}
+</header>      
 
-      {selectedMuseum && (
-        <form onSubmit={handleUpdate}>
-          <h2>{viewOnly ? "View Museum" : "Edit Museum"}</h2>
-          <label>Name:</label>
-          <input
-            type="text"
-            value={formData.Name}
-            onChange={(e) => setFormData({ ...formData, Name: e.target.value })}
-            disabled
-          />
-          <label>Description:</label>
-          <input
-            type="text"
-            value={formData.Description}
-            onChange={(e) => setFormData({ ...formData, Description: e.target.value })}
-            disabled={viewOnly}
-          />
-          <label>Location:</label>
-          <input
-            type="text"
-            value={formData.Location}
-            onChange={(e) => setFormData({ ...formData, Location: e.target.value })}
-            disabled={viewOnly}
-          />
-          <label>Opening Hours:</label>
-          <input
-            type="text"
-            value={formData.OpeningHours}
-            onChange={(e) => setFormData({ ...formData, OpeningHours: e.target.value })}
-            disabled={viewOnly}
-          />
-          <label>Ticket Prices:</label>
-          <input
-            type="text"
-            value={formData.TicketPrices.Foreigner}
-            placeholder="Foreigner"
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                TicketPrices: { ...formData.TicketPrices, Foreigner: e.target.value }
-              })
-            }
-            disabled={viewOnly}
-          />
-          <input
-            type="text"
-            value={formData.TicketPrices.Student}
-            placeholder="Student"
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                TicketPrices: { ...formData.TicketPrices, Student: e.target.value }
-              })
-            }
-            disabled={viewOnly}
-          />
-          <input
-            type="text"
-            value={formData.TicketPrices.Native}
-            placeholder="Native"
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                TicketPrices: { ...formData.TicketPrices, Native: e.target.value }
-              })
-            }
-            disabled={viewOnly}
-          />
-          <label>Tags:</label>
-          <input
-            type="text"
-            value={formData.Tags}
-            onChange={(e) => setFormData({ ...formData, Tags:  e.target.value  })}
-            disabled={viewOnly}
-          />
-          {!viewOnly && <button type="submit">Update Museum</button>}
-        </form>
-      )}
-      {/* Sidebar */}
-      <div className="sidebar">
-        <h3>Explore</h3>
-        <ul>
-          <li onClick={() => navigate('/gov-museum')}>Create other Museums</li>
-        </ul>
+ 
+ 
+
+{isCreateModalOpen && (
+  <div style={styles.modalOverlay}>
+    <div style={styles.modalContent}>
+      <div style={styles.modalHeader}>
+        <h2 style={styles.sectionTitle}>Create Museums</h2>
+        <HighlightOffOutlinedIcon
+          onClick={() => {
+            setIsCreateModalOpen(false);
+            resetFormData(); // Reset form data when modal is closed
+          }}
+          style={styles.cancelIcon}
+        />
       </div>
+      <form style={styles.form} onSubmit={handleCreate}>
+        {/* Name */}
+        <div style={styles.inputGroup}>
+          <BadgeOutlinedIcon style={styles.inputIcon} />
+          <span style={styles.inputLabel}>Name:</span>
+          <input
+            type="text"
+            name="Name"
+            placeholder="Enter museum name"
+            value={formData.Name}
+            onChange={handleInputChange}
+            style={styles.input}
+            required
+          />
+        </div>
+
+        {/* Description */}
+        <div style={styles.inputGroup}>
+          <FaClipboardList style={styles.inputIcon} />
+          <span style={styles.inputLabel}>Description:</span>
+          <textarea
+            name="Description"
+            placeholder="Enter a description"
+            value={formData.Description}
+            onChange={handleInputChange}
+            style={{ ...styles.input, height: '80px' }}
+          />
+        </div>
+
+        {/* Location */}
+        <div style={styles.inputGroup}>
+          <FaMapMarkerAlt style={styles.inputIcon} />
+          <span style={styles.inputLabel}>Location:</span>
+          <input
+            type="text"
+            name="Location"
+            placeholder="Enter location"
+            value={formData.Location}
+            onChange={handleInputChange}
+            style={styles.input}
+          />
+        </div>
+
+        {/* Opening Hours */}
+        <div style={styles.inputGroup}>
+          <FaClock style={styles.inputIcon} />
+          <span style={styles.inputLabel}>Opening Hours:</span>
+          <input
+            type="text"
+            name="OpeningHours"
+            placeholder="e.g., 9:00 AM - 5:00 PM"
+            value={formData.OpeningHours}
+            onChange={handleInputChange}
+            style={styles.input}
+          />
+        </div>
+
+        {/* Ticket Prices */}
+          <label style={styles.sectionTitle}>Ticket Prices:</label>
+          <div style={styles.ticketPricesGroup}>
+            {['Foreigner', 'Student', 'Native'].map((category) => (
+              <div key={category} style={styles.inputLabel}>
+                <label>{category}:</label>
+                <input
+                  type="number"
+                  name={category}
+                  value={formData.TicketPrices[category]}
+                  onChange={handleTicketPricesChange}
+                  style={styles.input}
+                />
+              </div>
+            ))}
+          </div>
+         
+
+        <div>
+          <label>Tags (HistoricalPeriod):</label>
+          <select
+            type="text"
+            name="HistoricalPeriod"
+            value={formData.Tags.HistoricalPeriod}
+            onChange={handleTagsChange}
+            required
+         >
+         <option value="">Select a type</option>
+            <option value="Modern Era">Modern Era</option>
+            <option value="Mofeern Era ">Mofeern Era</option>
+            <option value="jjjj">jjjj</option>
+            <option value="museum">jjjj</option>
+            <option value="mm">mm</option>
+
+          </select>
+           
+        </div>
+        <div>
+          <label>Image URL:</label>
+          <input
+            type="text"
+            name="image"
+            value={formData.image}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        
+
+        {/* Submit Button */}
+        <button type="submit" style={styles.submitButton}>
+          Create Museum
+        </button>
+      </form>
+      
+    </div>
+  </div>
+)}
+{/* Modal for Editing Historical Locations */}
+{isModalOpen2 && (
+  <div style={styles.modalOverlay}>
+    <div style={styles.modalContent}>
+      <h2 style={styles.sectionTitle}>Edit Museum</h2>
+      <HighlightOffOutlinedIcon
+        onClick={() => {
+          setIsModalOpen2(false);
+          resetFormData();
+        }}
+        style={styles.cancel2Icon} // Apply cancel icon style
+      />
+      <form  style={styles.form} onSubmit={handleUpdate}>
+        <div style={styles.inputGroup}>
+          <BadgeOutlinedIcon style={styles.inputIcon} />
+          <span style={styles.inputLabel}>Name:</span>
+          <input
+            type="text"
+            name="Name"
+            value={formData.Name}
+            onChange={handleInputChange}
+            style={styles.input}
+            disabled // Name should not be editable
+          />
+        </div>
+        <div style={styles.inputGroup}>
+          <FaClipboardList style={styles.inputIcon} />
+          <span style={styles.inputLabel}>Description:</span>
+          <textarea
+            name="Description"
+            value={formData.Description}
+            onChange={handleInputChange}
+            style={styles.textarea}
+          />
+        </div>
+        <div style={styles.inputGroup}>
+          <FaMapMarkerAlt style={styles.inputIcon} />
+          <span style={styles.inputLabel}>Location:</span>
+          <input
+            type="text"
+            name="Location"
+            value={formData.Location}
+            onChange={handleInputChange}
+            style={styles.input}
+          />
+        </div>
+        <div style={styles.inputGroup}>
+          <FaClock style={styles.inputIcon} />
+          <span style={styles.inputLabel}>Opening Hours:</span>
+          <input
+            type="text"
+            name="OpeningHours"
+            value={formData.OpeningHours}
+            onChange={handleInputChange}
+            style={styles.input}
+          />
+        </div>
+        <div style={styles.inputGroup}>
+          <FaDollarSign style={styles.inputIcon} />
+          <span style={styles.inputLabel}>Ticket Prices:</span>
+          <div style={styles.ticketPricesGroup}>
+            <div>
+              <label><b>Foreigner:</b></label>
+              <input
+                type="number"
+                name="Foreigner"
+                value={formData.TicketPrices.Foreigner}
+                onChange={handleTicketPricesChange}
+                style={styles.ticketInput}
+              />
+            </div>
+            <div>
+              <label><b>Student:</b></label>
+              <input
+                type="number"
+                name="Student"
+                value={formData.TicketPrices.Student}
+                onChange={handleTicketPricesChange}
+                style={styles.ticketInput}
+              />
+            </div>
+            <div>
+              <label><b>Native:</b></label>
+              <input
+                type="number"
+                name="Native"
+                value={formData.TicketPrices.Native}
+                onChange={handleTicketPricesChange}
+                style={styles.ticketInput}
+              />
+            </div>
+          </div>
+        </div>
+        <div style={styles.inputGroup}>
+          <FaTag style={styles.inputIcon} />
+          <span style={styles.inputLabel}>Tags (Type):</span>
+          <select
+            name="Types"
+            value={formData.Tags.Types}
+            onChange={handleTagsChange}
+            style={styles.select}
+          >
+            <option value="">Select a type</option>
+            <option value="Monuments">Monuments</option>
+            <option value="Religious Sites">Religious Sites</option>
+            <option value="Palaces">Palaces</option>
+            <option value="Castles">Castles</option>
+          </select>
+        </div>
+        <div style={styles.inputGroup}>
+          <FaImage style={styles.inputIcon} />
+          <span style={styles.inputLabel}>Image URL:</span>
+          <input
+            type="text"
+            name="image"
+            value={formData.image}
+            onChange={handleInputChange}
+            style={styles.input}
+          />
+        </div>
+        <button type="submit" style={styles.submitButton}>
+          Update Museum
+        </button>
+      </form>
+    </div>
+  </div>
+)}
+
+
+ {/* Historical Locations List */}
+ <ul style={styles.activityList}>
+  <h2 style={styles.sectionTitle}>Your Museums</h2>
+
+  {museums.map((museum) => (
+    <li key={museum.Name} style={styles.activityItem}>
+      <div style={styles.activityInfo}>
+        <p style={styles.activityText2}>
+          <strong>{museum.Name}</strong>
+        </p>
+        <p style={styles.activityText}>
+          <FaMapMarkerAlt style={styles.detailsIcon} /> Location: {museum.Location}
+        </p>
+        <p style={styles.activityText}>
+          <FaClock style={styles.detailsIcon} /> Opening Hours: {museum.OpeningHours}
+        </p>
+       
+        
+        <button
+          style={{ ...styles.button, ...styles.viewButton }}
+          onClick={() => toggleViewDetails(museum.Name)}
+        >
+          <FaEye style={styles.detailsIcon} />
+          {selectedLocation === museum.Name ? ' Hide Details' : ' View Details'}
+        </button>
+        {selectedLocation === museum.Name && (
+          <div style={styles.detailSection}>
+            <p style={styles.detailText}>
+              <strong>Description:</strong> {museum.Description}
+            </p>
+            <p style={styles.detailText}>
+              <strong>Image:</strong> <img src={museum.image} alt={museum.Name} style={styles.locationImage} />
+            </p>
+            <p style={styles.detailText}>
+          <strong>Ticket Prices:</strong>
+          <ul style={styles.ticketPricesList}>
+            <li>Foreigner: ${museum.TicketPrices.Foreigner}</li>
+            <li>Student: ${museum.TicketPrices.Student}</li>
+            <li>Native: ${museum.TicketPrices.Native}</li>
+          </ul>
+        </p>
+          </div>
+        )}
+      </div>
+      <div style={styles.actionButtons}>
+        <button
+          style={{ ...styles.button, ...styles.editButton }}
+          onClick={(e) => handleUpdateClick(e, museum)}
+
+
+        >
+          <FaEdit /> Edit
+        </button>
+        <button
+          style={{ ...styles.button, ...styles.deleteButton }}
+          onClick={() => setShowDeletePopup(museum.Name)} // Show confirmation popup
+        >
+          <FaTrash /> Delete
+        </button>
+      </div>
+    </li>
+  ))}
+</ul>
+
+{/* Confirmation Popup */}
+{showDeletePopup && (
+  <div style={styles.popupOverlay}>
+    <div style={styles.popup}>
+      <p style={styles.popupText}>
+        Are you sure you want to delete this location?
+      </p>
+      <div style={styles.popupButtons}>
+        <button
+          style={styles.confirmButton}
+          onClick={() => {
+            handleDeleteMuseum(showDeletePopup);
+            setShowDeletePopup(null); // Close the popup
+          }}
+        >
+          Yes
+        </button>
+        <button
+          style={styles.cancelButton}
+          onClick={() => setShowDeletePopup(null)} // Close popup without deleting
+        >
+          No
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+     
+     
     </div>
   );
 };

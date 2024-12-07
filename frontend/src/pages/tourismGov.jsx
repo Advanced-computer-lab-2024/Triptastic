@@ -952,7 +952,7 @@ const styles = {
   },
   button: {
     padding: '8px 12px',
-    fontSize: '14px',
+    fontSize: '10px',
     borderRadius: '5px',
     border: 'none',
     cursor: 'pointer',
