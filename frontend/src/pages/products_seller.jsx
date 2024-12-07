@@ -419,10 +419,10 @@ const Productssel = () => {
               All Products
             </span>
           </div>
-          <div className="my products" style={styles.item} onClick={() => navigate('/sellerReport')}>
+          <div className="my products" style={styles.item} onClick={() => navigate('/sellerProduct')}>
             <FaPlus style={styles.iconn} />
             <span className="label" style={styles.label}>
-               Reports
+               My Products
        </span>
           </div>
          
