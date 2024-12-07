@@ -41,17 +41,18 @@ const PromoCodeForm = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       const response = await fetch('http://localhost:8000/createPromoCode', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
-        setMessage(data.message);
+        alert(data.message); // Show success alert immediately
+        setMessage(''); // Clear message state
         setFormData({
           code: '',
           discount: '',
@@ -62,12 +63,15 @@ const PromoCodeForm = () => {
         fetchPromoCodes(); // Refresh promo codes after creation
       } else {
         const errorData = await response.json();
-        setError(errorData.error || 'Failed to create promo code');
+        alert(errorData.error || 'Failed to create promo code'); // Show error alert immediately
+        setError(''); // Clear error state
       }
     } catch (err) {
-      setError('An error occurred while creating the promo code');
+      alert('An error occurred while creating the promo code'); // Show error alert immediately
+      setError('');
     }
   };
+  
 
   const fetchPromoCodes = async () => {
     setLoading(true);
