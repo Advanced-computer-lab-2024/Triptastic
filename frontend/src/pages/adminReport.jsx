@@ -42,7 +42,7 @@ const AdminReport = () => {
         setIsLoading(true);
         if (Username) {
           try {
-            const response = await fetch(`http://localhost:8000/viewAllProducts`);
+            const response = await fetch(`http://localhost:8000/viewMyProducts?seller=${Username}`);
             if (response.ok) {
               const data = await response.json();
               setProducts(data);
@@ -96,9 +96,9 @@ const AdminReport = () => {
         }
       };
 
-      const filterByProduct = async (productId) => { //returns object {date, quantity}
+      const filterByProduct = async (name) => { //returns object {date, quantity}
         try{
-          const response = await fetch(`http://localhost:8000/filterByProduct?productId=${productId}`);
+          const response = await fetch(`http://localhost:8000/filterByProduct?productName=${name}`);
           if (response.ok) {
             const data = await response.json();
             setDatesQuant(data);
@@ -119,10 +119,10 @@ const AdminReport = () => {
         };
 
         const fetchFilteredProducts = async (date) => {// returns object of {product, quantity}
-            
+          const Username = localStorage.getItem('Username');
             setIsLoading(true);
             try{
-            const response = await fetch(`http://localhost:8000/getFilteredP?date=${date}`);
+            const response = await fetch(`http://localhost:8000/getFilteredP?Username=${Username}&date=${date}`);
             if (response.ok) {
                 const data = await response.json();
                 setProductQuantity(data);
@@ -190,7 +190,7 @@ const AdminReport = () => {
             const handleFilterChange = (event) => {
                 const selectedProduct = Products.find(product => product._id === event.target.value);
                 if (selectedProduct) {
-                  filterByProduct(selectedProduct._id);
+                  filterByProduct(selectedProduct.productName);
                   setFilteredP(true);
                   setFilterP(selectedProduct);
                 }
@@ -345,7 +345,6 @@ return (
             <p><strong>Product Name:</strong> {filterP.productName}</p>
             <p><strong>Price:</strong> ${filterP.price}</p>
             <p><strong>Sales:</strong> {filterP.sales}</p>
-            <p><strong>Total Quantity Sold:</strong> {count}</p>
         </div>
 
         {/* Render purchase dates */}
@@ -353,7 +352,6 @@ return (
             {DatesQuant.map((dateQuant, index) => (
                 <li key={index} style={styles.dateListItem}>
                     <p><strong>Date:</strong> {new Date(dateQuant.createdAt).toLocaleDateString()}</p>
-                    <p><strong>Quantity Sold:</strong> {dateQuant.quantity}</p>
                 </li>
             ))}
         </ul>
@@ -365,14 +363,12 @@ return (
     <div style={styles.filteredProductCard}>
         <h3 style={styles.filteredProductTitle}>Filtered Products</h3>
         <ul style={styles.dateList}>
-            {productQuantity.map(({ product, quantity }) => (
-                <li key={product._id} style={styles.dateListItem}>
-                    <p><strong>Product Name:</strong> {product.productName}</p>
-                    <p><strong>Price:</strong> ${product.price}</p>
-                    <p><strong>Quantity Sold on this Date:</strong> {quantity}</p>
-                </li>
-            ))}
-        </ul>
+        {productQuantity.map((product, index) => (
+                 <li key={index}>
+               <h2>Product: {product}</h2>
+                          </li>
+               ))}
+                 </ul>
     </div>
 )}
 
