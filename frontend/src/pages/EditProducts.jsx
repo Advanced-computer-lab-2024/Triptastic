@@ -346,16 +346,19 @@ const styles = {
   cardGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-    gap: '20px',
+    gap: '14px',
   },
+  
+
   card: {
     backgroundColor: '#fff',
-    padding: '20px',
+    padding: '8px',
     borderRadius: '10px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
     textAlign: 'center',
   },
   productName: {
+
     fontSize: '18px',
     fontWeight: 'bold',
     marginBottom: '10px',
@@ -373,6 +376,7 @@ const styles = {
     borderRadius: '5px',
   },
   textarea: {
+    
     width: '100%',
     padding: '10px',
     marginBottom: '10px',
@@ -427,21 +431,27 @@ const styles = {
     color: '#0F5132',
     marginBottom: '10px',
   },
+  productDescription: {
+    fontFamily: "'Roboto', sans-serif", // Example: Roboto font
+    fontSize: '20px',
+    marginBottom: '10px',
+  },
+  
   productDetailsContainer: {
     display: 'flex',
     flexDirection: 'column', // Stack the details vertically
     alignItems: 'flex-start', // Align items to the left
-    gap: '5px', // Add space between each detail
-    marginTop: '10px',
+    gap: '0px', // Add space between each detail
+    marginTop: '5px',
   },
   productDetail: {
-    fontFamily: "'Courier New', monospace",
+    fontFamily: "'Roboto', sans-serif", // Example: Roboto font
     fontSize: '20px',
     color: '#333',
-    lineHeight: '1.5', // Ensures consistent spacing between lines
+    lineHeight: '1.2', // Ensures consistent spacing between lines
   },
   price: {
-    fontFamily: "'Courier New', monospace",
+    fontFamily:  "'Roboto', sans-serif", // Example: Roboto font
     marginLeft: '5px', // Ensure small consistent spacing
 
   },
