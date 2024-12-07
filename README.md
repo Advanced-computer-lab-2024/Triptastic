@@ -8,9 +8,12 @@
 
 ## Build Status
 
-- [ ] **Build Status**: [e.g., "In Progress", "Completed", "Bug Found"]
-- Known Issues: *Describe any known issues or bugs here.*
-- Last Updated: *Date of the last update or release.*
+- Build Status is of this project is **IN PROGRESS**
+- Known Issues: *Response time is a little bit slow possibly due to amount of requests sent to the server also UI/UX could still be improved. Some minor changes to the overall logic of some functions may need fine tuning*
+
+- Last Updated: 9/12/2024
+
+
 
 ## Code Styles and Conventions
 
@@ -52,10 +55,7 @@
 - Activity and Itinerary booking
 - Product Buying and Selling
 
-## Code Examples
 
-### 1. **Tourist creation**
-This example shows how to create a new tourist.
 
 
 ## Code Examples
@@ -130,10 +130,34 @@ This example shows how to add a new product to the website.
 
 
 ## API reference
+### 1. **Amadeus API**
+GET:https://test.api.amadeus.com/v2/shopping/flight-offers
+GET:https://test.api.amadeus.com/v3/shopping/hotel-offers
+
+### 2. **Google maps API**
+https://maps.googleapis.com/maps/api/geocode/json
+
+### 3. **Currency exchange API**
+https://api.exchangerate-api.com/v4/latest
+
+
+
 
 
 
 ## Tests
+*To test our website functionality we used Postman to test all routes below you will find some example routes that were tested please make sure to examine the route itself to see if there is need for a body or query*
+
+POST:http://localhost:8000/createProductseller
+
+GET:http://localhost:8000/filterItineraries?minBudget=50&maxBudget=3500
+
+PATCH:http://localhost:8000/addProductToWishlist
+
+PATCH:http://localhost:8000/updateProductQuantityInCart
+
+GET:http://localhost:8000/getPreferences?username=${username}
+
 
 
 
