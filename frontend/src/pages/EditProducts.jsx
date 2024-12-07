@@ -587,7 +587,6 @@ const styles = {
   buttonEdit: {
     padding: '10px',
     fontSize: '14px',
-    fontWeight: 'bold',
     backgroundColor: '#0F5132',
     color: '#fff',
     border: 'none',
@@ -598,7 +597,6 @@ const styles = {
   buttonSave: {
     padding: '10px',
     fontSize: '14px',
-    fontWeight: 'bold',
     backgroundColor: '#28a745',
     color: '#fff',
     border: 'none',
@@ -615,7 +613,6 @@ const styles = {
   paginationButton: {
     padding: '10px 15px',
     fontSize: '14px',
-    fontWeight: 'bold',
     backgroundColor: '#0F5132',
     color: '#fff',
     border: 'none',
@@ -636,7 +633,7 @@ const styles = {
     fontSize: '20px',
     marginBottom: '10px',
   },
-  
+
   productDetailsContainer: {
     display: 'flex',
     flexDirection: 'column', // Stack the details vertically

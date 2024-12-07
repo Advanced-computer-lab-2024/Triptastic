@@ -365,7 +365,6 @@ const styles = {
   },
   cardTitle: {
     fontSize: '18px',
-    fontWeight: 'bold',
     marginBottom: '10px',
     color: '#0F5132',
   },
@@ -375,7 +374,6 @@ const styles = {
   },
   heading: {
     fontSize: '24px',
-    fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: '20px',
     color: '#0F5132',
@@ -389,7 +387,6 @@ const styles = {
   },
   cardHeading: {
     fontSize: '20px',
-    fontWeight: 'bold',
     color: '#333',
     marginBottom: '15px',
   },
@@ -404,7 +401,6 @@ const styles = {
   },
   label: {
     fontSize: '14px',
-    fontWeight: 'bold',
     marginBottom: '5px',
     color: '#555',
   },
@@ -417,7 +413,6 @@ const styles = {
   button: {
     padding: '12px',
     fontSize: '16px',
-    fontWeight: 'bold',
     color: '#fff',
     backgroundColor: '#0F5132',
     border: 'none',
@@ -432,7 +427,6 @@ const styles = {
   },
   resultTitle: {
     fontSize: '16px',
-    fontWeight: 'bold',
     marginBottom: '10px',
   },
   resultContent: {
@@ -454,7 +448,6 @@ const styles = {
   button: {
     padding: '12px',
     fontSize: '13px',
-    fontWeight: 'bold',
     color: '#fff',
     border: 'none',
     borderRadius: '5px',
@@ -482,7 +475,6 @@ const styles = {
   },
   label: {
     fontSize: '14px',
-    fontWeight: 'bold',
     marginBottom: '5px',
     color: '#555',
   },
@@ -496,7 +488,6 @@ const styles = {
   button: {
     padding: '12px',
     fontSize: '16px',
-    fontWeight: 'bold',
     color: '#fff',
     backgroundColor: '#0F5132',
     border: 'none',
@@ -527,7 +518,6 @@ const styles = {
   },
   sectionHeading: {
     fontSize: '20px',
-    fontWeight: 'bold',
     marginBottom: '15px',
     color: '#333',
     borderBottom: '2px solid #ddd',
@@ -546,7 +536,6 @@ const styles = {
   },
   heading: {
     fontSize: '24px',
-    fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: '20px',
     color: '#0F5132',
@@ -654,7 +643,6 @@ fontSize: '14px',
 button: {
 padding: '12px',
 fontSize: '12px',
-fontWeight: 'bold',
 backgroundColor: '#0F5132',
 color: '#fff',
 border: 'none',

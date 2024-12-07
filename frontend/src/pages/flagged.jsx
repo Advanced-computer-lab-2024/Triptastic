@@ -48,7 +48,7 @@ const handlePageChange = (newPage) => {
       setFlagTouristItineraryMessage('An error occurred while flagging the tourist itinerary.');
     }
   };
-  
+
 
   const handleFlagActivity = async (id) => {
     setFlagMessage('');
@@ -145,7 +145,7 @@ const handlePageChange = (newPage) => {
         <div style={styles.logoContainer}>
           <img src={image} alt="Logo" style={styles.logo} />
         </div>
-        <h1 style={styles.title2}>Document Approval Dashboard</h1>
+        <h1 style={styles.title2}>Flag Events</h1>
       </header>
 
     {/* Sidebar */}
