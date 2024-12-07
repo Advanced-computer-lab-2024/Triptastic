@@ -194,7 +194,26 @@ const Products = () => {
     navigate('/Wishlist'); // Navigate to Wishlist page
   };
    
- 
+  const [currentPage, setCurrentPage] = useState(1);
+const itemsPerPage = 8; // Customize the number of items per page
+const totalPages = Math.ceil(products.length / itemsPerPage);
+const currentProducts = products.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+const handleNextPage = () => {
+  if (currentPage < totalPages) {
+    setCurrentPage((prevPage) => prevPage + 1);
+    scrollToTop();
+  }
+};
+
+const handlePreviousPage = () => {
+  if (currentPage > 1) {
+    setCurrentPage((prevPage) => prevPage - 1);
+    scrollToTop();
+  }
+};
   
   const handleFilterSubmit = (e) => {
     console.log(`Filtering products with prices between ${range[0]} and ${range[1]}`);
@@ -403,123 +422,165 @@ const Products = () => {
 
 </h3>
 
-{/* Product List */}
-{products.length > 0 ? (
-  <div
-    style={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-      gap: '20px',
-    }}
-  >
-    {products.map((product, index) => (
-      <div
-        key={index}
-        style={{
-          position: 'relative',
-          backgroundColor: '#fff',
-          border: '1px solid #ddd',
-          borderRadius: '10px',
-          padding: '20px',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          transition: 'transform 0.2s ease',
-          overflow: 'visible',
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = 'scale(1.03)';
-          e.currentTarget.style.boxShadow = '0 8px 12px rgba(0, 0, 0, 0.15)';
-          e.currentTarget.style.borderColor = '#0F5132';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'scale(1)';
-          e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
-          e.currentTarget.style.borderColor = '#ddd';
-        }}
-      >
-        {/* Product Image */}
-        {product.image && (
-          <img
-            src={`http://localhost:8000/${product.image.replace(/\\/g, '/')}`}
-            alt={product.productName}
-            style={{
-              width: '100%',
-              height: '200px',
-              objectFit: 'cover',
-              borderRadius: '8px',
-              marginBottom: '10px',
-            }}
-          />
-        )}
 
-        {/* Product Information */}
-        <div>
-          <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>
-            {product.productName}
-          </h3>
-          <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
-            <strong><FaRegFileAlt /> Description:</strong> {product.description}
-          </p>
-          
-          <p style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '8px' }}>
-            <strong><FaDollarSign /> Price:</strong> {(product.price * conversionRate).toFixed(2)} {selectedCurrency}{' '}
-          </p>
-          <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
-            <strong><FaWarehouse /> Stock:</strong> {product.stock}
-          </p>
-          <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
-            <strong><FaStar /> Rating:</strong> {product.rating}
-          </p>
-          <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}
-          ><strong><FaChartBar /> Sales:</strong> {product.sales}
-          </p>
+    <div>
+      {/* Product List */}
+      {currentProducts.length > 0 ? (
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '20px',
+          }}
+        >
+          {currentProducts.map((product, index) => (
+            <div
+              key={index}
+              style={{
+                position: 'relative',
+                backgroundColor: '#fff',
+                border: '1px solid #ddd',
+                borderRadius: '10px',
+                padding: '20px',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                transition: 'transform 0.2s ease',
+                overflow: 'visible',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.03)';
+                e.currentTarget.style.boxShadow = '0 8px 12px rgba(0, 0, 0, 0.15)';
+                e.currentTarget.style.borderColor = '#0F5132';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+                e.currentTarget.style.borderColor = '#ddd';
+              }}
+            >
+              {/* Product Image */}
+              {product.image && (
+                <img
+                  src={`http://localhost:8000/${product.image.replace(/\\/g, '/')}`}
+                  alt={product.productName}
+                  style={{
+                    width: '100%',
+                    height: '200px',
+                    objectFit: 'cover',
+                    borderRadius: '8px',
+                    marginBottom: '10px',
+                  }}
+                />
+              )}
 
-          <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
-            <strong><FaComments /> Reviews:</strong> {product.review}
-          </p>
+              {/* Product Information */}
+              <div>
+                <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>
+                  {product.productName}
+                </h3>
+                <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
+                  <strong><FaRegFileAlt /> Description:</strong> {product.description}
+                </p>
+                <p style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '8px' }}>
+                  <strong><FaDollarSign /> Price:</strong> {(product.price * conversionRate).toFixed(2)} {selectedCurrency}
+                </p>
+                <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
+                  <strong><FaWarehouse /> Stock:</strong> {product.stock}
+                </p>
+                <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
+                  <strong><FaStar /> Rating:</strong> {product.rating}
+                </p>
+                <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
+                  <strong><FaChartBar /> Sales:</strong> {product.sales}
+                </p>
+                <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
+                  <strong><FaComments /> Reviews:</strong> {product.review}
+                </p>
+              </div>
+
+              {/* Product Actions */}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginTop: '10px',
+                }}
+              >
+                <button
+                  onClick={() => handleAddToCart(product)}
+                  style={{
+                    backgroundColor: '#0F5132',
+                    color: '#fff',
+                    padding: '10px 16px',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                  }}
+                >
+                  <FaShoppingCart /> Add to Cart
+                </button>
+                <button
+                  onClick={() => handleAddToWishlist(product)}
+                  style={{
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: '20px',
+                    color: '#f50057',
+                  }}
+                >
+                  <FaHeart />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
+      ) : (
+        <p>No products available.</p>
+      )}
 
-        {/* Product Actions */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
-          <button
-            onClick={() => handleAddToCart(product)}
-            style={{
-              backgroundColor: '#0F5132',
-              color: '#fff',
-              padding: '10px 16px',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '14px',
-            }}
-          >
-            <FaShoppingCart /> Add to Cart
-          </button>
-          <button
-            onClick={() => handleAddToWishlist(product)}
-            style={{
-              backgroundColor: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '20px',
-              color: '#f50057',
-            }}
-          >
-            <FaHeart />
-          </button>
-        </div>
+      {/* Pagination Controls */}
+      <div style={{ marginTop: '20px', textAlign: 'center' }}>
+        <button
+          onClick={handlePreviousPage}
+          disabled={currentPage === 1}
+          style={{
+            padding: '10px 20px',
+            marginRight: '10px',
+            backgroundColor: currentPage === 1 ? '#ddd' : '#0F5132',
+            color: currentPage === 1 ? '#999' : '#fff',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+          }}
+        >
+          Previous
+        </button>
+        <span style={{ fontSize: '16px', margin: '0 10px' }}>
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={handleNextPage}
+          disabled={currentPage === totalPages}
+          style={{
+            padding: '10px 20px',
+            marginLeft: '10px',
+            backgroundColor: currentPage === totalPages ? '#ddd' : '#0F5132',
+            color: currentPage === totalPages ? '#999' : '#fff',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+          }}
+        >
+          Next
+        </button>
       </div>
-    ))}
-  </div>
-) : (
-  <p>No products available.</p>
-)}
-
- 
-    
-
+    </div>
+  
     
 
 
