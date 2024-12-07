@@ -25,6 +25,7 @@ const TouristProfile = () => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [upcomingItineraries,setUpcomingItineraries]= useState([]);
 
   const [touristInfo, setTouristInfo] = useState(null);
   const [complaints, setComplaints] = useState([]); // New state for complaints
@@ -635,10 +636,12 @@ const [comments, setComments] = useState({});
   
       if (response.status === 200) {
         const bookedItineraries = response.data;
-  
+
         // Filter past itineraries
         const pastItineraries = filterPastItineraries(bookedItineraries);
-        setBookedItineraries(pastItineraries); // Store only past itineraries in state
+        setPastItineraries(pastItineraries);
+        const upcomingItineraries= filterUpcmoingItineraries(bookedItineraries);
+        setUpcomingItineraries(upcomingItineraries);
       } else {
         setErrorMessage('Failed to retrieve booked itineraries');
       }
@@ -649,7 +652,10 @@ const [comments, setComments] = useState({});
       setLoading(false);
     }
   };
-  
+  const filterUpcmoingItineraries = (itineraries) => {
+    const today = new Date();
+    return itineraries.filter(itinerary => new Date(itinerary.DatesTimes) > today);
+  };
   // Filter past itineraries
   const filterPastItineraries = (itineraries) => {
     const today = new Date();
@@ -1371,8 +1377,8 @@ return (
     <div className="dashboard-section" style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
       <div>
         <h3 style={styles.cardTitle}>Your Upcoming Booked Itineraries</h3>
-        {bookedItineraries.length > 0 ? (
-          bookedItineraries.map((itinerary) => (
+        {upcomingItineraries.length > 0 ? (
+          upcomingItineraries.map((itinerary) => (
             <div key={itinerary._id} style={styles.itineraryCard}>
               <h4>Activities Included: {itinerary.Activities.join(", ")}</h4>
               <p>Locations: {itinerary.Locations.join(", ")}</p>
@@ -1486,7 +1492,7 @@ return (
         </div>
       ))
     ) : (
-      <p style={styles.emptyMessage}>You can leave feedback after the itinerary date.</p>
+      <p style={styles.emptyMessage}>You have no past itineraries</p>
     )}
   </div>
 )}

@@ -409,7 +409,7 @@ const fileComplaint = async (req, res) => {
  };
 
  const addReviewToProduct = async (req, res) => {
-  
+
   const { productName, review } = req.body; // We'll only need the productName and review text
 
   try {
@@ -1462,6 +1462,7 @@ const getBookedItineraries = async(req, res) => {
     const bookedItineraries = await itineraryModel.find({
       _id: { $in: bookingIds } // Use the extracted booking IDs
     });
+    // console.log(bookedItineraries);
 
     // Return the booked itineraries
     res.status(200).json(bookedItineraries);
