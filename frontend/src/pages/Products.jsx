@@ -221,7 +221,6 @@ const Products = () => {
     <div style={styles.container2}>
     {/* Background Section */}
     <div style={styles.background}>
-      <h1 style={styles.title}>Looking for a certain product?</h1>
        {/* Search Section */}
        <div style={styles.searchSection}>
     
@@ -262,12 +261,24 @@ const Products = () => {
           railStyle={{ backgroundColor: "#d9d9d9", height: 6 }} // Custom rail style
         />
         </div>
+     
 
         <button type="submit" style={styles.filterButton}>
           Filter
         </button>
       </div>
     </form>
+    
+    <button 
+  type="button" // Use "button" to prevent it from submitting forms
+  onClick={fetchProductsByRating} // Call the function when clicked
+  style={styles.filterButton2}
+>
+  Sort by Rating
+</button>
+
+
+    
    
 
     </div>
@@ -602,9 +613,11 @@ const styles = {
     fontSize: '26px', // Adjust the size of the search icon
   },
   sliderContainer: {
-    width: "500%", // Adjust the slider width to make it wider
-    maxWidth: "300px", // Set a maximum width for larger screens
+    width: "300px", // Adjust the slider width to make it wider
+    maxWidth: "900px", // Set a maximum width for larger screens
     margin: "0 30px", // Center the slider
+
+ 
   },
   container: {
     //marginTop:'400px',
@@ -617,19 +630,28 @@ const styles = {
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
   },
   filterForm: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    padding: "10px",
+    display: "flex", // Use flexbox for horizontal alignment
+    alignItems: "center", // Align items vertically
+    gap: "10px", // Add spacing between slider and button
+    marginTop: "15px", // Add some margin above the row
   },
   filterGroup: {
     display: "flex",
-    flexDirection: "column",
     alignItems: "center",
     gap: "20px",
     width: "100%",
   },
   filterButton: {
+    padding: "10px 20px",
+    borderRadius: "15px",
+    border: "2px solid white",
+    backgroundColor: "transparent",
+    color: "white",
+    cursor: "pointer",
+    fontSize: "16px",
+
+  },
+  filterButton2: {
     padding: "10px 20px",
     borderRadius: "15px",
     border: "2px solid white",
