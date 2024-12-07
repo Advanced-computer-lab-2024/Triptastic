@@ -48,6 +48,7 @@ const handlePageChange = (newPage) => {
       setFlagTouristItineraryMessage('An error occurred while flagging the tourist itinerary.');
     }
   };
+  
 
   const handleFlagActivity = async (id) => {
     setFlagMessage('');

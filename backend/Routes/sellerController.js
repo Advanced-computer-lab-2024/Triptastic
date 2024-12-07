@@ -214,11 +214,18 @@ const getProductSeller = async (req, res) => {
   const { productName } = req.query;
 
   try {
-      const product = await productModel.findOne({ productName: productName });
-      res.status(200).json(product);
-  } 
-  catch (error) {
-      res.status(400).json({ error: error.message });
+    // Use case-insensitive regular expression to find product by productName
+    const product = await productModel.findOne({
+      productName: { $regex: new RegExp(`^${productName}$`, 'i') }, // 'i' for case-insensitive search
+    });
+
+    if (product) {
+      res.status(200).json(product); // Return the product
+    } else {
+      res.status(404).json({ error: "Product not found" }); // Handle case where no product is found
+    }
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 };
 
