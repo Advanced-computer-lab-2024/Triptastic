@@ -19,6 +19,8 @@ import {
   FaStar,
   FaUserCircle,
 } from "react-icons/fa";
+import MuseumIcon from '@mui/icons-material/Museum';
+
 import logo from "../images/image.png"; // Adjust the path based on your folder structure
 import flight from "../images/flight.jpg"; // Adjust the path as necessary
 
@@ -736,7 +738,7 @@ const BookFlights = () => {
             </span>
           </div>
           <div style={styles.item} onClick={() => navigate("/museums")}>
-            <FaUniversity style={styles.icons} />
+            <MuseumIcon style={styles.icons} />
             <span className="label" style={styles.label}>
               Museums
             </span>

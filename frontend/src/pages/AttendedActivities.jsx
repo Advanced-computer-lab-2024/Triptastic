@@ -8,6 +8,8 @@ import {
   FaComments,
   FaStar
 } from "react-icons/fa";
+import MuseumIcon from '@mui/icons-material/Museum';
+
 import {
   SentimentVeryDissatisfiedOutlined,
   SentimentDissatisfiedOutlined,
@@ -16,6 +18,14 @@ import {
   SentimentVerySatisfiedOutlined,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
+  FaClipboardList,
+   FaDollarSign,FaSearch} from "react-icons/fa";
+import { MdNotificationImportant } from 'react-icons/md';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import "intro.js/introjs.css"; // Import Intro.js styles
+import introJs from "intro.js";
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
 const AttendedActivitiesPage = () => {
   const [attendedActivities, setAttendedActivities] = useState([]);
@@ -135,7 +145,85 @@ const AttendedActivitiesPage = () => {
           onClick={() => navigate("/tourist-profile")}
         />
       </header>
-
+      <div className="tourist-profile-container" style={{ marginTop: '120px' }}>
+      {/* Sidebar */}
+      <div
+        style={styles.sidebar}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.width = '200px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '1')
+          );
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.width = '60px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '0')
+          );
+        }}
+      >
+        <div className="historical" style={styles.item} onClick={() => navigate('/historical-locations')}>
+          <FaLandmark style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            Historical Loc
+          </span>
+        </div>
+        <div className="museums" style={styles.item} onClick={() => navigate('/museums')}>
+          <MuseumIcon style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            Museums
+          </span>
+        </div>
+        <div className="products" style={styles.item} onClick={() => navigate('/products')}>
+          <FaBox style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            Products
+          </span>
+        </div>
+        <div className="itineraries" style={styles.item} onClick={() => navigate('/itineraries')}>
+          <FaMap style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            Itineraries
+          </span>
+        </div>
+        <div className="activities" style={styles.item} onClick={() => navigate('/activities')}>
+          <FaRunning style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            Activities
+          </span>
+        </div>
+        <div className="flights" style={styles.item} onClick={() => navigate('/book-flights')}>
+          <FaPlane style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            Book Flights
+          </span>
+        </div>
+        <div className="hotels" style={styles.item} onClick={() => navigate('/book-hotels')}>
+          <FaHotel style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            Book a Hotel
+          </span>
+        </div>
+        <div className="transportation" style={styles.item} onClick={() => navigate('/book-transportation')}>
+          <FaBus style={styles.iconn} />
+          <span className="label" style={styles.label}>
+           Transportation
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
+          <FaClipboardList style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            Past Orders
+          </span>
+        </div>
+        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
+          <FaStar style={styles.iconn} />
+          <span className="label" style={styles.label}>
+            Review Activities
+          </span>
+        </div>
+      </div>
+      </div>
       <div style={styles.content}>
         {errorMessage && <p style={styles.error}>{errorMessage}</p>}
         {successMessage && <p style={styles.success}>{successMessage}</p>}
@@ -261,6 +349,11 @@ const styles = {
     justifyContent: "space-between",
     padding: "10px 20px",
     zIndex: 1000,
+  },
+  item: {
+ 
+    padding: '10px 0',
+    
   },
   logoContainer: {
     display: "flex",
@@ -401,6 +494,48 @@ const styles = {
     fontSize: "16px",
     color: "#0F5132",
   },
+  
+  sidebar: {
+    position: 'fixed',
+    top: '60px',
+    left: 0,
+    height: '100vh',
+    width: '50px', // Default width when collapsed
+    backgroundColor: 'rgba(15, 81, 50, 0.85)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start', // Ensure alignment starts from the left
+    padding: '10px 0',
+    overflowX: 'hidden',
+    transition: 'width 0.3s ease',
+    zIndex: 1000,
+  },
+  sidebarExpanded: {
+    width: '200px', // Width when expanded
+  },
+  iconn: {
+    fontSize: '24px',
+    color: 'white',
+    cursor: 'pointer',
+    marginLeft:'15px'
+  },
+  label: {
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#fff',
+    opacity: 0, // Initially hidden
+    whiteSpace: 'nowrap', // Prevent label text from wrapping
+    transition: 'opacity 0.3s ease',
+  },
+  title: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: 'white',
+    margin: 0,
+    marginLeft:'60px'
+  },
+
   commentDate: {
     fontSize: "12px",
     color: "#777",

@@ -4,7 +4,7 @@ import { CurrencyContext } from '../pages/CurrencyContext';
 import { FaBell, FaUserCircle ,FaCalendar,FaDollarSign ,FaMapMarkerAlt,FaClock,FaTags,FaPercent} from 'react-icons/fa'; // Import icons
 import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
   FaClipboardList,FaSearch,
-  FaStar, } from "react-icons/fa";
+  FaStar, Famuseum} from "react-icons/fa";
 import logo from '../images/image.png'; // Add your logo file pathimport axios from 'axios';
 import axios from 'axios';
 import { FaBookmark, FaRegBookmark } from 'react-icons/fa';

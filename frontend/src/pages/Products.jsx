@@ -27,8 +27,10 @@ import {
   FaPlane,
   FaHotel,
   FaClipboardList,
-  FaSearch,
+  FaSearch
 } from "react-icons/fa";
+import MuseumIcon from '@mui/icons-material/Museum';
+
 import activity from "../images/shopping.jpg";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
@@ -401,7 +403,7 @@ const Products = () => {
             </span>
           </div>
           <div style={styles.item} onClick={() => navigate("/museums")}>
-            <FaUniversity style={styles.icon} />
+            <MuseumIcon style={styles.icon} />
             <span className="label" style={styles.label}>
               Museums
             </span>

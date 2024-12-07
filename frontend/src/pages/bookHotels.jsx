@@ -18,6 +18,8 @@ import {
   FaSearch,
 
 } from "react-icons/fa";
+import MuseumIcon from '@mui/icons-material/Museum';
+
 import logo from "../images/image.png"; // Adjust the path as necessary
 import hotel from "../images/hotel.jpg"; // Adjust the path as necessary
 
@@ -485,7 +487,7 @@ const BookHotels = () => {
             </span>
           </div>
           <div style={styles.item} onClick={() => navigate("/museums")}>
-            <FaUniversity style={styles.icon} />
+            <MuseumIcon style={styles.icon} />
             <span className="label" style={styles.label}>
               Museums
             </span>

@@ -11,6 +11,8 @@ import shopping from '../images/shopping.jpg';
 import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
   FaClipboardList,
   FaStar, FaDollarSign,FaSearch} from "react-icons/fa";
+  import MuseumIcon from '@mui/icons-material/Museum';
+
 import { FaBell,FaUserCircle} from 'react-icons/fa';
 import { MdNotificationImportant } from 'react-icons/md';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
@@ -1013,61 +1015,61 @@ return (
         }}
       >
         <div className="historical" style={styles.item} onClick={() => navigate('/historical-locations')}>
-          <FaLandmark style={styles.icon} />
+          <FaLandmark style={styles.iconn} />
           <span className="label" style={styles.label}>
             Historical Loc
           </span>
         </div>
         <div className="museums" style={styles.item} onClick={() => navigate('/museums')}>
-          <FaUniversity style={styles.icon} />
+          <MuseumIcon style={styles.iconn} />
           <span className="label" style={styles.label}>
             Museums
           </span>
         </div>
         <div className="products" style={styles.item} onClick={() => navigate('/products')}>
-          <FaBox style={styles.icon} />
+          <FaBox style={styles.iconn} />
           <span className="label" style={styles.label}>
             Products
           </span>
         </div>
         <div className="itineraries" style={styles.item} onClick={() => navigate('/itineraries')}>
-          <FaMap style={styles.icon} />
+          <FaMap style={styles.iconn} />
           <span className="label" style={styles.label}>
             Itineraries
           </span>
         </div>
         <div className="activities" style={styles.item} onClick={() => navigate('/activities')}>
-          <FaRunning style={styles.icon} />
+          <FaRunning style={styles.iconn} />
           <span className="label" style={styles.label}>
             Activities
           </span>
         </div>
         <div className="flights" style={styles.item} onClick={() => navigate('/book-flights')}>
-          <FaPlane style={styles.icon} />
+          <FaPlane style={styles.iconn} />
           <span className="label" style={styles.label}>
             Book Flights
           </span>
         </div>
         <div className="hotels" style={styles.item} onClick={() => navigate('/book-hotels')}>
-          <FaHotel style={styles.icon} />
+          <FaHotel style={styles.iconn} />
           <span className="label" style={styles.label}>
             Book a Hotel
           </span>
         </div>
         <div className="transportation" style={styles.item} onClick={() => navigate('/book-transportation')}>
-          <FaBus style={styles.icon} />
+          <FaBus style={styles.iconn} />
           <span className="label" style={styles.label}>
            Transportation
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
-          <FaClipboardList style={styles.icon} />
+          <FaClipboardList style={styles.iconn} />
           <span className="label" style={styles.label}>
             Past Orders
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
-          <FaStar style={styles.icon} />
+          <FaStar style={styles.iconn} />
           <span className="label" style={styles.label}>
             Review Activities
           </span>
