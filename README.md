@@ -38,6 +38,14 @@
 ## Screenshots
 ![Screenshot](README_screenshots/1.png)
 
+![Screenshot](README_screenshots/2.png)
+
+![Screenshot](README_screenshots/3.png)
+
+![Screenshot](README_screenshots/4.png)
+
+
+
 ## Tech/Framework Used
 
 - **MongoDB**  
@@ -258,6 +266,9 @@ We welcome contributions from the community! Whether you want to fix a bug, add 
 
 
 ## Credits
+https://www.youtube.com/channel/UC29ju8bIPH5as8OGnQzwJyA
+
+https://www.youtube.com/channel/UCW5YeuERMmlnqo4oq8vwUpg   
 
 
 ## License
