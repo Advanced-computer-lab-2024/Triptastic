@@ -9,7 +9,7 @@ import { FaBell,FaUserCircle} from 'react-icons/fa';
 import { FaLandmark, FaEdit,FaMapMarkerAlt,FaCalendar,FaEye,FaTrash,FaPlus, FaTag, FaCheck, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
   FaClipboardList,
   FaStar, FaDollarSign,FaSearch} from "react-icons/fa";
-  import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 
 
 
@@ -750,6 +750,7 @@ const handleGetActivity = async (e, Advertiser,name) => {
 };
 
 const styles={
+  
    itinerariesSection: {
     marginTop: "20px",
   },
