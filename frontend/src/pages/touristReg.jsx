@@ -278,19 +278,21 @@ const handleLoginSubmit = async (e) => {
         // Set success message and break the loop if login is successful
         setSuccessMessage('Login successful!');
         setErrorMessage('');
+
         return;
       } else {
         const errorData = await response.json();
-        setErrorMessage(errorData.error || 'Login failed');
+
       }
     } catch (error) {
+      alert("An unexpected error occurred. Please try again later.");
       setErrorMessage('Something went wrong. Please try again later.');
     }
   }
 
   // If none of the login attempts succeed, show a generic error message
   setSuccessMessage('');
-  setErrorMessage('Login failed for all attempts. Please check your credentials.');
+  alert("Incorrect username or password.Please try again.");
 };
 
 const handleSubmit = async (e) => {
