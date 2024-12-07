@@ -1677,8 +1677,7 @@ loadingText: {
 
 
 
- {/* Sidebar */}
- <div
+<div
         style={styles.sidebar}
         onMouseEnter={(e) => {
           e.currentTarget.style.width = '200px';
@@ -1722,7 +1721,6 @@ loadingText: {
           </span>
         </div>
 
-
         <div style={styles.item} onClick={() => navigate('/adminReport')}>
           <FaBox  style={styles.icon} />
           <span className="label" style={styles.label}>
@@ -1749,8 +1747,13 @@ loadingText: {
             Flag Events
           </span>   
         </div>
+        <div style={styles.item} onClick={() => navigate('/products_admin')}>
+          <FaBox  style={styles.icon} />
+          <span className="label" style={styles.label}>
+            View Products
+          </span>   
+        </div>
       </div>
-
 
  
       <div style={styles.userStatsContainer}>    
