@@ -413,8 +413,8 @@ const BookHotels = () => {
                 <FaCalendarAlt style={styles.iconn} />
                 <input
                   type="date"
-                  name="date"
-                  value={hotelDetails.date}
+                  name="checkInDate"
+                  value={hotelDetails.checkInDate}
                   onChange={handleInputChange}
                   style={styles.input}
                   required
@@ -425,8 +425,8 @@ const BookHotels = () => {
                <FaCalendarAlt style={styles.iconn} />
                 <input
                   type="date"
-                  name="date"
-                  value={hotelDetails.date}
+                  name="checkOutDate"
+                  value={hotelDetails.checkOutDate}
                   onChange={handleInputChange}
                   style={styles.input}
                   required
