@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import image from '../images/image.png';
-import { FaUserCircle, FaBell,FaSearch, FaBox, FaLandmark, FaUniversity, FaMap, FaRunning, FaPlane, FaHotel, FaClipboardList, FaStar, FaBus } from 'react-icons/fa';
+import { FaUserCircle, FaBell,FaSearch, FaBox, FaPlus, FaUniversity, FaMap, FaRunning, FaPlane, FaHotel, FaClipboardList, FaStar, FaBus } from 'react-icons/fa';
 import { MdNotificationImportant } from 'react-icons/md';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
@@ -40,6 +40,8 @@ const SellerProfile = () => {
   const [notifications, setNotifications] = useState([]); // Initialize as an empty array
   const [showNotifications, setShowNotifications] = useState(false); // Toggle notification dropdown
   const [editProductId, setEditProductId] = useState(null);
+  const [showDropdown, setShowDropdown] = useState(false);
+
   const [editProductData, setEditProductData] = useState({
     productName: '',
     description: '',
@@ -610,14 +612,8 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
 
   {/* Icons Container */}
   <div style={styles.iconContainer}>
-    {/* Products Icon */}
-    <FaBox
-      title="View Products"
-      size={22}
-      style={styles.icon}
-      onClick={() => navigate('/products')} // Navigate to Products page
-    />
-
+   
+   
     {/* Notification Bell */}
     <FaBell
       title="Notifications"
@@ -626,25 +622,41 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
       onClick={handleNotificationClick}
     />
 
-    {/* Change Password Icon */}
-    <LockResetIcon
-      title="Change Password"
-      style={styles.icon}
-      onClick={togglePasswordModal}
-    />
-
     {/* Profile Icon */}
     <ManageAccountsIcon
       title="Edit Profile"
       style={styles.profileIcon}
-      onClick={toggleModal} // Open modal on click
-    />
+      onClick={() => setShowDropdown((prev) => !prev)} // Toggle dropdown
+      />
 
     {/* Logout Icon */}
     <LogoutOutlinedIcon
       style={styles.logoutIcon}
       onClick={() => navigate('/Guest')}
     />
+
+{showDropdown && (
+    <div style={styles.dropdownMenu}>
+      <div
+        style={styles.dropdownItem}
+        onClick={() => {
+          setShowDropdown(false); // Close dropdown
+          toggleModal(); // Open Edit Profile modal
+        }}
+      >
+        Edit Profile
+      </div>
+      <div
+        style={styles.dropdownItem}
+        onClick={() => {
+          setShowDropdown(false); // Close dropdown
+          togglePasswordModal(); // Open Change Password modal
+        }}
+      >
+        Change Password
+      </div>
+    </div>
+  )}
   </div>
 
 
@@ -754,6 +766,42 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
         </div>
       )}
      </header>
+     {/* Sidebar */}
+ <div
+          style={styles.sidebar}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.width = '200px';
+            Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+              (label) => (label.style.opacity = '1')
+            );
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.width = '50px';
+            Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+              (label) => (label.style.opacity = '0')
+            );
+          }}
+        >
+            <div className="profile" style={styles.item} onClick={() => navigate('/seller-profile')}>
+            <FaUserCircle style={styles.iconn} />
+            <span className="label" style={styles.label}>
+              Profile
+            </span>
+          </div>
+          <div className="products" style={styles.item} onClick={() => navigate('/products')}>
+            <FaBox style={styles.iconn} />
+            <span className="label" style={styles.label}>
+              All Products
+            </span>
+          </div>
+          <div className="my products" style={styles.item} onClick={() => navigate('/sellerReport')}>
+            <FaPlus style={styles.iconn} />
+            <span className="label" style={styles.label}>
+              My Products
+            </span>
+          </div>
+         
+        </div>
 
    {/* Add Product Section */}
    <div style={styles.card}>
@@ -957,7 +1005,6 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
         Search
       </button>
     </form>
-    <button onClick={()=>navigate('/sellerReport')} >Sales report</button>
     {errorMessage && <p style={styles.errorMessage}>{errorMessage}</p>}
     {successMessage && (
       <p style={styles.successMessage}>{successMessage}</p>
@@ -1149,6 +1196,79 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
 };
 
 const styles = {
+  sidebar: {
+    position: 'fixed',
+    top: '60px',
+    left: 0,
+    height: '100vh',
+    width: '50px', // Default width when collapsed
+    backgroundColor: 'rgba(15, 81, 50, 0.85)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    padding: '10px 0',
+    overflowX: 'hidden',
+    transition: 'width 0.3s ease',
+    zIndex: 1000,
+  },
+  sidebarExpanded: {
+    width: '200px', // Width when expanded
+  },
+  iconContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    padding: '10px',
+    width: '100%', // Full width of the sidebar
+    color: '#fff',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease',
+  },
+  iconContainerHover: {
+    backgroundColor: '#084B24', // Background on hover
+  },
+  iconn: {
+    fontSize: '24px',
+    marginLeft: '15px', // Move icons slightly to the right
+    color: '#fff', // Icons are always white
+  },
+  label: {
+    cursor: 'pointer',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#fff',
+    opacity: 0, // Initially hidden
+    whiteSpace: 'nowrap', // Prevent label text from wrapping
+    transition: 'opacity 0.3s ease',
+  },
+  labelVisible: {
+    opacity: 1, // Fully visible when expanded
+  },
+  item: {
+    padding: '10px 0',
+  },
+  dropdownMenu: {
+    position: "absolute",
+    top: "40px",
+    right: "0",
+    backgroundColor: "#fff",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    zIndex: 1000,
+    minWidth: "150px",
+    overflow: "hidden",
+  },
+  dropdownItem: {
+    padding: "10px 15px",
+    fontSize: "14px",
+    color: "#333",
+    cursor: "pointer",
+    transition: "background-color 0.2s ease",
+  },
+  dropdownItemHover: {
+    backgroundColor: "#f5f5f5",
+  },
   header: {
     display: 'flex',
     justifyContent: 'space-between',

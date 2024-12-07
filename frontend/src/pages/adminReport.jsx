@@ -245,62 +245,6 @@ return (
         </select>
     </div>
 
-
-
-            <div style={styles.profitSummaryContainer}>
-    <div style={styles.profitCard}>
-        <h3 style={styles.profitTitle}>Total Itinerary Profits</h3>
-        <p style={styles.profitAmount}>${itinProfits}</p>
-    </div>
-    <div style={styles.profitCard}>
-        <h3 style={styles.profitTitle}>Total Activities Profits</h3>
-        <p style={styles.profitAmount}>${actProfits}</p>
-    </div>
-</div>
-
-
-            {!filteredP && !filteredD && (
-    <>
-        <div style={styles.profitSummary}>
-            <h2>Total Profit from Sales</h2>
-            <p style={styles.profitAmount}>${totalSales}</p>
-        </div>
-
-        <div style={styles.resultCard}>
-            <h3 style={styles.cardTitle}>Most Sold Product</h3>
-            {!isLoading && mostSold ? (
-                <div style={styles.productDetailsContainer}>
-                    <p style={styles.productDetail}><strong>Product Name:</strong> {mostSold.productName}</p>
-                    <p style={styles.productDetail}><strong>Price:</strong> ${mostSold.price}</p>
-                    <p style={styles.productDetail}><strong>Sales:</strong> {mostSold.sales}</p>
-                    <p style={styles.productDetail}>
-                        <strong>Times Purchased:</strong> {mostSold.sales === 0 ? 0 : mostSold.sales / mostSold.price}
-                    </p>
-                </div>
-            ) : (
-                <p style={styles.noData}>No data available</p>
-            )}
-        </div>
-
-        <div style={styles.resultCard}>
-            <h3 style={styles.cardTitle}>Least Sold Product</h3>
-            {!isLoading && leastSold ? (
-                <div style={styles.productDetailsContainer}>
-                    <p style={styles.productDetail}><strong>Product Name:</strong> {leastSold.productName}</p>
-                    <p style={styles.productDetail}><strong>Price:</strong> ${leastSold.price}</p>
-                    <p style={styles.productDetail}><strong>Sales:</strong> {leastSold.sales}</p>
-                    <p style={styles.productDetail}>
-                        <strong>Times Purchased:</strong> {leastSold.sales === 0 ? 0 : leastSold.sales / leastSold.price}
-                    </p>
-                </div>
-            ) : (
-                <p style={styles.noData}>No data available</p>
-            )}
-        </div>
-    </>
-)}
-
-
 {/* Filtered Product Details */}
 {filteredP && (
     <div style={styles.filteredProductCard}>

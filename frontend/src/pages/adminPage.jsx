@@ -1,16 +1,11 @@
 import React, { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaBell,FaChartBar,FaBox ,FaImage } from 'react-icons/fa'; // Importing bell icon
+import { FaBell,FaChartBar,FaBox ,FaUserShield } from 'react-icons/fa'; // Importing bell icon
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
-import LockResetIcon from '@mui/icons-material/LockReset';
-import { FaTag, FaInfoCircle, FaDollarSign ,FaSearch} from "react-icons/fa";
-import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
-import Inventory2Icon from '@mui/icons-material/Inventory2';
-import { FaUser,FaExclamationCircle, FaHeart, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
+import { FaUser,FaExclamationCircle, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
 import UserStatistics from './chart';
-import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
 
 const AdminPage = () => {
@@ -53,9 +48,6 @@ const AdminPage = () => {
   const [notifications, setNotifications] = useState([]); // Initialize as an empty array
   const [myProducts, setMyProducts] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
-
-
-
   const [complaintIdToSearch, setComplaintIdToSearch] = useState('');
   const [complaintDetails, setComplaintDetails] = useState(null);
   const [complaintLoading, setComplaintLoading] = useState(false);
@@ -1470,9 +1462,6 @@ loadingText: {
     textAlign: 'left',
     transition: 'transform 0.2s',
   },
-  logoutIcon: {
-    cursor:'pointer'
-  },
   profitCardHover: {
     transform: 'scale(1.02)',
   },
@@ -1586,7 +1575,6 @@ loadingText: {
 />
 
 
-
       {/* Notification Count */}
       {notifications && notifications.length > 0 && (
         <span
@@ -1658,9 +1646,6 @@ loadingText: {
     title="Manage Account Settings"
     onClick={() => setShowDropdown((prev) => !prev)} // Toggle dropdown
   />
-  <div style={styles.logoutButton} onClick={()=>navigate('/Guest')}>
-     <LogoutOutlinedIcon style={styles.logoutIcon} />
-   </div>
   {showDropdown && (
     <div style={styles.dropdownMenu}>
       <div
@@ -1716,36 +1701,28 @@ loadingText: {
           </span>
         </div>
 
-        <div style={styles.item} onClick={() => navigate('/PromoCodeForm')}>
-          <FaTag style={styles.icon} />
+        <div style={styles.item} onClick={() => navigate('/manage')}>
+          <FaUserShield style={styles.icon} />
           <span className="label" style={styles.label}>
-            Promo Codes
+          Admin Panel
           </span>
         </div>
+        
         <div style={styles.item} onClick={() => navigate('/Complaints')}>
           <FaExclamationCircle style={styles.icon} />
           <span className="label" style={styles.label}>
            Complaints
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/preftags')}>
-          <FaHeart style={styles.icon} />
-          <span className="label" style={styles.label}>
-           Preference Tags
-          </span>
-        </div>
+
         <div style={styles.item} onClick={() => navigate('/docs')}>
           <FaFileAlt style={styles.icon} />
           <span className="label" style={styles.label}>
             Documents
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/category')}>
-          <FaThList style={styles.icon} />
-          <span className="label" style={styles.label}>
-           Categories
-          </span>
-        </div>
+
+
         <div style={styles.item} onClick={() => navigate('/adminReport')}>
           <FaBox  style={styles.icon} />
           <span className="label" style={styles.label}>
@@ -1756,12 +1733,6 @@ loadingText: {
           <FaTrashAlt  style={styles.icon} />
           <span className="label" style={styles.label}>
             Deletion Requests
-          </span>   
-        </div>
-        <div style={styles.item} onClick={() => navigate('/AddProduct')}>
-          <FaPlus  style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Add Product
           </span>   
         </div>
 
