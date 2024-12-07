@@ -976,6 +976,9 @@ const styles = {
     marginLeft: '15px', // Move icons slightly to the right
     color: '#fff', // Icons are always white
   },
+  fileInput: {
+    display: "none", // Hides the native file input
+  },
   label: {
     cursor: 'pointer',
     fontSize: '16px',
