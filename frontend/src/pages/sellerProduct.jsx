@@ -1220,10 +1220,9 @@ const styles = {
     top: "280px", // Adjust placement
   },
   cardTitle: {
-    fontSize: "14px", // Smaller font size for professional appearance
+    fontSize: "18px", // Smaller font size for professional appearance
     fontWeight: "600", // Slightly bold for prominence
-    color: "#333",
-    marginBottom: "8px",
+    color: "#0F5132",
     lineHeight: "1.4", // Good readability
   },
   cardDescription: {
@@ -1233,7 +1232,7 @@ const styles = {
     lineHeight: "1.4",
   },
   cardDetails: {
-    fontSize: "12px", // Maintain uniform font size for details
+    fontSize: "14px", // Maintain uniform font size for details
     color: "#444",
     marginBottom: "5px",
     lineHeight: "1.4",
@@ -1242,14 +1241,14 @@ const styles = {
     padding: "4px 8px",
     border: "1px solid #ddd",
     borderRadius: "5px",
-    fontSize: "12px",
+    fontSize: "18px",
     width: "100%",
   },
   textarea: {
     padding: "4px 8px",
     border: "1px solid #ddd",
     borderRadius: "5px",
-    fontSize: "12px",
+    fontSize: "18px",
     width: "100%",
     resize: "vertical",
   },
@@ -1257,7 +1256,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     gap: "15px",
-    width: "80%", // Maintain consistent form width
+    width: "100%", // Maintain consistent form width
     alignItems: "center", // Center-align the form
     margin: "0 auto", // Center the form on the page
   },
@@ -1383,7 +1382,7 @@ const styles = {
     fontSize: "12px",
   },
   saveButton: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#0F5132",
     color: "#fff",
     padding: "5px 8px",
     border: "none",
@@ -1392,7 +1391,7 @@ const styles = {
     fontSize: "12px",
   },
   archiveToggleButton: {
-    backgroundColor: "#6c757d",
+    backgroundColor: "#dc3545",
     color: "#fff",
     padding: "5px 8px",
     border: "none",
