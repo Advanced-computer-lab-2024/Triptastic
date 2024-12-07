@@ -2636,6 +2636,14 @@ const createOrder = async (req, res) => {
     if (fetchedProducts.length !== products.length) {
       return res.status(404).json({ message: 'Some products were not found' });
     }
+    // Loop through each product in fetchedProducts
+    for (const product of fetchedProducts) {
+      // Add the price to the total sales attribute
+      product.sales += product.price;
+
+      // Save the updated product object
+      await product.save();
+    }
 
     // Create a map of product names to their prices
     const productMap = fetchedProducts.reduce((acc, product) => {

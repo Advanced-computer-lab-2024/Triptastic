@@ -63,6 +63,7 @@ const ManagementPage = () => {
   );
 };
 
+
 const styles = {
   container: {
     maxWidth: '800px',

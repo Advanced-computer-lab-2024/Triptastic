@@ -1,141 +1,80 @@
+import React, { useState, useEffect } from 'react';
+import { FaArrowLeft, FaBox,FaEdit,FaUserShield, FaUser, FaExclamationCircle, FaHeart, FaFileAlt, FaTrashAlt, FaThList, FaPlus, FaFlag } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import image from '../images/image.png';
 
-import React, { useState,useEffect } from 'react';
+const Flaged = () => {
+  const [Itineraries, setItineraries] = useState([]);
+  const [touristItineraries, setTouristItineraries] = useState([]);
+  const [Activities, setActivities] = useState([]);
+  const [flagTouristItineraryMessage, setFlagTouristItineraryMessage] = useState('');
+  const [flagItineraryMessage, setFlagItineraryMessage] = useState('');
+  const [flagMessage, setFlagMessage] = useState('');
+  const [activeSection, setActiveSection] = useState('itineraries');
+  const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
+
+  const itemsPerPage = 3; // Adjust as needed
+  const getPaginatedData = (data) => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return data.slice(startIndex, endIndex);
+  };
+
+const handlePageChange = (newPage) => {
+  setCurrentPage(newPage);
+};
 
 
-const Flaged = ({ statistics }) => {
-    const [showingItineraries,setShowingItineraries]=useState(false);
-    const [Itineraries,setItineraries]= useState('');
-    const [touristItineraries,setTouristItineraries]= useState('');
-    const [Activities,setActivities]= useState('');
-    const [showingTouristItineraries,setShowingTouristItineraries]=useState(false);
-    const [flagTouristItineraryMessage, setFlagTouristItineraryMessage] = useState('');
-    const [flagItineraryMessage, setFlagItineraryMessage] = useState(''); // State for flagging messages
-    const [showingActivities,setShowingActivities]=useState(false);
 
-    const handleViewItineraries=()=>{
-        setShowingItineraries( prev=>!prev);
-      }
-      const handleViewActivities=()=>{
-        setShowingActivities( prev=>!prev);
-      }
-    
-      const handleViewTouristItineraries=()=>{
-        setShowingTouristItineraries( prev=>!prev);
-      }
+  const handleFlagTouristItinerary = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8000/flagTouristItinerary/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-      const handleFlagTouristItinerary = async (id) => {
-        try {
-          const response = await fetch(`http://localhost:8000/flagTouristItinerary/${id}`, {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-      
-          if (response.ok) {
-            const data = await response.json();
-            console.log(data.msg);
-            // Display success message
-            setFlagTouristItineraryMessage(`Successfully flagged tourist itinerary: ${data.msg}`);
-          } else {
-            const errorData = await response.json();
-            console.error('Error:', errorData.error);
-            // Display error message
-            setFlagTouristItineraryMessage(
-              errorData.error || 'Failed to flag the tourist itinerary.'
-            );
-          }
-        } catch (error) {
-          console.error('Error:', error);
-          // Display generic error message
-          setFlagTouristItineraryMessage('An error occurred while flagging the tourist itinerary.');
-        }
-      };
-      const getItineraries= async ()=>{
-        try{
-          const response = await fetch(`http://localhost:8000/getAllItineraries`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-          if (response.ok) {
-            const data = await response.json();
-            setItineraries(data);
-          }
-        }
-        catch (error) {
-          console.error(error);
-        }
+      if (response.ok) {
+        const data = await response.json();
+        setFlagTouristItineraryMessage(data.msg);
+
+      } else {
+        const errorData = await response.json();
+        setFlagTouristItineraryMessage(errorData.error || 'Failed to flag the tourist itinerary.');
       }
-      const getTouristItineraries= async ()=>{
-        try{
-          const response = await fetch(`http://localhost:8000/getAllTouristItineraries`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-          if (response.ok) {
-            const data = await response.json();
-            setTouristItineraries(data);
-          }
-        }
-        catch (error) {
-          console.error(error);
-        }
-      }
-      const getActivities= async ()=>{
-        try{
-          const response = await fetch(`http://localhost:8000/getAllActivities`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-          if (response.ok) {
-            const data = await response.json();
-            setActivities(data);
-          }
-        }
-        catch (error) {
-          console.error(error);
-        }
-      }    
- 
+    } catch (error) {
+      setFlagTouristItineraryMessage('An error occurred while flagging the tourist itinerary.');
+    }
+  };
   
-      const [flagMessage, setFlagMessage] = useState(''); // State to store flagging messages
 
-      const handleFlagActivity = async (id) => {
-        setFlagMessage(''); // Reset the message state
-      
-        try {
-          const response = await fetch(`http://localhost:8000/flagActivity/${id}`, {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-      
-          if (response.ok) {
-            const data = await response.json();
-            setFlagMessage('Activity flagged successfully!'); // Success message
-            console.log(data.msg);
-          } else {
-            const errorData = await response.json();
-            setFlagMessage(errorData.error || 'Failed to flag activity.'); // Error message from server
-            console.error('Error:', errorData.error);
-          }
-        } catch (error) {
-          setFlagMessage('An error occurred while flagging the activity.'); // Catch unexpected errors
-          console.error(error);
-        }
-      };
-      
-    
+  const handleFlagActivity = async (id) => {
+    setFlagMessage('');
+    try {
+      const response = await fetch(`http://localhost:8000/flagActivity/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setFlagMessage(data.msg); // Assuming the API response contains the desired message
+
+      } else {
+        const errorData = await response.json();
+        setFlagMessage(errorData.error || 'Failed to flag activity.');
+      }
+    } catch (error) {
+      setFlagMessage('An error occurred while flagging the activity.');
+    }
+  };
+
   const handleFlagItinerary = async (id) => {
-    setFlagItineraryMessage(''); // Reset the message
-  
+    setFlagItineraryMessage('');
     try {
       const response = await fetch(`http://localhost:8000/flagItinerary/${id}`, {
         method: 'PATCH',
@@ -143,561 +82,531 @@ const Flaged = ({ statistics }) => {
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (response.ok) {
         const data = await response.json();
-        setFlagItineraryMessage('Itinerary flagged successfully!'); // Success message
-        console.log(data.msg);
+        setFlagItineraryMessage(data.msg);
       } else {
         const errorData = await response.json();
-        setFlagItineraryMessage(errorData.error || 'Failed to flag itinerary.'); // Error message from server
-        console.error('Error:', errorData.error);
+        setFlagItineraryMessage(errorData.error || 'Failed to flag itinerary.');
       }
     } catch (error) {
-      setFlagItineraryMessage('An error occurred while flagging the itinerary.'); // Catch unexpected errors
+      setFlagItineraryMessage('An error occurred while flagging the itinerary.');
+    }
+  };
+
+  const getItineraries = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/getAllItineraries');
+      if (response.ok) {
+        const data = await response.json();
+        setItineraries(data);
+      }
+    } catch (error) {
       console.error(error);
     }
   };
-  
+
+  const getTouristItineraries = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/getAllTouristItineraries');
+      if (response.ok) {
+        const data = await response.json();
+        setTouristItineraries(data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getActivities = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/getAllActivities');
+      if (response.ok) {
+        const data = await response.json();
+        setActivities(data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     getItineraries();
     getTouristItineraries();
     getActivities();
-
   }, []);
 
+
   return (
+    <div style={styles.container}>
+            {/* Header */}
+            <header style={styles.header}>
+        <div style={styles.logoContainer}>
+          <img src={image} alt="Logo" style={styles.logo} />
+        </div>
+        <h1 style={styles.title2}>Document Approval Dashboard</h1>
+      </header>
 
+    {/* Sidebar */}
     <div
-  style={{
-    display: 'flex',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap',
-    gap: '20px',
-    marginBottom: '40px',
-    marginTop: '50px', // This pushes it lower
-  }}
->
-      {/* Itineraries Section */}
-  <div style={{ ...styles.section, flex: '1 1 calc(30% - 20px)' }}>
-  <button style={styles.button} onClick={handleViewItineraries}>
-    {showingItineraries ? 'Hide Itineraries' : 'Show Itineraries'}
-  </button>
+        style={styles.sidebar}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.width = '200px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '1')
+          );
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.width = '60px';
+          Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
+            (label) => (label.style.opacity = '0')
+          );
+        }}
+      >
 
-  {/* Modal for Itineraries */}
-  {showingItineraries && (
-    <div style={styles.modalOverlay}>
-      <div style={styles.modalContent}>
-        <h2 style={styles.modalTitle}>Itineraries</h2>
-        <button onClick={() => setShowingItineraries(false)} style={styles.modalCloseButton}>
-          Close
-        </button>
-
-        <div style={styles.modalBody}>
-          {Itineraries.length > 0 ? (
-            Itineraries.map((itinerary) => (
-              <div key={itinerary._id} style={styles.card}>
-                <h4 style={styles.title}>Locations:</h4>
-                <p style={styles.text}>{itinerary.Locations.join(', ')}</p>
-                <p style={styles.text}>Dates: {itinerary.DatesTimes}</p>
-                <button
-                  style={styles.flagButton}
-                  onClick={() => handleFlagItinerary(itinerary._id)}
-                >
-                  Flag Itinerary
-                </button>
-              </div>
-            ))
-          ) : (
-            <p style={styles.text}>No itineraries found.</p>
-          )}
+<div style={styles.item} onClick={() => navigate('/adminPage')}>
+          <FaUser style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Admin Profile
+          </span>
         </div>
-        {flagItineraryMessage && (
-          <p
-            style={{
-              color: flagItineraryMessage.includes('successfully') ? 'green' : 'red',
-              textAlign: 'center',
-              marginTop: '10px',
-            }}
-          >
-            {flagItineraryMessage}
-          </p>
-        )}
-      </div>
-    </div>
-  )}
-</div>
 
-{/* Activities Section */}
-<div style={{ ...styles.section, flex: '1 1 calc(30% - 20px)' }}>
-  <button style={styles.button} onClick={handleViewActivities}>
-    {showingActivities ? 'Hide Activities' : 'Show Activities'}
-  </button>
-
-  {/* Modal for Activities */}
-  {showingActivities && (
-    <div style={styles.modalOverlay}>
-      <div style={styles.modalContent}>
-        <h2 style={styles.modalTitle}>Activities</h2>
-        <button onClick={() => setShowingActivities(false)} style={styles.modalCloseButton}>
-          Close
-        </button>
-
-        <div style={styles.modalBody}>
-          {Activities.length > 0 ? (
-            Activities.map((activity) => (
-              <div key={activity._id} style={styles.card}>
-                <h4 style={styles.title}>Name:</h4>
-                <p style={styles.text}>{activity.Name}</p>
-                <p style={styles.text}>Category: {activity.Category}</p>
-                <button
-                  style={styles.flagButton}
-                  onClick={() => handleFlagActivity(activity._id)}
-                >
-                  Flag Activity
-                </button>
-              </div>
-            ))
-          ) : (
-            <p style={styles.text}>No activities found.</p>
-          )}
+        <div style={styles.item} onClick={() => navigate('/manage')}>
+          <FaUserShield style={styles.icon} />
+          <span className="label" style={styles.label}>
+          Admin Panel
+          </span>
         </div>
-        {flagMessage && (
-          <p
-            style={{
-              color: flagMessage.includes('successfully') ? 'green' : 'red',
-              textAlign: 'center',
-              marginTop: '15px',
-            }}
-          >
-            {flagMessage}
-          </p>
-        )}
-      </div>
-    </div>
-  )}
-</div>
-
-{/* Tourist Itineraries Section */}
-<div style={{ ...styles.section, flex: '1 1 calc(30% - 20px)' }}>
-  <button style={styles.button} onClick={handleViewTouristItineraries}>
-    {showingTouristItineraries ? 'Hide Tourist Itineraries' : 'Show Tourist Itineraries'}
-  </button>
-
-  {/* Modal for Tourist Itineraries */}
-  {showingTouristItineraries && (
-    <div style={styles.modalOverlay}>
-      <div style={styles.modalContent}>
-        <h2 style={styles.modalTitle}>Tourist Itineraries</h2>
-        <button
-          onClick={() => setShowingTouristItineraries(false)}
-          style={styles.modalCloseButton}
-        >
-          Close
-        </button>
-
-        <div style={styles.modalBody}>
-          {touristItineraries.length > 0 ? (
-            touristItineraries.map((touristItinerary) => (
-              <div key={touristItinerary._id} style={styles.card}>
-                <h4 style={styles.title}>Activities:</h4>
-                <p style={styles.text}>{touristItinerary.Activities.join(', ')}</p>
-                <p style={styles.text}>Locations: {touristItinerary.Locations.join(', ')}</p>
-                <button
-                  style={styles.flagButton}
-                  onClick={() => handleFlagTouristItinerary(touristItinerary._id)}
-                >
-                  Flag Tourist Itinerary
-                </button>
-              </div>
-            ))
-          ) : (
-            <p style={styles.text}>No tourist itineraries found.</p>
-          )}
+        
+        <div style={styles.item} onClick={() => navigate('/Complaints')}>
+          <FaExclamationCircle style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Complaints
+          </span>
         </div>
-        {flagTouristItineraryMessage && (
-          <p
-            style={{
-              color: flagTouristItineraryMessage.includes('Successfully') ? 'green' : 'red',
-            }}
-          >
-            {flagTouristItineraryMessage}
-          </p>
-        )}
+
+        <div style={styles.item} onClick={() => navigate('/docs')}>
+          <FaFileAlt style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Documents
+          </span>
+        </div>
+
+
+        <div style={styles.item} onClick={() => navigate('/adminReport')}>
+          <FaBox  style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Sales Report
+          </span>   
+        </div>
+        <div style={styles.item} onClick={() => navigate('/DeletionRequest')}>
+          <FaTrashAlt  style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Deletion Requests
+          </span>   
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/EditProducts')}>
+          <FaEdit   style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Edit Products
+          </span>   
+        </div>
+
+        <div style={styles.item} onClick={() => navigate('/flagged')}>
+          <FaFlag   style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Flag Events
+          </span>   
+        </div>
       </div>
+
+      
+    <div style={styles.buttonGroup}>
+      
+      <button
+        style={activeSection === 'itineraries' ? styles.activeButton : styles.button}
+        onClick={() => {
+          setActiveSection('itineraries');
+          setCurrentPage(1); // Reset page
+        }}
+      >
+        Itineraries
+      </button>
+      <button
+        style={activeSection === 'tourist' ? styles.activeButton : styles.button}
+        onClick={() => {
+          setActiveSection('tourist');
+          setCurrentPage(1); // Reset page
+        }}
+      >
+        Tourist Itineraries
+      </button>
+      <button
+        style={activeSection === 'activities' ? styles.activeButton : styles.button}
+        onClick={() => {
+          setActiveSection('activities');
+          setCurrentPage(1); // Reset page
+        }}
+      >
+        Activities
+      </button>
     </div>
-  )}
-</div>
+
+    {activeSection === 'itineraries' && (
+      <div style={styles.section}>
+            <div style={styles.paginationContainer}>
+      <button
+        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+        disabled={currentPage === 1}
+        style={styles.paginationButton}
+      >
+        Previous
+      </button>
+      <p style={{ margin: '0 10px', fontSize: '16px' }}>
+        Page {currentPage} of {Math.ceil(Itineraries.length / itemsPerPage)}
+      </p>
+      <button
+        onClick={() =>
+          setCurrentPage((prev) =>
+            Math.min(prev + 1, Math.ceil(Itineraries.length / itemsPerPage))
+          )
+        }
+        disabled={currentPage === Math.ceil(Itineraries.length / itemsPerPage)}
+        style={styles.paginationButton}
+      >
+        Next
+      </button>
+    </div>
+        <h2 style={styles.heading}>Itineraries</h2>
+        {getPaginatedData(Itineraries).map((itinerary) => (
+          <div key={itinerary._id} style={styles.card}>
+  <h4>Locations:</h4>
+  <p>{itinerary.Locations.join(', ')}</p>
+  <p>Dates: {itinerary.DatesTimes}</p>
+  <FaFlag
+    style={styles.flagIcon}
+    onClick={() => {
+      handleFlagItinerary(itinerary._id);
+      alert(flagItineraryMessage); // Display success or error alert
+    }}
+  />
 </div>
 
+        ))}
+</div>
+    )}
 
+    {activeSection === 'tourist' && (
+      <div style={styles.section}>
+        {/* Pagination Above Cards */}
+<div style={styles.paginationContainer}>
+  <button
+    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+    disabled={currentPage === 1}
+    style={styles.paginationButton}
+  >
+    Previous
+  </button>
+  <p style={{ margin: '0 10px', fontSize: '16px' }}>
+    Page {currentPage} of{' '}
+    {Math.ceil(
+      activeSection === 'itineraries'
+        ? Itineraries.length / itemsPerPage
+        : activeSection === 'tourist'
+        ? touristItineraries.length / itemsPerPage
+        : Activities.length / itemsPerPage
+    )}
+  </p>
+  <button
+    onClick={() =>
+      setCurrentPage((prev) =>
+        Math.min(
+          prev + 1,
+          Math.ceil(
+            activeSection === 'itineraries'
+              ? Itineraries.length / itemsPerPage
+              : activeSection === 'tourist'
+              ? touristItineraries.length / itemsPerPage
+              : Activities.length / itemsPerPage
+          )
+        )
+      )
+    }
+    disabled={
+      currentPage ===
+      Math.ceil(
+        activeSection === 'itineraries'
+          ? Itineraries.length / itemsPerPage
+          : activeSection === 'tourist'
+          ? touristItineraries.length / itemsPerPage
+          : Activities.length / itemsPerPage
+      )
+    }
+    style={styles.paginationButton}
+  >
+    Next
+  </button>
+</div>
+        <h2 style={styles.heading}>Tourist Itineraries</h2>
+        {getPaginatedData(touristItineraries).map((itinerary) => (
+          <div key={itinerary._id} style={styles.card}>
+  <h4>Activities:</h4>
+  <p>{itinerary.Activities.join(', ')}</p>
+  <p>Locations: {itinerary.Locations.join(', ')}</p>
+  <FaFlag
+    style={styles.flagIcon}
+    onClick={() => {
+      handleFlagTouristItinerary(itinerary._id);
+      alert(flagTouristItineraryMessage); // Display success or error alert
+    }}
+  />
+</div>
+
+        ))}
+      </div>
+    )}
+
+    {activeSection === 'activities' && (
+      <div style={styles.section}>
+        {/* Pagination Above Cards */}
+<div style={styles.paginationContainer}>
+  <button
+    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+    disabled={currentPage === 1}
+    style={styles.paginationButton}
+  >
+    Previous
+  </button>
+  <p style={{ margin: '0 10px', fontSize: '16px' }}>
+    Page {currentPage} of{' '}
+    {Math.ceil(
+      activeSection === 'itineraries'
+        ? Itineraries.length / itemsPerPage
+        : activeSection === 'tourist'
+        ? touristItineraries.length / itemsPerPage
+        : Activities.length / itemsPerPage
+    )}
+  </p>
+  <button
+    onClick={() =>
+      setCurrentPage((prev) =>
+        Math.min(
+          prev + 1,
+          Math.ceil(
+            activeSection === 'itineraries'
+              ? Itineraries.length / itemsPerPage
+              : activeSection === 'tourist'
+              ? touristItineraries.length / itemsPerPage
+              : Activities.length / itemsPerPage
+          )
+        )
+      )
+    }
+    disabled={
+      currentPage ===
+      Math.ceil(
+        activeSection === 'itineraries'
+          ? Itineraries.length / itemsPerPage
+          : activeSection === 'tourist'
+          ? touristItineraries.length / itemsPerPage
+          : Activities.length / itemsPerPage
+      )
+    }
+    style={styles.paginationButton}
+  >
+    Next
+  </button>
+</div>
+        <h2 style={styles.heading}>Activities</h2>
+        {getPaginatedData(Activities).map((activity) => (
+          <div key={activity._id} style={styles.card}>
+  <h4>Name:</h4>
+  <p>{activity.Name}</p>
+  <p>Category: {activity.Category}</p>
+  <FaFlag
+    style={styles.flagIcon}
+    onClick={() => {
+      handleFlagActivity(activity._id);
+      alert(flagMessage); // Display success or error alert
+    }}
+  />
+</div>
+
+        ))}
+      </div>
+    )}
+  </div>
   );
 };
 
+
 const styles = {
-  error: {
-    color: 'red',
-    fontSize: '14px',
-    textAlign: 'center',
+  container: {
+    maxWidth: '800px',
+    margin: '0 auto',
+    padding: '20px',
+    marginTop: '90px', // Push content down to account for the 
+
   },
-  success: {
-    color: 'green',
-    fontSize: '14px',
-    textAlign: 'center',
-  },
-  heading: {
-    fontSize: "24px",
-    fontWeight: "bold",
-    margin: 0,
-    color: "#0F5132", // Green theme for text
-  },
-  openModalButton: {
-    margin: '10px',
-    padding: '10px 20px',
-    backgroundColor: '#0F5132',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-  },
-  modalOverlay: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100vw',
-    height: '100vh',
-    background: 'rgba(0, 0, 0, 0.5)',
+  paginationContainer: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1000,
+    marginTop: '20px',
   },
-  modalContent: {
-    background: '#fff',
-    padding: '20px',
-    borderRadius: '10px',
-    width: '50%',
-    maxWidth: '600px',
-    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-    position: 'relative',
-    maxHeight: '80vh', // Limit modal height
-    display: 'flex',
-    flexDirection: 'column',
-    overflow: 'hidden', // Ensure no overflow outside modal container
-  },
-  modalBody: {
-    flex: 1,
-    overflowY: 'auto', // Make modal scrollable
-    paddingRight: '10px', // Add space for scroll bar
-  },
-  cancelIcon: {
-    position: 'absolute',
-    top: '10px',
-    right: '10px',
-    fontSize: '24px',
-    color: '#dc3545',
-    cursor: 'pointer',
-  },
-  cancelpasswordIcon: {
-    color: '#0F5132', // Set the color of the icon
-    fontSize: '30px', // Adjust the size as needed
-    cursor: 'pointer', // Ensure it acts as a button
-    position: 'absolute', // Position it correctly in the modal
-    right: '50px', // Adjust placement
-    top: '25px', // Adjust placement
-  },
- 
-  modalContentH2: {
-    fontSize: '24px',
-    textAlign: 'center',
-    color: '#333',
-    marginBottom: '15px',
-  },
-  formGroup: {
-    marginBottom: '15px',
-  },
-  label: {
-    display: 'block',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    marginBottom: '5px',
-  },
-  input: {
-    width: '100%',
-    padding: '10px',
-    border: '1px solid #ddd',
+  paginationButton: {
+    padding: '10px 20px',
+    margin: '0 10px',
     borderRadius: '5px',
-    fontSize: '14px',
-  },
-  submitButton: {
-    width: '100%',
-    padding: '10px',
-    fontSize: '16px',
-    backgroundColor: '#0F5132',
-    color: '#fff',
     border: 'none',
-    borderRadius: '5px',
+    backgroundColor: '#0F5132',
+    border: '1px solid black', // Black border
     cursor: 'pointer',
+    fontSize: '14px',
   },
-  iconContainer: {
-    display: 'flex', // Enable flexbox
-    alignItems: 'center', // Vertically align items
-    justifyContent: 'space-between', // Even spacing between icons
-    gap: '20px', // Space between each icon
+  activePaginationButton: {
+    backgroundColor: '#007BFF',
+    border: '1px solid black', // Black border
   },
-  profileIcon: {
-    fontSize: '30px',
-    color: 'white',
-    cursor: 'pointer',
-  },
-  container2: {
-    maxWidth: '1200px',
-    margin: '20px auto',
-    padding: '10px',
-    fontFamily: 'Arial, sans-serif',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '10px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-  },
-  heading: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    textAlign: 'center',
+  
+  buttonGroup: {
+    display: 'flex',
+    justifyContent: 'center',
     marginBottom: '20px',
-    color: '#0F5132',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px', // Reduced gap between elements
-  },
-  formGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    marginBottom: '3px', // Reduced margin between groups
-  },
-  label: {
-    fontSize: '14px',
-    fontWeight: 'bold',
-    marginBottom: '4px', // Less space below labels
-    color: '#555',
-  },
-  input: {
-    padding: '2px', // Reduced padding for inputs
-    fontSize: '14px',
-    border: '1px solid #ccc',
-    borderRadius: '5px',
+    gap: '10px',
   },
   button: {
-    padding: '10px',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: '#fff',
-    backgroundColor: '#0F5132',
-    border: 'none',
+    padding: '10px 20px',
     borderRadius: '5px',
+    border: '1px solid #ccc',
+    backgroundColor: '#0F5132',
     cursor: 'pointer',
+    fontSize: '16px',
     transition: 'background-color 0.3s ease',
   },
-  buttonHover: {
-    backgroundColor: '#0C3E27',
-  },
-  errorMessage: {
-    marginTop: '10px',
-    color: 'red',
-    fontSize: '14px',
-    textAlign: 'center',
-  },
-  successMessage: {
-    marginTop: '10px',
-    color: 'green',
-    fontSize: '14px',
-    textAlign: 'center',
+  activeButton: {
+    padding: '10px 20px',
+    borderRadius: '5px',
+    border: '1px solid #007BFF',
+    backgroundColor: '#0F5132',
+    border: '1px solid black', // Black border    cursor: 'pointer',
+    fontSize: '16px',
   },
   section: {
-    flex: '1 1 30%', // Responsive sections
-    minWidth: '250px', // Ensure minimum width
-    maxWidth: '300px', // Prevent overly large sections
     backgroundColor: '#f8f9fa',
     borderRadius: '10px',
-    padding: '15px',
+    padding: '20px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
   },
-  button: {
-    display: 'block',
-    width: '100%',
-    padding: '10px',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: '#fff',
-    backgroundColor: '#0F5132',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
+  
+  heading: {
+    fontSize: '18px',
     marginBottom: '10px',
   },
-  content: {
-    marginTop: '10px',
-  },
-
-  text: {
-    fontSize: '14px',
-    margin: '5px 0',
-    color: '#555',
+  card: {
+    backgroundColor: '#fff',
+    padding: '15px',
+    marginBottom: '10px',
+    borderRadius: '5px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+  //     width: '90%', // Optional: Set a smaller width for the card
+  // maxWidth: '300px', // Optional: Cap the maximum width
+   margin: '0 auto 8px', // Center-align the card and adjust bottom spacing
   },
   flagButton: {
-    padding: '8px',
-    fontSize: '14px',
-    color: '#fff',
+    padding: '10px 15px',
     backgroundColor: '#d9534f',
+    color: '#fff',
     border: 'none',
     borderRadius: '5px',
     cursor: 'pointer',
-    marginTop: '10px',
-  },
-  card2: {
-    backgroundColor: '#fff',
-    borderRadius: '10px',
-    maxWidth: '1200px',
-    margin: '20px auto',
-    padding: '10px',
-    fontFamily: 'Arial, sans-serif',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '10px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-  },
-  cardTitle: {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    color: '#0F5132',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    marginBottom: '15px',
-  },card: {
-    backgroundColor: '#fff',
-    padding: '20px',
-    borderRadius: '10px',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-  },
-  th: {
-    textAlign: 'left',
-    backgroundColor: '#0F5132',
-    color: 'white',
-    padding: '10px',
-    border: '1px solid #ddd',
-  },
-  td: {
-    padding: '10px',
-    border: '1px solid #ddd',
-    textAlign: 'left',
-  },
-  tr: {
-    backgroundColor: '#fff',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px',
-  },
-  formGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  label: {
     fontSize: '14px',
-    fontWeight: 'bold',
-    marginBottom: '5px',
   },
-  icon: {
-    marginRight: '5px',
-    color: '#0F5132',
-  },
-  input: {
-    padding: '10px',
+  message: {
+    marginTop: '10px',
+    color: '#28a745',
     fontSize: '14px',
-    border: '1px solid #ccc',
-    borderRadius: '5px',
   },
-  textarea: {
-    padding: '10px',
-    fontSize: '14px',
-    border: '1px solid #ccc',
-    borderRadius: '5px',
-    minHeight: '80px',
-  },
-  fileUploadContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '10px',
-  },
-  uploadLabel: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '5px',
-    color: '#0F5132',
-    fontWeight: 'bold',
-  },
-  fileInput: {
-    border: '1px solid #ccc',
-    borderRadius: '5px',
-    padding: '5px',
-  },
-  imagePreview: {
-    maxWidth: '100%',
-    borderRadius: '10px',
-    marginTop: '10px',
-  },
-  submitButton: {
-    backgroundColor: '#0F5132',
-    color: '#fff',
-    padding: '10px',
-    fontSize: '16px',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
-  },
-  error: {
-    color: 'red',
-    marginTop: '10px',
-  },
-  success: {
-    color: 'green',
-    marginTop: '10px',
-  },
-  //sidebar
-  sidebar: {
-    position: 'fixed',
-    top: '60px',
-    left: 0,
-    height: '100vh',
-    width: '50px', // Default width when collapsed
-    backgroundColor: 'rgba(15, 81, 50, 0.85)',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start', // Ensure alignment starts from the left
-    padding: '10px 0',
-    overflowX: 'hidden',
-    transition: 'width 0.3s ease',
-    zIndex: 1000,
-  },
-  sidebarExpanded: {
-    width: '200px', // Width when expanded
-  },
-  icon: {
-    fontSize: '24px',
-    marginLeft: '15px', // Move icons slightly to the right
-    color: '#fff', // Icons are always white
-  },
-  label: {
-    cursor: 'pointer',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: '#fff',
-    opacity: 0, // Initially hidden
-    whiteSpace: 'nowrap', // Prevent label text from wrapping
-    transition: 'opacity 0.3s ease',
-  },
+  //header
+header: {
+  height:'60px',
+  position: 'fixed', // Make the header fixed
+  top: '0', // Stick to the top of the viewport
+  left: '0',
+  width: '100%', // Make it span the full width of the viewport
+  backgroundColor: '#0F5132', // Green background
+  color: 'white', // White text
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding: '10px 20px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for depth
+  zIndex: '1000', // Ensure it appears above other content
+},
+logoContainer: {
+  marginBottom: '10px', // Space between the logo and the title
+},
+logo: {
+  height: '60px',
+  width: '70px',
+  borderRadius: '10px',
+},
+title2: {
+  fontSize: '24px',
+  fontWeight: 'bold',
+  color: 'white',
+  position: 'absolute', // Position the title independently
+  top: '50%', // Center vertically
+  left: '50%', // Center horizontally
+  transform: 'translate(-50%, -50%)', // Adjust for element's size
+  margin: '0',
+},
+          //sidebar
+          sidebar: {
+            position: 'fixed',
+            top: '60px',
+            left: 0,
+            height: '100vh',
+            width: '50px', // Default width when collapsed
+            backgroundColor: 'rgba(15, 81, 50, 0.85)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start', // Ensure alignment starts from the left
+            padding: '10px 0',
+            overflowX: 'hidden',
+            transition: 'width 0.3s ease',
+            zIndex: 1000,
+          },
+          flagIcon: {
+            fontSize: '20px', // Adjust size as needed
+            color: '#d9534f', // Red color for the icon
+            cursor: 'pointer', // Pointer cursor on hover
+            transition: 'color 0.3s ease', // Smooth hover effect
+          },
+          item: {
+            padding: '10px 0',
+          },
+          sidebarExpanded: {
+            width: '200px', // Width when expanded
+          },
+      
+          label: {
+            cursor: 'pointer',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            color: '#fff',
+            opacity: 0, // Initially hidden
+            whiteSpace: 'nowrap', // Prevent label text from wrapping
+            transition: 'opacity 0.3s ease',
+          },
+          icon: {
+            fontSize: '24px',
+            marginLeft: '15px', // Move icons slightly to the right
+            color: '#fff', // Icons are always white
+          },
+
 };
 
 export default Flaged;
