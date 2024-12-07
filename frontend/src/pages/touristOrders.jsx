@@ -260,21 +260,29 @@ const TouristOrders = () => {
         orders.map((order) => (
           <div key={order.orderNumber} style={styles.orderCard}>
             <h3 style={styles.orderTitle}>
-              Order #{order.orderNumber} <FaBoxOpen style={styles.icon} />
+              Order #{order.orderNumber} <FaBoxOpen style={styles.icon2} />
             </h3>
             <p style={styles.orderInfo}>
-              <FaShippingFast style={styles.icon} /> Status: {order.status}
+              <FaShippingFast style={styles.icon2} /> Status: {order.status}
             </p>
             <p style={styles.orderInfo}>
-              <FaDollarSign style={styles.icon} /> Total Price: {selectedCurrency}{" "}
+              <FaDollarSign style={styles.icon2} /> Total Price: {selectedCurrency}{" "}
               {(order.totalPrice * conversionRate).toFixed(2)}
             </p>
             <p style={styles.orderInfo}>
-  <FaHome style={styles.icon} /> Shipping Address: {order.shippingAddress}
+  <FaHome style={styles.icon2} /> Shipping Address: {order.shippingAddress}
 </p>
 
 
             <div style={styles.productsContainer}>
+           
+              <button
+                onClick={() => cancelOrder(order.orderNumber)}
+                style={styles.cancelButtonn}
+              >
+                Cancel Order
+              </button>
+          
               <h4 style={styles.productsTitle}>Products in this Order</h4>
               {order.products.map((product) => (
                 <div key={product} style={styles.productItem}>
@@ -287,14 +295,6 @@ const TouristOrders = () => {
                   </button>
                 </div>
               ))}
-            </div>
-            <div style={styles.buttonContainer}>
-              <button
-                onClick={() => cancelOrder(order.orderNumber)}
-                style={styles.cancelButton}
-              >
-                Cancel Order
-              </button>
             </div>
           </div>
         ))
@@ -396,6 +396,18 @@ const styles = {
     fontSize: '16px',
     margin: '5px',
   },
+  cancelButtonn: {
+    backgroundColor: '#dc3545',
+    color: '#fff',
+    padding: '10px 20px',
+    borderRadius: '4px',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '13px',
+    margin: '5px',
+    marginLeft:'990px',
+    marginTop:'-100px'
+  },
   container: {
     maxWidth: "1200px",
     margin: "0 auto",
@@ -427,8 +439,11 @@ const styles = {
     height: "60px",
     width: "70px",
     borderRadius: "10px",
+  }, 
+  icon2:{
+  fontSize: '18px',
+  color: '#0F5132',
   },
-
   profileIcon: {
     fontSize: "30px",
     color: "white",
@@ -532,6 +547,7 @@ const styles = {
     fontSize: '24px',
     color: 'white',
     cursor: 'pointer',
+    marginLeft:'15px'
   },
   label: {
     cursor: 'pointer',
