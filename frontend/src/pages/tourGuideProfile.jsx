@@ -79,6 +79,18 @@ const [showDropdown, setShowDropdown] = useState(false);
       setIsChangingPassword(false);
     }
   };
+
+  const handleLogout = () => {
+    const confirmLogout = window.confirm("Are you sure you want to logout?");
+
+    if (confirmLogout) {
+      // Proceed with logout, navigate to '/Guest'
+      navigate('/Guest');
+    } else {
+      // Do nothing if the user cancels the logout
+      console.log("Logout cancelled");
+    }
+  };
   const filterByItinerary = async (itineraryId) => {
     try{
       const response = await fetch(`http://localhost:8000/filterByItinerary?itineraryId=${itineraryId}`);
@@ -459,9 +471,9 @@ const handleViewReport = async (itineraryId) => {
     title="Manage Account Settings"
     onClick={() => setShowDropdown((prev) => !prev)} // Toggle dropdown
   />
-                    <LogoutOutlinedIcon
-      style={{marginLeft:"20",cursor:'pointer'}}
-      onClick={() => navigate('/Guest')}
+           <LogoutOutlinedIcon
+      style={{ cursor: 'pointer',marginLeft:'20px' }} // You can adjust your styles here
+      onClick={handleLogout}
     />
   {showDropdown && (
     <div style={styles.dropdownMenu}>
