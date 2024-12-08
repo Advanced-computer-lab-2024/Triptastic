@@ -802,9 +802,9 @@ const sortProductsByRatingTourist = async (req, res) => {
       res.status(500).json({ error: 'Server error while searching for historical locations' });
     }
   };
-  
   const filterItineraries = async (req, res) => {
     const { minBudget, maxBudget, date, preferences, language } = req.query;
+  
   
     let filter = {};
   
@@ -812,7 +812,7 @@ const sortProductsByRatingTourist = async (req, res) => {
     if (minBudget !== undefined && maxBudget !== undefined) {
       filter.Price = {
         $gte: Number(minBudget), // Minimum budget
-        $lte: Number(maxBudget)  // Maximum budget
+        $lte: Number(maxBudget),  // Maximum budget
       };
     } else if (minBudget !== undefined) {
       filter.Price = { $gte: Number(minBudget) };
@@ -820,12 +820,13 @@ const sortProductsByRatingTourist = async (req, res) => {
       filter.Price = { $lte: Number(maxBudget) };
     }
   
+  
     // Date filter (for itineraries that are upcoming)
     if (date) {
       // If a date is provided, filter by that specific date (exact match)
       const inputDate = new Date(date);
       inputDate.setHours(0, 0, 0, 0); // Normalize to the start of the provided day
-    
+  
       // Filter activities for the exact date provided
       filter.DatesTimes = {
         $gte: inputDate, // Activities on or after the given date (local time start of the day)
@@ -835,13 +836,11 @@ const sortProductsByRatingTourist = async (req, res) => {
       // If no date is provided, filter activities from today onwards (local time)
       const today = new Date();
       today.setHours(0, 0, 0, 0); // Normalize to the start of today
-    
+  
       filter.DatesTimes = {
         $gte: today, // Activities starting today or later
       };
     }
-    
-    
   
     // Preferences filter (historic areas, beaches, family-friendly, shopping)
     if (preferences) {
@@ -853,19 +852,24 @@ const sortProductsByRatingTourist = async (req, res) => {
       filter.Language = language;
     }
   
+  
     try {
       // Fetch itineraries that match the filter criteria
       const itineraries = await itineraryModel.find(filter);
-      
-      if (itineraries.length === 0) {
-        return res.status(404).json({ msg: "No itineraries found matching the criteria." });
-      }
   
+      console.log('Fetched itineraries:', itineraries);
+  
+      
       res.status(200).json(itineraries);
     } catch (error) {
+      console.error('Error fetching itineraries:', error);
       res.status(500).json({ error: 'Error fetching itineraries' });
     }
-  };const searchActivities = async (req, res) => {
+  };
+  
+  
+  
+  const searchActivities = async (req, res) => {
     const { name, category, tag } = req.query;
   
     try {

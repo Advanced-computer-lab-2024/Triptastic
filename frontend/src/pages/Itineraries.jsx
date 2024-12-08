@@ -97,14 +97,32 @@ const Itineraries = () => {
   };
   const fetchFilteredItineraries = async () => {
     const { minBudget, maxBudget, date, preferences, language } = filters;
+  
+    console.log('Current filters:', { minBudget, maxBudget, date, preferences, language });
+  
+    // Validate the date input (if provided)
+    if (date) {
+      const inputDate = new Date(date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Normalize today to the start of the day
+  
+      if (inputDate <= today) {
+        setErrorMessage("Cannot select a past date.");
+        console.log('Date validation failed: input date is in the past');
+        return; // Do not proceed if the date is in the past
+      }
+    }
+  
     let query = `http://localhost:8000/filterItineraries?`;
-    
+  
     if (minBudget) query += `minBudget=${minBudget}&`;
     if (maxBudget) query += `maxBudget=${maxBudget}&`;
     if (date) query += `date=${date}&`;
     if (preferences) query += `preferences=${preferences}&`;
     if (language) query += `language=${language}&`;
-
+  
+    console.log('Generated query:', query);
+  
     try {
       const response = await fetch(query, {
         method: 'GET',
@@ -112,22 +130,35 @@ const Itineraries = () => {
           'Content-Type': 'application/json',
         },
       });
-
+  
       if (response.ok) {
         const data = await response.json();
-        const filteredItineraries = data.filter(itinerary => !itinerary.FlagInappropriate && itinerary.active);
-        setItineraries(filteredItineraries);
+        console.log('API Response:', data);
+  
+        const filteredItineraries = data.filter(itinerary => {
+          return !itinerary.FlagInappropriate && itinerary.active;
+        });
+  
+        console.log('Filtered itineraries:', filteredItineraries);
+  
+        setItineraries(filteredItineraries); 
         setErrorMessage('');
       } else {
-        throw new Error('No itineraries found matching the criteria');
+        
+        const errorData = await response.json();
+        setErrorMessage(errorData.error || 'No itineraries found matching the criteria');
+        console.log('Error from API:', errorData);
       }
     } catch (error) {
       setErrorMessage('An error occurred while fetching itineraries');
-      console.error(error);
+      console.error('Fetch error:', error);
     } finally {
       setLoading(false);
+      console.log('Fetch process completed.');
     }
   };
+  
+  
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -451,7 +482,8 @@ const Itineraries = () => {
           <p style={styles.loading}>Loading itineraries...</p>
         ) : (
           <>
-            
+                        {errorMessage && <p style={styles.error}>{errorMessage}</p>}
+
   {/* Itineraries List */}
 {itineraries.length > 0 ? (
   <div
@@ -608,7 +640,6 @@ const Itineraries = () => {
 )}
 
   
-            {errorMessage && <p style={styles.error}>{errorMessage}</p>}
   
             
           </>
