@@ -530,17 +530,16 @@ return (
     <>
 
 
-{/* Pagination */}
 <div style={productStyles.paginationContainer}>
   <button
     onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
     disabled={currentPage === 1}
     style={{
       ...productStyles.paginationButton,
-      ...(currentPage === 1 ? productStyles.paginationButtonDisabled : {}),
+      ...(currentPage === 1
+        ? { cursor: 'not-allowed', opacity: 0.8 } // Slightly reduce opacity when disabled
+        : {}),
     }}
-    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#155724')}
-    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = currentPage === 1 ? '#ccc' : '#0F5132')}
   >
     Previous
   </button>
@@ -556,14 +555,15 @@ return (
     disabled={currentPage === Math.ceil(Products.length / itemsPerPage)}
     style={{
       ...productStyles.paginationButton,
-      ...(currentPage === Math.ceil(Products.length / itemsPerPage) ? productStyles.paginationButtonDisabled : {}),
+      ...(currentPage === Math.ceil(Products.length / itemsPerPage)
+        ? { cursor: 'not-allowed', opacity: 0.8 } // Slightly reduce opacity when disabled
+        : {}),
     }}
-    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#155724')}
-    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = currentPage === Math.ceil(Products.length / itemsPerPage) ? '#ccc' : '#0F5132')}
   >
     Next
   </button>
 </div>
+
 
 
         {isLoading ? (
@@ -624,29 +624,8 @@ const productStyles = {
       gap: '20px',
       marginTop: '20px',
   },
-  paginationContainer: {
-    marginTop: '-25px', // Raise the buttons up
-    marginBottom: '20px', // Add space below the buttons to prevent collision
-    display: 'flex',
-    justifyContent: 'center', // Center the buttons
-    alignItems: 'center', // Align vertically
-    gap: '8px', // Space between buttons and text
-  },
-  paginationButton: {
-    padding: '5px 10px', // Smaller button size
-    fontSize: '14px', // Smaller text
-    backgroundColor: '#0F5132', // Button background
-    color: 'white', // Button text color
-    border: 'none', // Removes default border
-    borderRadius: '3px', // Slightly rounded corners
-    cursor: 'pointer', // Pointer cursor on hover
-    transition: 'background-color 0.3s', // Smooth hover effect
-  },
-  paginationButtonDisabled: {
-    backgroundColor: '#ccc', // Disabled button background
-    color: '#666', // Disabled text color
-    cursor: 'not-allowed', // Disabled cursor
-  },
+
+
   paginationInfo: {
     fontSize: '14px', // Smaller text size
     fontWeight: 'bold', // Bold text
@@ -689,7 +668,6 @@ const productStyles = {
   },
   paginationButton: {
       backgroundColor: '#0F5132',
-      color: '#fff',
       border: 'none',
       borderRadius: '5px',
       padding: '10px 20px',
@@ -713,6 +691,25 @@ const productStyles = {
       color: '#888',
       marginTop: '20px',
   },
+  paginationButton: {
+    padding: '5px 10px', // Smaller button size
+    fontSize: '14px', // Smaller text
+    backgroundColor: '#0F5132', // Green background
+    color: 'white', // White text
+    border: 'none', // Removes default border
+    borderRadius: '3px', // Slightly rounded corners
+    cursor: 'pointer', // Pointer cursor on hover
+    transition: 'opacity 0.3s', // Smooth hover effect
+  },
+  paginationContainer: {
+    marginTop: '-15px', // Adjust spacing
+    marginBottom: '20px', // Add space below the buttons
+    display: 'flex',
+    justifyContent: 'center', // Center the buttons
+    alignItems: 'center', // Align vertically
+    gap: '8px', // Space between buttons
+  },
+
 };
 
 
