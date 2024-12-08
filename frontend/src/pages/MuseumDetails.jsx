@@ -43,7 +43,18 @@ const MuseumDetail = () => {
 
     fetchMuseum();
   }, [Name]);
-
+  const handleProfileRedirect = () => {
+    const context = localStorage.getItem('context');
+  
+    if (context === 'tourist') {
+      navigate('/tourist-profile');
+    } else if (context === 'guest') {
+      navigate('/Guest');
+    }  else {
+      console.error('Unknown context');
+      navigate('/'); // Fallback to home
+    }
+  };
   if (loading) return <p style={styles.loading}>Loading museum details...</p>;
   if (errorMessage) return <p style={styles.error}>{errorMessage}</p>;
   if (!museum) return <p style={styles.noMuseum}>No museum found.</p>;
@@ -77,7 +88,14 @@ const MuseumDetail = () => {
           );
         }}
       >
-        <div   style={styles.item} onClick={() => navigate('/historical-locations')}>
+        <div style={styles.item} onClick={() =>  handleProfileRedirect()}>
+          <FaUserCircle style={styles.icon} />
+          <span className="label" style={styles.label}>
+             Home Page
+          </span>
+          </div>
+
+        <div style={styles.item} onClick={() => navigate('/historical-locations')}>
           <FaUniversity style={styles.icon} />
           <span className="label" style={styles.label}>
             Historical Sites

@@ -64,6 +64,18 @@ const BookFlights = () => {
       window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to top
     }
   };
+  const handleProfileRedirect = () => {
+    const context = localStorage.getItem('context');
+  
+    if (context === 'tourist') {
+      navigate('/tourist-profile');
+    } else if (context === 'guest') {
+      navigate('/Guest');
+    }  else {
+      console.error('Unknown context');
+      navigate('/'); // Fallback to home
+    }
+  };
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -727,7 +739,7 @@ const BookFlights = () => {
             );
           }}
         >
-          <div style={styles.item} onClick={() => navigate('/tourist-profile')}>
+           <div style={styles.item} onClick={() => handleProfileRedirect()}>
           <FaUserCircle style={styles.icons} />
           <span className="label" style={styles.label}>
              Home Page
