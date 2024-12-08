@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { FaHeart } from "react-icons/fa";
+import { FaUsersCog } from "react-icons/fa";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import { CurrencyContext } from "../pages/CurrencyContext";
 import logo from "../images/image.png"; // Replace with your logo path
@@ -459,6 +459,13 @@ const Productsad = () => {
               Admin Panel
             </span>
           </div>
+
+          <div style={styles.item} onClick={() => navigate('/admincontrol')}>
+          <FaUsersCog   style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Admin Control
+          </span>   
+        </div>
 
           <div style={styles.item} onClick={() => navigate("/Complaints")}>
             <FaExclamationCircle style={styles.icon} />

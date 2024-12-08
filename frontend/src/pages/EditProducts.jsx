@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaEdit, FaSave, FaBox, FaUserShield, FaTasks, FaArchive } from 'react-icons/fa';
-import { FaArrowLeft, FaTag, FaUser, FaExclamationCircle, FaHeart, FaFileAlt, FaTrashAlt, FaThList, FaPlus, FaFlag,FaSearch } from 'react-icons/fa';
+import { FaUsersCog, FaTag, FaUser, FaExclamationCircle, FaHeart, FaFileAlt, FaTrashAlt, FaThList, FaPlus, FaFlag,FaSearch } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import image from '../images/image.png';
 import { HiOutlineArchiveBoxXMark } from "react-icons/hi2";
@@ -297,6 +297,14 @@ const EditProducts = () => {
           Admin Panel
           </span>
         </div>
+
+        <div style={styles.item} onClick={() => navigate('/admincontrol')}>
+          <FaUsersCog   style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Admin Control
+          </span>   
+        </div>
+        
         
         <div style={styles.item} onClick={() => navigate('/Complaints')}>
           <FaExclamationCircle style={styles.icon} />
