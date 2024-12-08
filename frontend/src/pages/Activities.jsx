@@ -265,6 +265,8 @@ const fetchFilteredActivities = async () => {
   //   }
   // };
 
+
+
   const fetchBookmarkedActivities = async () => {
     try {
       const response = await axios.get('http://localhost:8000/getBookmarkedEvents', {
@@ -614,7 +616,7 @@ return (
           );
         }}
       >
-        <div style={styles.item} onClick={() => navigate('/tourist-profile')}>
+        <div style={styles.item} onClick={() => handleProfileRedirect()}>
           <FaUserCircle style={styles.icon} />
           <span className="label" style={styles.label}>
              Home Page

@@ -40,6 +40,18 @@ const ActivityDetail = () => {
     fetchActivity();
   }, [name]);
 
+  const handleProfileRedirect = () => {
+    const context = localStorage.getItem('context');
+  
+    if (context === 'tourist') {
+      navigate('/tourist-profile');
+    } else if (context === 'guest') {
+      navigate('/Guest');
+    }  else {
+      console.error('Unknown context');
+      navigate('/'); // Fallback to home
+    }
+  };
   if (loading) return <p style={styles.loading}>Loading activity details...</p>;
   if (errorMessage) return <p style={styles.error}>{errorMessage}</p>;
   if (!activity) return <p style={styles.noActivity}>No activity found.</p>;
@@ -78,6 +90,12 @@ onClick={() => navigate('/BookmarkedEvents')}
           );
         }}
       >
+        <div style={styles.item} onClick={() =>  handleProfileRedirect()}>
+          <FaUserCircle style={styles.icon2} />
+          <span className="label" style={styles.label}>
+             Home Page
+          </span>
+        </div>
         <div   style={styles.item} onClick={() => navigate('/historical-locations')}>
           <FaUniversity style={styles.icon2} />
           <span className="label" style={styles.label}>
@@ -126,18 +144,7 @@ onClick={() => navigate('/BookmarkedEvents')}
            Transportation
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
-          <FaClipboardList style={styles.icon2} />
-          <span className="label" style={styles.label}>
-            Past Orders
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
-          <FaStar style={styles.icon2} />
-          <span className="label" style={styles.label}>
-            Review Activities
-          </span>
-        </div>
+       
       </div>
     <div style={styles.container}>
       {/* Hero Section with Background */}

@@ -11,6 +11,7 @@ import beach from '../images/beach.jpg';
 import historic from '../images/historic.jpg';
 import family from '../images/family.png';
 import shopping from '../images/shopping.jpg';
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 
 import { FaBell,FaUserCircle} from 'react-icons/fa';
 import { MdNotificationImportant } from 'react-icons/md';
@@ -106,18 +107,25 @@ const Wishlist = () => {
       <header style={styles.header}>
         <img src={logo} alt="Logo" style={styles.logo} />
         <h1 style={styles.title}>My Wishlist</h1>
-        <div style={styles.iconGroup}>
-          <FaShoppingCart
-            style={styles.icon}
-            onClick={() => navigate('/Cart')}
-            title="Cart"
-          />
-          <FaUserCircle
-            style={styles.icon}
-            onClick={() => navigate('/tourist-profile')}
-            title="Profile"
-          />
-        </div>
+        <button
+    style={{
+      padding: '12px 20px',
+      border: 'none',
+      borderRadius: '5px',
+      backgroundColor: '#0F5132',
+      color: '#fff',
+      fontWeight: 'bold',
+      fontSize: '16px',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+    }}
+    onClick={() => navigate('/Cart', { state: { from: '/products' } })}
+  >
+    <ShoppingCartOutlinedIcon style={{ fontSize: '20px', color: '#fff' }} />
+    Back to Cart
+  </button>
       </header>
       <div
         style={styles.sidebar}
@@ -134,66 +142,63 @@ const Wishlist = () => {
           );
         }}
       >
-        <div   style={styles.item} onClick={() => navigate('/historical-locations')}>
-          <FaUniversity style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Historical Sites
-          </span>
-        </div>
-        <div  style={styles.item} onClick={() => navigate('/museums')}>
-          <MuseumIcon style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Museums
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/products')}>
-          <FaBox style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Products
-          </span>
-        </div>
-        <div  style={styles.item} onClick={() => navigate('/itineraries')}>
-          <FaMap style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Itineraries
-          </span>
-        </div>
-        <div  style={styles.item} onClick={() => navigate('/activities')}>
-          <FaRunning style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Activities
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/book-flights')}>
-          <FaPlane style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Book Flights
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/book-hotels')}>
-          <HotelIcon style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Book a Hotel
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/book-transportation')}>
-          <FaBus style={styles.icon} />
-          <span className="label" style={styles.label}>
-           Transportation
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
-          <FaClipboardList style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Past Orders
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
-          <FaStar style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Review Activities
-          </span>
-        </div>
+        <div style={styles.item} onClick={() => navigate('/tourist-profile')}>
+
+<FaUserCircle  style={styles.icon} />
+<span className="label" style={styles.label}>
+  Home Page
+</span>
+</div>
+
+<div style={styles.item} onClick={() => navigate('/historical-locations')}>
+
+<FaUniversity style={styles.icon} />
+<span className="label" style={styles.label}>
+  Historical Sites
+</span>
+</div>
+<div style={styles.item} onClick={() => navigate('/museums')}>
+<MuseumIcon style={styles.icon} />
+<span className="label" style={styles.label}>
+  Museums
+</span>
+</div>
+<div style={styles.item} onClick={() => navigate('/products')}>
+<FaBox style={styles.icon} />
+<span className="label" style={styles.label}>
+  Products
+</span>
+</div>
+<div style={styles.item} onClick={() => navigate('/itineraries')}>
+<FaMap style={styles.icon} />
+<span className="label" style={styles.label}>
+  Itineraries
+</span>
+</div>
+<div style={styles.item} onClick={() => navigate('/activities')}>
+<FaRunning style={styles.icon} />
+<span className="label" style={styles.label}>
+  Activities
+</span>
+</div>
+<div style={styles.item} onClick={() => navigate('/book-flights')}>
+<FaPlane style={styles.icon} />
+<span className="label" style={styles.label}>
+  Book Flights
+</span>
+</div>
+<div style={styles.item} onClick={() => navigate('/book-hotels')}>
+<HotelIcon style={styles.icon} />
+<span className="label" style={styles.label}>
+  Book a Hotel
+</span>
+</div>
+<div style={styles.item} onClick={() => navigate('/book-transportation')}>
+<FaBus style={styles.icon} />
+<span className="label" style={styles.label}>
+ Transportation
+</span>
+</div>
       </div>
       <div style={styles.wishlistContent}>
         {wishlist.length === 0 ? (
@@ -255,6 +260,8 @@ const styles = {
     fontSize: '24px',
     fontWeight: 'bold',
     color: 'white',
+    marginTop:'20px',
+    marginLeft:'150px'
   },
   iconGroup: {
     display: 'flex',
@@ -266,6 +273,9 @@ const styles = {
     cursor: 'pointer',
     marginLeft: '15px', // Move icons slightly to the right
 
+  },
+  item:{
+    padding: "10px 0",
   },
   wishlistContent: {
       padding: '0', // Ensure no padding

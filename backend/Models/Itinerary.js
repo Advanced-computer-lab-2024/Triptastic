@@ -42,8 +42,9 @@ const itinerarySchema = new Schema({
         required: true
     },
     PreferenceTag:{
-        type: String,
-        required:false
+      type: String,
+      enum: ['historical areas', 'shopping', 'family friendly','beaches'], 
+      required: true
     },
     FlagInappropriate:{
         type: Boolean,

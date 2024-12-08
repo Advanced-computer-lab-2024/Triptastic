@@ -105,6 +105,27 @@ const toggleViewDetails = (locationName) => {
 
     fetchMyLocations();
   }, []);
+
+
+
+
+
+  const handleLogout = () => {
+    const confirmLogout = window.confirm("Are you sure you want to logout?");
+
+    if (confirmLogout) {
+      // Proceed with logout, navigate to '/Guest'
+      navigate('/Guest');
+    } else {
+      // Do nothing if the user cancels the logout
+      console.log("Logout cancelled");
+    }
+  };
+
+
+
+
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -359,13 +380,19 @@ const toggleViewDetails = (locationName) => {
       
     </button>
     <ReactTooltip id="create-location-tooltip" />
-    <LockResetIcon
-      style={styles.lockIcon}
-      onClick={() => setIsModalOpen(true)}
-    />
-    <LogoutOutlinedIcon
-      style={styles.logoutIcon}
-      onClick={() => navigate('/Guest')}
+    <button
+        style={styles.headerIcons}
+        onClick={() => setIsModalOpen(true)}
+        data-tooltip-id="reset-password-tooltip"
+        data-tooltip-content="Reset Password"
+      >
+        <LockResetIcon style={styles.lockIcon} />
+      </button>
+      
+      <ReactTooltip id="reset-password-tooltip" />
+      <LogoutOutlinedIcon
+      style={{ cursor: 'pointer' }} // You can adjust your styles here
+      onClick={handleLogout}
     />
   </div>
 </header>
@@ -387,6 +414,7 @@ const toggleViewDetails = (locationName) => {
           }}
           style={styles.cancelIcon}
         />
+   
       </div>
       <form style={styles.form} onSubmit={handleCreate}>
         {/* Name */}
@@ -487,7 +515,7 @@ const toggleViewDetails = (locationName) => {
           />
         </div>
 
-        
+
 
         {/* Submit Button */}
         <button type="submit" style={styles.submitButton}>
@@ -799,7 +827,7 @@ const styles = {
   headerIcons: {
     display: "flex",
     alignItems: "center",
-    gap: "15px", // Space between icons and button
+    gap: "0px", // Space between icons and button
   },
 
 
@@ -1434,11 +1462,11 @@ const styles = {
     fontSize: '14px',
   },
   lockIcon: {
-    fontSize: '30px',
+    fontSize: '25px',
     color: '#fff',
     cursor: 'pointer',
     marginRight:'20',
-    marginTop:'3'
+    marginDown:'8px'
 
   },
   content: {
