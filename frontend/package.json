@@ -14,6 +14,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.7",
     "cors": "^2.8.5",
+    "framer-motion": "^11.13.1",
     "intro.js": "^7.2.0",
     "rc-slider": "^11.1.7",
     "rc-tooltip": "^6.3.1",
@@ -28,6 +29,7 @@
     "react-tooltip": "^5.28.0",
     "recharts": "^2.14.1",
     "slick-carousel": "^1.8.1",
+    "styled-components": "^6.1.13",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
