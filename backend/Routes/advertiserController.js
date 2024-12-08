@@ -447,35 +447,42 @@ const requestAccountDeletionAdvertiser = async (req, res) => {
 };
 
 
+
 const changePasswordAdvertiser = async (req, res) => {
-        const { Username, currentPassword, newPassword } = req.body;
-      
-        try {
-          // Step 1: Find the advertiser by Username
-          const advertiser = await advertiserModel.findOne({ Username });
-      
-          if (!advertiser) {
-            return res.status(404).json({ error: "Advertiser not found" });
-          }
-      
-          // Step 2: Compare current password with the one stored in the database (plain text)
-          if (currentPassword !== advertiser.Password) {
-            return res.status(400).json({ error: "Current password is incorrect" });
-          }
-      
-          // Step 3: Update only the password field using findOneAndUpdate
-          await advertiserModel.findOneAndUpdate(
-            { Username },  // Find by Username
-            { $set: { Password: newPassword } },  // Update only the password field
-            { new: true, runValidators: false }   // Disable validation for other fields
-          );
-      
-          res.status(200).json({ message: "Password changed successfully" });
-        } catch (error) {
-          console.error("Error changing password:", error.message);
-          res.status(500).json({ error: "Error changing password" });
-        }
-      };
+  const { Username, currentPassword, newPassword } = req.body;
+
+  try {
+    // Step 1: Find the advertiser by Username
+    const advertiser = await advertiserModel.findOne({ Username });
+
+    if (!advertiser) {
+      return res.status(404).json({ error: "Advertiser not found" });
+    }
+
+    // Step 2: Compare current password with the one stored in the database (hashed password comparison)
+    const isMatch = await bcrypt.compare(currentPassword, advertiser.Password);
+
+    if (!isMatch) {
+      return res.status(400).json({ error: "Current password is incorrect" });
+    }
+
+    // Step 3: Hash the new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10); // 10 is the salt rounds, you can adjust if needed
+
+    // Step 4: Update only the password field using findOneAndUpdate
+    await advertiserModel.findOneAndUpdate(
+      { Username },  // Find by Username
+      { $set: { Password: hashedNewPassword } },  // Update only the password field with hashed password
+      { new: true, runValidators: false }   // Disable validation for other fields
+    );
+
+    res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    console.error("Error changing password:", error.message);
+    res.status(500).json({ error: "Error changing password" });
+  }
+};
+
 const getPendingAdvertisers = async (req, res) => {
     try {
         const pendingAdvertisers = await advertiserModel.find({ docsApproved: 'pending' });

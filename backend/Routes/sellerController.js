@@ -323,17 +323,23 @@ const changePasswordSeller = async (req, res) => {
       return res.status(404).json({ error: "Seller not found" });
     }
 
-    // Compare current password directly (plain text comparison)
-    if (currentPassword !== seller.Password) {
+    // Compare current password with the one stored in the database (hashed password comparison)
+    const isMatch = await bcrypt.compare(currentPassword, seller.Password);
+
+    if (!isMatch) {
       return res.status(400).json({ error: "Current password is incorrect" });
     }
 
-    // Update the seller's password (plain text)
-    seller.Password = newPassword;
+    // Hash the new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10); // 10 is the salt rounds, you can adjust if needed
+
+    // Update the seller's password with the hashed new password
+    seller.Password = hashedNewPassword;
     await seller.save();
 
     res.status(200).json({ message: "Password changed successfully" });
   } catch (error) {
+    console.error("Error changing password:", error.message);
     res.status(500).json({ error: "Error changing password" });
   }
 };

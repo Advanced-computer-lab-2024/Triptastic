@@ -3,7 +3,7 @@ import logo from '../images/image.png'; // Adjust the path based on your folder 
 import { FaUserCircle,FaFilter,FaSyncAlt} from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import { FaShoppingCart,FaRegFileAlt, FaDollarSign, FaStar, FaComments, FaWarehouse, FaChartBar,FaBars} from 'react-icons/fa';
-import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel,
+import { FaUsersCog, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel,
   FaClipboardList,FaSearch,FaArchive,FaUserShield } from "react-icons/fa";
   import activity from '../images/shopping.jpg'; 
   import Slider from "rc-slider";
@@ -243,6 +243,14 @@ return (
           Admin Panel
           </span>
         </div>
+
+        <div style={styles.item} onClick={() => navigate('/admincontrol')}>
+          <FaUsersCog   style={styles.iconn} />
+          <span className="label" style={styles.label}>
+           Admin Control
+          </span>   
+        </div>
+        
         
         <div style={styles.item} onClick={() => navigate('/Complaints')}>
           <FaExclamationCircle style={styles.iconn} />

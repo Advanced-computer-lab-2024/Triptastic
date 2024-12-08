@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './promoCodeForm.css';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
-import { FaPercentage, FaCalendarAlt, FaTag ,FaUserShield} from 'react-icons/fa';
+import { FaUsersCog,FaPercentage, FaCalendarAlt, FaTag ,FaUserShield} from 'react-icons/fa';
 import { MdDiscount } from 'react-icons/md';
 import image from '../images/image.png';
 import {FaUser,FaBox, FaExclamationCircle, FaHeart, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
@@ -139,6 +139,13 @@ const PromoCodeForm = () => {
           </span>
         </div>
         
+        <div style={styles.item} onClick={() => navigate('/admincontrol')}>
+          <FaUsersCog   style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Admin Control
+          </span>   
+        </div>
+        
         <div style={styles.item} onClick={() => navigate('/Complaints')}>
           <FaExclamationCircle style={styles.icon} />
           <span className="label" style={styles.label}>
@@ -178,6 +185,12 @@ const PromoCodeForm = () => {
           <FaFlag   style={styles.icon} />
           <span className="label" style={styles.label}>
             Flag Events
+          </span>   
+        </div>
+        <div style={styles.item} onClick={() => navigate('/products_admin')}>
+          <FaBox  style={styles.icon} />
+          <span className="label" style={styles.label}>
+            View Products
           </span>   
         </div>
       </div>
