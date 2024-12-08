@@ -1226,12 +1226,6 @@ return (
           )}
         </div>
 
-          {/* Profile Icon */}
-          <ManageAccountsIcon
-            alt="Profile Icon"
-            style={styles.profileIcon}
-            onClick={() => navigate("/touristSettings")}
-          />
           <ManageAccountsIcon
     style={styles.profileIcon}
     title="Manage Account Settings"
