@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
+
 import { CurrencyContext } from "../pages/CurrencyContext";
 import {
   FaPlaneDeparture,
@@ -16,7 +17,7 @@ import {
   FaPlane,
   FaHotel,
   FaClipboardList,
-  FaStar,
+  FaGlobe,
   FaUserCircle,
 } from "react-icons/fa";
 import MuseumIcon from '@mui/icons-material/Museum';
@@ -40,6 +41,7 @@ const BookFlights = () => {
   const navigate = useNavigate();
   const { selectedCurrency, conversionRate, fetchConversionRate } =
     useContext(CurrencyContext);
+ 
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -78,11 +80,17 @@ const BookFlights = () => {
     }
   };
 
+
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
       window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to top
     }
+  };
+
+  
+  const handleCurrencyChange = (event) => {
+    fetchConversionRate(event.target.value); // Update conversion rate for all products
   };
 
   const formatDate = (date) => {
@@ -588,6 +596,22 @@ const BookFlights = () => {
       fontSize: "16px",
       color: "#777",
     },
+    currencySelector: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: "5px", // Space between the globe icon and the dropdown
+    },
+    currencyIcon: {
+      fontSize: "18px", // Globe icon size
+      color: "#fff", // White color for the globe icon
+    },
+    currencyDropdown: {
+      border: "1px solid #ddd",
+      borderRadius: "5px",
+      padding: "3px 5px",
+      fontSize: "12px", // Smaller font size for the dropdown
+      cursor: "pointer",
+    },
   };
 
   return (
@@ -596,6 +620,7 @@ const BookFlights = () => {
       <div style={styles.background}>
         {/* Search Form */}
         <h2 style={styles.searchFormHeading}>Where to next, Traveler?</h2>
+
         <div style={styles.searchFormContainer}>
           <form onSubmit={handleSubmit} style={styles.searchForm}>
             {/* Origin Dropdown */}
@@ -720,6 +745,23 @@ const BookFlights = () => {
           </div>
           <h1 style={styles.title}>Book Flights</h1>
          <div>
+
+                  {/* Currency Selector */}
+<div style={styles.currencySelector}>
+  <FaGlobe style={styles.currencyIcon} />
+  <select
+    value={selectedCurrency}
+    onChange={handleCurrencyChange}
+    style={styles.currencyDropdown}
+  >
+    <option value="USD">USD</option>
+    <option value="EUR">EUR</option>
+    <option value="GBP">GBP</option>
+    <option value="EGP">EGP</option>
+    {/* Add other currencies */}
+  </select>
+</div>
+
 
          </div>
         </header>

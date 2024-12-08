@@ -71,7 +71,7 @@
 - Product Buying and Selling
 - Transportation Booking
 - Advertising activities
-- Posting historial sites
+- Posting historical sites
 
 
 

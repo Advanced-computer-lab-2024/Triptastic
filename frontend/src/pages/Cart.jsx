@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import MuseumIcon from '@mui/icons-material/Museum';
 import HotelIcon from '@mui/icons-material/Hotel';
 import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
-import { FaTrash, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
+import { FaTrash, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaGlobe, FaShoppingCart,
   FaClipboardList,
   FaStar, } from "react-icons/fa";
 
@@ -131,28 +131,46 @@ const Cart = () => {
   return (
     <div style={styles.container}>
       <header style={styles.header}>
-        <img src={logo} alt="Logo" style={styles.logo} />
-        <h1 style={styles.title}>My Cart</h1>
-        <button
-    style={{
-      padding: '12px 20px',
-      border: 'none',
-      borderRadius: '5px',
-      backgroundColor: '#0F5132',
-      color: '#fff',
-      fontWeight: 'bold',
-      fontSize: '16px',
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-    }}
-    onClick={() => navigate('/Checkout', { state: { from: '/products' } })}
-  >
-    <ShoppingCartCheckoutIcon style={{ fontSize: '20px', color: '#fff' }} />
-    Proceed to Checkout
-  </button>
-      </header>
+      <img src={logo} alt="Logo" style={styles.logo} />
+      <h1 style={styles.title}>My Cart</h1>
+
+      {/* Currency Selector */}
+      <div style={styles.currencySelector}>
+        <FaGlobe style={styles.currencyIcon} />
+        <select
+          value={selectedCurrency}
+          onChange={handleCurrencyChange}
+          style={styles.currencyDropdown}
+        >
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+          <option value="EGP">EGP</option>
+          {/* Add other currencies */}
+        </select>
+      </div>
+
+      {/* Checkout Button */}
+      <button
+        style={{
+          padding: '12px 20px',
+          border: 'none',
+          borderRadius: '5px',
+          backgroundColor: '#0F5132',
+          color: '#fff',
+          fontWeight: 'bold',
+          fontSize: '16px',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+        }}
+        onClick={() => navigate('/Checkout', { state: { from: '/products' } })}
+      >
+        <ShoppingCartCheckoutIcon style={{ fontSize: '20px', color: '#fff' }} />
+        Proceed to Checkout
+      </button>
+    </header>
       {/* Sidebar */}
       <div
         style={styles.sidebar}
@@ -593,6 +611,27 @@ const styles = {
     fontSize: '18px',
     color: '#555',
   },
+  
+  currencySelector: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "5px", // Space between the globe icon and the dropdown
+    marginLeft: "auto", // Push it to the right
+    marginRight: "15px", // Add spacing before the button
+    marginTop: "10px", // Moves the currency selector down
+  },
+  currencyIcon: {
+    fontSize: "18px", // Globe icon size
+    color: "#fff", // White color for the globe icon
+  },
+  currencyDropdown: {
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    padding: "3px 5px",
+    fontSize: "12px", // Smaller font size for the dropdown
+    cursor: "pointer",
+  },
+  
   sidebar: {
     position: 'fixed',
     top: "60px",
