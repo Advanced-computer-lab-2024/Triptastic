@@ -64,7 +64,7 @@ import Flaged from './pages/flagged';
 import ManagementPage from './pages/manage';
 import Adminprod from './pages/products_admin';
 import Sellerprod from './pages/products_seller';
-
+import Adminn from './pages/admincontrol';
 import SellerProduct from './pages/sellerProduct';
 
 
@@ -161,7 +161,7 @@ function App() {
             <Route path="/products_seller" element={<Sellerprod />} />
             <Route path="/products_admin" element={<Adminprod />} />
             <Route path="/sellerProduct" element={<SellerProduct />} />
-
+            <Route path="/admincontrol" element={<Adminn />} />
           </Routes>
         </Router>
       </Elements>
