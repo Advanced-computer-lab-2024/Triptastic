@@ -10,6 +10,8 @@ import logo from '../images/image.png';
 import bus from '../images/transportation.webp';
 import MuseumIcon from '@mui/icons-material/Museum';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import HotelIcon from '@mui/icons-material/Hotel';
+
 import NearMeIcon from '@mui/icons-material/NearMe';
 import DepartureBoardIcon from '@mui/icons-material/DepartureBoard';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -141,7 +143,7 @@ const BookTransportation = () => {
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/book-hotels')}>
-          <FaHotel style={styles.icon} />
+          <HotelIcon style={styles.icon} />
           <span className="label" style={styles.label}>
             Book a Hotel
           </span>

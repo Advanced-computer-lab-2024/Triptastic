@@ -269,13 +269,15 @@ const TouristOrders = () => {
 
 
             <div style={styles.productsContainer}>
+
+            {order.status === 'pending' && (
            
               <button
                 onClick={() => cancelOrder(order.orderNumber)}
                 style={styles.cancelButtonn}
               >
                 Cancel Order
-              </button>
+              </button>)};
           
               <h4 style={styles.productsTitle}>Products in this Order</h4>
               {order.products.map((product) => (
