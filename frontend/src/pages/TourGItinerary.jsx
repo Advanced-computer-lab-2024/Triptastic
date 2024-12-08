@@ -613,14 +613,34 @@ const [touristItineraryData, setTouristItineraryData] = useState({
       </div>
     </div>
   )}
-      {/* Itineraries List Section */}
 <div style={styles.itinerariesSection}>
   <h2 style={styles.sectionTitle}>Your Itineraries</h2>
   {filteredItineraries.length > 0 ? (
     <ul style={styles.list}>
       {filteredItineraries.map((itinerary) => (
-        <li key={itinerary._id} style={styles.listItem}>
-          <div style={styles.itineraryInfo}>
+        <li
+          key={itinerary._id}
+          style={{
+            padding: "15px",
+            border: "1px solid #ddd",
+            borderRadius: "10px",
+            backgroundColor: "#f9f9f9",
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            marginBottom: "20px",
+            position: "relative",
+            transition: "transform 0.3s ease, border-color 0.3s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = "#0F5132";
+            e.currentTarget.style.transform = "scale(1.03)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = "#ddd";
+            e.currentTarget.style.transform = "scale(1)";
+          }}
+        >
+          {/* Itinerary Info */}
+          <div style={{ marginBottom: "15px" }}>
             <p style={styles.listText}>
               <FaMapMarkerAlt style={styles.icon} />
               <strong>Locations:</strong> {itinerary.Locations.join(", ")}
@@ -642,42 +662,161 @@ const [touristItineraryData, setTouristItineraryData] = useState({
               </span>
             </p>
           </div>
-          <div style={styles.actions}>
-            <button
-              style={styles.viewButton}
-              onClick={() => handleViewItinerary(itinerary)}
-            >
-              <InfoOutlinedIcon style={styles.icon} />
-              {selectedItinerary === itinerary && isIVisible
-                ? "Hide Details"
-                : "View Details"}
-            </button>
-            <button
-              style={styles.editButton}
-              onClick={() => {
-                setItineraryData({
-                  Activities: itinerary.Activities.join(", "),
-                  Locations: itinerary.Locations.join(", "),
-                  Timeline: itinerary.Timeline,
-                  DurationOfActivity: itinerary.DurationOfActivity,
-                  Language: itinerary.Language,
-                  Price: itinerary.Price,
-                  DatesTimes: itinerary.DatesTimes,
-                  Accesibility: itinerary.Accesibility,
-                  pickUpDropOff: itinerary.pickUpDropOff,
-                  bookingOpen: itinerary.bookingOpen,
-                });
-                setSelectedItinerary(itinerary);
-                setModalOpen(true);
-              }}
-            >
-              <BorderColorOutlinedIcon style={styles.icon} />
-              Edit
-            </button>
+
+          {/* Delete Button */}
+          <div
+            style={{
+              position: "absolute",
+              top: "10px",
+              right: "10px",
+              backgroundColor: "#dc3545",
+              color: "#fff",
+              borderRadius: "5px",
+              padding: "6px 10px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontSize:'12px',
+              fontWeight:'bold'
+            }}
+            onClick={() => setShowDeletePopup(itinerary._id)}
+            title="Delete Itinerary"
+          >
+            <DeleteOutlineOutlinedIcon style={{ fontSize: "14px" }} />
+            Delete
+          </div>
+
+          {/* Edit Button */}
+          <button
+            style={{
+              padding: "6px 12px",
+              borderRadius: "5px",
+              backgroundColor: "#0F5132",
+              color: "#fff",
+              border: "none",
+              cursor: "pointer",
+              fontSize: "12px",
+              fontWeight: "600",
+              position: "absolute",
+              top: "50px",
+              right: "10px",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+            onClick={() => {
+              setItineraryData({
+                Activities: itinerary.Activities.join(", "),
+                Locations: itinerary.Locations.join(", "),
+                Timeline: itinerary.Timeline,
+                DurationOfActivity: itinerary.DurationOfActivity,
+                Language: itinerary.Language,
+                Price: itinerary.Price,
+                DatesTimes: itinerary.DatesTimes,
+                Accesibility: itinerary.Accesibility,
+                pickUpDropOff: itinerary.pickUpDropOff,
+                bookingOpen: itinerary.bookingOpen,
+              });
+              setSelectedItinerary(itinerary);
+              setModalOpen(true);
+            }}
+          >
+            <BorderColorOutlinedIcon style={{ fontSize: "14px" }} />
+            Edit
+          </button>
+                 {/* Details Section */}
+                 {selectedItinerary === itinerary && isIVisible && (
+            <div style={styles.detailsContainer}>
+              <ul style={styles.detailsList}>
+                <li style={styles.detailsItem}>
+                  <FaListAlt style={styles.detailsIcon} />
+                  <span>
+                    <strong>Activities:</strong> {itinerary.Activities.join(", ")}
+                  </span>
+                </li>
+                <li style={styles.detailsItem}>
+                  <FaClock style={styles.detailsIcon} />
+                  <span>
+                    <strong>Timeline:</strong> {itinerary.Timeline}
+                  </span>
+                </li>
+                <li style={styles.detailsItem}>
+                  <FaHourglassHalf style={styles.detailsIcon} />
+                  <span>
+                    <strong>Duration:</strong> {itinerary.DurationOfActivity}
+                  </span>
+                </li>
+                <li style={styles.detailsItem}>
+                  <FaLanguage style={styles.detailsIcon} />
+                  <span>
+                    <strong>Language:</strong> {itinerary.Language}
+                  </span>
+                </li>
+                <li style={styles.detailsItem}>
+                  <FaDollarSign style={styles.detailsIcon} />
+                  <span>
+                    <strong>Price:</strong> ${itinerary.Price}
+                  </span>
+                </li>
+                <li style={styles.detailsItem}>
+                  <FaWheelchair style={styles.detailsIcon} />
+                  <span>
+                    <strong>Accessibility:</strong> {itinerary.Accesibility}
+                  </span>
+                </li>
+                <li style={styles.detailsItem}>
+                  <FaBus style={styles.detailsIcon} />
+                  <span>
+                    <strong>Pick Up/Drop Off:</strong> {itinerary.pickUpDropOff}
+                  </span>
+                </li>
+                <li style={styles.detailsItem}>
+                  <FaCheck style={styles.detailsIcon} />
+                  <span>
+                    <strong>Booking Open:</strong>{" "}
+                    {itinerary.bookingOpen ? "Yes" : "No"}
+                  </span>
+                </li>
+              </ul>
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "10px" }}>
             <button
               style={{
-                ...styles.toggleButton,
+                padding: "6px 12px",
+                borderRadius: "5px",
+                border: "1px solid #0F5132",
+                backgroundColor: "transparent",
+                color: "#0F5132",
+                cursor: "pointer",
+                fontSize: "12px",
+                fontWeight: "600",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+              onClick={() => handleViewItinerary(itinerary)}
+            >
+              <InfoOutlinedIcon style={{ fontSize: "14px" }} />
+              {selectedItinerary === itinerary && isIVisible ? "Hide Details" : "View Details"}
+            </button>
+
+            <button
+              style={{
+                padding: "6px 12px",
+                borderRadius: "5px",
                 backgroundColor: itinerary.active ? "#dc3545" : "#0F5132",
+                color: "#fff",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "12px",
+                fontWeight: "600",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
               }}
               onClick={() =>
                 itinerary.active
@@ -687,94 +826,41 @@ const [touristItineraryData, setTouristItineraryData] = useState({
             >
               {itinerary.active ? "Deactivate" : "Activate"}
             </button>
-          {/* Delete Button with Icon and Text */}
-{/* Delete Button */}
-<div
-  style={styles.deleteButtonTopRight}
-  onClick={() => setShowDeletePopup(itinerary._id)} // Show confirmation popup
-  title="Delete Itinerary"
->
-  <DeleteOutlineOutlinedIcon style={styles.deleteIcon} />
-  <span style={styles.deleteText}>Delete</span>
-</div>
-
-{/* Confirmation Popup */}
-{showDeletePopup === itinerary._id && (
-  <div style={styles.popupOverlay}>
-    <div style={styles.popup}>
-      <p style={styles.popupText}>
-        Are you sure you want to delete this itinerary?
-      </p>
-      <div style={styles.popupButtons}>
-        <button
-          style={styles.confirmButton}
-          onClick={() => {
-            handleDeleteItinerary(itinerary._id); // Handle delete
-            setShowDeletePopup(null); // Close popup
-          }}
-        >
-          Yes
-        </button>
-        <button
-          style={styles.cancelButton}
-          onClick={() => setShowDeletePopup(null)} // Close popup without deleting
-        >
-          No
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
           </div>
-
-          {selectedItinerary === itinerary && isIVisible && (
-  <div style={styles.detailsContainer}>
-    <ul style={styles.detailsList}>
-      <li style={styles.detailsItem}>
-        <FaListAlt style={styles.detailsIcon} />
-        <span><strong>Activities:</strong> {itinerary.Activities.join(", ")}</span>
-      </li>
-      <li style={styles.detailsItem}>
-        <FaClock style={styles.detailsIcon} />
-        <span><strong>Timeline:</strong> {itinerary.Timeline}</span>
-      </li>
-      <li style={styles.detailsItem}>
-        <FaHourglassHalf style={styles.detailsIcon} />
-        <span><strong>Duration:</strong> {itinerary.DurationOfActivity}</span>
-      </li>
-      <li style={styles.detailsItem}>
-        <FaLanguage style={styles.detailsIcon} />
-        <span><strong>Language:</strong> {itinerary.Language}</span>
-      </li>
-      <li style={styles.detailsItem}>
-        <FaDollarSign style={styles.detailsIcon} />
-        <span><strong>Price:</strong> ${itinerary.Price}</span>
-      </li>
-      <li style={styles.detailsItem}>
-        <FaWheelchair style={styles.detailsIcon} />
-        <span><strong>Accessibility:</strong> {itinerary.Accesibility}</span>
-      </li>
-      <li style={styles.detailsItem}>
-        <FaBus style={styles.detailsIcon} />
-        <span><strong>Pick Up/Drop Off:</strong> {itinerary.pickUpDropOff}</span>
-      </li>
-      <li style={styles.detailsItem}>
-        <FaCheck style={styles.detailsIcon} />
-        <span>
-          <strong>Booking Open:</strong> {itinerary.bookingOpen ? "Yes" : "No"}
-        </span>
-      </li>
-    </ul>
-  </div>
-          )}
         </li>
       ))}
     </ul>
   ) : (
     <p style={styles.noData}>No itineraries found.</p>
   )}
+
+  {/* Global Popup */}
+  {showDeletePopup && (
+    <div style={styles.popupOverlay}>
+      <div style={styles.popup}>
+        <p>Are you sure you want to delete this itinerary?</p>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <button
+            style={styles.confirmButton}
+            onClick={() => {
+              handleDeleteItinerary(showDeletePopup);
+              setShowDeletePopup(null);
+            }}
+          >
+            Yes
+          </button>
+          <button style={styles.cancelButton} onClick={() => setShowDeletePopup(null)}>
+            No
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
 </div>
+
+
+
+
   
       {/* Edit Itinerary Modal */}
       {modalOpen && (
@@ -853,13 +939,14 @@ const [touristItineraryData, setTouristItineraryData] = useState({
 
 const styles = {
   container: {
-    top:'-90px',
-     margin: '90px auto',
-    maxWidth: '1200px',
-    padding: '20px',
-    backgroundColor: '#f9f9f9',
-    borderRadius: '10px',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    margin: "90px auto",
+    maxWidth: "1200px",
+    padding: "20px",
+    backgroundColor: "#f9f9f9",
+    borderRadius: "10px",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    position: "relative", // Allows stacking context
+    zIndex: 0, // Ensure the container is below the popup
   },
   header: {
     position: "fixed",
@@ -1094,17 +1181,18 @@ const styles = {
   list: {
     listStyleType: "none",
     padding: 0,
+    position: "relative", // Required for z-index
+    zIndex: 1, // Ensure the list is below the popup
   },
   listItem: {
-    position: "relative", // Enable positioning for child elements
+    position: "relative",
     padding: "10px",
     border: "1px solid #ddd",
     borderRadius: "5px",
     marginBottom: "10px",
-    backgroundColor: "#fff", // Clean background for visibility
-    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)", // Subtle shadow
-    display: "flex",
-    flexDirection: "column",
+    backgroundColor: "#fff",
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+    zIndex: 1, // Ensure the cards are below the popup
   },
   deleteIcon: {
     position: "absolute", // Position in the top-right
@@ -1308,9 +1396,8 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 1000,
+    zIndex: 1000, // Ensures popup is above cards
   },
-  
   popup: {
     backgroundColor: "#fff",
     padding: "20px",
@@ -1318,6 +1405,7 @@ const styles = {
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
     textAlign: "center",
     width: "300px",
+    zIndex: 1010, // Popup content should stack above the overlay
   },
   
   popupText: {

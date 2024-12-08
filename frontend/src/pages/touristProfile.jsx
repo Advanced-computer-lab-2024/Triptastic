@@ -18,6 +18,10 @@ import beach from "../images/beach.jpg";
 import historic from "../images/historic.jpg";
 import family from "../images/family.png";
 import shopping from "../images/shopping.jpg";
+import goldBadge from "../images/gold.png";
+import silverBadge from "../images/silver.png";
+import bronzeBadge from "../images/bronze.png";
+
 import {
   FaLandmark,
   FaUniversity,
@@ -112,6 +116,14 @@ const TouristProfile = () => {
     phoneNumber: "",
     isPrimary: false,
   });
+  const [updatedPreferences, setUpdatedPreferences] = useState({});
+  const [preferences, setPreferences] = useState({
+    historicAreas: false,
+    beaches: false,
+    familyFriendly: false,
+    shopping: false,
+    budget: "",
+  });
 
 
 
@@ -137,13 +149,7 @@ const TouristProfile = () => {
     date: "",
   });
 
-  const [preferences, setPreferences] = useState({
-    historicAreas: false,
-    beaches: false,
-    familyFriendly: false,
-    shopping: false,
-    budget: "",
-  });
+
  
 
   useEffect(() => {
@@ -436,45 +442,7 @@ const TouristProfile = () => {
     }
   };
 
-  const fetchTouristInfo = async () => {
-    setLoading(true);
-    const Username = localStorage.getItem("Username");
-
-    if (Username) {
-      try {
-        const response = await fetch(
-          `http://localhost:8000/getTourist?Username=${Username}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data) {
-            // Apply currency conversion to Wallet balance
-            data.Wallet = (data.Wallet * conversionRate).toFixed(2);
-            setTouristInfo(data);
-            setFormData(data); // Pre-fill the form with current data
-            setErrorMessage("");
-          } else {
-            setErrorMessage("No tourist information found.");
-          }
-        } else {
-          throw new Error("Failed to fetch tourist information");
-        }
-      } catch (error) {
-        setErrorMessage("An error occurred while fetching tourist information");
-        console.error(error);
-      }
-    } else {
-      setErrorMessage("No tourist information found.");
-    }
-    setLoading(false);
-  };
+ 
   const handleCancelActivityBooking = async (id) => {
     const username = localStorage.getItem("Username");
     try {
@@ -577,6 +545,86 @@ const TouristProfile = () => {
     } catch (error) {
       setErrorMessage("");
       console.error(error);
+    }
+    setLoading(false);
+  };
+  const submitUpdatedPreferences = async () => {
+    try {
+      const username = localStorage.getItem("Username");
+  
+      const response = await fetch(
+        `http://localhost:8000/setPreferences?username=${username}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedPreferences),
+        }
+      );
+  
+      if (response.ok) {
+        alert("Preferences updated successfully!");
+        setPreferences(updatedPreferences);
+        setErrorMessage("");
+      } else {
+        throw new Error("Failed to update preferences");
+      }
+    } catch (error) {
+      setErrorMessage("Error updating preferences");
+    }
+  };
+  
+  const handlePreferenceChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    
+    setUpdatedPreferences((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+  const fetchTouristInfo = async () => {
+    setLoading(true);
+    const Username = localStorage.getItem("Username");
+
+    if (Username) {
+      try {
+        const response = await fetch(
+          `http://localhost:8000/getTourist?Username=${Username}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data) {
+            // Apply currency conversion to Wallet balance (adjust 'conversionRate' as needed)
+            const conversionRate = 1.2;  // Update this conversion rate dynamically if needed
+            data.Wallet = (data.Wallet * conversionRate).toFixed(2);
+
+            // Set the tourist data and preferences
+            setTouristInfo(data);
+            setPreferences(data.preferences);  // Save preferences
+            setUpdatedPreferences(data.preferences); // Save updated preferences
+
+            // Pre-fill the form with current data
+            setErrorMessage("");
+          } else {
+            setErrorMessage("No tourist information found.");
+          }
+        } else {
+          throw new Error("Failed to fetch tourist information");
+        }
+      } catch (error) {
+        setErrorMessage("An error occurred while fetching tourist information");
+        console.error(error);
+      }
+    } else {
+      setErrorMessage("No tourist information found.");
     }
     setLoading(false);
   };
@@ -985,13 +1033,7 @@ const TouristProfile = () => {
     }
   };
   
-  const handlePreferenceChange = (e) => {
-    const { name, type, value, checked } = e.target;
-    setPreferences((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
+
   
   
   useEffect(() => {
@@ -1149,6 +1191,19 @@ const TouristProfile = () => {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
+  const getBadgeIcon = (badgeLevel) => {
+    switch (badgeLevel) {
+      case 3:
+        return goldBadge; // Imported gold badge image
+      case 2:
+        return silverBadge; // Imported silver badge image
+      case 1:
+        return bronzeBadge; // Imported bronze badge image
+      default:
+        return null; // Optional: Return null or a default badge
+    }
+  };
+  
 
 
 return (
@@ -1171,12 +1226,6 @@ return (
           )}
         </div>
 
-          {/* Profile Icon */}
-          <ManageAccountsIcon
-            alt="Profile Icon"
-            style={styles.profileIcon}
-            onClick={() => navigate("/touristSettings")}
-          />
           <ManageAccountsIcon
     style={styles.profileIcon}
     title="Manage Account Settings"
@@ -1251,6 +1300,37 @@ return (
             style={styles.cancelIcon}
             onClick={() => setModalOpen(false)} // Close modal on click
           />
+         <div style={styles.walletInfo}>
+  <h3 style={styles.walletTitle}>Wallet Balance</h3>
+  <div style={styles.walletDetails}>
+    {/* Wallet */}
+    <div style={styles.walletItem}>
+      <p style={styles.walletAmount}>
+        {(touristInfo.Wallet * conversionRate).toFixed(2)} {selectedCurrency}
+      </p>
+      <span style={styles.walletLabel}>Wallet</span>
+    </div>
+
+    {/* Points */}
+    <div style={styles.walletItem}>
+      <p style={styles.walletAmount}>{touristInfo.points}</p>
+      <span style={styles.walletLabel}>Points</span>
+    </div>
+
+    {/* Badge */}
+    <div style={styles.walletItem}>
+        <img
+          src={getBadgeIcon(touristInfo.badge)}
+          alt={`Badge Level ${touristInfo.badge}`}
+          style={styles.badgeImage}
+        />
+        <span style={styles.walletLabel}>Badge</span>
+        <p style={styles.walletLabel}>{touristInfo.badge}</p>
+      </div>
+  </div>
+</div>
+
+            
             <form onSubmit={handleUpdate}>
               <div style={styles.formGroup}>
                 <label style={styles.label2}>Email:</label>
@@ -1307,22 +1387,93 @@ return (
                   {/* Add more currency options as needed */}
                 </select>
               </div>
-              <div style={styles.walletInfo}>
-              <h3 style={styles.walletTitle}>Wallet Balance:</h3>
-              <p style={styles.walletAmount}>
-                {(touristInfo.Wallet * conversionRate).toFixed(2)}{" "}
-                {selectedCurrency}
-              </p>
-              </div>
+             
              
                 <button type="submit" style={styles.saveButton}>
                   Save Changes
                 </button>
+                
               
        
 
                
             </form>
+          
+            {Object.keys(preferences).length > 0 ? (
+  <form style={styles.preferencesForm}>
+    {/* Preferences Header */}
+    <h3 style={styles.preferencesHeader}>Preferences</h3>
+
+    {/* Preferences Checkboxes */}
+    <div style={styles.preferencesGroup}>
+      <label style={styles.preferenceItem}>
+        <input
+          type="checkbox"
+          name="historicAreas"
+          checked={updatedPreferences.historicAreas || false}
+          onChange={handlePreferenceChange}
+        />
+        <span>Historic Areas</span>
+      </label>
+      <label style={styles.preferenceItem}>
+        <input
+          type="checkbox"
+          name="beaches"
+          checked={updatedPreferences.beaches || false}
+          onChange={handlePreferenceChange}
+        />
+        <span>Beaches</span>
+      </label>
+      <label style={styles.preferenceItem}>
+        <input
+          type="checkbox"
+          name="familyFriendly"
+          checked={updatedPreferences.familyFriendly || false}
+          onChange={handlePreferenceChange}
+        />
+        <span>Family-Friendly</span>
+      </label>
+      <label style={styles.preferenceItem}>
+        <input
+          type="checkbox"
+          name="shopping"
+          checked={updatedPreferences.shopping || false}
+          onChange={handlePreferenceChange}
+        />
+        <span>Shopping</span>
+      </label>
+    </div>
+
+    {/* Budget Selector */}
+    <div style={styles.budgetSection}>
+      <label style={styles.label2}>Select Budget:</label>
+      <select
+        name="budget"
+        value={updatedPreferences.budget || ''}
+        onChange={handlePreferenceChange}
+        style={styles.budgetDropdown}
+      >
+        <option value="">Select Budget</option>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+      </select>
+    </div>
+
+    {/* Submit Button */}
+    <button
+      type="button"
+      onClick={submitUpdatedPreferences}
+      style={styles.submitButton}
+    >
+      Submit Preferences
+    </button>
+  </form>
+) : (
+  <p>No preferences available.</p>
+)}
+
+            
             <div style={styles.buttonGroup}>
             <button  onClick={() => setShowDeleteModal(true)}  style={styles.deletebutton}>
           {waiting
@@ -2478,6 +2629,140 @@ const sliderSettings = {
   adaptiveHeight: true,
 };
 const styles = {
+  preferencesForm: {
+    marginTop: "20px",
+    backgroundColor: "#f9f9f9",
+    padding: "15px",
+    borderRadius: "10px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+  },
+  preferencesHeader: {
+    fontSize: "18px",
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: "15px",
+    textAlign: "center",
+  },
+  preferencesGroup: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "15px",
+    justifyContent: "center",
+    marginBottom: "15px",
+  },
+  preferenceItem: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    fontSize: "16px",
+    color: "#333",
+  },
+  budgetSection: {
+    marginTop: "10px",
+    marginBottom: "15px",
+    textAlign: "center",
+  },
+  budgetDropdown: {
+    padding: "10px",
+    fontSize: "16px",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    width: "100%",
+  },
+  preferencesForm: {
+    marginTop: "20px",
+    backgroundColor: "#f9f9f9",
+    padding: "15px",
+    borderRadius: "10px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+  },
+  preferencesHeader: {
+    fontSize: "18px",
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: "15px",
+    textAlign: "center",
+  },
+  preferencesGroup: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "15px",
+    justifyContent: "center",
+    marginBottom: "15px",
+  },
+  preferenceItem: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    fontSize: "16px",
+    color: "#333",
+  },
+  budgetSection: {
+    marginTop: "10px",
+    marginBottom: "15px",
+    textAlign: "center",
+  },
+  budgetDropdown: {
+    padding: "10px",
+    fontSize: "16px",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    width: "100%",
+  },
+  submitButton: {
+    display: "block",
+    width: "70%",
+    padding: "10px 15px",
+    backgroundColor: "#0F5132",
+    color: "#fff",
+    fontSize: "16px",
+    fontWeight: "bold",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+  },
+  badgeImage: {
+    width: "50px",
+    height: "50px",
+    objectFit: "cover",
+    marginTop: "-15px",
+  },
+  walletInfo: {
+    marginTop: "20px",
+    backgroundColor: "#f7f7f7",
+    padding: "15px",
+    borderRadius: "10px",
+    textAlign: "center",
+    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+  },
+  walletTitle: {
+    fontSize: "18px",
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: "20px",
+  },
+  walletDetails: {
+    display: "flex",
+    justifyContent: "space-around",
+    alignItems: "center",
+    gap: "20px",
+  },
+  walletItem: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  walletAmount: {
+    fontSize: "16px",
+    fontWeight: "bold",
+    color: "#0F5132",
+  },
+  walletLabel: {
+    marginTop: "5px",
+    fontSize: "14px",
+    color: "#666",
+  },
   noAddressesText: {
     textAlign: "center",
     fontSize: "18px",
@@ -2560,15 +2845,7 @@ const styles = {
     fontSize: "14px",
     resize: "vertical",
   },
-  submitButton: {
-    background: "#0F5132",
-    color: "white",
-    padding: "10px 20px",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    fontWeight: "bold",
-  },
+
   complaintsList: {
     padding: "10px",
     margin: "0 auto",
@@ -2757,24 +3034,7 @@ const styles = {
     borderRadius: '5px',
     cursor: 'pointer',
   },
-  walletInfo: {
-    backgroundColor: "#f7f7f7",
-    padding: "15px",
-    borderRadius: "10px",
  
-    textAlign: "center",
-  },
-  walletTitle: {
-    fontSize: "18px",
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: "10px",
-  },
-  walletAmount: {
-    fontSize: "16px",
-    fontWeight: "bold",
-    color: "#0F5132",
-  },
 label2: {
   fontSize: "14px",
   fontWeight: "bold",
@@ -2810,11 +3070,11 @@ label2: {
   submitButton: {
     backgroundColor: '#0F5132',
     color: 'white',
-    padding: '10px 20px',
+    padding: '5px 8px',
     borderRadius: '5px',
     border: 'none',
     cursor: 'pointer',
-    fontSize: '14px',
+    fontSize: '13px',
   },
 
   formGroup: {
