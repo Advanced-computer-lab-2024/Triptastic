@@ -72,6 +72,17 @@ const SellerProfile = () => {
   };
  
 
+    const handleLogout = () => {
+      const confirmLogout = window.confirm("Are you sure you want to logout?");
+  
+      if (confirmLogout) {
+        // Proceed with logout, navigate to '/Guest'
+        navigate('/Guest');
+      } else {
+        // Do nothing if the user cancels the logout
+        console.log("Logout cancelled");
+      }
+    };
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -540,8 +551,8 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
 
     {/* Logout Icon */}
     <LogoutOutlinedIcon
-      style={styles.logoutIcon}
-      onClick={() => navigate('/Guest')}
+      style={{ cursor: 'pointer' }} // You can adjust your styles here
+      onClick={handleLogout}
     />
 
 {showDropdown && (
