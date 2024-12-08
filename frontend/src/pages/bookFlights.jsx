@@ -49,7 +49,7 @@ const BookFlights = () => {
     });
   };
 
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
   const totalPages = Math.ceil(flights.length / itemsPerPage);

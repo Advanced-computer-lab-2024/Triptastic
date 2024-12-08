@@ -233,7 +233,7 @@ const Products = () => {
     navigate("/Wishlist"); // Navigate to Wishlist page
   };
 
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8; // Customize the number of items per page
   const totalPages = Math.ceil(products.length / itemsPerPage);
   const currentProducts = products.slice(
