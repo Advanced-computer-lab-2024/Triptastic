@@ -1126,7 +1126,7 @@ const styles = {
   },
   container: {
     margin: "90px auto",
-    maxWidth: "1000px",
+    maxWidth: "1200px",
     padding: "20px",
     backgroundColor: "#f9f9f9",
     borderRadius: "10px",
@@ -1354,7 +1354,7 @@ const styles = {
     gap: "15px",
     width: "30%", // Maintain consistent form width
     alignItems: "center", // Center-align the form
-    marginLeft: "300px", // Center the form on the page
+    marginLeft: "370px", // Center the form on the page
     marginTop:'10px',
     marginBottom:'10px',
 

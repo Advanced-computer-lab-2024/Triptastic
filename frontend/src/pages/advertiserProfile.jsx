@@ -3,7 +3,7 @@ import './advertiserProfile.css';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
 import { FaBell,FaUserCircle} from 'react-icons/fa';
-import { FaCalendarDay, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
+import { FaCalendarDay, FaUniversity, FaCalendarAlt,FaTags, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
   FaClipboardList,
   FaStar, FaDollarSign,FaSearch} from "react-icons/fa";
   import LockResetIcon from '@mui/icons-material/LockReset';
@@ -707,75 +707,381 @@ const [date, setDate] = useState('');
   </div>
 </div>
 
-     {/* Activities Section */}
-<h6 className="activities-title" style={{fontSize:'20px'}}>Reports</h6>
-{filteredActivities.length > 0 ? (
-  <div className="activities-grid">
-    {filteredActivities.map((activity) => (
-      <div key={activity._id} className="activity-card">
-        <div className="activity-info">
-          <h4 className="activity-name">{activity.name}</h4>
-          <p className="activity-detail"><strong>Category:</strong> {activity.Category}</p>
-          <p className="activity-detail"><strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}</p>
-        </div>
-
-        <div style={{ position: "relative" }}>
-  <button
-    className="toggle-report-button"
-    style={styles.toggleReportButton}
-    onClick={() => handleViewReport(activity._id)}
+<div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', color: '#333' }}>
+  <h2
+    style={{
+      fontSize: '20px',
+      fontWeight: '700',
+      color: '#0F5132',
+      textAlign: 'center',
+      letterSpacing: '1px',
+      borderBottom: '2px solid #0F5132',
+      paddingBottom: '10px',
+      marginBottom: '20px',
+    }}
   >
-    {activityReports[activity._id]?.visible ? 'Hide Report' : 'View Report'}
-  </button>
+    Reports
+  </h2>
+
+  {filteredActivities.length > 0 ? (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        gap: '20px',
+      }}
+    >
+      {filteredActivities.map((activity) => (
+        <div
+          key={activity._id}
+          style={{
+            padding: '15px',
+            border: '1px solid #ddd',
+            borderRadius: '10px',
+            backgroundColor: '#f9f9f9',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            transition: 'transform 0.3s ease',
+            position: 'relative',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.03)';
+            e.currentTarget.style.borderColor = '#0F5132';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.borderColor = '#ddd';
+          }}
+        >
+          {/* Activity Info */}
+          <div style={{ marginBottom: '10px' }}>
+            <h4
+              style={{
+                fontSize: '16px',
+                fontWeight: '600',
+                color: '#0F5132',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <FaRunning
+                style={{
+                  marginRight: '8px',
+                  color: '#0F5132',
+                  fontSize: '18px',
+                }}
+              />
+              {activity.name}
+            </h4>
+            <p
+              style={{
+                fontSize: '14px',
+                marginBottom: '5px',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <FaTags
+                style={{
+                  marginRight: '8px',
+                  color: '#0F5132',
+                  fontSize: '16px',
+                }}
+              />
+              <strong>Category:</strong> {activity.Category}
+            </p>
+            <p
+              style={{
+                fontSize: '14px',
+                marginBottom: '5px',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <FaCalendarAlt
+                style={{
+                  marginRight: '8px',
+                  color: '#0F5132',
+                  fontSize: '16px',
+                }}
+              />
+              <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
+            </p>
+          </div>
+
+          {/* Toggle Report Button */}
+          <div style={{ position: 'relative', textAlign: 'center', marginTop: '10px' }}>
+            <button
+              style={{
+                padding: '8px 12px',
+                backgroundColor: '#0F5132',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                transition: 'background-color 0.3s ease',
+              }}
+              onClick={() => handleViewReport(activity._id)}
+            >
+              {activityReports[activity._id]?.visible ? 'Hide Report' : 'View Report'}
+            </button>
+          </div>
+
+          {/* Collapsible Report Section */}
+          {activityReports[activity._id]?.visible && (
+            <div style={{ marginTop: '15px', borderTop: '1px solid #ddd', paddingTop: '10px' }}>
+              <table
+                style={{
+                  width: '100%',
+                  borderCollapse: 'collapse',
+                  textAlign: 'left',
+                  fontSize: '14px',
+                }}
+              >
+                <thead>
+                  <tr>
+                    <th style={{ borderBottom: '2px solid #0F5132', padding: '5px' }}>
+                      Total Tourists
+                    </th>
+                    <th
+                      colSpan="2"
+                      style={{
+                        borderBottom: '2px solid #0F5132',
+                        padding: '5px',
+                        textAlign: 'center',
+                      }}
+                    >
+                      {activityReports[activity._id].totalTourists}
+                    </th>
+                  </tr>
+                  <tr>
+                    <th style={{ borderBottom: '1px solid #ddd', padding: '5px' }}>Tourist</th>
+                    <th style={{ borderBottom: '1px solid #ddd', padding: '5px' }}>Email</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {activityReports[activity._id].tourists.length > 0 ? (
+                    activityReports[activity._id].tourists.map((tourist, index) => (
+                      <tr key={index}>
+                        <td style={{ padding: '5px', borderBottom: '1px solid #ddd' }}>
+                          {tourist.Username}
+                        </td>
+                        <td style={{ padding: '5px', borderBottom: '1px solid #ddd' }}>
+                          {tourist.Email}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan="3"
+                        style={{
+                          textAlign: 'center',
+                          padding: '10px',
+                          fontStyle: 'italic',
+                          color: '#d9534f',
+                        }}
+                      >
+                        No tourists booked this activity yet.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  ) : (
+    <p
+      style={{
+        fontSize: '14px',
+        color: '#d9534f',
+        textAlign: 'center',
+        marginTop: '20px',
+      }}
+    >
+      No activities found.
+    </p>
+  )}
 </div>
 
 
-        {/* Collapsible Report Section */}
-       {/* Collapsible Report Section */}
-{activityReports[activity._id]?.visible && (
-  <div className="report-section">
-    <table className="report-table">
-      <thead>
-        <tr>
-          <th>Total Tourists</th>
-          <th colSpan="2">{activityReports[activity._id].totalTourists}</th>
-        </tr>
-        <tr>
-          <th>Tourist</th>
-          <th>Email</th>
-        </tr>
-      </thead>
-      <tbody>
-        {activityReports[activity._id].tourists.length > 0 ? (
-          activityReports[activity._id].tourists.map((tourist, index) => (
-            <tr key={index}>
-              <td>{tourist.Username}</td>
-              <td>{tourist.Email}</td>
-            </tr>
-          ))
-        ) : (
-          <tr>
-            <td colSpan="3" className="no-tourists">No tourists booked this activity yet.</td>
-          </tr>
-        )}
-      </tbody>
-    </table>
+  {/* Statistics Section */}
+<div
+  style={{
+    padding: '20px',
+    fontFamily: 'Arial, sans-serif',
+    color: '#333',
+  }}
+>
+  <div
+    style={{
+      textAlign: 'center',
+      marginBottom: '20px',
+    }}
+  >
+    <h2
+      style={{
+        fontSize: '20px',
+        fontWeight: '700',
+        color: '#0F5132',
+        letterSpacing: '1px',
+        borderBottom: '2px solid #0F5132',
+        paddingBottom: '10px',
+        margin: '0 auto',
+        maxWidth: '300px',
+      }}
+    >
+      Total Sales: ${totalSales}
+    </h2>
   </div>
-)}
 
+  <div
+    style={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      gap: '20px',
+      alignItems: 'stretch',
+    }}
+  >
+    {mostSold && (
+      <div
+        style={{
+          flex: 1,
+          padding: '15px',
+          border: '1px solid #ddd',
+          borderRadius: '10px',
+          backgroundColor: '#f9f9f9',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          transition: 'transform 0.3s ease',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'scale(1.03)';
+          e.currentTarget.style.borderColor = '#0F5132';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+          e.currentTarget.style.borderColor = '#ddd';
+        }}
+      >
+        <h4
+          style={{
+            fontSize: '16px',
+            fontWeight: '600',
+            color: '#0F5132',
+            marginBottom: '15px',
+            textAlign: 'center',
+            borderBottom: '2px solid #0F5132',
+            paddingBottom: '10px',
+            letterSpacing: '1px',
+          }}
+        >
+          <TrendingUpOutlinedIcon
+            style={{
+              color: '#0F5132',
+              marginRight: '8px',
+              verticalAlign: 'middle',
+              fontSize: '18px',
+            }}
+          />
+          Most Sold Activity
+        </h4>
+        <p
+          style={{
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            marginBottom: '10px',
+          }}
+        >
+          <strong>Name:</strong>&nbsp; {mostSold.name}
+        </p>
+        <p
+          style={{
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            marginBottom: '10px',
+          }}
+        >
+          <strong>Sales:</strong>&nbsp; ${mostSold.sales}
+        </p>
       </div>
-    ))}
+    )}
+
+    {leastSold && (
+      <div
+        style={{
+          flex: 1,
+          padding: '15px',
+          border: '1px solid #ddd',
+          borderRadius: '10px',
+          backgroundColor: '#f9f9f9',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          transition: 'transform 0.3s ease',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'scale(1.03)';
+          e.currentTarget.style.borderColor = '#0F5132';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'scale(1)';
+          e.currentTarget.style.borderColor = '#ddd';
+        }}
+      >
+        <h4
+          style={{
+            fontSize: '16px',
+            fontWeight: '600',
+            color: '#0F5132',
+            marginBottom: '15px',
+            textAlign: 'center',
+            borderBottom: '2px solid #0F5132',
+            paddingBottom: '10px',
+            letterSpacing: '1px',
+          }}
+        >
+          <TrendingDownOutlinedIcon
+            style={{
+              color: '#d9534f',
+              marginRight: '8px',
+              verticalAlign: 'middle',
+              fontSize: '18px',
+            }}
+          />
+          Least Sold Activity
+        </h4>
+        <p
+          style={{
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            marginBottom: '10px',
+          }}
+        >
+          <strong>Name:</strong>&nbsp; {leastSold.name}
+        </p>
+        <p
+          style={{
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            marginBottom: '10px',
+          }}
+        >
+          <strong>Sales:</strong>&nbsp; ${leastSold.sales}
+        </p>
+      </div>
+    )}
   </div>
-) : (
-  <p className="no-activities">No activities found.</p>
-)}
+</div>
 
   {/* Filters Section */}
   <div style={styles.filterContainerr}>
   <div style={styles.salesTitle}>
-    <h3 style={styles.salesHeading}>
-      Sales
-    </h3>
+   
   </div>
         <div style={styles.filterGroup}>
           <label htmlFor="activityFilter" style={styles.filterLabel}>
@@ -807,49 +1113,82 @@ const [date, setDate] = useState('');
             style={styles.dateInput}
           />
           <button style={styles.filterButton} onClick={handleFilterD}>
-            {filteredD ? "Clear Filter" : "Apply Filter"}
+            {filteredD ? "Clear" : "Filter Date"}
           </button>
         </div>
       </div>
-
-     {/* Statistics Section */}
-<div style={styles.statisticsContainer}>
-  <div style={styles.totalSales}>
-    <h2 style={styles.totalSalesText}>
-       Total Sales: ${totalSales}
-    </h2>
-  </div>
-  
-  {mostSold && (
-    <div style={styles.statisticsCard}>
-      <h4 style={styles.cardTitle}>
-        <TrendingUpOutlinedIcon style={styles.iconSmall} /> Most Sold Activity
-      </h4>
-      <p style={styles.cardDetail}><strong>Name:</strong> {mostSold.name}</p>
-      <p style={styles.cardDetail}><strong>Sales:</strong> ${mostSold.sales}</p>
-    </div>
-  )}
-
-  {leastSold && (
-    <div style={styles.statisticsCard}>
-      <h4 style={styles.cardTitle}>
-        <TrendingDownOutlinedIcon style={styles.iconSmall} /> Least Sold Activity
-      </h4>
-      <p style={styles.cardDetail}><strong>Name:</strong> {leastSold.name}</p>
-      <p style={styles.cardDetail}><strong>Sales:</strong> ${leastSold.sales}</p>
-    </div>
-  )}
-</div>
-
 {/* Activities List */}
-<div style={styles.activitiesContainer}>
+<div
+  style={{
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+    gap: '20px',
+    padding: '20px',
+    fontFamily: 'Arial, sans-serif',
+  }}
+>
   {filteredActivities.map((activity) => (
-    <div key={activity._id} style={styles.activityCard}>
-      <h4 style={styles.cardTitle}>
-        <FaRunning style={styles.iconSmall} /> {activity.name}
+    <div
+      key={activity._id}
+      style={{
+        padding: '15px',
+        border: '1px solid #ddd',
+        borderRadius: '10px',
+        backgroundColor: '#f9f9f9',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        transition: 'transform 0.3s ease, border-color 0.3s ease',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'scale(1.03)';
+        e.currentTarget.style.borderColor = '#0F5132';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'scale(1)';
+        e.currentTarget.style.borderColor = '#ddd';
+      }}
+    >
+      <h4
+        style={{
+          fontSize: '16px',
+          fontWeight: '600',
+          color: '#0F5132',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          marginBottom: '10px',
+        }}
+      >
+        <FaRunning style={{ fontSize: '18px', color: '#0F5132' }} />
+        {activity.name}
       </h4>
-      <p style={styles.cardDetail}><strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}</p>
-      <p style={styles.cardDetail}><strong>Sales:</strong> ${activity.sales}</p>
+      <p
+        style={{
+          fontSize: '14px',
+          marginBottom: '5px',
+          display: 'flex',
+          alignItems: 'center',
+          color: '#333',
+        }}
+      >
+        <FaCalendarAlt
+          style={{ marginRight: '8px', color: '#0F5132', fontSize: '16px' }}
+        />
+        <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
+      </p>
+      <p
+        style={{
+          fontSize: '14px',
+          marginBottom: '5px',
+          display: 'flex',
+          alignItems: 'center',
+          color: '#333',
+        }}
+      >
+        <FaDollarSign
+          style={{ marginRight: '8px', color: '#0F5132', fontSize: '16px' }}
+        />
+        <strong>Sales:</strong> ${activity.sales}
+      </p>
     </div>
   ))}
 </div>
@@ -915,7 +1254,6 @@ const styles = {
     padding: "20px",
     backgroundColor: "#f9f9f9",
     borderRadius: "10px",
-    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
     display: "flex",
     flexDirection: "column",
     gap: "20px",
@@ -937,7 +1275,7 @@ const styles = {
   },
 
   statisticsCard: {
-    backgroundColor: "#fff",
+    backgroundColor: "#f9f9f9",
     padding: "15px",
     borderRadius: "8px",
     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
@@ -968,7 +1306,7 @@ const styles = {
   },
 
   activityCard: {
-    backgroundColor: "#fff",
+    backgroundColor: "#f9f9f9",
     padding: "15px",
     borderRadius: "8px",
     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
@@ -1086,7 +1424,17 @@ const styles = {
     zIndex: 10, // Ensure it sits on top
     transition: "background-color 0.3s ease",
   },
-  
+  sectionTitle: {
+    fontSize: "20px",
+    fontWeight: "600",
+    color: "#0F5132", 
+    marginBottom: "15px",
+    textAlign: "center",
+    borderBottom: "2px solid #0F5132", 
+    paddingBottom: "10px",
+    letterSpacing: "1px", 
+    textTransform: "uppercase", 
+  },
  
   profileIcon: {
     fontSize: '30px',
@@ -1211,7 +1559,7 @@ const styles = {
   },
   filterContainer: {
     marginTop: "50px",
-    marginBottom:"-50px",
+    marginBottom:"-30px",
     padding: "15px",
     backgroundColor: "#f9f9f9",
     borderRadius: "5px",
@@ -1269,6 +1617,7 @@ const styles = {
     fontSize: "14px",
     cursor: "pointer",
     transition: "background-color 0.3s ease",
+    marginBottom:'15px'
   },
 
   // Hover effect for the button

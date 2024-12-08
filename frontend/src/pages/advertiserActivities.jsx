@@ -512,64 +512,194 @@ const handleGetActivity = async (e, Advertiser,name) => {
 )}
 
 {/* Activities List */}
-<ul style={styles.activityList}>
-<h2 style={styles.sectionTitle}>Your Activities</h2>
+<ul
+  style={{
+    listStyle: 'none',
+    padding: '0',
+    margin: '20px auto',
+    fontFamily: 'Arial, sans-serif',
+    maxWidth: '1000px',
+  }}
+>
+  <h2
+    style={{
+      fontSize: '20px',
+      fontWeight: '700',
+      color: '#0F5132',
+      textAlign: 'center',
+      letterSpacing: '1px',
+      borderBottom: '2px solid #0F5132',
+      paddingBottom: '10px',
+      marginBottom: '20px',
+    }}
+  >
+    Your Activities
+  </h2>
 
   {activities.map((activity) => (
-    <li key={activity.id} style={styles.activityItem}>
-      <div style={styles.activityInfo}>
-        <p style={styles.activityText}>{activity.name}</p>
-        <p style={styles.activityText}>
-          <FaMapMarkerAlt style={styles.detailsIcon} /> Location: {activity.location}
-        </p>
-        <p style={styles.activityText}>
-          <FaCalendar style={styles.detailsIcon} /> Date: {activity.date}
-        </p>
-        <button
-          style={{ ...styles.button, ...styles.viewButton }}
-          onClick={() => toggleViewDetails(activity._id)}
+    <li
+      key={activity.id}
+      style={{
+        position: 'relative',
+        padding: '15px',
+        border: '1px solid #ddd',
+        borderRadius: '10px',
+        backgroundColor: '#f9f9f9',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        marginBottom: '15px',
+        transition: 'transform 0.3s ease, border-color 0.3s ease',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = '#0F5132';
+        e.currentTarget.style.transform = 'scale(1.03)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = '#ddd';
+        e.currentTarget.style.transform = 'scale(1)';
+      }}
+    >
+      {/* Delete Button */}
+      <button
+        style={{
+          position: 'absolute',
+          top: '10px',
+          right: '10px',
+          padding: '6px 12px',
+            borderRadius: '5px',
+            backgroundColor: '#d9534f',
+            color: '#fff',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '12px',
+            fontWeight: '600',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            transition: 'background-color 0.3s ease',
+        }}
+        onClick={() => setShowDeletePopup(activity._id)}
+      >
+        <FaTrash /> Delete
+      </button>
+
+      <div style={{ marginBottom: '10px' }}>
+        <p
+          style={{
+            fontSize: '16px',
+            fontWeight: '600',
+            color: '#0F5132',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            marginBottom: '5px',
+          }}
         >
-          <FaEye style={styles.detailsIcon} />
-          {activityDetails[activity._id]?.visible ? ' Hide Details' : ' View Details'}
-        </button>
+          <FaMapMarkerAlt style={{ fontSize: '16px', color: '#0F5132' }} />
+          {activity.name}
+        </p>
+        <p
+          style={{
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            marginBottom: '5px',
+            color: '#333',
+          }}
+        >
+          <FaMapMarkerAlt style={{ fontSize: '14px', color: '#0F5132' }} />
+          <strong>Location:</strong> {activity.location}
+        </p>
+        <p
+          style={{
+            fontSize: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            marginBottom: '5px',
+            color: '#333',
+          }}
+        >
+          <FaCalendar style={{ fontSize: '14px', color: '#0F5132' }} />
+          <strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}
+        </p>
         {activityDetails[activity._id]?.visible && (
-          <div style={styles.detailSection}>
-            <p style={styles.detailText}>
+          <div style={{ marginTop: '10px', paddingLeft: '10px' }}>
+            <p style={{ fontSize: '14px', marginBottom: '5px' }}>
               <strong>Time:</strong> {activity.time}
             </p>
-            <p style={styles.detailText}>
+            <p style={{ fontSize: '14px', marginBottom: '5px' }}>
               <strong>Price:</strong> ${activity.price}
             </p>
-            <p style={styles.detailText}>
+            <p style={{ fontSize: '14px', marginBottom: '5px' }}>
               <strong>Category:</strong> {activity.Category}
             </p>
-            <p style={styles.detailText}>
+            <p style={{ fontSize: '14px', marginBottom: '5px' }}>
               <strong>Tags:</strong> {activity.tags.join(', ')}
             </p>
-            <p style={styles.detailText}>
-              <strong>Booking Open:</strong> {activity.bookingOpen ? 'Yes' : 'No'}
+            <p style={{ fontSize: '14px' }}>
+              <strong>Booking Open:</strong>{' '}
+              {activity.bookingOpen ? 'Yes' : 'No'}
             </p>
           </div>
         )}
       </div>
-      <div style={styles.actionButtons}>
 
+      {/* Buttons Section */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <button
-          style={{ ...styles.button, ...styles.editButton }}
-          onClick={(e) => handleUpdateClick(e, activity)}
+          style={{
+            padding: '6px 12px',
+            borderRadius: '5px',
+            backgroundColor: 'transparent',
+            color: '#0F5132',
+            border: '1px solid #0F5132',
+            cursor: 'pointer',
+            fontSize: '12px',
+            fontWeight: '600',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            transition: 'background-color 0.3s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#f5f5f5';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+          }}
+          onClick={() => toggleViewDetails(activity._id)}
         >
-          <FaEdit /> Edit
+          <FaEye style={{ fontSize: '14px' }} />{' '}
+          {activityDetails[activity._id]?.visible ? 'Hide Details' : 'View Details'}
         </button>
         <button
-          style={{ ...styles.button, ...styles.deleteButton }}
-          onClick={() => setShowDeletePopup(activity._id)} // Show confirmation popup
-          >
-          <FaTrash /> Delete
+          style={{
+            padding: '6px 12px',
+            borderRadius: '5px',
+            backgroundColor: '#0F312',
+            color: '#fff',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '12px',
+            fontWeight: '600',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            transition: 'background-color 0.3s ease',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#0d4b2a')}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#0F312')}
+          onClick={(e) => handleUpdateClick(e, activity)}
+        >
+          <FaEdit style={{ fontSize: '14px', color: '#fff' }} /> Edit
         </button>
       </div>
     </li>
   ))}
 </ul>
+
+
 {/* Confirmation Popup */}
 {showDeletePopup && (
   <div style={styles.popupOverlay}>
@@ -625,7 +755,7 @@ const handleGetActivity = async (e, Advertiser,name) => {
             name="name"
             value={formData.name}
             onChange={handleInputChange}
-            style={styles.input}
+            style={styles.input2}
           />
         </div>
         <div style={styles.inputGroup}>
@@ -637,7 +767,7 @@ const handleGetActivity = async (e, Advertiser,name) => {
             name="date"
             value={formData.date}
             onChange={handleInputChange}
-            style={styles.input}
+            style={styles.input2}
           />
         </div>
         <div style={styles.inputGroup}>
@@ -649,7 +779,7 @@ const handleGetActivity = async (e, Advertiser,name) => {
             name="price"
             value={formData.price}
             onChange={handleInputChange}
-            style={styles.input}
+            style={styles.input2}
           />
         </div>
         <div style={styles.inputGroup}>
@@ -661,7 +791,7 @@ const handleGetActivity = async (e, Advertiser,name) => {
             name="Category"
             value={formData.Category}
             onChange={handleInputChange}
-            style={styles.input}
+            style={styles.input2}
           />
         </div>
         <div style={styles.inputGroup}>
@@ -916,6 +1046,14 @@ const styles={
     border: "1px solid #ccc",
     fontSize: "14px",
   },
+  input2: {
+    flex: 1,
+    padding: "10px",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+    fontSize: "14px",
+    marginBottom:'30px'
+  },
   checkboxGroup: {
     display: "flex",
     alignItems: "center",
@@ -1154,7 +1292,7 @@ const styles={
     cursor: 'pointer', // Ensure it acts as a button
     position: 'absolute', // Position it correctly in the modal
     right: '500px', // Adjust placement
-    top: '100px', // Adjust placement
+    top: '110px', // Adjust placement
   },
   cancel2Icon: {
     color: '#0F5132', // Set the color of the icon
@@ -1162,7 +1300,7 @@ const styles={
     cursor: 'pointer', // Ensure it acts as a button
     position: 'absolute', // Position it correctly in the modal
     right: '500px', // Adjust placement
-    top: '180px', // Adjust placement
+    top: '130px', // Adjust placement
   },
   createButton: {
     display: "flex",

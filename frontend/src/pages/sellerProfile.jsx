@@ -10,6 +10,8 @@ import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
 import { Tooltip } from 'react-tooltip'; // Updated import
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import TrendingUpOutlinedIcon from '@mui/icons-material/TrendingUpOutlined';
+import TrendingDownOutlinedIcon from '@mui/icons-material/TrendingDownOutlined';
 
 const SellerProfile = () => {
   const [sellerProducts, setSellerProducts] = useState([]);
@@ -728,7 +730,7 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
     borderBottom: "2px solid #0F5132", 
     paddingBottom: "10px",
     letterSpacing: "1px", 
-    textTransform: "uppercase"}}>
+    }}>
       <i className="fa fa-dollar-sign"></i> Total Profit from Sales: ${totalSales}
     </h2>
     <div
@@ -756,7 +758,14 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
         paddingBottom: "10px",
         letterSpacing: "1px",
       }}
-    >
+    ><TrendingUpOutlinedIcon
+    style={{
+      color: '#0F5132',
+      marginRight: '8px',
+      verticalAlign: 'middle',
+      fontSize: '18px',
+    }}
+  />
       Most Sold Product
     </h3>
     {!isLoading && mostSold && (
@@ -795,7 +804,14 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
         paddingBottom: "10px",
         letterSpacing: "1px",
       }}
-    >
+    ><TrendingDownOutlinedIcon
+    style={{
+      color: '#d9534f',
+      marginRight: '8px',
+      verticalAlign: 'middle',
+      fontSize: '18px',
+    }}
+  />
       Least Sold Product
     </h3>
     {!isLoading && leastSold && (
@@ -1317,7 +1333,7 @@ const styles = {
   },
   container: {
     margin: '90px auto',
-    maxWidth: '1000px',
+    maxWidth: '1200px',
     padding: '20px',
     backgroundColor: '#f9f9f9',
     borderRadius: '10px',
