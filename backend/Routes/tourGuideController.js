@@ -251,7 +251,7 @@ const createTourGuideInfo = async (req, res) => {
       return;
     }
 
-    const message = `The itinerary "${itinerary.name}" is now open for bookings!`;
+    const message = `The itinerary "${itinerary.Activities}" is now open for bookings!`;
     const now = new Date();
 
     for (const { username } of itinerary.notificationRequests) {

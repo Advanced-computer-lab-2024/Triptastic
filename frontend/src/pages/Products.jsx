@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
-import { FaHeart } from "react-icons/fa";
+import { FaGlobe } from "react-icons/fa";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import { CurrencyContext } from "../pages/CurrencyContext";
 import logo from "../images/image.png"; // Replace with your logo path
 import HotelIcon from '@mui/icons-material/Hotel';
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
 import {
   FaUserCircle,
   FaShoppingCart,
@@ -13,11 +15,11 @@ import {
   FaComments,
   FaWarehouse,
   FaChartBar,
-  FaBars,FaCircle
-} 
+  FaArrowRight, FaArrowLeft, FaCircle
+}
 
 
-from "react-icons/fa";
+  from "react-icons/fa";
 import { IoIosStarOutline } from "react-icons/io";
 import {
   FaLandmark,
@@ -46,7 +48,23 @@ const Products = () => {
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
 
+  const handleCurrencyChange = (event) => {
+    fetchConversionRate(event.target.value);
+  };
+  // Carousel Handlers
+  const handleNextReview = (reviews) => {
+    setCurrentReviewIndex((prevIndex) =>
+      prevIndex === reviews.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const handlePrevReview = (reviews) => {
+    setCurrentReviewIndex((prevIndex) =>
+      prevIndex === 0 ? reviews.length - 1 : prevIndex - 1
+    );
+  };
   const navigate = useNavigate(); // Initialize useNavigate for navigation
   const [fetchedProduct, setFetchedProduct] = useState(null); //new
   const [errorMessage, setErrorMessage] = useState("");
@@ -234,7 +252,7 @@ const Products = () => {
   };
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8; // Customize the number of items per page
+  const itemsPerPage = 9; // Customize the number of items per page
   const totalPages = Math.ceil(products.length / itemsPerPage);
   const currentProducts = products.slice(
     (currentPage - 1) * itemsPerPage,
@@ -349,7 +367,24 @@ const Products = () => {
           </div>
           <h1 style={styles.title}>Products</h1>
           <div style={styles.headerIcons}>
-          
+
+            
+        {/* Currency Selector */}
+<div style={styles.currencySelector}>
+  <FaGlobe style={styles.currencyIcon} />
+  <select
+    value={selectedCurrency}
+    onChange={handleCurrencyChange}
+    style={styles.currencyDropdown}
+  >
+    <option value="USD">USD</option>
+    <option value="EUR">EUR</option>
+    <option value="GBP">GBP</option>
+    <option value="EGP">EGP</option>
+    {/* Add other currencies */}
+  </select>
+</div>
+
             {/* Wishlist Icon */}
             <div
               style={styles.wishlistIcon}
@@ -359,7 +394,7 @@ const Products = () => {
                   : navigate("/wishlist")
               }
             >
-              <FaHeart style={styles.wishlistHeartIcon} />
+              <FavoriteOutlinedIcon style={styles.wishlistHeartIcon} />
             </div>
             {/* Cart Icon */}
             <div
@@ -370,7 +405,7 @@ const Products = () => {
                   : navigate("/Cart")
               }
             >
-              <FaShoppingCart style={styles.cartIcon} />
+              <ShoppingCartOutlinedIcon style={styles.cartIcon} />
             </div>
           </div>
         </header>
@@ -392,11 +427,11 @@ const Products = () => {
           }}
         >
           <div style={styles.item} onClick={() => handleProfileRedirect()}>
-          <FaUserCircle style={styles.icon} />
-          <span className="label" style={styles.label}>
-             Home Page
-          </span>
-        </div>
+            <FaUserCircle style={styles.icon} />
+            <span className="label" style={styles.label}>
+              Home Page
+            </span>
+          </div>
           <div
             style={styles.item}
             onClick={() => navigate("/historical-locations")}
@@ -451,7 +486,7 @@ const Products = () => {
               Transportation
             </span>
           </div>
-         
+
         </div>
 
         <div className="card" style={styles.card}>
@@ -571,24 +606,24 @@ const Products = () => {
                         {product.stock}
                       </p>
                       <p
-    style={{
-      fontSize: "14px",
-      color: "#555",
-      marginBottom: "8px",
-      display: "flex",
-      alignItems: "center",
-      gap: "10px",
-    }}
-  >
+                        style={{
+                          fontSize: "14px",
+                          color: "#555",
+                          marginBottom: "8px",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                        }}
+                      >
 
-    <strong>
-      <IoIosStarOutline style={{ color: "grey", marginRight: "0px" }} /> Rating:
-    </strong>{" "}
-    <span style={styles.stars}>
-      {"★".repeat(Math.floor(product.rating || 0)) +
-        "☆".repeat(5 - Math.floor(product.rating || 0))}
-    </span>
-  </p>
+                        <strong>
+                          <IoIosStarOutline style={{ color: "grey", marginRight: "0px" }} /> Rating:
+                        </strong>{" "}
+                        <span style={styles.stars}>
+                          {"★".repeat(Math.floor(product.rating || 0)) +
+                            "☆".repeat(5 - Math.floor(product.rating || 0))}
+                        </span>
+                      </p>
 
                       <p
                         style={{
@@ -602,41 +637,37 @@ const Products = () => {
                         </strong>{" "}
                         {product.sales}
                       </p>
+                      {/* Reviews Section */}
                       <div>
-      <strong
-        style={{
-          fontSize: "14px",
-          color: "#555",
-          marginBottom: "8px",
-        }}
-      >
-        <FaComments style={{ marginRight: "5px" }} /> Reviews:
-      </strong>
-      <ul
-        style={{
-          listStyleType: "none",
-          padding: 0,
-          marginTop: "5px",
-        }}
-      >
-        {product.reviews.map((review, index) => (
-          <li
-            key={index}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px", // Spacing between bullet and text
-              marginBottom: "5px",
-              fontSize: "14px",
-              color: "#555",
-            }}
-          >
-            <FaCircle style={{ fontSize: "8px", color: "#555" }} />
-            {review}
-          </li>
-        ))}
-      </ul>
-    </div>
+                        <strong style={styles.reviewTitle}>
+                          <FaComments style={{ marginRight: "5px" }} /> Reviews:
+                        </strong>
+
+                        {product.reviews.length > 0 ? (
+                          <div style={styles.carouselContainer}>
+                            <button
+                              onClick={() => handlePrevReview(product.reviews)}
+                              style={styles.carouselButton}
+                            >
+                              <FaArrowLeft />
+                            </button>
+
+                            <div style={styles.reviewBox}>
+                              {product.reviews[currentReviewIndex]}
+                            </div>
+
+                            <button
+                              onClick={() => handleNextReview(product.reviews)}
+                              style={styles.carouselButton}
+                            >
+                              <FaArrowRight />
+                            </button>
+                          </div>
+                        ) : (
+                          <p style={styles.noReviewsText}>No reviews available.</p>
+                        )}
+                      </div>
+                      {/* End of Reviews Section */}
                     </div>
 
                     {/* Product Actions */}
@@ -653,14 +684,18 @@ const Products = () => {
                         style={{
                           backgroundColor: "#0F5132",
                           color: "#fff",
-                          padding: "10px 16px",
+                          padding: "5px 10px", // Reduced padding for a smaller button
                           border: "none",
-                          borderRadius: "6px",
+                          borderRadius: "5px", // Slightly smaller radius
                           cursor: "pointer",
-                          fontSize: "14px",
+                          fontSize: "14px", // Reduced font size
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "5px", // Space between the icon and text
                         }}
                       >
-                        <FaShoppingCart /> Add to Cart
+                        <ShoppingCartOutlinedIcon style={{ fontSize: "16px" }} /> {/* Adjust icon size */}
+                        Add to Cart
                       </button>
                       <button
                         onClick={() => handleAddToWishlist(product)}
@@ -672,7 +707,7 @@ const Products = () => {
                           color: "#f50057",
                         }}
                       >
-                        <FaHeart />
+                        <FavoriteOutlinedIcon />
                       </button>
                     </div>
                   </div>
@@ -787,7 +822,22 @@ const styles = {
     backgroundColor: "#fff",
     cursor: "pointer",
   },
-
+  currencySelector: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "5px", // Space between the globe icon and the dropdown
+  },
+  currencyIcon: {
+    fontSize: "18px", // Globe icon size
+    color: "#fff", // White color for the globe icon
+  },
+  currencyDropdown: {
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    padding: "3px 5px",
+    fontSize: "12px", // Smaller font size for the dropdown
+    cursor: "pointer",
+  },
   searchButton: {
     padding: "12px 20px",
     fontSize: "16px",
@@ -1066,6 +1116,42 @@ const styles = {
     alignItems: "center",
     gap: "10px",
     margin: 0, // Reset margin to ensure alignment
+  },
+  reviewTitle: {
+    fontSize: "14px",
+    color: "#555",
+    marginBottom: "8px",
+  },
+  carouselContainer: {
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: "10px",
+  },
+  carouselButton: {
+    backgroundColor: "transparent",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "16px",
+    color: "#555",
+  },
+  reviewBox: {
+    textAlign: "center",
+    width: "80%",
+    padding: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "10px",
+    backgroundColor: "#f9f9f9",
+  },
+  reviewIcon: {
+    fontSize: "8px",
+    color: "#555",
+    marginRight: "8px",
+  },
+  noReviewsText: {
+    fontSize: "14px",
+    color: "#999",
   },
 };
 

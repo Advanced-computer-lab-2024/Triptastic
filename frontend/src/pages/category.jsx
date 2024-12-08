@@ -261,6 +261,7 @@ const deleteCategory = async (e) => {
           value={createCategoryName}
           onChange={(e) => setCreateCategoryName(e.target.value)}
           required
+          placeholder="Enter a new Category name" // Added placeholder here
           style={styles.input}
         />
       </div>

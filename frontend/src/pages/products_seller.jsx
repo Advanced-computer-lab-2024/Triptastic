@@ -15,7 +15,8 @@ import {
   FaBars,
 } from "react-icons/fa";
 import {
-  FaLandmark,
+  FaArrowLeft,
+  FaArrowRight,
   FaUniversity,
   FaBox,
   FaMap,
@@ -99,6 +100,21 @@ const Productssel = () => {
       ...prevData,
       [name]: value,
     }));
+  };
+
+  const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
+
+  // Carousel Handlers
+  const handleNextReview = (reviews) => {
+    setCurrentReviewIndex((prevIndex) =>
+      prevIndex === reviews.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const handlePrevReview = (reviews) => {
+    setCurrentReviewIndex((prevIndex) =>
+      prevIndex === 0 ? reviews.length - 1 : prevIndex - 1
+    );
   };
 
   const fetchProductsByRating = async () => {
@@ -421,15 +437,8 @@ const Productssel = () => {
           <div style={styles.logoContainer}>
             <img src={logo} alt="Logo" style={styles.logo} />
           </div>
-          <h1 style={styles.title}>Products</h1>
-          <div style={styles.headerIcons}>
-            {/* Profile Icon */}
-            <FaUserCircle
-              alt="Profile Icon"
-              style={styles.profileIcon}
-              onClick={handleProfileRedirect} // Navigate to profile
-            />
-          </div>
+          <h1 style={styles.title}>All Products</h1>
+        
         </header>
         <div
           style={styles.sidebar}
@@ -453,7 +462,7 @@ const Productssel = () => {
           >
             <FaUserCircle style={styles.iconn} />
             <span className="label" style={styles.label}>
-               Profile
+              Profile
             </span>
           </div>
           <div
@@ -479,7 +488,7 @@ const Productssel = () => {
         </div>
 
         <div style={styles.userStatsContainer}>
-         
+
 
           <div className="card" style={styles.card}>
             <h3
@@ -631,41 +640,37 @@ const Productssel = () => {
                         {product.sales}
                       </p>
 
+                      {/* Reviews Section */}
                       <div>
-      <strong
-        style={{
-          fontSize: "14px",
-          color: "#555",
-          marginBottom: "8px",
-        }}
-      >
-        <FaComments style={{ marginRight: "5px" }} /> Reviews:
-      </strong>
-      <ul
-        style={{
-          listStyleType: "none",
-          padding: 0,
-          marginTop: "5px",
-        }}
-      >
-        {product.reviews.map((review, index) => (
-          <li
-            key={index}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px", // Spacing between bullet and text
-              marginBottom: "5px",
-              fontSize: "14px",
-              color: "#555",
-            }}
-          >
-            <FaCircle style={{ fontSize: "8px", color: "#555" }} />
-            {review}
-          </li>
-        ))}
-      </ul>
-    </div>
+                        <strong style={styles.reviewTitle}>
+                          <FaComments style={{ marginRight: "5px" }} /> Reviews:
+                        </strong>
+
+                        {product.reviews.length > 0 ? (
+                          <div style={styles.carouselContainer}>
+                            <button
+                              onClick={() => handlePrevReview(product.reviews)}
+                              style={styles.carouselButton}
+                            >
+                              <FaArrowLeft />
+                            </button>
+
+                            <div style={styles.reviewBox}>
+                              {product.reviews[currentReviewIndex]}
+                            </div>
+
+                            <button
+                              onClick={() => handleNextReview(product.reviews)}
+                              style={styles.carouselButton}
+                            >
+                              <FaArrowRight />
+                            </button>
+                          </div>
+                        ) : (
+                          <p style={styles.noReviewsText}>No reviews available.</p>
+                        )}
+                      </div>
+                      {/* End of Reviews Section */}
                     </div>
 
                     {/* Product Actions */}
@@ -709,11 +714,15 @@ const styles = {
     color: "white",
   },
   title: {
-    fontSize: "2.5rem",
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: "20px",
-    textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)",
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: 'white',
+    position: 'absolute', // Make it position-relative to the container
+    left: '50%', // Position the title to the center horizontally
+    transform: 'translateX(-50%)', // Offset it back by 50% of its width to center
+    margin: 0,
+    top: '50%', // Optional: if vertical centering within the container is required
+    transform: 'translate(-50%, -50%)', // Combine horizontal and vertical centering
   },
   searchSection: {
     display: "flex",
@@ -930,12 +939,6 @@ const styles = {
     fontSize: "25px", // Adjust size
     color: "white", // Green text
   },
-  title: {
-    fontSize: "24px",
-    fontWeight: "bold",
-    color: "white",
-    margin: 0,
-  },
 
   productList: {
     fontSize: "11px",
@@ -1029,6 +1032,42 @@ const styles = {
     alignItems: "center",
     gap: "10px",
     margin: 0, // Reset margin to ensure alignment
+  },
+  reviewTitle: {
+    fontSize: "14px",
+    color: "#555",
+    marginBottom: "8px",
+  },
+  carouselContainer: {
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: "10px",
+  },
+  carouselButton: {
+    backgroundColor: "transparent",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "16px",
+    color: "#555",
+  },
+  reviewBox: {
+    textAlign: "center",
+    width: "80%",
+    padding: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "10px",
+    backgroundColor: "#f9f9f9",
+  },
+  reviewIcon: {
+    fontSize: "8px",
+    color: "#555",
+    marginRight: "8px",
+  },
+  noReviewsText: {
+    fontSize: "14px",
+    color: "#999",
   },
 };
 

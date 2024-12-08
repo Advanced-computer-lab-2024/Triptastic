@@ -530,38 +530,41 @@ return (
     <>
 
 
-        {/* Pagination */}
-        <div style={productStyles.paginationContainer}>
-            <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                style={{
-                    ...productStyles.paginationButton,
-                    ...(currentPage === 1 ? productStyles.paginationButtonDisabled : {}),
-                }}
-            >
-                Previous
-            </button>
-            <p style={{ margin: '0 10px', fontSize: '16px' }}>
-                Page {currentPage} of {Math.ceil(Products.length / itemsPerPage)}
-            </p>
-            <button
-                onClick={() =>
-                    setCurrentPage((prev) =>
-                        Math.min(prev + 1, Math.ceil(Products.length / itemsPerPage))
-                    )
-                }
-                disabled={currentPage === Math.ceil(Products.length / itemsPerPage)}
-                style={{
-                    ...productStyles.paginationButton,
-                    ...(currentPage === Math.ceil(Products.length / itemsPerPage)
-                        ? productStyles.paginationButtonDisabled
-                        : {}),
-                }}
-            >
-                Next
-            </button>
-        </div>
+{/* Pagination */}
+<div style={productStyles.paginationContainer}>
+  <button
+    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+    disabled={currentPage === 1}
+    style={{
+      ...productStyles.paginationButton,
+      ...(currentPage === 1 ? productStyles.paginationButtonDisabled : {}),
+    }}
+    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#155724')}
+    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = currentPage === 1 ? '#ccc' : '#0F5132')}
+  >
+    Previous
+  </button>
+  <p style={productStyles.paginationInfo}>
+    Page {currentPage} of {Math.ceil(Products.length / itemsPerPage)}
+  </p>
+  <button
+    onClick={() =>
+      setCurrentPage((prev) =>
+        Math.min(prev + 1, Math.ceil(Products.length / itemsPerPage))
+      )
+    }
+    disabled={currentPage === Math.ceil(Products.length / itemsPerPage)}
+    style={{
+      ...productStyles.paginationButton,
+      ...(currentPage === Math.ceil(Products.length / itemsPerPage) ? productStyles.paginationButtonDisabled : {}),
+    }}
+    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#155724')}
+    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = currentPage === Math.ceil(Products.length / itemsPerPage) ? '#ccc' : '#0F5132')}
+  >
+    Next
+  </button>
+</div>
+
 
         {isLoading ? (
             <p style={productStyles.loadingSpinner}>Loading...</p>
@@ -620,6 +623,34 @@ const productStyles = {
       gridTemplateColumns: 'repeat(2, 1fr)', // Keeps the card positions the same
       gap: '20px',
       marginTop: '20px',
+  },
+  paginationContainer: {
+    marginTop: '-25px', // Raise the buttons up
+    marginBottom: '20px', // Add space below the buttons to prevent collision
+    display: 'flex',
+    justifyContent: 'center', // Center the buttons
+    alignItems: 'center', // Align vertically
+    gap: '8px', // Space between buttons and text
+  },
+  paginationButton: {
+    padding: '5px 10px', // Smaller button size
+    fontSize: '14px', // Smaller text
+    backgroundColor: '#0F5132', // Button background
+    color: 'white', // Button text color
+    border: 'none', // Removes default border
+    borderRadius: '3px', // Slightly rounded corners
+    cursor: 'pointer', // Pointer cursor on hover
+    transition: 'background-color 0.3s', // Smooth hover effect
+  },
+  paginationButtonDisabled: {
+    backgroundColor: '#ccc', // Disabled button background
+    color: '#666', // Disabled text color
+    cursor: 'not-allowed', // Disabled cursor
+  },
+  paginationInfo: {
+    fontSize: '14px', // Smaller text size
+    fontWeight: 'bold', // Bold text
+    color: '#0F5132', // Text color matching theme
   },
   card: {
       backgroundColor: '#fff',

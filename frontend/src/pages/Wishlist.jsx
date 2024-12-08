@@ -222,7 +222,7 @@ const Wishlist = () => {
                       handleAddToCartFromWishlist(product.productName, product._id)
                     }
                   >
-                    <FaCartPlus style={styles.buttonIcon} /> Add to Cart
+                    <ShoppingCartOutlinedIcon style={styles.buttonIcon} /> Add to Cart
                   </button>
                   <button
                     style={styles.removeButton}
@@ -382,7 +382,7 @@ const styles = {
     backgroundColor: '#0F5132',
     color: 'white',
     padding: '5px 10px', // Reduced padding for a smaller button
-    fontSize: '14px', // Smaller font size
+    fontSize: '13px', // Smaller font size
     border: 'none',
     borderRadius: '5px',
     cursor: 'pointer',
@@ -393,7 +393,7 @@ const styles = {
     backgroundColor: '#dc3545',
     color: 'white',
     padding: '5px 10px', // Reduced padding for a smaller button
-    fontSize: '14px', // Smaller font size
+    fontSize: '13px', // Smaller font size
     border: 'none',
     borderRadius: '5px',
     cursor: 'pointer',
@@ -402,6 +402,7 @@ const styles = {
   },
   buttonIcon: {
     marginRight: '5px',
+    fontsize:'10px'
   },
   
   item: {

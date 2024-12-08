@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { CurrencyContext } from '../pages/CurrencyContext';
 import { FaBus, FaPlane,FaCar,FaShip, FaTrain, FaMoneyBillWave, FaMapMarkerAlt, FaLocationArrow, FaClock ,FaDollarSign, FaArrowCircleLeft,FaUserCircle,FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaHotel, FaShoppingCart,
-  FaClipboardList,
+  FaGlobe,
   FaStar, } from 'react-icons/fa'; // Icons for transport types
 import { AiOutlineCheckCircle, AiOutlineWarning } from 'react-icons/ai'; // Icons for messages
 import logo from '../images/image.png';
@@ -81,7 +81,21 @@ const BookTransportation = () => {
         <img src={logo} alt="Logo" style={styles.logo} /> {/* Add your logo here */}
         <h1 style={styles.title}>Book Your Transportation</h1>
 <div>
-
+        {/* Currency Selector */}
+        <div style={styles.currencySelector}>
+  <FaGlobe style={styles.currencyIcon} />
+  <select
+    value={selectedCurrency}
+    onChange={handleCurrencyChange}
+    style={styles.currencyDropdown}
+  >
+    <option value="USD">USD</option>
+    <option value="EUR">EUR</option>
+    <option value="GBP">GBP</option>
+    <option value="EGP">EGP</option>
+    {/* Add other currencies */}
+  </select>
+</div>
 </div>
       </header>
          {/* Sidebar */}
@@ -304,6 +318,23 @@ const styles = {
  
     padding: '10px 0',
     
+  },
+  
+  currencySelector: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "5px", // Space between the globe icon and the dropdown
+  },
+  currencyIcon: {
+    fontSize: "18px", // Globe icon size
+    color: "#fff", // White color for the globe icon
+  },
+  currencyDropdown: {
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    padding: "3px 5px",
+    fontSize: "12px", // Smaller font size for the dropdown
+    cursor: "pointer",
   },
   container: {
 

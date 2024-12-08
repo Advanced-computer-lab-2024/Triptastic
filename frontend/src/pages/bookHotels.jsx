@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { CurrencyContext } from "../pages/CurrencyContext";
+import React, { useState, useEffect, useContext } from "react";
 import {
   FaLandmark,
   FaUniversity,
@@ -7,7 +8,7 @@ import {
   FaRunning,
   FaBus,
   FaPlane,
-  FaHotel,
+  FaGlobe,
   FaClipboardList,
   FaStar,
   FaUserCircle,
@@ -74,6 +75,11 @@ const BookHotels = () => {
     fetchToken();
   }, []);
 
+  const { selectedCurrency, conversionRate, fetchConversionRate } =
+    useContext(CurrencyContext);
+    const handleCurrencyChange = (event) => {
+      fetchConversionRate(event.target.value); // Update conversion rate for all products
+    };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setHotelDetails({
@@ -278,6 +284,22 @@ const BookHotels = () => {
       color: "white",
       cursor: "pointer",
     },
+    currencySelector: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: "5px", // Space between the globe icon and the dropdown
+    },
+    currencyIcon: {
+      fontSize: "18px", // Globe icon size
+      color: "#fff", // White color for the globe icon
+    },
+    currencyDropdown: {
+      border: "1px solid #ddd",
+      borderRadius: "5px",
+      padding: "3px 5px",
+      fontSize: "12px", // Smaller font size for the dropdown
+      cursor: "pointer",
+    },
     sidebar: {
       position: "fixed",
       top: "60px",
@@ -472,6 +494,27 @@ const BookHotels = () => {
           <h1 style={styles.title}>Book Hotels</h1>
           <div>
 
+            
+
+
+
+
+        {/* Currency Selector */}
+<div style={styles.currencySelector}>
+  <FaGlobe style={styles.currencyIcon} />
+  <select
+    value={selectedCurrency}
+    onChange={handleCurrencyChange}
+    style={styles.currencyDropdown}
+  >
+    <option value="USD">USD</option>
+    <option value="EUR">EUR</option>
+    <option value="GBP">GBP</option>
+    <option value="EGP">EGP</option>
+    {/* Add other currencies */}
+  </select>
+</div>
+
           </div>
         </header>
         {/* Sidebar */}
@@ -639,17 +682,19 @@ const BookHotels = () => {
                           : "Standard"}
                       </div>
                       <p
-                        style={{
-                          fontSize: "16px",
-                          fontWeight: "bold",
-                          color: "#0F5132",
-                          marginTop: "10px",
-                        }}
-                      >
-                        {hotel.offers && hotel.offers[0]?.price?.total
-                          ? `Price: $${hotel.offers[0].price.total}`
-                          : "Price: Contact for details"}
-                      </p>
+  style={{
+    fontSize: "16px",
+    fontWeight: "bold",
+    color: "#0F5132",
+    marginTop: "10px",
+  }}
+>
+  {hotel.offers && hotel.offers[0]?.price?.total
+    ? `Price: $${(hotel.offers[0].price.total * conversionRate).toFixed(2)}`
+    : "Price: Contact for details"}
+</p>
+
+
                       <div
                         style={{
                           display: "flex",
