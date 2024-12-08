@@ -619,14 +619,13 @@ const styles = {
     marginTop: '20px',
   },
   paginationButton: {
-    padding: '10px 15px',
+    padding: '5px 10px',
     fontSize: '14px',
     backgroundColor: '#0F5132',
-    color: '#fff',
+    color: 'white',
     border: 'none',
-    borderRadius: '5px',
+    borderRadius: '3px',
     cursor: 'pointer',
-    margin: '0 10px',
     transition: 'background-color 0.3s ease',
   },
   productName: {
@@ -746,6 +745,18 @@ title2: {
             fontSize: '24px',
             marginLeft: '15px', // Move icons slightly to the right
             color: '#fff', // Icons are always white
+          },
+
+
+          paginationButton: {
+            padding: '5px 10px',
+            fontSize: '14px',
+            backgroundColor: '#0F5132',
+            color: 'white',
+            border: 'none',
+            borderRadius: '3px',
+            cursor: 'pointer',
+            transition: 'background-color 0.3s ease',
           },
       
 };
