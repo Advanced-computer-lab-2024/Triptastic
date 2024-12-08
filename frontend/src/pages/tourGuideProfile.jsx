@@ -1,12 +1,12 @@
 import React, { useState, useEffect} from 'react';
 import image from '../images/image.png';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
-import { FaBell,FaSearch,FaUserCircle, FaBox, FaLandmark, FaUniversity,  FaSync,
+import { FaUsers,FaTimesCircle,FaUserCircle, FaClock, FaMapMarkerAlt, FaCalendarAlt,  FaSync,
   FaFilter,
   FaDollarSign,
   FaMapMarkedAlt,
   FaCalendarDay,
-  FaChartLine,FaClipboardList,FaMap, FaRunning, FaPlane, FaHotel, FaStar, FaBus } from 'react-icons/fa';
+  FaChartLine,FaClipboardList,FaMap, FaRunning, FaPlane, FaChartBar, FaStar, FaBus } from 'react-icons/fa';
 import { MdNotificationImportant } from 'react-icons/md';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
@@ -15,8 +15,8 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 import AssistantPhotoIcon from '@mui/icons-material/AssistantPhoto';
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import CommentIcon from '@mui/icons-material/Comment';
+import TrendingUpOutlinedIcon from '@mui/icons-material/TrendingUpOutlined';
+  import TrendingDownOutlinedIcon from '@mui/icons-material/TrendingDownOutlined';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
@@ -671,59 +671,209 @@ const handleViewReport = async (itineraryId) => {
       </div>
     )}
 
-
-
-<div style={styles.mainContainer}>
+<div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', color: '#333' }}>
   {/* Itinerary Reports Section */}
-  <div style={styles.reportsSection}>
-    <h3 style={styles.sectionTitle}>
-      <span style={styles.titleText}>Itinerary Reports</span>
-      <AssessmentIcon style={styles.flagIcon} />
+  <div style={{ marginBottom: '10px' ,marginTop:'-30px'}}>
+    <h3
+      style={{
+        fontSize: '20px',
+      fontWeight: '700',
+      color: '#0F5132',
+      textAlign: 'center',
+      letterSpacing: '1px',
+      borderBottom: '2px solid #0F5132',
+      paddingBottom: '10px',
+      marginBottom: '20px',
+      }}
+    >      Reports
     </h3>
-    <div style={styles.gridContainer}>
+
+    {/* Filter Section */}
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        gap: '15px',
+        marginBottom: '20px',
+      }}
+    >
+      <span
+        style={{
+          fontSize: '16px',
+          fontWeight: '600',
+          color: '#0F5132',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+        }}
+      >
+        <DisplaySettingsIcon style={{ fontSize: '20px', color: '#0F5132' }} />
+        Filter Reports
+      </span>
+      <select
+        onChange={(e) => handleMonthFilter(e.target.value)}
+        value={selectedMonth}
+        style={{
+          padding: '10px',
+          borderRadius: '5px',
+          border: '1px solid #ddd',
+          fontSize: '14px',
+          backgroundColor: '#fff',
+          color: '#333',
+          cursor: 'pointer',
+        }}
+      >
+        <option value="">All Months</option>
+        {Array.from({ length: 12 }, (_, i) => (
+          <option key={i + 1} value={i + 1}>
+            {new Date(0, i).toLocaleString('default', { month: 'long' })}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    {/* Reports Grid */}
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        gap: '20px',
+      }}
+    >
       {filteredItineraries.length > 0 ? (
         filteredItineraries.map((itinerary) => (
-          <div key={itinerary._id} style={styles.box}>
-            <h4 style={styles.listText}>
-              Locations: {itinerary.Locations.join(", ")}
+          <div
+            key={itinerary._id}
+            style={{
+              padding: '20px',
+              border: '1px solid #ddd',
+              borderRadius: '10px',
+              backgroundColor: '#f9f9f9',
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+              transition: 'transform 0.3s ease, border-color 0.3s ease',
+              position: 'relative',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = '#0F5132';
+              e.currentTarget.style.transform = 'scale(1.03)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = '#ddd';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            <h4
+              style={{
+                fontSize: '18px',
+                fontWeight: '600',
+                color: '#0F5132',
+                marginBottom: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              <FaMapMarkerAlt style={{ fontSize: '20px', color: '#0F5132' }} />
+              Locations: {itinerary.Locations.join(', ')}
             </h4>
-            <p style={styles.listText}>Dates: {itinerary.DatesTimes}</p>
-            <p style={styles.listText}>Timeline: {itinerary.Timeline}</p>
+            <p
+              style={{
+                fontSize: '14px',
+                marginBottom: '8px',
+                color: '#333',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              <FaCalendarAlt style={{ fontSize: '16px', color: '#0F5132' }} />
+              Dates: {itinerary.DatesTimes}
+            </p>
+            <p
+              style={{
+                fontSize: '14px',
+                marginBottom: '8px',
+                color: '#333',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              <FaClock style={{ fontSize: '16px', color: '#0F5132' }} />
+              Timeline: {itinerary.Timeline}
+            </p>
             <button
-              style={styles.button}
+              style={{
+                padding: '10px 20px',
+                borderRadius: '5px',
+                backgroundColor: '#0F5132',
+                color: '#fff',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '600',
+                transition: 'background-color 0.3s ease',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#0d4b2a')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#0F5132')}
               onClick={() => handleViewReport(itinerary._id)}
             >
-              {itineraryReports[itinerary._id]?.visible
-                ? "Hide Report"
-                : "View Report"}
+              {itineraryReports[itinerary._id]?.visible ? 'Hide Report' : 'View Report'}
             </button>
 
-            {/* Report Table */}
+            {/* Report Section */}
             {itineraryReports[itinerary._id]?.visible && (
-              <div style={styles.reportSection}>
-                <table style={styles.table}>
-                  <thead style={styles.tableHead}>
+              <div style={{ marginTop: '15px', overflowY: 'auto', maxHeight: '200px' }}>
+                <p
+                  style={{
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: '#0F5132',
+                    marginBottom: '10px',
+                  }}
+                >
+                  Total Tourists: {itineraryReports[itinerary._id]?.tourists.length || 0}
+                </p>
+                <table
+                  style={{
+                    width: '100%',
+                    borderCollapse: 'collapse',
+                    fontSize: '14px',
+                  }}
+                >
+                  <thead
+                    style={{
+                      backgroundColor: '#0F5132',
+                      color: '#fff',
+                      textAlign: 'left',
+                    }}
+                  >
                     <tr>
-                      <th style={styles.tableHeadCell}>Tourist</th>
-                      <th style={styles.tableHeadCell}>Email</th>
+                      <th style={{ padding: '8px', borderBottom: '2px solid #ddd' }}>
+                        Tourist
+                      </th>
+                      <th style={{ padding: '8px', borderBottom: '2px solid #ddd' }}>
+                        Email
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
-                    {itineraryReports[itinerary._id].tourists.map(
-                      (tourist, index) => (
-                        <tr
-                          key={index}
-                          style={
-                            index % 2 === 0
-                              ? styles.tableRow
-                              : styles.tableRowAlt
-                          } // Alternating row colors
-                        >
-                          <td style={styles.tableCell}>{tourist.Username}</td>
-                          <td style={styles.tableCell}>{tourist.Email}</td>
-                        </tr>
-                      )
-                    )}
+                    {itineraryReports[itinerary._id]?.tourists.map((tourist, index) => (
+                      <tr
+                        key={index}
+                        style={{
+                          backgroundColor: index % 2 === 0 ? '#f9f9f9' : '#fff',
+                        }}
+                      >
+                        <td style={{ padding: '8px', borderBottom: '1px solid #ddd' }}>
+                          {tourist.Username}
+                        </td>
+                        <td style={{ padding: '8px', borderBottom: '1px solid #ddd' }}>
+                          {tourist.Email}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -731,169 +881,504 @@ const handleViewReport = async (itineraryId) => {
           </div>
         ))
       ) : (
-        <p style={styles.noData}>No itineraries found.</p>
+        <p
+          style={{
+            fontSize: '16px',
+            color: '#d9534f',
+            textAlign: 'center',
+            marginTop: '20px',
+          }}
+        >
+          No itineraries found.
+        </p>
       )}
     </div>
   </div>
-
-  {/* Filter Section */}
-  <div style={styles.filterContainer}>
-    <h3 style={styles.filterTitle}>
-      <DisplaySettingsIcon style={styles.filterIcon} /> Filter Reports
-    </h3>
-    <select
-      onChange={(e) => handleMonthFilter(e.target.value)}
-      value={selectedMonth}
-      style={styles.filterDropdown}
-    >
-      <option value="">All Months</option>
-      {Array.from({ length: 12 }, (_, i) => (
-        <option key={i + 1} value={i + 1}>
-          {new Date(0, i).toLocaleString("default", { month: "long" })}
-        </option>
-      ))}
-    </select>
-  </div>
-</div>
-
-<div style={styles.filtersWrapper}>
-  {/* Date Filter */}
-  <div style={styles.dateFilter}>
-    <FaCalendarDay style={styles.iconn} />
-    <input
-      type="date"
-      value={date}
-      onChange={(e) => setDate(e.target.value)}
-      style={styles.dateInput}
-    />
-  </div>
-
-
-  {/* Apply/Reset Filter by Date */}
-  <button style={styles.filterButton} onClick={handleFilterD}>
-    <FaFilter style={styles.iconf} /> {filteredD ? "Clear Filter" : "Filter"}
-  </button>
-
-  {/* Itinerary Filter */}
-  <div style={styles.itineraryFilter}>
-    <label htmlFor="itineraryDropdown" style={styles.filterLabel}>
-      <DisplaySettingsIcon style={styles.iconn} /> Filter by Itinerary:
-    </label>
-    <select
-      id="itineraryDropdown"
-      value={filterI ? filterI._id : ""}
-      onChange={(e) => handleFilterChange(e.target.value)}
-      style={styles.dropdown}
-    >
-      <option value="">Select an itinerary</option>
-      {itineraries.map((itinerary) => (
-        <option key={itinerary._id} value={itinerary._id}>
-          {itinerary.Locations.join(", ")}
-        </option>
-      ))}
-    </select>
-  </div>
 </div>
 
 
-{/* Statistics Section */}
-<div style={styles.reportSection}>
-  {!filteredI && !filteredD && (
-    <>
-      <h3 style={styles.sectionTitlee}>
-       Total Profit from Sales: ${totalSales}
-      </h3>
+
+<div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', color: '#333' }}>
+  {/* Statistics Section */}
+  <div style={{ marginBottom: '20px' }}>
+  <h3
+  style={{
+    fontSize: '20px',
+    fontWeight: '700',
+    color: '#0F5132',
+    letterSpacing: '1px',
+    borderBottom: '2px solid #0F5132',
+    paddingBottom: '10px',
+    margin: '0 auto',
+    display: 'flex', // Ensures flexbox for alignment
+    alignItems: 'center', // Centers items vertically
+    justifyContent: 'center', // Centers items horizontally
+    maxWidth: '500px',
+    marginBottom: '20px',
+  }}
+>
+  Total Profit from Sales: ${totalSales}
+</h3>
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        gap: '20px',
+        justifyContent: 'center',
+      }}
+    >
+      {/* Most Sold Itinerary Card */}
       {mostSold && (
-        <div style={styles.itineraryCard}>
-          <h4 style={styles.cardTitle}>
-            <FaChartLine style={styles.iconn} /> Most Sold Itinerary
+        <div
+          style={{
+            padding: '20px',
+            border: '1px solid #ddd',
+            borderRadius: '10px',
+            backgroundColor: '#f9f9f9',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            transition: 'transform 0.3s ease, border-color 0.3s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = '#0F5132';
+            e.currentTarget.style.transform = 'scale(1.03)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = '#ddd';
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
+        >
+          <h4
+            style={{
+              fontSize: '16px',
+            fontWeight: '600',
+            color: '#0F5132',
+            marginBottom: '15px',
+            textAlign: 'center',
+            borderBottom: '2px solid #0F5132',
+            paddingBottom: '10px',
+            letterSpacing: '1px',
+            }}
+          >
+            <TrendingUpOutlinedIcon style={{ fontSize: '20px', color: '#0F5132' }} />
+            Most Sold Itinerary
           </h4>
-          <p><strong>Locations:</strong> {mostSold.Locations.join(", ")}</p>
-          <p><strong>Price:</strong> ${mostSold.Price}</p>
-          <p><strong>Sales:</strong> ${mostSold.sales}</p>
+          <p
+            style={{
+              fontSize: '14px',
+              marginBottom: '8px',
+              color: '#333',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <FaMapMarkerAlt style={{ fontSize: '14px', color: '#0F5132' }} />
+            <strong>Locations:</strong> {mostSold.Locations.join(', ')}
+          </p>
+          <p
+            style={{
+              fontSize: '14px',
+              marginBottom: '8px',
+              color: '#333',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <FaDollarSign style={{ fontSize: '14px', color: '#0F5132' }} />
+            <strong>Price:</strong> ${mostSold.Price}
+          </p>
+          <p
+            style={{
+              fontSize: '14px',
+              color: '#333',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <FaChartLine style={{ fontSize: '14px', color: '#0F5132' }} />
+            <strong>Sales:</strong> ${mostSold.sales}
+          </p>
         </div>
       )}
+
+      {/* Least Sold Itinerary Card */}
       {leastSold && (
-        <div style={styles.itineraryCard}>
-          <h4 style={styles.cardTitle}>
-            <FaChartLine style={styles.iconn} /> Least Sold Itinerary
+        <div
+          style={{
+            padding: '20px',
+            border: '1px solid #ddd',
+            borderRadius: '10px',
+            backgroundColor: '#f9f9f9',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            transition: 'transform 0.3s ease, border-color 0.3s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = '#0F5132';
+            e.currentTarget.style.transform = 'scale(1.03)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = '#ddd';
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
+        >
+          <h4
+            style={{
+              fontSize: '16px',
+            fontWeight: '600',
+            color: '#0F5132',
+            marginBottom: '15px',
+            textAlign: 'center',
+            borderBottom: '2px solid #0F5132',
+            paddingBottom: '10px',
+            letterSpacing: '1px',
+            }}
+          >
+            <TrendingDownOutlinedIcon style={{ fontSize: '20px', color: '#d9534f' }} />
+            Least Sold Itinerary
           </h4>
-          <p><strong>Locations:</strong> {leastSold.Locations.join(", ")}</p>
-          <p><strong>Price:</strong> ${leastSold.Price}</p>
-          <p><strong>Sales:</strong> ${leastSold.sales}</p>
+          <p
+            style={{
+              fontSize: '14px',
+              marginBottom: '8px',
+              color: '#333',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <FaMapMarkerAlt style={{ fontSize: '14px', color: '#0F5132' }} />
+            <strong>Locations:</strong> {leastSold.Locations.join(', ')}
+          </p>
+          <p
+            style={{
+              fontSize: '14px',
+              marginBottom: '8px',
+              color: '#333',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <FaDollarSign style={{ fontSize: '14px', color: '#0F5132' }} />
+            <strong>Price:</strong> ${leastSold.Price}
+          </p>
+          <p
+            style={{
+              fontSize: '14px',
+              color: '#333',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <FaChartLine style={{ fontSize: '14px', color: '#0F5132' }} />
+            <strong>Sales:</strong> ${leastSold.sales}
+          </p>
         </div>
       )}
-    </>
-  )}
+    </div>
+  </div>
 </div>
 
 
-{/* Reports Section */}
-<div style={styles.reportSection}>
-  {/* Filtered by Date */}
-  {filteredD && (
-    <div style={styles.filteredSection}>
-      <h3 style={styles.sectionTitle}>
-        <FaCalendarDay style={styles.iconn} /> Filtered by Date: {date}
-      </h3>
-      {itineraries.map((itinerary) => (
-        <div key={itinerary._id} style={styles.itineraryCard}>
-          <p><strong>Locations:</strong> {itinerary.Locations.join(", ")}</p>
-          <p><strong>Price:</strong> ${itinerary.Price}</p>
-          <p><strong>Sales:</strong> ${itinerary.sales}</p>
-        </div>
-      ))}
+<div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', color: '#333' }}>
+  {/* Filters Section */}
+  <div
+    style={{
+      display: 'flex',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+      gap: '20px',
+      marginBottom: '20px',
+    }}
+  >
+    {/* Date Filter */}
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <FaCalendarDay style={{ fontSize: '18px', color: '#0F5132' }} />
+      <input
+        type="date"
+        value={date}
+        onChange={(e) => setDate(e.target.value)}
+        style={{
+          padding: '8px 10px',
+          border: '1px solid #ddd',
+          borderRadius: '5px',
+          fontSize: '14px',
+          color: '#333',
+        }}
+      />
+      <button
+        onClick={handleFilterD}
+        style={{
+          padding: '8px 15px',
+          borderRadius: '5px',
+          backgroundColor: filteredD ? '#d9534f' : '#0F5132',
+          color: '#fff',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: '14px',
+          fontWeight: '600',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          marginTop:'-1px'
+        }}
+      >
+        {filteredD ? 'Clear' : 'Filter Date'}
+      </button>
     </div>
-  )}
 
-
-  {/* Filtered by Itinerary */}
-  {filteredI && filterI && (
-    <div style={styles.filteredSection}>
-      <h3 style={styles.sectionTitle}>
-        <FaClipboardList style={styles.iconn} /> Selected Itinerary
-      </h3>
-      <p><strong>Locations:</strong> {filterI.Locations.join(", ")}</p>
-      <p><strong>Price:</strong> ${filterI.Price}</p>
-      <p><strong>Sales:</strong> ${filterI.sales}</p>
-      <p><strong>Bookings:</strong> {count}</p>
-      <ul>
-        {dates.map((date, index) => (
-          <li key={index}>{date}</li>
+    {/* Itinerary Filter */}
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <FaClipboardList style={{ fontSize: '18px', color: '#0F5132' }} />
+      <label
+        htmlFor="itineraryDropdown"
+        style={{ fontSize: '14px', fontWeight: '600', color: '#0F5132' }}
+      >
+        Filter by Itinerary
+      </label>
+      <select
+        id="itineraryDropdown"
+        value={filterI ? filterI._id : ''}
+        onChange={(e) => handleFilterChange(e.target.value)}
+        style={{
+          padding: '8px',
+          borderRadius: '5px',
+          border: '1px solid #ddd',
+          fontSize: '14px',
+          color: '#333',
+        }}
+      >
+        <option value="">Select an itinerary</option>
+        {itineraries.map((itinerary) => (
+          <option key={itinerary._id} value={itinerary._id}>
+            {itinerary.Locations.join(', ')}
+          </option>
         ))}
-      </ul>
-      <p><strong>Cancellations:</strong> {count - filterI.sales / filterI.Price}</p>
+      </select>
     </div>
-  )}
-
-
-  {/* All Itineraries */}
-  {!filteredI && !filteredD && (
-    <div style={styles.itineraryList}>
-      <h3 style={styles.sectionTitle}>
-        <FaMapMarkedAlt style={styles.iconn} /> All Itineraries
-      </h3>
-      {itineraries.length > 0 ? (
-        itineraries.map((itinerary) => (
-          <div key={itinerary._id} style={styles.itineraryCard}>
-            <p><strong>Locations:</strong> {itinerary.Locations.join(", ")}</p>
-            <p><strong>Price:</strong> ${itinerary.Price}</p>
-            <p><strong>Sales:</strong> ${itinerary.sales}</p>
-          </div>
-        ))
-      ) : (
-        <p>No itineraries found.</p>
-      )}
-    </div>
-  )}
+  </div>
 </div>
+
+
+  {/* Reports Section */}
+  <div>
+    {/* Filtered by Date */}
+    {filteredD && (
+      <div
+        style={{
+          marginTop: '20px',
+          padding: '20px',
+          border: '1px solid #ddd',
+          borderRadius: '10px',
+          backgroundColor: '#f9f9f9',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        }}
+      >
+        <h3
+          style={{
+            fontSize: '18px',
+            fontWeight: '700',
+            color: '#0F5132',
+            marginBottom: '15px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+          }}
+        >
+          <FaCalendarDay style={{ fontSize: '18px', color: '#0F5132' }} />
+          Filtered by Date: {date}
+        </h3>
+        {itineraries.map((itinerary) => (
+          <div
+            key={itinerary._id}
+            style={{
+              padding: '15px',
+              border: '1px solid #ddd',
+              borderRadius: '10px',
+              backgroundColor: '#f9f9f9',
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+              marginBottom: '15px',
+            }}
+          >
+            <div style={{ fontSize: '14px', color: '#333', lineHeight: '1.6' }}>
+  <p style={{ display: 'flex', alignItems: 'center', marginBottom: '8px', gap: '8px' }}>
+    <FaMapMarkerAlt style={{ fontSize: '16px', color: '#0F5132' }} />
+    <strong style={{ color: '#0F5132' }}>Locations:</strong>
+    <span style={{ color: '#555' }}>{itinerary.Locations.join(', ')}</span>
+  </p>
+  <p style={{ display: 'flex', alignItems: 'center', marginBottom: '8px', gap: '8px' }}>
+    <FaDollarSign style={{ fontSize: '16px', color: '#0F5132' }} />
+    <strong style={{ color: '#0F5132' }}>Price:</strong>
+    <span style={{ color: '#555' }}>${itinerary.Price}</span>
+  </p>
+  <p style={{ display: 'flex', alignItems: 'center', marginBottom: '8px', gap: '8px' }}>
+    <FaChartLine style={{ fontSize: '16px', color: '#0F5132' }} />
+    <strong style={{ color: '#0F5132' }}>Sales:</strong>
+    <span style={{ color: '#555' }}>${itinerary.sales}</span>
+  </p>
+</div>
+          </div>
+        ))}
+      </div>
+    )}
+
+    {/* Filtered by Itinerary */}
+    {filteredI && filterI && (
+      <div
+        style={{
+          marginTop: '20px',
+          padding: '20px',
+          border: '1px solid #ddd',
+          borderRadius: '10px',
+          backgroundColor: '#f9f9f9',
+          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        }}
+      >
+        <h3
+          style={{
+            fontSize: '18px',
+            fontWeight: '700',
+            color: '#0F5132',
+            marginBottom: '15px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+          }}
+        >
+          <FaClipboardList style={{ fontSize: '18px', color: '#0F5132' }} />
+          Selected Itinerary
+        </h3>
+        <div style={{ fontSize: '14px', color: '#333', lineHeight: '1.6' }}>
+  <p style={{ display: 'flex', alignItems: 'center', marginBottom: '8px', gap: '8px' }}>
+    <FaMapMarkerAlt style={{ fontSize: '16px', color: '#0F5132' }} />
+    <strong style={{ color: '#0F5132' }}>Locations:</strong>
+    <span style={{ color: '#555' }}>{filterI.Locations.join(', ')}</span>
+  </p>
+  <p style={{ display: 'flex', alignItems: 'center', marginBottom: '8px', gap: '8px' }}>
+    <FaDollarSign style={{ fontSize: '16px', color: '#0F5132' }} />
+    <strong style={{ color: '#0F5132' }}>Price:</strong>
+    <span style={{ color: '#555' }}>${filterI.Price}</span>
+  </p>
+  <p style={{ display: 'flex', alignItems: 'center', marginBottom: '8px', gap: '8px' }}>
+    <FaChartLine style={{ fontSize: '16px', color: '#0F5132' }} />
+    <strong style={{ color: '#0F5132' }}>Sales:</strong>
+    <span style={{ color: '#555' }}>${filterI.sales}</span>
+  </p>
+  <p style={{ display: 'flex', alignItems: 'center', marginBottom: '8px', gap: '8px' }}>
+    <FaUsers style={{ fontSize: '16px', color: '#0F5132' }} />
+    <strong style={{ color: '#0F5132' }}>Bookings:</strong>
+    <span style={{ color: '#555' }}>{count}</span>
+  </p>
+  <ul style={{ marginLeft: '20px', listStyleType: 'circle', color: '#555' }}>
+    {dates.map((date, index) => (
+      <li key={index} style={{ marginBottom: '5px' }}>
+        <FaCalendarAlt style={{ fontSize: '14px', color: '#0F5132', marginRight: '5px' }} />
+        {date}
+      </li>
+    ))}
+  </ul>
+  <p style={{ display: 'flex', alignItems: 'center', marginBottom: '8px', gap: '8px' }}>
+    <FaTimesCircle style={{ fontSize: '16px', color: '#d9534f' }} />
+    <strong style={{ color: '#d9534f' }}>Cancellations:</strong>
+    <span style={{ color: '#555' }}>{count - Math.round(filterI.sales / filterI.Price)}</span>
+  </p>
+</div>
+
+      </div>
+    )}
+
+    {/* All Itineraries */}
+    {!filteredI && !filteredD && (
+      <div style={{ marginTop: '20px' }}>
+        <h3
+          style={{
+            fontSize: '20px',
+            fontWeight: '800',
+            color: '#0F5132',
+            marginBottom: '15px',
+            textAlign: 'center',
+            borderBottom: '2px solid #0F5132',
+            paddingBottom: '10px',
+            letterSpacing: '1px',
+          }}
+        >
+Sales        </h3>
+        {itineraries.length > 0 ? (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+              gap: '20px',
+            }}
+          >
+            {itineraries.map((itinerary) => (
+              <div
+                key={itinerary._id}
+                style={{
+                  padding: '20px',
+                  border: '1px solid #ddd',
+                  borderRadius: '10px',
+                  backgroundColor: '#f9f9f9',
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                  transition: 'transform 0.3s ease, border-color 0.3s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#0F5132';
+                  e.currentTarget.style.transform = 'scale(1.03)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = '#ddd';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }}
+              >
+               <div style={{ fontSize: '14px', color: '#333', lineHeight: '1.6' }}>
+  <p style={{ display: 'flex', alignItems: 'center', marginBottom: '8px', gap: '8px' }}>
+    <FaMapMarkerAlt style={{ fontSize: '16px', color: '#0F5132' }} />
+    <strong style={{ color: '#0F5132' }}>Locations:</strong>
+    <span style={{ color: '#555' }}>{itinerary.Locations.join(', ')}</span>
+  </p>
+  <p style={{ display: 'flex', alignItems: 'center', marginBottom: '8px', gap: '8px' }}>
+    <FaDollarSign style={{ fontSize: '16px', color: '#0F5132' }} />
+    <strong style={{ color: '#0F5132' }}>Price:</strong>
+    <span style={{ color: '#555' }}>${itinerary.Price}</span>
+  </p>
+  <p style={{ display: 'flex', alignItems: 'center', marginBottom: '8px', gap: '8px' }}>
+    <FaChartLine style={{ fontSize: '16px', color: '#0F5132' }} />
+    <strong style={{ color: '#0F5132' }}>Sales:</strong>
+    <span style={{ color: '#555' }}>${itinerary.sales}</span>
+  </p>
+</div>
+
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p
+            style={{
+              fontSize: '14px',
+              color: '#d9534f',
+              textAlign: 'center',
+              marginTop: '20px',
+            }}
+          >
+            No itineraries found.
+          </p>
+        )}
+      </div>
+    )}
+  </div>
+
+
 </div>
     );
   }
 
 const styles = {
   container: {
-    top:'-90px',
      margin: '90px auto',
     maxWidth: '1200px',
     padding: '20px',
@@ -1264,23 +1749,7 @@ const styles = {
   reportsSection: {
     flex: "3",
   },
-  sectionTitle: {
-    fontSize: "25px",
-    color: "#0F5132",
-    textAlign: "center",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "10px",
-  },
-  sectionTitlee: {
-    fontSize: "23px", // Increased font size for better visibility
-    color: "#0F5132", // Green color for the text
-    textAlign: "center", // Center the text horizontally
-    display: "flex", // Use flexbox for alignment
-    alignItems: "center", // Center the content vertically
-    justifyContent: "center", // Center the content horizontally
-  },
+ 
   
   titleText: {
     color: '#0F5132', // Green shade for the title
@@ -1295,6 +1764,17 @@ const styles = {
     gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
     gap: "20px",
     padding: "20px 0",
+  },
+  sectionTitle: {
+    fontSize: "20px",
+    fontWeight: "600",
+    color: "#0F5132", 
+    marginBottom: "15px",
+    textAlign: "center",
+    borderBottom: "2px solid #0F5132", 
+    paddingBottom: "10px",
+    letterSpacing: "1px", 
+    textTransform: "uppercase", 
   },
   box: {
     backgroundColor: "#f9f9f9",
@@ -1375,15 +1855,7 @@ const styles = {
     borderRadius: "10px",
     boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
   },
-  sectionTitle: {
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    fontSize: "18px",
-    fontWeight: "bold",
-    color: "#0F5132",
-    marginBottom: "10px",
-  },
+  
   sectionIcon: {
     fontSize: "20px",
     color: "#0F5132",
@@ -1512,15 +1984,6 @@ const styles = {
     fontSize: "13px",
   },
 
-  sectionTitle: {
-    display: "flex",
-    alignItems: "center",
-    fontSize: "15px",
-    fontWeight: "bold",
-    color: "#0F5132",
-    gap: "5px",
-    marginBottom: "10px",
-  },
   reportSection: {
     marginTop: "15px",
     padding: "12px",

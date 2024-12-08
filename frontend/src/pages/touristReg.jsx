@@ -627,9 +627,11 @@ return (
     name="DOB"
     value={formData.DOB}
     onChange={(e) => setFormData({ ...formData, DOB: e.target.value })}
+    max={new Date().toISOString().split("T")[0]} // Restricts date selection to today or earlier
     required
   />
 </div>
+
 <div>
   <label htmlFor="signUpOccupation">Occupation:</label>
   <input
@@ -909,11 +911,11 @@ return (
             onChange={(e) => setEmailForOTP(e.target.value)}
             required
             style={{
-              width: '100%',
-              padding: '5px',
-              borderRadius: '5px',
-              border: '1px solid #ccc',
-              fontSize: '14px',
+             width: '100%',
+          padding: '5px',
+          borderRadius: '5px',
+          border: '1px solid #ccc',
+          fontSize: '14px',
             }}
           />
         </div>

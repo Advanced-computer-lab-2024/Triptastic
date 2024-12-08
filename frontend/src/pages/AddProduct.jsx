@@ -360,13 +360,6 @@ const styles = {
       transform: 'translate(-50%, -50%)', // Adjust for element's size
       margin: '0',
     },
-
-      card: {
-        backgroundColor: '#fff',
-        padding: '20px',
-        borderRadius: '10px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      },
       cardTitle: {
         fontSize: '18px',
         fontWeight: 'bold',
@@ -388,6 +381,7 @@ const styles = {
         flexDirection: 'column',
         gap: '10px',
       },
+      
       submitButton: {
         width: '100%',
         padding: '10px',
@@ -443,6 +437,9 @@ const styles = {
         padding: '20px',
         borderRadius: '10px',
         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)', // Increased shadow intensity and blur
+        height: 'auto', // Adjusts to content dynamically
+        minHeight: '500px', // Ensures a minimum height
       },
       formGroup: {
         display: 'flex',

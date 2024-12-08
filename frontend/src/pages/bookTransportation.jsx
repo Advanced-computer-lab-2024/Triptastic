@@ -78,8 +78,9 @@ const BookTransportation = () => {
       <header style={styles.header}>
         <img src={logo} alt="Logo" style={styles.logo} /> {/* Add your logo here */}
         <h1 style={styles.title}>Book Your Transportation</h1>
-        <FaUserCircle style={styles.profileIcon} onClick={handleProfileRedirect} />
+<div>
 
+</div>
       </header>
          {/* Sidebar */}
          <div
@@ -97,6 +98,12 @@ const BookTransportation = () => {
           );
         }}
       >
+        <div style={styles.item} onClick={() => navigate('/tourist-profile')}>
+          <FaUserCircle style={styles.icon} />
+          <span className="label" style={styles.label}>
+             Home Page
+          </span>
+        </div>
         <div style={styles.item} onClick={() => navigate('/historical-locations')}>
           <FaUniversity style={styles.icon} />
           <span className="label" style={styles.label}>
@@ -145,18 +152,7 @@ const BookTransportation = () => {
            Transportation
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
-          <FaClipboardList style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Past Orders
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
-          <FaStar style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Review Activities
-          </span>
-        </div>
+       
       </div>
       {/* Error and Success Messages */}
       {error && (
