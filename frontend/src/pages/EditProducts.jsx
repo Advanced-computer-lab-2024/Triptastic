@@ -394,23 +394,31 @@ const EditProducts = () => {
             : 'N/A'}
         </p>
         <button
-      onClick={() => archiveProduct(productSearchResult.productName)}
-      disabled={loading || productSearchResult.unarchived}
-      style={styles.archiveButton}
-    >
-      <FaArchive style={{ marginRight: '5px' }} />
-      Archive Product
-    </button>
+  onClick={() => archiveProduct(productSearchResult.productName)}
+  disabled={loading || productSearchResult.unarchived}
+  style={{
+    ...styles.archiveButton,
+    padding: '4px 8px', // Reduced padding
+    fontSize: '12px', // Smaller font size
+  }}
+>
+  <FaArchive style={{ marginRight: '3px', fontSize: '14px' }} /> {/* Smaller icon */}
+  Archive
+</button>
 
-    {/* Unarchive Product Button */}
-    <button
-      onClick={() => unarchiveProduct(productSearchResult.productName)}
-      disabled={loading || !productSearchResult.archived}
-      style={styles.unarchiveButton}
-    >
-      <HiOutlineArchiveBoxXMark style={{ marginRight: '5px' }} />
-      Unarchive Product
-    </button>
+{/* Unarchive Product Button */}
+<button
+  onClick={() => unarchiveProduct(productSearchResult.productName)}
+  disabled={loading || !productSearchResult.archived}
+  style={{
+    ...styles.unarchiveButton,
+    padding: '4px 8px', // Reduced padding
+    fontSize: '12px', // Smaller font size
+  }}
+>
+  <HiOutlineArchiveBoxXMark style={{ marginRight: '3px', fontSize: '14px' }} /> {/* Smaller icon */}
+  Unarchive
+</button>
       </div>
     )}
   </div>
@@ -844,6 +852,38 @@ title2: {
           },
           editButtonHover: {
             backgroundColor: '#155724',
+          },
+          buttonContainer: {
+            display: 'flex', // Align buttons side-by-side
+            gap: '10px', // Add spacing between buttons
+            marginTop: '10px', // Optional margin for spacing
+            justifyContent: 'flex-start', // Align buttons to the left (adjust as needed)
+          },
+          archiveButton: {
+            padding: '4px 8px', // Smaller padding
+            fontSize: '12px', // Smaller font size
+            backgroundColor: '#0F5132', // Green background
+            color: 'white', // White text
+            border: 'none',
+            borderRadius: '3px', // Slightly rounded corners
+            cursor: 'pointer',
+            display: 'flex', // Align icon and text
+            alignItems: 'center',
+            gap: '5px', // Space between icon and text
+            transition: 'background-color 0.3s ease',
+          },
+          unarchiveButton: {
+            padding: '4px 8px', // Smaller padding
+            fontSize: '12px', // Smaller font size
+            backgroundColor: '#d9534f', // Red background
+            color: 'white', // White text
+            border: 'none',
+            borderRadius: '3px', // Slightly rounded corners
+            cursor: 'pointer',
+            display: 'flex', // Align icon and text
+            alignItems: 'center',
+            gap: '5px', // Space between icon and text
+            transition: 'background-color 0.3s ease',
           },
 };
 
