@@ -525,7 +525,7 @@ const handleDeleteUser = async () => {
 
 
   <div style={styles.container2}>
-  <h2 style={styles.heading2}>Admin Settings</h2>
+
 
   {/* Create Admin Form */}
   <form style={styles.form2} onSubmit={createAdmin}>

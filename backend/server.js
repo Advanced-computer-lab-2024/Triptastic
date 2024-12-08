@@ -34,7 +34,9 @@ const{requestOTPADV,resetPasswordADV,changePasswordAdvertiser,createAdvertiser,g
 const{requestOTPS,resetPasswordS,viewMyProducts,deleteAllNotifications,getNotificationsForAdmin,checkAndNotifyOutOfStockAdmin,getNotificationsForSeller,checkAndNotifyOutOfStockSeller,changePasswordSeller, createSeller,getSeller,updateSeller,createProductseller,getProductSeller,viewProductsSeller,sortProductsByRatingSeller,requestAccountDeletionSeller,getPendingSellers,settleDocsSeller,loginSeller,filterByProduct,getFilteredProducts,updateProduct}=require("./Routes/sellerController");
 
 //Admin
-const{getPromoCodes,createPromoCode,getUserStatistics,replyToComplaint,rejectDeletionRequest,acceptDeletionRequest,getPendingDeletionRequests,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin,createCategory,
+const{  removeFlagFromItinerary,
+  removeFlagFromTouristItinerary,
+  removeFlagFromActivity,getPromoCodes,createPromoCode,getUserStatistics,replyToComplaint,rejectDeletionRequest,acceptDeletionRequest,getPendingDeletionRequests,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin,createCategory,
   getCategory,
   updateCategory,
   deleteCategory,getProduct,createProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
@@ -328,6 +330,10 @@ app.get('/getFilteredP',getFilteredP)
 app.get('/actProfits',actProfits);
 app.get('/itinProfits',itinProfits);
 app.get("/getMyProducts",getMyProducts);
+app.patch('/removeFlag/itinerary/:id', removeFlagFromItinerary);
+app.patch('/removeFlag/touristItinerary/:id', removeFlagFromTouristItinerary);
+app.patch('/removeFlag/activity/:id', removeFlagFromActivity);
+
 
 //TourismGoverner
 app.post("/createHistoricalLocation",createhistoricalLocation);

@@ -326,6 +326,7 @@ return (
         borderRadius: '10px',
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         marginBottom: '20px',
+        marginTop: '80px', // Adjust this value to move content below the header
     }}
 >
     <h1
@@ -338,7 +339,7 @@ return (
         }}
     >
         <FaChartBar style={{ marginRight: '10px', color: '#0F5132' }} />
-        {localStorage.getItem('Username')}'s Sales Report
+        {localStorage.getItem('Username')}'s Products Report
     </h1>
 
     {/* Filter Section */}
@@ -527,7 +528,7 @@ return (
 {/* Product List */}
 {!filteredP && !filteredD && (
     <>
-        <h2 style={styles.pageTitle}>Products Sales</h2>
+
 
         {/* Pagination */}
         <div style={productStyles.paginationContainer}>
@@ -1050,7 +1051,7 @@ filterSelect: {
       display: 'grid',
       gridTemplateColumns: 'repeat(2, 1fr)',
       gap: '20px',
-      marginTop: '20px',
+      marginTop: '90px',
   },
   card: {
       backgroundColor: '#fff',
