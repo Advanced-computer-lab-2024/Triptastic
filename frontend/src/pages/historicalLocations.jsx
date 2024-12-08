@@ -1,16 +1,19 @@
-import React, { useState,useRef , useEffect} from 'react';
-import { FaBars, FaTimes,FaHome, FaUser, FaMapMarkerAlt } from "react-icons/fa"; // For menu icons
-import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
+import React, { useState, useRef, useEffect } from 'react';
+import { FaBars, FaTimes, FaHome, FaUser, FaMapMarkerAlt } from "react-icons/fa"; // For menu icons
+import {
+  FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
   FaClipboardList,
-  FaStar, } from "react-icons/fa";
-import { FaPercentage, FaCalendarAlt, FaTag ,FaUserCircle} from 'react-icons/fa';
+  FaStar,
+} from "react-icons/fa";
+import { FaPercentage, FaCalendarAlt, FaTag, FaUserCircle } from 'react-icons/fa';
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import IosShareIcon from '@mui/icons-material/IosShare';
 
-import { FaBell ,FaCalendar,FaDollarSign ,FaClock,FaTags,FaPercent} from 'react-icons/fa'; // Import icons
-import { FaSearch,
-  } from "react-icons/fa";
-  import HotelIcon from '@mui/icons-material/Hotel';
+import { FaBell, FaCalendar, FaDollarSign, FaClock, FaTags, FaPercent } from 'react-icons/fa'; // Import icons
+import {
+  FaSearch,
+} from "react-icons/fa";
+import HotelIcon from '@mui/icons-material/Hotel';
 import MuseumIcon from '@mui/icons-material/Museum';
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
 import Pyramids from '../images/pyramids.jpg';
@@ -46,24 +49,24 @@ const HistoricalLocations = () => {
 
   const tagOptions = [
     'Monuments',
-    'Religious Sites', 
+    'Religious Sites',
     'Palaces/Castles'
   ];
   const navigate = useNavigate();
 
   const handleProfileRedirect = () => {
     const context = localStorage.getItem('context');
-  
+
     if (context === 'tourist') {
       navigate('/tourist-profile');
     } else if (context === 'guest') {
       navigate('/Guest');
-    }  else {
+    } else {
       console.error('Unknown context');
       navigate('/'); // Fallback to home
     }
-  }; 
-   const handleViewAllHistoricalPlaces = async () => {
+  };
+  const handleViewAllHistoricalPlaces = async () => {
     setLoading(true);
     setErrorMessage('');
     try {
@@ -112,7 +115,7 @@ const HistoricalLocations = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-  
+
   useEffect(() => {
     handleViewAllHistoricalPlaces();
 
@@ -128,31 +131,31 @@ const HistoricalLocations = () => {
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         const errorMessage = errorData.error || 'No historical locations found with the specified tag type.';
         alert(errorMessage);
         return;
       }
-  
+
       let data = await response.json();
       console.log(`Filter ${selectedTag} Response:`, data);
       if (!Array.isArray(data)) {
         data = [data];
       }
-  
+
       setHistoricalPlaces(data);
-    } 
+    }
     catch (error) {
       console.error('Error filtering historical locations:', error);
       alert("No historical locations found with the specified tag type.");
-    } 
+    }
     finally {
       setLoading(false);
     }
   };
-  
+
 
   // Search historical places by name or tag
   const handleSearch = async (query) => {
@@ -165,19 +168,19 @@ const HistoricalLocations = () => {
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         setErrorMessage(errorData.error || 'No historical locations found.');
         return;
       }
-  
+
       let data = await response.json();
       console.log("Search Response:", data);
       if (!Array.isArray(data)) {
         data = [data];
       }
-  
+
       setHistoricalPlaces(data);
     } catch (error) {
       console.error('Error searching historical places:', error);
@@ -186,7 +189,7 @@ const HistoricalLocations = () => {
       setLoading(false);
     }
   };
-  
+
   const onSearchSubmit = () => {
     if (searchTerm) {
       setSearchQuery(searchTerm); // Update the search query state
@@ -198,7 +201,7 @@ const HistoricalLocations = () => {
       handleFilter(); // Call filter if a period is selected
     }
   };
-  
+
   const renderHistoricalPlaces = () => {
     return historicalPlaces.length > 0 ? (
       historicalPlaces.map(place => <li key={place._id}>{place.Name}</li>)
@@ -218,9 +221,9 @@ const HistoricalLocations = () => {
           email: shareMethod === 'email' ? email : '' // Only include email if method is 'email'
         })
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
         setShareableLink(data.link); // Set the link to state
         if (shareMethod === 'copy') {
@@ -237,8 +240,8 @@ const HistoricalLocations = () => {
       console.error('Error generating shareable link:', error);
     }
   };
-  
-  
+
+
   const handleEmailInputChange = (e) => {
     setEmail(e.target.value);
   };
@@ -268,7 +271,7 @@ const HistoricalLocations = () => {
         <div style={styles.item} onClick={() => handleProfileRedirect()}>
           <FaUserCircle style={styles.icon} />
           <span className="label" style={styles.label}>
-             Home Page
+            Home Page
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/historical-locations')}>
@@ -319,7 +322,7 @@ const HistoricalLocations = () => {
             Transportation
           </span>
         </div>
-        
+
       </div>
 
       {/* Main Content Section */}
@@ -346,117 +349,117 @@ const HistoricalLocations = () => {
             </button>
 
             {viewPlaces && (
-  <>
-   <div style={{ position: 'relative', textAlign: 'center' }}>
-  <button
-    onClick={() => setFilterVisible(!filterVisible)}
-    placeholder='Filter Historical Locations'
+              <>
+                <div style={{ position: 'relative', textAlign: 'center' }}>
+                  <button
+                    onClick={() => setFilterVisible(!filterVisible)}
+                    placeholder='Filter Historical Locations'
 
-    style={{
-      padding: '8px 16px',
-      fontSize: '1rem',
-      color: '#333',
-      backgroundColor: '#fff',
-      border: '1px solid #ccc',
-      borderRadius: '30px',
-      cursor: 'pointer',
-      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-      transition: 'background-color 0.3s, box-shadow 0.3s',
-    }}
-    onMouseOver={(e) => {
-      e.target.style.backgroundColor = '#f1f1f1';
-      e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
-    }}
-    onMouseOut={(e) => {
-      e.target.style.backgroundColor = '#fff';
-      e.target.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-    }}
-  >
-    Filter Historical Locations
-  </button>
+                    style={{
+                      padding: '8px 16px',
+                      fontSize: '1rem',
+                      color: '#333',
+                      backgroundColor: '#fff',
+                      border: '1px solid #ccc',
+                      borderRadius: '30px',
+                      cursor: 'pointer',
+                      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                      transition: 'background-color 0.3s, box-shadow 0.3s',
+                    }}
+                    onMouseOver={(e) => {
+                      e.target.style.backgroundColor = '#f1f1f1';
+                      e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+                    }}
+                    onMouseOut={(e) => {
+                      e.target.style.backgroundColor = '#fff';
+                      e.target.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+                    }}
+                  >
+                    Filter Historical Locations
+                  </button>
 
-  {filterVisible && (
-    <div
-      style={{
-        position: 'absolute',
-        top: '50px', // Space below the button
-        left: '50%',
-        transform: 'translateX(-50%)',
-        padding: '10px',
-        backgroundColor: '#f9f9f9',
-        borderRadius: '30px',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-        textAlign: 'center',
-        width: '280px',
-        zIndex: 10,
-      }}
-    >
-      <label
-        htmlFor="tag-select"
-        style={{
-          display: 'block',
-          marginBottom: '10px',
-          borderRadius: '30px',
-          fontSize: '1rem',
-          fontWeight: 'bold',
-          color: '#333',
-        }}
-      >
-        Filter by Tag:
-      </label>
-      <select
-        id="tag-select"
-        onChange={(e) => {
-          setSelectedPeriod(e.target.value); // Sync with period selection
-          setSelectedTag(e.target.value);
-        }}
-        value={selectedTag}
-        style={{
-          padding: '8px',
-          fontSize: '1rem',
-          borderRadius: '30px',
-          border: '1px solid #ccc',
-          marginBottom: '10px',
-          width: '100%',
-        }}
-      >
-        <option value="" disabled>
-          Select a tag
-        </option>
-        <option value="Monuments">Monuments</option>
-        <option value="Religious Sites">Religious Sites</option>
-        <option value="Palaces/Castles">Castles/Palaces</option>
-      </select>
-      <button
-        onClick={handleFilter}
-        disabled={!selectedTag}
-        style={{
-          padding: '8px 16px',
-          fontSize: '1rem',
-          color: '#333',
-          backgroundColor: '#fff',
-          border: '1px solid #ccc',
-          borderRadius: '50px',
-          cursor: selectedTag ? 'pointer' : 'not-allowed',
-          opacity: selectedTag ? '1' : '0.6',
-          width: '100%',
-        }}
-      >
-        Apply Filter
-      </button>
-    </div>
-  )}
-</div>
-
-
-  </>
-)}
-      </div>
+                  {filterVisible && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '50px', // Space below the button
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        padding: '10px',
+                        backgroundColor: '#f9f9f9',
+                        borderRadius: '30px',
+                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                        textAlign: 'center',
+                        width: '280px',
+                        zIndex: 10,
+                      }}
+                    >
+                      <label
+                        htmlFor="tag-select"
+                        style={{
+                          display: 'block',
+                          marginBottom: '10px',
+                          borderRadius: '30px',
+                          fontSize: '1rem',
+                          fontWeight: 'bold',
+                          color: '#333',
+                        }}
+                      >
+                        Filter by Tag:
+                      </label>
+                      <select
+                        id="tag-select"
+                        onChange={(e) => {
+                          setSelectedPeriod(e.target.value); // Sync with period selection
+                          setSelectedTag(e.target.value);
+                        }}
+                        value={selectedTag}
+                        style={{
+                          padding: '8px',
+                          fontSize: '1rem',
+                          borderRadius: '30px',
+                          border: '1px solid #ccc',
+                          marginBottom: '10px',
+                          width: '100%',
+                        }}
+                      >
+                        <option value="" disabled>
+                          Select a tag
+                        </option>
+                        <option value="Monuments">Monuments</option>
+                        <option value="Religious Sites">Religious Sites</option>
+                        <option value="Palaces/Castles">Castles/Palaces</option>
+                      </select>
+                      <button
+                        onClick={handleFilter}
+                        disabled={!selectedTag}
+                        style={{
+                          padding: '8px 16px',
+                          fontSize: '1rem',
+                          color: '#333',
+                          backgroundColor: '#fff',
+                          border: '1px solid #ccc',
+                          borderRadius: '50px',
+                          cursor: selectedTag ? 'pointer' : 'not-allowed',
+                          opacity: selectedTag ? '1' : '0.6',
+                          width: '100%',
+                        }}
+                      >
+                        Apply Filter
+                      </button>
+                    </div>
+                  )}
+                </div>
 
 
+              </>
+            )}
           </div>
+
+
         </div>
-        <div style={styles.container}>
+      </div>
+      <div style={styles.container}>
 
         {/* Header Section */}
         <header style={styles.header}>
@@ -464,134 +467,135 @@ const HistoricalLocations = () => {
             <img src={logo} alt="Logo" style={styles.logo} />
           </div>
           <h1 style={{ fontSize: '24px', marginTop: '20px' }}>Historical Places</h1>
-         <div>
+          <div>
 
-         </div>
+          </div>
 
         </header>
 
 
-      {loading ? (
-  <p style={{ textAlign: 'center', fontSize: '1.2rem' }}>Loading...</p>
-) : (
-  <div style={styles.cardContainer}>
-    {errorMessage && <p style={{ color: 'red', textAlign: 'center' }}>{errorMessage}</p>}
-    {historicalPlaces.map((historicallocation) => (
-      <div key={historicallocation._id} style={styles.card}>
-        <img
-          src={
-            historicallocation.Name === "The Great Pyramid of Giza"
-              ? Pyramids
-              : historicallocation.Name === "The Great Wall of China"
-              ? china
-              : historicallocation.Name === "Neuschwanstein Castle"
-              ? neuch
-              : historicallocation.Name === "eiffel tower"
-              ? eiffel
-              : historicallocation.Name === "luxor temple"
-              ? temple
-              : historicallocation.Name === "big ben"
-              ? ben
-              : historicallocation.Name === "buckingham palace"
-              ? buck
-              : historicallocation.mainImage || historicallocation // Fallback to a default image
-          }
-          alt={historicallocation.Name}
-          style={styles.image}
-        />
-        <div style={styles.details}>
-  <h2 style={styles.locationName}>{historicallocation.Name}</h2>
-  <p style={styles.description}>{historicallocation.Description}</p>
+        {loading ? (
+          <p style={{ textAlign: 'center', fontSize: '1.2rem' }}>Loading...</p>
+        ) : (
+          <div style={styles.cardContainer}>
+            {errorMessage && <p style={{ color: 'red', textAlign: 'center' }}>{errorMessage}</p>}
+            {historicalPlaces.map((historicallocation) => (
+              <div key={historicallocation._id} style={styles.card}>
+                <img
+                  src={
+                    historicallocation.Name === "The Great Pyramid of Giza"
+                      ? Pyramids
+                      : historicallocation.Name === "The Great Wall of China"
+                        ? china
+                        : historicallocation.Name === "Neuschwanstein Castle"
+                          ? neuch
+                          : historicallocation.Name === "eiffel tower"
+                            ? eiffel
+                            : historicallocation.Name === "luxor temple"
+                              ? temple
+                              : historicallocation.Name === "big ben"
+                                ? ben
+                                : historicallocation.Name === "buckingham palace"
+                                  ? buck
+                                  : historicallocation.mainImage || historicallocation // Fallback to a default image
+                  }
+                  alt={historicallocation.Name}
+                  style={styles.image}
+                />
+                <div style={styles.details}>
+                  <h2 style={styles.locationName}>{historicallocation.Name}</h2>
+                  <p style={styles.description}>{historicallocation.Description}</p>
 
-  <div
-    onClick={(e) => {
-      // Prevent the event from bubbling up to the parent, ensuring the dropdown stays open when clicking inside
-      e.stopPropagation();
-    }}
-    style={{ position: 'relative', display: 'inline-block' }}
-  >
-    <button
-      onClick={() => handleShareMode(historicallocation)}
-      style={styles.shareButton}
-    >
-      <IosShareIcon />
-    </button>
-    <button
-      onClick={() => handleShareMode(historicallocation)}
-      style={styles.shareOption}
-    >
-      <i className="fas fa-share-alt" style={styles.shareOptionIcon}></i>
-    </button>
+                  <div
+                    onClick={(e) => {
+                      // Prevent the event from bubbling up to the parent, ensuring the dropdown stays open when clicking inside
+                      e.stopPropagation();
+                    }}
+                    style={{ position: 'relative', display: 'inline-block' }}
+                  >
+                    <button
+                      onClick={() => handleShareMode(historicallocation)}
+                      style={styles.shareButton}
+                    >
+                      <IosShareIcon />
+                    </button>
+                    <button
+                      onClick={() => handleShareMode(historicallocation)}
+                      style={styles.shareOption}
+                    >
+                      <i className="fas fa-share-alt" style={styles.shareOptionIcon}></i>
+                    </button>
 
-    {/* Dropdown */}
-    {isEmailMode && HistToShare && HistToShare._id === historicallocation._id && (
-      <div
-        style={styles.shareDropdown}
-        onClick={(e) => e.stopPropagation()} // Ensure clicking inside dropdown doesn't close it
-      >
-        <button
-          onClick={() => handleShare(historicallocation, 'copy')}
-          style={styles.shareOption}
-        >
-          <FiCopy style={styles.shareOptionIcon} /> Copy Link
-        </button>
-        {/* <button
-          onClick={() => setIsEmailMode(false)}
-          style={styles.shareOption}
-        >
-          {/* <MailOutlineIcon style={styles.shareOptionIcon} /> Share via Email */}
-       {/* </button> */}
+                    {/* Dropdown */}
+                    {isEmailMode && HistToShare && HistToShare._id === historicallocation._id && (
+                      <div
+                        style={styles.shareDropdown}
+                        onClick={(e) => e.stopPropagation()} // Ensure clicking inside dropdown doesn't close it
+                      >
+                        <button
+                          onClick={() => handleShare(historicallocation, 'copy')}
+                          style={styles.shareOption}
+                        >
+                          <FiCopy style={styles.shareOptionIcon} /> Copy Link
+                        </button>
+                        {/* <button
+                                onClick={() => setIsEmailMode(false)}
+                                       style={styles.shareOption}
+                                                      >
+                                        {/* <MailOutlineIcon style={styles.shareOptionIcon} /> Share via Email */}
+                        {/* </button> */}
 
-        {/* Email Input Field */}
-        {isEmailMode && HistToShare._id === historicallocation._id && (
-  <div style={{ marginTop: '10px' }}>
-    <input
-      type="email"
-      placeholder="Enter recipient's email"
-      value={email}
-      onChange={handleEmailInputChange}
-      style={styles.emailInput}
-    />
-    <button
-      onClick={() => handleShare(historicallocation, 'email')}
-      style={{ ...styles.button, marginTop: '10px' }}
-    >
-      Send Email
-    </button>
-  </div>
-)}
+                        {/* Email Input Field */}
+                        {isEmailMode && HistToShare._id === historicallocation._id && (
+                          <div style={{ marginTop: '10px' }}>
+                            <input
+                              type="email"
+                              placeholder="Enter recipient's email"
+                              value={email}
+                              onChange={handleEmailInputChange}
+                              style={styles.emailInput}
+                            />
+                            <button
+                              onClick={() => handleShare(historicallocation, 'email')}
+                              style={{ ...styles.button, marginTop: '10px' }}
+                            >
+                              Send Email
+                            </button>
+                          </div>
+                        )}
 
 
-        {/* Copy Success Message */}
-        {copySuccess[historicallocation._id] && (
-          <p style={styles.successMessage}>{copySuccess[historicallocation._id]}</p>
-        )}
+                        {/* Copy Success Message */}
+                        {copySuccess[historicallocation._id] && (
+                          <p style={styles.successMessage}>{copySuccess[historicallocation._id]}</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+              </div>
+            ))}
+          </div>
+        )
+
+        }
       </div>
-    )}
-  </div>
-</div>
+    </div>
 
-      </div>
-    ))}
-  </div>
-)
-
-}
-</div>
-</div>
-
-  );};
+  );
+};
 
 
 const styles = {
   container2: {
-    marginTop:'60px',
+    marginTop: '60px',
     fontFamily: 'Arial, sans-serif',
   },
- 
+
   background: {
     position: 'relative',
-    backgroundImage:  `url(${historicallocation})`, // Replace with your image path
+    backgroundImage: `url(${historicallocation})`, // Replace with your image path
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     height: '400px', // Adjust height as needed
@@ -627,7 +631,7 @@ const styles = {
   searchForm1: {
     padding: '12px 20px',
     fontSize: '16px',
-    height:'50px',
+    height: '50px',
     borderRadius: '50px', // Make the input rounded
     border: '1px solid #ccc',
     outline: 'none',
@@ -643,7 +647,7 @@ const styles = {
     backgroundColor: '#fff', // Ensure consistent background
     cursor: 'pointer',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Add a soft shadow
-    width:'250px'
+    width: '250px'
   },
   searchButton: {
     padding: '12px 20px',
@@ -661,7 +665,7 @@ const styles = {
     fontSize: '25px', // Adjust icon size
   },
   header: {
-    height:'60px',
+    height: '60px',
     position: 'fixed', // Make the header fixed
     top: '0', // Stick to the top of the viewport
     left: '0',
@@ -693,7 +697,7 @@ const styles = {
   sidebarExpanded: {
     width: '200px', // Width when expanded
   },
-  
+
   iconContainer: {
     display: 'flex',
     alignItems: 'center',
@@ -705,9 +709,9 @@ const styles = {
     transition: 'background-color 0.3s ease',
   },
   item: {
- 
+
     padding: '10px 0',
-    
+
   },
   iconContainerHover: {
     backgroundColor: '#084B24', // Background on hover
@@ -738,7 +742,7 @@ const styles = {
     width: '70px',
     borderRadius: '10px',
   },
-  profileIcon:{
+  profileIcon: {
     fontSize: '40px',
     cursor: 'pointer',
 
@@ -749,7 +753,7 @@ const styles = {
     marginBottom: '20px',
   },
   button: {
-    color:'#0F5132',
+    color: '#0F5132',
     padding: '10px 20px',
     backgroundColor: '#0F5132',
     color: '#fff',
@@ -759,8 +763,8 @@ const styles = {
     marginRight: '10px',
   },
   buttonsearch: {
-    marginTop:'90px',
-    color:'#0F5132',
+    marginTop: '90px',
+    color: '#0F5132',
     padding: '10px 20px',
     backgroundColor: '#0F5132',
     color: '#fff',
@@ -790,7 +794,7 @@ const styles = {
     gap: '20px',
     justifyContent: 'space-between',
   },
-  
+
 
   emailInput: {
     padding: '10px',
@@ -800,90 +804,90 @@ const styles = {
     borderRadius: '5px',
   },
 
-  
-    card: {
-      display: 'flex',
-      flexDirection: 'column', // Change to column for better layout
-      alignItems: 'center',
-      border: '1px solid #ddd',
-      borderRadius: '8px',
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-      overflow: 'hidden',
-      width: '100%',
-      maxWidth: "350px", // Adjust the width
-      padding: "10px", // Reduce padding for a shorter container
-      height: "450px",
-      backgroundColor: '#fff',
-      marginBottom: '20px',
-    },
-    image: {
-      width: '100%', // Make the image take the full width of the card
-      height: '380px', // Adjust the height for better visibility
-      objectFit: 'full', // Ensure the image scales correctly
-    },
-    details: {
-      position: "relative", // Ensure the dropdown is positioned relative to this container
-      padding: "20px",
-      textAlign: "center",
-    },
-    museumName: {
-      fontSize: '1.5rem',
-      fontWeight: 'bold',
-      margin: '0 0 10px',
-    },
-    description: {
-      fontSize: '1rem',
-      color: '#555',
-      marginBottom: '20px',
-    },
-  
-    shareButton: {
-      backgroundColor: 'transparent',
-      border: 'none',
-      fontSize: '1.5rem',
-      color: 'black',
-      cursor: 'pointer',
-      marginTop: '10px',
-    },
-    shareDropdown: {
-      position: "absolute", // Position relative to parent
-      top: "-230px", // Distance from the button (adjust as needed)
-      left: "25%", // Center align with the button
-      transform: "translateX(-50%)", // Center alignment adjustment
-      backgroundColor: "#fff",
-      border: "1px solid #ddd",
-      borderRadius: "8px",
-      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-      zIndex: "1000",
-      padding: "10px",
-      width: "200px", // Fixed width
-    },
-    
-    
-    shareOption: {
-      display: "flex",
-      alignItems: "center", // Align icon and text vertically
-      justifyContent: "flex-start", // Align icon and text to the left
-      width: "100%",
-      padding: "10px",
-      backgroundColor: "transparent",
-      border: "none",
-      cursor: "pointer",
-      fontSize: "1rem",
-      color: "black", // Icon and text color
-      textDecoration: "none",
-    },
-    shareOptionIcon: {
-      marginRight: "8px", // Space between the icon and text
-      fontSize: "1.0rem", // Ensure both icons are the same size
-    },
-    container: {
-      maxWidth: '1200px',
-      margin: '0 auto',
-      padding: '20px',
-      fontFamily: 'Arial, sans-serif',
-    },
-    };
-    
-  
+
+  card: {
+    display: 'flex',
+    flexDirection: 'column', // Change to column for better layout
+    alignItems: 'center',
+    border: '1px solid #ddd',
+    borderRadius: '8px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    overflow: 'hidden',
+    width: '100%',
+    maxWidth: "350px", // Adjust the width
+    padding: "10px", // Reduce padding for a shorter container
+    height: "450px",
+    backgroundColor: '#fff',
+    marginBottom: '20px',
+  },
+  image: {
+    width: '100%', // Make the image take the full width of the card
+    height: '380px', // Adjust the height for better visibility
+    objectFit: 'full', // Ensure the image scales correctly
+  },
+  details: {
+    position: "relative", // Ensure the dropdown is positioned relative to this container
+    padding: "20px",
+    textAlign: "center",
+  },
+  museumName: {
+    fontSize: '1.5rem',
+    fontWeight: 'bold',
+    margin: '0 0 10px',
+  },
+  description: {
+    fontSize: '1rem',
+    color: '#555',
+    marginBottom: '20px',
+  },
+
+  shareButton: {
+    backgroundColor: 'transparent',
+    border: 'none',
+    fontSize: '1.5rem',
+    color: 'black',
+    cursor: 'pointer',
+    marginTop: '10px',
+  },
+  shareDropdown: {
+    position: "absolute", // Position relative to parent
+    top: "-230px", // Distance from the button (adjust as needed)
+    left: "25%", // Center align with the button
+    transform: "translateX(-50%)", // Center alignment adjustment
+    backgroundColor: "#fff",
+    border: "1px solid #ddd",
+    borderRadius: "8px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    zIndex: "1000",
+    padding: "10px",
+    width: "200px", // Fixed width
+  },
+
+
+  shareOption: {
+    display: "flex",
+    alignItems: "center", // Align icon and text vertically
+    justifyContent: "flex-start", // Align icon and text to the left
+    width: "100%",
+    padding: "10px",
+    backgroundColor: "transparent",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "1rem",
+    color: "black", // Icon and text color
+    textDecoration: "none",
+  },
+  shareOptionIcon: {
+    marginRight: "8px", // Space between the icon and text
+    fontSize: "1.0rem", // Ensure both icons are the same size
+  },
+  container: {
+    maxWidth: '1200px',
+    margin: '0 auto',
+    padding: '20px',
+    fontFamily: 'Arial, sans-serif',
+  },
+};
+
+
 export default HistoricalLocations;

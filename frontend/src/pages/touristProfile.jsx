@@ -2699,33 +2699,9 @@ return (
           
         </div>
 
-        <button
-          onClick={() => setShowPastItineraries(!showPastItineraries)}
-          style={{
-            marginTop: "20px",
-            padding: "10px 20px",
-            backgroundColor: "#0F5132",
-            color: "#fff",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          {showPastItineraries
-            ? "Hide Past Itineraries"
-            : "Show Past Itineraries"}
-        </button>
+       
 
-        {showPastItineraries && (
-          <div
-            className="card"
-            style={{
-              marginTop: "20px",
-              padding: "10px",
-              backgroundColor: "#f9f9f9",
-              borderRadius: "5px",
-            }}
-          >
+        
             <h3 style={{ fontSize: "18px", marginBottom: "10px" }}>
               Past Itineraries
             </h3>
@@ -2815,8 +2791,7 @@ return (
             ) : (
               <p style={styles.emptyMessage}>You have no past itineraries</p>
             )}
-          </div>
-        )}
+          
 
        
 
