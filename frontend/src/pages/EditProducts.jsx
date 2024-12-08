@@ -663,8 +663,10 @@ const styles = {
     marginBottom: '20px', // Add space between pagination and cards
   },
   paginationText: {
-    fontSize: '14px',
-    fontWeight: 'bold',
+    fontSize: '14px', // Match button font size
+    fontWeight: 'bold', // Bold text
+    color: '#0F5132', // Consistent green color
+    textAlign: 'center',
   },
   error: {
     color: 'red',
