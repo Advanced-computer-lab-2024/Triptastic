@@ -229,9 +229,11 @@ const Itineraries = () => {
       alert(error.response?.data?.error || 'An error occurred while booking the itinerary');
     }
   };
+
   useEffect(() => {
     fetchASCItineraries(); // Default to ascending sort
   }, []);
+  
   const handleShare = async (itineraryId,shareMethod) => {
     try {
       // Make a request to the backend with the itinerary ID

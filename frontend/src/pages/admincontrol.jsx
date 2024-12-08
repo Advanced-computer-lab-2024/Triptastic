@@ -19,7 +19,7 @@ const Adminn = () => {
       useEffect(() => {
         // Reset form data when the component loads
         setFormData({ Username: '', Password: '', Email: '' });
-        setTourismGovData({ Username: '', Password: '' });
+        setTourismGovData({ Username: '', Password: '' }); // Clear on load
       }, []);
     
       const [loading, setLoading] = useState(false);
@@ -112,8 +112,9 @@ const handleDeleteUser = async () => {
   
       if (response.ok) {
         const data = await response.json();
-        alert('Tourism Governor added successfully!');
         setTourismGovData({ Username: '', Password: '' });
+        alert('Tourism Governor added successfully!');
+ 
       } else {
         const errorData = await response.json();
         alert(errorData.error || 'Failed to add Tourism Governor.');
@@ -522,8 +523,6 @@ const handleDeleteUser = async () => {
         </div>
       </div>
 
-
-
   <div style={styles.container2}>
 
 
@@ -573,82 +572,86 @@ const handleDeleteUser = async () => {
   </form>
 
   {/* Delete User Form */}
-  <form style={styles.form2} onSubmit={handleDeleteUser}>
-    <h3>Delete User</h3>
-    <label style={styles.label2}>Username:</label>
-    <input
-      type="text"
-      placeholder="Enter username to delete"
-      value={usernameToDelete}
-      onChange={(e) => setUsernameToDelete(e.target.value)}
-      style={styles.input2}
-      required
-    />
-    <label style={styles.label2}>User Type:</label>
-    <select
-      value={userType}
-      onChange={(e) => setUserType(e.target.value)}
-      style={styles.input2}
-      required
-    >
-      <option value="">Select Type</option>
-      <option value="Admin">Admin</option>
-      <option value="TourismGov">Tourism Governor</option>
-      <option value="Tourist">Tourist</option>
-      <option value="Advertiser">Advertiser</option>
-      <option value="Seller">Seller</option>
-      <option value="TourGuide">Tour Guide</option>
-    </select>
-    <button type="submit" style={styles.button2}>
-      Delete User
-    </button>
-    {deleteUserSuccess && (
-      <div className="alert alert-success" role="alert">
-        {deleteUserSuccess}
-      </div>
-    )}
-    {deleteUserError && (
-      <div className="alert alert-danger" role="alert">
-        {deleteUserError}
-      </div>
-    )}
-  </form>
+  {/* Delete User Form */}
+<div style={styles.form2}>
+  <h3>Delete User</h3>
+  <label style={styles.label2}>Username:</label>
+  <input
+    type="text"
+    placeholder="Enter username to delete"
+    value={usernameToDelete}
+    onChange={(e) => setUsernameToDelete(e.target.value)}
+    style={styles.input2}
+    required
+  />
+  <label style={styles.label2}>User Type:</label>
+  <select
+    value={userType}
+    onChange={(e) => setUserType(e.target.value)}
+    style={styles.input2}
+    required
+  >
+    <option value="">Select Type</option>
+    <option value="Admin">Admin</option>
+    <option value="TourismGov">Tourism Governor</option>
+    <option value="Tourist">Tourist</option>
+    <option value="Advertiser">Advertiser</option>
+    <option value="Seller">Seller</option>
+    <option value="TourGuide">Tour Guide</option>
+  </select>
+  <button type="button" style={styles.button2} onClick={handleDeleteUser}>
+    Delete User
+  </button>
+  {deleteUserSuccess && (
+    <div className="alert alert-success" role="alert">
+      {deleteUserSuccess}
+    </div>
+  )}
+  {deleteUserError && (
+    <div className="alert alert-danger" role="alert">
+      {deleteUserError}
+    </div>
+  )}
+</div>
 
-  {/* Add Tourism Governor Form */}
-  <form style={styles.form2} onSubmit={addTourismGov}>
-    <h3>Add Tourism Governor</h3>
-    <label style={styles.label2}>Username:</label>
-    <input
-      type="text"
-      placeholder="Enter username"
-      value={tourismGovData.Username}
-      onChange={(e) => setTourismGovData({ ...tourismGovData, Username: e.target.value })}
-      style={styles.input2}
-      required
-    />
-    <label style={styles.label2}>Password:</label>
-    <input
-      type="password"
-      placeholder="Enter password"
-      value={tourismGovData.Password}
-      onChange={(e) => setTourismGovData({ ...tourismGovData, Password: e.target.value })}
-      style={styles.input2}
-      required
-    />
-    <button type="submit" style={styles.button2}>
-      Add Tourism Governor
-    </button>
-    {addTourismGovSuccess && (
-      <div className="alert alert-success" role="alert">
-        {addTourismGovSuccess}
-      </div>
-    )}
-    {addTourismGovError && (
-      <div className="alert alert-danger" role="alert">
-        {addTourismGovError}
-      </div>
-    )}
-  </form>
+
+ {/* Add Tourism Governor Form */}
+{/* Add Tourism Governor Form */}
+<form style={styles.form2} onSubmit={addTourismGov}>
+  <h3>Add Tourism Governor</h3>
+  <label style={styles.label2}>Username:</label>
+  <input
+    type="text"
+    placeholder="Enter username" // Placeholder for guidance
+    value={tourismGovData.Username} // Controlled value
+    onChange={(e) => setTourismGovData({ ...tourismGovData, Username: e.target.value })}
+    style={styles.input2}
+    required
+  />
+  <label style={styles.label2}>Password:</label>
+  <input
+    type="password"
+    placeholder="Enter password" // Placeholder for guidance
+    value={tourismGovData.Password} // Controlled value
+    onChange={(e) => setTourismGovData({ ...tourismGovData, Password: e.target.value })}
+    style={styles.input2}
+    required
+  />
+  <button type="submit" style={styles.button2}>
+    Add Tourism Governor
+  </button>
+  {addTourismGovSuccess && (
+    <div className="alert alert-success" role="alert">
+      {addTourismGovSuccess}
+    </div>
+  )}
+  {addTourismGovError && (
+    <div className="alert alert-danger" role="alert">
+      {addTourismGovError}
+    </div>
+  )}
+</form>
+
 </div>
 
 </div>
