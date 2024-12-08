@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {FaUserShield} from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import image from '../images/image.png';
-import {FaTag,FaUser,FaBox, FaExclamationCircle, FaHeart, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
+import {FaUsersCog,FaUser,FaBox, FaExclamationCircle, FaHeart, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
 
 
 
@@ -139,6 +139,14 @@ const Preftags = () => {
           Admin Panel
           </span>
         </div>
+
+        <div style={styles.item} onClick={() => navigate('/admincontrol')}>
+          <FaUsersCog   style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Admin Control
+          </span>   
+        </div>
+        
         
         <div style={styles.item} onClick={() => navigate('/Complaints')}>
           <FaExclamationCircle style={styles.icon} />
@@ -179,6 +187,12 @@ const Preftags = () => {
           <FaFlag   style={styles.icon} />
           <span className="label" style={styles.label}>
             Flag Events
+          </span>   
+        </div>
+        <div style={styles.item} onClick={() => navigate('/products_admin')}>
+          <FaBox  style={styles.icon} />
+          <span className="label" style={styles.label}>
+            View Products
           </span>   
         </div>
       </div>

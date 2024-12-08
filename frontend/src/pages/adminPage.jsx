@@ -1590,6 +1590,7 @@ loadingText: {
           </span>   
         </div>
         
+        
         <div style={styles.item} onClick={() => navigate('/Complaints')}>
           <FaExclamationCircle style={styles.icon} />
           <span className="label" style={styles.label}>
