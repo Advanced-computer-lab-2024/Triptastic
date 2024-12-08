@@ -95,9 +95,10 @@ const Docs = () => {
       >
         Previous
       </button>
-      <p style={{ margin: '0 10px', fontSize: '16px' }}>
-        Page {currentPage} of {Math.ceil(totalItems / resultsPerPage)}
-      </p>
+      <span style={styles.paginationInfo}>
+  Page {currentPage} of {Math.ceil(totalItems / resultsPerPage)}
+</span>
+
       <button
         onClick={() =>
           setCurrentPage((prev) => Math.min(prev + 1, Math.ceil(totalItems / resultsPerPage)))
@@ -345,14 +346,25 @@ const styles = {
     marginTop: '20px',
   },
   paginationButton: {
-    padding: '10px 20px',
-    borderRadius: '5px',
-    border: 'none',
-    backgroundColor: '#0F5132',
-    color: '#fff',
-    cursor: 'pointer',
-    fontSize: '14px',
+    padding: '6px 12px', // Adjusted for a compact size
+    fontSize: '14px', // Slightly smaller text
+    backgroundColor: '#0F5132', // Green background color
+    color: 'white', // White text
+    border: 'none', // Remove default borders
+    borderRadius: '4px', // Rounded corners
+    cursor: 'pointer', // Pointer cursor on hover
+    transition: 'background-color 0.3s', // Smooth color transition on hover
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Subtle shadow for depth
   },
+  paginationButtonHover: {
+    backgroundColor: '#155724', // Darker green on hover
+  },
+  paginationButtonDisabled: {
+    backgroundColor: '#ccc', // Light gray for disabled buttons
+    color: '#666', // Darker gray text for disabled state
+    cursor: 'not-allowed', // No pointer cursor for disabled buttons
+  },
+  
   container: {
     maxWidth: '800px',
     margin: '0 auto',
@@ -664,6 +676,16 @@ cursor: 'pointer',
 transition: 'background-color 0.3s ease',
 
 },
+paginationInfo: {
+  margin: '0 10px', // Add margin for spacing
+  fontWeight: 'normal', // Remove bold if not needed
+  color: '#0F5132', // Green text matching the theme
+  textAlign: 'center', // Center the text
+  fontSize: '14px', // Slightly smaller text
+  fontWeight: 'bold', // Bold text for emphasis
+
+},
+
 button2: {
   padding: '12px',
   fontSize: '16px',

@@ -23,6 +23,25 @@ const Complaints = () => {
   const [selectedComplaintId, setSelectedComplaintId] = useState(null);
   const navigate = useNavigate();
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3; // Items per page
+  const totalPages = Math.ceil(complaints.length / itemsPerPage);
+  const displayedComplaints = complaints.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
   const fetchData = async () => {
     try {
       const response = await fetch(
@@ -234,8 +253,33 @@ const Complaints = () => {
         </select>
       </div>
 
+      <div style={styles.paginationControls}>
+  <button
+    onClick={handlePrevPage}
+    disabled={currentPage === 1}
+    style={styles.paginationButton}
+    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#155724')}
+    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#0F5132')}
+  >
+    Prev
+  </button>
+  <span style={styles.paginationInfo}>
+    Page {currentPage} of {totalPages}
+  </span>
+  <button
+    onClick={handleNextPage}
+    disabled={currentPage === totalPages}
+    style={styles.paginationButton}
+    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#155724')}
+    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#0F5132')}
+  >
+    Next
+  </button>
+</div>
+
+
 <div className="complaints-list">
-  {complaints.map((complaint) => (
+  {displayedComplaints.map((complaint) => (
     <div key={complaint._id} className="complaint-card">
       {/* Header */}
       <div className="complaint-header">
@@ -267,6 +311,7 @@ const Complaints = () => {
           View Details
         </button>
       </div>
+
 
 {/* View Details Section */}
 {selectedComplaintId === complaint._id && (
@@ -387,6 +432,32 @@ const styles = {
     fontSize: '40px',
     color: 'white',
     cursor: 'pointer',
+  },
+  paginationControls: {
+    marginTop: '-25px', // Raise the buttons up
+    marginBottom: '20px', // Add space below the buttons to prevent collision
+    display: 'flex',
+    justifyContent: 'center', // Center the buttons
+    alignItems: 'center', // Align vertically
+    gap: '8px', // Space between buttons and text
+  },
+  paginationButton: {
+    padding: '5px 10px', // Smaller button size
+    fontSize: '14px', // Smaller text
+    backgroundColor: '#0F5132', // Button background
+    color: 'white', // Button text color
+    border: 'none', // Removes default border
+    borderRadius: '3px', // Slightly rounded corners
+    cursor: 'pointer', // Pointer cursor on hover
+    transition: 'background-color 0.3s', // Smooth hover effect
+  },
+  paginationInfo: {
+    fontSize: '14px', // Smaller text size
+    fontWeight: 'bold', // Bold text
+    color: '#0F5132', // Text color matching theme
+  },
+  complaintsList: {
+    marginTop: '20px', // Add space above the complaints list
   },
 //header
     heading: {
