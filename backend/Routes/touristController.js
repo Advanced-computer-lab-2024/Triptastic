@@ -2837,7 +2837,7 @@ const getTouristOrders = async (req, res) => {
     const { tourist } = req.query; // Get the tourist username from URL parameters
 
     // Find all orders for the given tourist
-    const orders = await Order.find({ tourist });
+    const orders = await Order.find({ tourist }).sort({ orderDate: -1 });
 
     if (orders.length === 0) {
       return res.status(404).json({ message: 'No orders found for this tourist.' });
@@ -2849,7 +2849,7 @@ const getTouristOrders = async (req, res) => {
     // Loop through each order and check if it's more than 3 days old
     for (let order of orders) {
       const orderDate = new Date(order.orderDate);
-      const daysDifference = currentDate.getDate() - orderDate.getDate();  // Correct difference in days
+      const daysDifference = currentDate.getDay - orderDate.getDay;  // Correct difference in days
 // console.log(order.shippingAddress);
       // If the order is more than 3 days old and its status is not already 'delivered', update it
       if (daysDifference > 2 && order.status !== 'delivered') {

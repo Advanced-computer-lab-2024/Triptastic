@@ -344,7 +344,7 @@ const Checkout = () => {
         body: JSON.stringify({
           touristUsername, // Send the username instead of touristId
           products: cartItems.map(item => item.productName), // Send the product names instead of IDs
-          shippingAddress: selectedAddress,
+          shippingAddress: formatAddress(selectedAddress),
           totalPrice:total
           // Set payment method as 'cashOnDelivery'
         }),
