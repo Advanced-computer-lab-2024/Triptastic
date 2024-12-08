@@ -12,11 +12,11 @@ import {
   FaComments,
   FaWarehouse,
   FaChartBar,
-  FaBars,FaCircle
+  FaBars, FaCircle
 } from "react-icons/fa";
 import {
-  FaLandmark,
-  FaUniversity,
+  FaArrowLeft,
+  FaArrowRight,
   FaBox,
   FaMap,
   FaRunning,
@@ -91,6 +91,20 @@ const Productsad = () => {
     setRange(value); // Update the range dynamically as slider is adjusted
     setMinPrice(value[0]); // Update the minimum price dynamically
     setMaxPrice(value[1]); // Update the maximum price dynamically
+  };
+  const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
+
+  // Carousel Handlers
+  const handleNextReview = (reviews) => {
+    setCurrentReviewIndex((prevIndex) =>
+      prevIndex === reviews.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const handlePrevReview = (reviews) => {
+    setCurrentReviewIndex((prevIndex) =>
+      prevIndex === 0 ? reviews.length - 1 : prevIndex - 1
+    );
   };
 
   const handleInputChange = (e) => {
@@ -422,14 +436,7 @@ const Productsad = () => {
             <img src={logo} alt="Logo" style={styles.logo} />
           </div>
           <h1 style={styles.title}>Products</h1>
-          <div style={styles.headerIcons}>
-            {/* Profile Icon */}
-            <FaUserCircle
-              alt="Profile Icon"
-              style={styles.profileIcon}
-              onClick={handleProfileRedirect} // Navigate to profile
-            />
-          </div>
+      
         </header>
         <div
           style={styles.sidebar}
@@ -461,11 +468,11 @@ const Productsad = () => {
           </div>
 
           <div style={styles.item} onClick={() => navigate('/admincontrol')}>
-          <FaUsersCog   style={styles.icon} />
-          <span className="label" style={styles.label}>
-           Admin Control
-          </span>   
-        </div>
+            <FaUsersCog style={styles.icon} />
+            <span className="label" style={styles.label}>
+              Admin Control
+            </span>
+          </div>
 
           <div style={styles.item} onClick={() => navigate("/Complaints")}>
             <FaExclamationCircle style={styles.icon} />
@@ -517,7 +524,7 @@ const Productsad = () => {
 
         <div style={styles.userStatsContainer}>
           <div style={styles.profitSummary}>
-            
+
           </div>
 
           <div className="card" style={styles.card}>
@@ -637,24 +644,24 @@ const Productsad = () => {
                         {product.stock}
                       </p>
                       <p
-    style={{
-      fontSize: "14px",
-      color: "#555",
-      marginBottom: "8px",
-      display: "flex",
-      alignItems: "center",
-      gap: "10px",
-    }}
-  >
+                        style={{
+                          fontSize: "14px",
+                          color: "#555",
+                          marginBottom: "8px",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                        }}
+                      >
 
-    <strong>
-      <IoIosStarOutline style={{ color: "grey", marginRight: "0px" }} /> Rating:
-    </strong>{" "}
-    <span style={styles.stars}>
-      {"★".repeat(Math.floor(product.rating || 0)) +
-        "☆".repeat(5 - Math.floor(product.rating || 0))}
-    </span>
-  </p>
+                        <strong>
+                          <IoIosStarOutline style={{ color: "grey", marginRight: "0px" }} /> Rating:
+                        </strong>{" "}
+                        <span style={styles.stars}>
+                          {"★".repeat(Math.floor(product.rating || 0)) +
+                            "☆".repeat(5 - Math.floor(product.rating || 0))}
+                        </span>
+                      </p>
                       <p
                         style={{
                           fontSize: "14px",
@@ -668,41 +675,37 @@ const Productsad = () => {
                         {product.sales}
                       </p>
 
-                      <div>
-      <strong
-        style={{
-          fontSize: "14px",
-          color: "#555",
-          marginBottom: "8px",
-        }}
-      >
-        <FaComments style={{ marginRight: "5px" }} /> Reviews:
-      </strong>
-      <ul
-        style={{
-          listStyleType: "none",
-          padding: 0,
-          marginTop: "5px",
-        }}
-      >
-        {product.reviews.map((review, index) => (
-          <li
-            key={index}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px", // Spacing between bullet and text
-              marginBottom: "5px",
-              fontSize: "14px",
-              color: "#555",
-            }}
-          >
-            <FaCircle style={{ fontSize: "8px", color: "#555" }} />
-            {review}
-          </li>
-        ))}
-      </ul>
-    </div>
+                      {/* Reviews Section */}
+       <div>
+              <strong style={styles.reviewTitle}>
+                <FaComments style={{ marginRight: "5px" }} /> Reviews:
+              </strong>
+
+              {product.reviews.length > 0 ? (
+                <div style={styles.carouselContainer}>
+                  <button
+                    onClick={() => handlePrevReview(product.reviews)}
+                    style={styles.carouselButton}
+                  >
+                    <FaArrowLeft />
+                  </button>
+
+                  <div style={styles.reviewBox}>
+                    {product.reviews[currentReviewIndex]}
+                  </div>
+
+                  <button
+                    onClick={() => handleNextReview(product.reviews)}
+                    style={styles.carouselButton}
+                  >
+                    <FaArrowRight />
+                  </button>
+                </div>
+              ) : (
+                <p style={styles.noReviewsText}>No reviews available.</p>
+              )}
+            </div>
+            {/* End of Reviews Section */}
                     </div>
 
                     {/* Product Actions */}
@@ -744,13 +747,6 @@ const styles = {
     justifyContent: "center",
     alignItems: "center",
     color: "white",
-  },
-  title: {
-    fontSize: "2.5rem",
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: "20px",
-    textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)",
   },
   searchSection: {
     display: "flex",
@@ -968,10 +964,15 @@ const styles = {
     color: "white", // Green text
   },
   title: {
-    fontSize: "24px",
-    fontWeight: "bold",
-    color: "white",
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: 'white',
+    position: 'absolute', // Make it position-relative to the container
+    left: '50%', // Position the title to the center horizontally
+    transform: 'translateX(-50%)', // Offset it back by 50% of its width to center
     margin: 0,
+    top: '50%', // Optional: if vertical centering within the container is required
+    transform: 'translate(-50%, -50%)', // Combine horizontal and vertical centering
   },
 
   productList: {
@@ -1066,6 +1067,42 @@ const styles = {
     alignItems: "center",
     gap: "10px",
     margin: 0, // Reset margin to ensure alignment
+  },
+  reviewTitle: {
+    fontSize: "14px",
+    color: "#555",
+    marginBottom: "8px",
+  },
+  carouselContainer: {
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: "10px",
+  },
+  carouselButton: {
+    backgroundColor: "transparent",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "16px",
+    color: "#555",
+  },
+  reviewBox: {
+    textAlign: "center",
+    width: "80%",
+    padding: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "10px",
+    backgroundColor: "#f9f9f9",
+  },
+  reviewIcon: {
+    fontSize: "8px",
+    color: "#555",
+    marginRight: "8px",
+  },
+  noReviewsText: {
+    fontSize: "14px",
+    color: "#999",
   },
 };
 

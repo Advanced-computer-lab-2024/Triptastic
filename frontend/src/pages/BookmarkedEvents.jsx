@@ -12,6 +12,7 @@ import family from '../images/family.png';
 import shopping from '../images/shopping.jpg';
 import HotelIcon from '@mui/icons-material/Hotel';
 import MuseumIcon from '@mui/icons-material/Museum';
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import { FaBell,FaUserCircle} from 'react-icons/fa';
 import logo from '../images/image.png'; // Add your logo file pathimport axios from 'axios';
 
@@ -71,15 +72,10 @@ const BookmarkedEvents = () => {
         <img src={logo} alt="Logo" style={styles.logo} />
         <h1 style={styles.title}>Bookmarked Activities</h1>
         <div style={styles.iconGroup}>
-          <FaShoppingCart
+          <ShoppingCartOutlinedIcon
             style={styles.icon}
             onClick={() => navigate('/Cart')}
             title="Cart"
-          />
-          <FaUserCircle
-            style={styles.icon}
-            onClick={() => navigate('/tourist-profile')}
-            title="Profile"
           />
         </div>
       </header>
@@ -99,6 +95,12 @@ const BookmarkedEvents = () => {
           );
         }}
       >
+        <div   style={styles.item} onClick={() => navigate('/tourist-profile')}>
+          <FaUserCircle style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Home Page
+          </span>
+        </div>
         <div   style={styles.item} onClick={() => navigate('/historical-locations')}>
           <FaUniversity style={styles.icon} />
           <span className="label" style={styles.label}>
@@ -145,18 +147,6 @@ const BookmarkedEvents = () => {
           <FaBus style={styles.icon} />
           <span className="label" style={styles.label}>
            Transportation
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
-          <FaClipboardList style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Past Orders
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
-          <FaStar style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Review Activities
           </span>
         </div>
       </div>
@@ -281,7 +271,14 @@ const styles = {
   },
   title: {
     fontSize: '24px',
+    fontWeight: 'bold',
     color: 'white',
+    position: 'absolute', // Make it position-relative to the container
+    left: '50%', // Position the title to the center horizontally
+    transform: 'translateX(-50%)', // Offset it back by 50% of its width to center
+    margin: 0,
+    top: '50%', // Optional: if vertical centering within the container is required
+    transform: 'translate(-50%, -50%)', // Combine horizontal and vertical centering
   },
   content: {
     marginTop: '20px',
