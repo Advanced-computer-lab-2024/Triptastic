@@ -29,7 +29,7 @@ import { Tooltip } from "react-tooltip"; // Updated import
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 
 const SellerProduct = () => {
-    const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [sellerProducts, setSellerProducts] = useState([]);
   const [error, setError] = useState("");
   const [seller, setSeller] = useState(localStorage.getItem("Username") || "");
@@ -103,8 +103,6 @@ const SellerProduct = () => {
       [name]: value,
     }));
   };
-
-  
 
   const addNotification = (message) => {
     setNotifications((prevNotifications) => [
@@ -260,7 +258,6 @@ const SellerProduct = () => {
     setLoading(false);
   };
 
-  
   const handleProductInputChange = (e) => {
     const { name, value } = e.target;
     setProductFormData((prevData) => ({
@@ -328,8 +325,6 @@ const SellerProduct = () => {
     }
   };
 
-  
-  
   const getProductByName = async (e) => {
     e.preventDefault();
     console.log("Search function triggered");
@@ -355,7 +350,6 @@ const SellerProduct = () => {
         console.log(product); // Log the fetched product
         setProductSearchResult(product); // Set the product in state
         setProductNameToArchive(product.productName); // Store product name for archiving
-        setSuccessMessage(`Product found successfully: ${product.productName}`);
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.error || "Product not found.");
@@ -410,23 +404,25 @@ const SellerProduct = () => {
       setError("No product selected to archive.");
       return;
     }
-  
+
     setLoading(true);
     setError("");
     setSuccessMessage("");
-  
+
     try {
-      const response = await fetch(`http://localhost:8000/archiveProduct/${productName}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-  
+      const response = await fetch(
+        `http://localhost:8000/archiveProduct/${productName}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
       if (response.ok) {
         const result = await response.json();
-        setSuccessMessage(`Product "${productName}" archived successfully.`);
-  
+
         // Update the sellerProducts array to reflect the change
         setSellerProducts((prevProducts) =>
           prevProducts.map((product) =>
@@ -435,7 +431,7 @@ const SellerProduct = () => {
               : product
           )
         );
-  
+
         // Reset productSearchResult to null after action
         setProductSearchResult(null);
       } else {
@@ -449,29 +445,31 @@ const SellerProduct = () => {
       setLoading(false);
     }
   };
-  
+
   const unarchiveProduct = async (productName) => {
     if (!productName) {
       setError("No product selected to unarchive.");
       return;
     }
-  
+
     setLoading(true);
     setError("");
     setSuccessMessage("");
-  
+
     try {
-      const response = await fetch(`http://localhost:8000/unarchiveProduct/${productName}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-  
+      const response = await fetch(
+        `http://localhost:8000/unarchiveProduct/${productName}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
       if (response.ok) {
         const result = await response.json();
-        setSuccessMessage(`Product "${productName}" unarchived successfully.`);
-  
+
         // Update the sellerProducts array to reflect the change
         setSellerProducts((prevProducts) =>
           prevProducts.map((product) =>
@@ -480,7 +478,7 @@ const SellerProduct = () => {
               : product
           )
         );
-  
+
         // Reset productSearchResult to null after action
         setProductSearchResult(null);
       } else {
@@ -494,8 +492,7 @@ const SellerProduct = () => {
       setLoading(false);
     }
   };
-  
-  
+
   const handleSaveProduct = async (productId) => {
     // Save the updated product data to the server...
     // After saving, update the sellerProducts state and reset editProductId
@@ -553,21 +550,19 @@ const SellerProduct = () => {
 
         {/* Icons Container */}
         <div style={styles.iconContainer}>
-          
-        <button style={styles.createButton} onClick={() => setShowCreateModal(true)}>
-    <FaPlus style={styles.createIcon} /> Add Product
-  </button>
+          <button
+            style={styles.createButton}
+            onClick={() => setShowCreateModal(true)}
+          >
+            <FaPlus style={styles.createIcon} /> Add Product
+          </button>
 
           {/* Logout Icon */}
           <LogoutOutlinedIcon
             style={styles.logoutIcon}
             onClick={() => navigate("/Guest")}
           />
-
-         
         </div>
-       
-           
       </header>
       {/* Sidebar */}
       <div
@@ -608,7 +603,7 @@ const SellerProduct = () => {
         <div
           className="my products"
           style={styles.item}
-          onClick={() => navigate("/sellerReport")}
+          onClick={() => navigate("/sellerProduct")}
         >
           <FaPlus style={styles.iconn} />
           <span className="label" style={styles.label}>
@@ -617,96 +612,96 @@ const SellerProduct = () => {
         </div>
       </div>
 
-    {/* Add Product Modal */}
-    {showCreateModal && (
-      <div style={styles.modalOverlay}>
-        <div style={styles.modalContent}>
-          <h3 style={styles.cardTitle}>
-            Add Product <Inventory2Icon />
-          </h3>
+      {/* Add Product Modal */}
+      {showCreateModal && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <h3 style={styles.cardTitle}>
+              Add Product <Inventory2Icon />
+            </h3>
 
-          {/* Close Modal Icon */}
-          <HighlightOffOutlinedIcon
-            onClick={() => setShowCreateModal(false)}
-            style={styles.cancelIcon}
-          />
+            {/* Close Modal Icon */}
+            <HighlightOffOutlinedIcon
+              onClick={() => setShowCreateModal(false)}
+              style={styles.cancelIcon}
+            />
 
-          <form onSubmit={handleProductSubmit} style={styles.form}>
-            <input
-              type="text"
-              placeholder="Product Name"
-              name="productName"
-              value={productFormData.productName}
-              onChange={handleProductInputChange}
-              required
-              style={styles.input}
-            />
-            <textarea
-              placeholder="Description"
-              name="description"
-              value={productFormData.description}
-              onChange={handleProductInputChange}
-              required
-              style={styles.textarea}
-            />
-            <input
-              type="number"
-              placeholder="Price"
-              name="price"
-              value={productFormData.price}
-              onChange={handleProductInputChange}
-              required
-              style={styles.input}
-            />
-            <input
-              type="number"
-              placeholder="Stock"
-              name="stock"
-              value={productFormData.stock}
-              onChange={handleProductInputChange}
-              required
-              style={styles.input}
-            />
-            <div style={styles.fileUploadContainer}>
-              <label style={styles.fileLabel} htmlFor="file-upload">
-                <strong
-                  style={{
-                    color: "#0F5132",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "5px",
-                    cursor: "pointer",
-                  }}
-                >
-                  Upload Product Image
-                  <AddPhotoAlternateIcon style={styles.iconButton} />
-                </strong>
-              </label>
-
+            <form onSubmit={handleProductSubmit} style={styles.form}>
               <input
-                id="file-upload"
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
+                type="text"
+                placeholder="Product Name"
+                name="productName"
+                value={productFormData.productName}
+                onChange={handleProductInputChange}
                 required
-                style={styles.fileInput}
+                style={styles.input}
               />
+              <textarea
+                placeholder="Description"
+                name="description"
+                value={productFormData.description}
+                onChange={handleProductInputChange}
+                required
+                style={styles.textarea}
+              />
+              <input
+                type="number"
+                placeholder="Price"
+                name="price"
+                value={productFormData.price}
+                onChange={handleProductInputChange}
+                required
+                style={styles.input}
+              />
+              <input
+                type="number"
+                placeholder="Stock"
+                name="stock"
+                value={productFormData.stock}
+                onChange={handleProductInputChange}
+                required
+                style={styles.input}
+              />
+              <div style={styles.fileUploadContainer}>
+                <label style={styles.fileLabel} htmlFor="file-upload">
+                  <strong
+                    style={{
+                      color: "#0F5132",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "5px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Upload Product Image
+                    <AddPhotoAlternateIcon style={styles.iconButton} />
+                  </strong>
+                </label>
 
-              {imagePreview && (
-                <img
-                  src={imagePreview}
-                  alt="Product Preview"
-                  style={styles.imagePreview}
+                <input
+                  id="file-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  required
+                  style={styles.fileInput}
                 />
-              )}
-            </div>
-            <button type="submit" style={styles.submitButton}>
-              Submit Product
-            </button>
-          </form>
+
+                {imagePreview && (
+                  <img
+                    src={imagePreview}
+                    alt="Product Preview"
+                    style={styles.imagePreview}
+                  />
+                )}
+              </div>
+              <button type="submit" style={styles.submitButton}>
+                Submit Product
+              </button>
+            </form>
+          </div>
         </div>
-      </div>
-    )}
+      )}
       <div style={styles.card}>
         <h3 style={styles.cardTitle}>Search Product</h3>
         <form onSubmit={getProductByName} style={styles.formSearch}>
@@ -725,231 +720,223 @@ const SellerProduct = () => {
         </form>
         {loading && <p>Loading...</p>}
         {error && <p style={styles.error}>{error}</p>}
-        <div style={styles.card}>
-        {errorMessage && <p style={styles.errorMessage}>{errorMessage}</p>}
-        {successMessage && (
-          <p style={styles.successMessage}>{successMessage}</p>
-        )}
-        {productSearchResult && (
-          <div style={styles.searchResult}>
-            <h4 style={styles.resultTitle}>Product Details</h4>
-            <p>
-              <strong>Name:</strong> {productSearchResult.productName}
-            </p>
-            <p>
-              <strong>Description:</strong> {productSearchResult.description}
-            </p>
-            <p>
-              <strong>Price:</strong> {productSearchResult.price}
-            </p>
-            <p>
-              <strong>Rating:</strong> {productSearchResult.rating}
-            </p>
-            <p>
-              <strong>Seller:</strong> {productSearchResult.seller}
-            </p>
-            <p>
-          <strong>Archived:</strong>{' '}
-          {productSearchResult.archived !== undefined
-            ? productSearchResult.archived.toString()
-            : 'N/A'}
-        </p>
-            <button
-              type="button" // Prevent form submission
+          {errorMessage && <p style={styles.errorMessage}>{errorMessage}</p>}
+          {successMessage && (
+            <p style={styles.successMessage}>{successMessage}</p>
+          )}
 
-              onClick={() => archiveProduct(productSearchResult.productName)}
-              disabled={loading || productSearchResult.unarchived}
-              style={styles.unarchiveButton}
-            >
-              <FaArchive style={{ marginRight: "5px" }} />
-              Archive Product
-            </button>
+          {productSearchResult && (
+            <div style={styles.searchResult}>
+              <h4 style={styles.resultTitle}>Product Details</h4>
+              <p>
+                <strong>Name:</strong> {productSearchResult.productName}
+              </p>
+              <p>
+                <strong>Description:</strong> {productSearchResult.description}
+              </p>
+              <p>
+                <strong>Price:</strong> {productSearchResult.price}
+              </p>
+              <p>
+                <strong>Rating:</strong> {productSearchResult.rating}
+              </p>
+              <p>
+                <strong>Seller:</strong> {productSearchResult.seller}
+              </p>
+              <p>
+                <strong>Archived:</strong>{" "}
+                {productSearchResult.archived !== undefined
+                  ? productSearchResult.archived.toString()
+                  : "N/A"}
+              </p>
+              <button
+                type="button" // Prevent form submission
+                onClick={() => archiveProduct(productSearchResult.productName)}
+                disabled={loading || productSearchResult.unarchived}
+                style={styles.unarchiveButton}
+              >
+                <FaArchive style={{ marginRight: "5px" }} />
+                Archive Product
+              </button>
 
-            {/* Unarchive Product Button */}
-            <button
-              type="button" // Prevent form submission
-
-              onClick={() => unarchiveProduct(productSearchResult.productName)}
-              disabled={loading || !productSearchResult.archived}
-              style={styles.unarchiveButton}
-            >
-              <HiOutlineArchiveBoxXMark style={{ marginRight: "5px" }} />
-              Unarchive Product
-            </button>
+              {/* Unarchive Product Button */}
+              <button
+                type="button" // Prevent form submission
+                onClick={() =>
+                  unarchiveProduct(productSearchResult.productName)
+                }
+                disabled={loading || !productSearchResult.archived}
+                style={styles.unarchiveButton}
+              >
+                <HiOutlineArchiveBoxXMark style={{ marginRight: "5px" }} />
+                Unarchive Product
+              </button>
+            </div>
+          )}
+        {sellerProducts.length === 0 && !loading ? (
+          <p>No products found.</p>
+        ) : (
+          <div style={styles.cardContainer}>
+            {sellerProducts.map((product) => (
+              <div
+                key={product._id}
+                style={{
+                  ...styles.card,
+                  position: "relative",
+                  backgroundColor: "#fff",
+                  border: "1px solid #ddd",
+                  borderRadius: "10px",
+                  padding: "15px",
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  transition: "transform 0.3s ease",
+                  overflow: "hidden",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "scale(1.03)";
+                  e.currentTarget.style.boxShadow =
+                    "0 8px 12px rgba(0, 0, 0, 0.15)";
+                  e.currentTarget.style.borderColor = "#0F5132";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "scale(1)";
+                  e.currentTarget.style.boxShadow =
+                    "0 4px 6px rgba(0, 0, 0, 0.1)";
+                  e.currentTarget.style.borderColor = "#ddd";
+                }}
+              >
+                <h4 style={styles.cardTitle}>
+                  {editProductId === product._id ? (
+                    <input
+                      type="text"
+                      name="productName"
+                      value={editProductData.productName}
+                      onChange={handleInputChange2}
+                      style={styles.input}
+                    />
+                  ) : (
+                    product.productName
+                  )}
+                </h4>
+                <p style={styles.cardDescription}>
+                  {editProductId === product._id ? (
+                    <textarea
+                      name="description"
+                      value={editProductData.description}
+                      onChange={handleInputChange2}
+                      style={styles.textarea}
+                    />
+                  ) : (
+                    product.description
+                  )}
+                </p>
+                <p style={styles.cardDetails}>
+                  <strong>Price:</strong>{" "}
+                  {editProductId === product._id ? (
+                    <input
+                      type="number"
+                      name="price"
+                      value={editProductData.price}
+                      onChange={handleInputChange2}
+                      style={styles.input}
+                    />
+                  ) : (
+                    `$${product.price}`
+                  )}
+                </p>
+                <p style={styles.cardDetails}>
+                  <strong>Stock:</strong>{" "}
+                  {editProductId === product._id ? (
+                    <input
+                      type="number"
+                      name="stock"
+                      value={editProductData.stock}
+                      onChange={handleInputChange2}
+                      style={styles.input}
+                    />
+                  ) : (
+                    product.stock
+                  )}
+                </p>
+                <p style={styles.cardDetails}>
+                  <strong>Rating:</strong> {product.rating}
+                </p>
+                <p style={styles.cardDetails}>
+                  <strong>Status:</strong>{" "}
+                  <span
+                    style={{
+                      color: product.archived ? "green" : "red",
+                      fontWeight: "500",
+                    }}
+                  >
+                    {product.archived ? "Archived" : "Unarchived"}
+                  </span>
+                </p>
+                <div style={styles.buttonContainer}>
+                  {editProductId === product._id ? (
+                    <button
+                      style={styles.saveButton}
+                      onClick={() => handleSaveProduct(product._id)}
+                    >
+                      Save
+                    </button>
+                  ) : (
+                    <button
+                      style={styles.editButton}
+                      onClick={() => handleProductEdit(product._id)}
+                    >
+                      Edit
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      product.archived
+                        ? unarchiveProduct(product.productName)
+                        : archiveProduct(product.productName)
+                    }
+                    style={styles.archiveToggleButton}
+                  >
+                    {product.archived ? "Unarchive" : "Archive"}
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
-      {sellerProducts.length === 0 && !loading ? (
-  <p>No products found.</p>
-) : (
-  <div style={styles.cardContainer}>
-    {sellerProducts.map((product) => (
-      <div
-        key={product._id}
-        style={{
-          ...styles.card,
-          position: "relative",
-          backgroundColor: "#fff",
-          border: "1px solid #ddd",
-          borderRadius: "10px",
-          padding: "15px",
-          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          transition: "transform 0.3s ease",
-          overflow: "hidden",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = "scale(1.03)";
-          e.currentTarget.style.boxShadow =
-            "0 8px 12px rgba(0, 0, 0, 0.15)";
-          e.currentTarget.style.borderColor = "#0F5132";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = "scale(1)";
-          e.currentTarget.style.boxShadow =
-            "0 4px 6px rgba(0, 0, 0, 0.1)";
-          e.currentTarget.style.borderColor = "#ddd";
-        }}
-      >
-       <h4 style={styles.cardTitle}>
-  {editProductId === product._id ? (
-    <input
-      type="text"
-      name="productName"
-      value={editProductData.productName}
-      onChange={handleInputChange2}
-      style={styles.input}
-    />
-  ) : (
-    product.productName
-  )}
-</h4>
-<p style={styles.cardDescription}>
-  {editProductId === product._id ? (
-    <textarea
-      name="description"
-      value={editProductData.description}
-      onChange={handleInputChange2}
-      style={styles.textarea}
-    />
-  ) : (
-    product.description
-  )}
-</p>
-<p style={styles.cardDetails}>
-  <strong>Price:</strong>{" "}
-  {editProductId === product._id ? (
-    <input
-      type="number"
-      name="price"
-      value={editProductData.price}
-      onChange={handleInputChange2}
-      style={styles.input}
-    />
-  ) : (
-    `$${product.price}`
-  )}
-</p>
-<p style={styles.cardDetails}>
-  <strong>Stock:</strong>{" "}
-  {editProductId === product._id ? (
-    <input
-      type="number"
-      name="stock"
-      value={editProductData.stock}
-      onChange={handleInputChange2}
-      style={styles.input}
-    />
-  ) : (
-    product.stock
-  )}
-</p>
-<p style={styles.cardDetails}>
-  <strong>Rating:</strong> {product.rating}
-</p>
-<p style={styles.cardDetails}>
-  <strong>Status:</strong>{" "}
-  <span
-    style={{
-      color: product.archived ? "green" : "red",
-      fontWeight: "500",
-    }}
-  >
-    {product.archived ? "Archived" : "Unarchived"}
-  </span>
-</p>
-        <div style={styles.buttonContainer}>
-          {editProductId === product._id ? (
-            <button
-              style={styles.saveButton}
-              onClick={() => handleSaveProduct(product._id)}
-            >
-              Save
-            </button>
-          ) : (
-            <button
-              style={styles.editButton}
-              onClick={() => handleProductEdit(product._id)}
-            >
-              Edit
-            </button>
-          )}
-          <button
-            type="button"
-            onClick={() =>
-              product.archived
-                ? unarchiveProduct(product.productName)
-                : archiveProduct(product.productName)
-            }
-            style={styles.archiveToggleButton}
-          >
-            {product.archived ? "Unarchive" : "Archive"}
-          </button>
-        </div>
-      </div>
-    ))}
-  </div>
-)}
 
-
-      </div>
-
-    
-
-     
-
-     
       <Tooltip id="amenities-tooltip" place="top" />
     </div>
   );
 };
 
 const styles = {
-    createButton: {
-        display: "flex",
-        alignItems: "center",
-        gap: "8px",
-        backgroundColor: "#0F5132",
-        color: "white",
-        padding: "10px 20px",
-        borderRadius: "5px",
-        border: "none",
-        cursor: "pointer",
-        fontSize: "16px",
-        fontWeight: "bold",
-        transition: "background-color 0.3s ease",
-        marginTop:'-1px'
-      },
-      
-      createButtonHover: {
-        backgroundColor: "#084B24", // Darker green on hover
-      },
-      
-      createIcon: {
-        fontSize: "20px",
-      },
+  createButton: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    backgroundColor: "#0F5132",
+    color: "white",
+    padding: "10px 20px",
+    borderRadius: "5px",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "16px",
+    fontWeight: "bold",
+    transition: "background-color 0.3s ease",
+    marginTop: "-1px",
+  },
+
+  createButtonHover: {
+    backgroundColor: "#084B24", // Darker green on hover
+  },
+
+  createIcon: {
+    fontSize: "20px",
+  },
   sidebar: {
     position: "fixed",
     top: "60px",
@@ -1249,7 +1236,7 @@ const styles = {
     alignItems: "center", // Center-align the form
     margin: "0 auto", // Center the form on the page
   },
- 
+
   fileUploadContainer: {
     display: "flex",
     flexDirection: "column",

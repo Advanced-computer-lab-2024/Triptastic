@@ -3,18 +3,12 @@ import logo from '../images/image.png'; // Adjust the path based on your folder 
 import { FaUserCircle,FaFilter,FaSyncAlt} from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import { FaShoppingCart,FaRegFileAlt, FaDollarSign, FaStar, FaComments, FaWarehouse, FaChartBar,FaBars} from 'react-icons/fa';
-import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel,
+import { FaUsersCog, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel,
   FaClipboardList,FaSearch,FaArchive,FaUserShield } from "react-icons/fa";
   import activity from '../images/shopping.jpg'; 
   import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
-import LockResetIcon from '@mui/icons-material/LockReset';
-import { FaTag, FaInfoCircle } from "react-icons/fa";
-import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
-import Inventory2Icon from '@mui/icons-material/Inventory2';
-  import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
+
   import { FaUser,FaExclamationCircle, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
 
 const AdminReport = () => {
@@ -34,6 +28,26 @@ const AdminReport = () => {
     const [itinProfits, setItinProfits] = useState(0);
     const [actProfits, setActProfits] = useState(0);
     const [hoveredProductId, setHoveredProductId] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 4; // Number of products per page
+    const indexOfLastProduct = currentPage * itemsPerPage;
+    const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
+    const currentProducts = Products.slice(indexOfFirstProduct, indexOfLastProduct);
+    
+     // Pagination Logic
+     const totalPages = Math.ceil(Products.length / itemsPerPage);
+
+ 
+     const handlePageChange = (page) => {
+         if (page >= 1 && page <= totalPages) {
+             setCurrentPage(page);
+         }
+     };
+ 
+     const handleRefresh = () => {
+         setRefresh(!refresh);
+         setCurrentPage(1); // Reset to first page after refresh
+     };
 
     const navigate = useNavigate(); // Initialize useNavigate for navigation
 
@@ -243,6 +257,14 @@ return (
           Admin Panel
           </span>
         </div>
+
+        <div style={styles.item} onClick={() => navigate('/admincontrol')}>
+          <FaUsersCog   style={styles.iconn} />
+          <span className="label" style={styles.label}>
+           Admin Control
+          </span>   
+        </div>
+        
         
         <div style={styles.item} onClick={() => navigate('/Complaints')}>
           <FaExclamationCircle style={styles.iconn} />
@@ -298,26 +320,24 @@ return (
     <h1 style={styles.pageTitle}>{localStorage.getItem('Username')}'s Sales Report</h1>
 
     {/* Action Row */}
-  {/* Action Row */}
     <div style={styles.actionRow}>
-    <FaSyncAlt 
-                style={styles.icon} 
-                onClick={() => setRefresh(!refresh)} 
-                title="Refresh" 
-            />
+        <FaSyncAlt 
+            style={styles.icon} 
+            onClick={() => setRefresh(!refresh)} 
+            title="Refresh" 
+        />
         <input
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
             style={styles.dateInput}
         />
-            <FaFilter 
-                style={styles.icon} 
-                onClick={() => handleFilterD()} 
-                title={filteredD ? 'Clear Filter' : 'Filter'} 
-            />
+        <FaFilter 
+            style={styles.icon} 
+            onClick={() => handleFilterD()} 
+            title={filteredD ? 'Clear Filter' : 'Filter'} 
+        />
     </div>
-
 
     {/* Product Filter Section */}
     <div style={styles.filterSection}>
@@ -337,93 +357,116 @@ return (
         </select>
     </div>
 
-{/* Filtered Product Details */}
-{filteredP && (
-    <div style={styles.filteredProductCard}>
-        <h3 style={styles.filteredProductTitle}>Selected Product</h3>
-        <div style={styles.filteredProductContent}>
-            <p><strong>Product Name:</strong> {filterP.productName}</p>
-            <p><strong>Price:</strong> ${filterP.price}</p>
-            <p><strong>Sales:</strong> {filterP.sales}</p>
+    {/* Filtered Product Details */}
+    {filteredP && (
+        <div style={styles.filteredProductCard}>
+            <h3 style={styles.filteredProductTitle}>Selected Product</h3>
+            <div style={styles.filteredProductContent}>
+                <p><strong>Product Name:</strong> {filterP.productName}</p>
+                <p><strong>Price:</strong> ${filterP.price}</p>
+                <p><strong>Sales:</strong> {filterP.sales}</p>
+            </div>
+
+            {/* Render purchase dates */}
+            <ul style={styles.dateList}>
+                {DatesQuant.map((dateQuant, index) => (
+                    <li key={index} style={styles.dateListItem}>
+                        <p><strong>Date:</strong> {new Date(dateQuant.createdAt).toLocaleDateString()}</p>
+                    </li>
+                ))}
+            </ul>
         </div>
+    )}
 
-        {/* Render purchase dates */}
-        <ul style={styles.dateList}>
-            {DatesQuant.map((dateQuant, index) => (
-                <li key={index} style={styles.dateListItem}>
-                    <p><strong>Date:</strong> {new Date(dateQuant.createdAt).toLocaleDateString()}</p>
-                </li>
-            ))}
-        </ul>
-    </div>
-)}
+    {/* Filtered Date Results */}
+    {filteredD && (
+        <div style={styles.filteredProductCard}>
+            <h3 style={styles.filteredProductTitle}>Filtered Products</h3>
+            <ul style={styles.dateList}>
+                {productQuantity.map((product, index) => (
+                    <li key={index} style={styles.dateListItem}>
+                        <h2>Product: {product}</h2>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    )}
 
-{/* Filtered Date Results */}
-{filteredD && (
-    <div style={styles.filteredProductCard}>
-        <h3 style={styles.filteredProductTitle}>Filtered Products</h3>
-        <ul style={styles.dateList}>
-        {productQuantity.map((product, index) => (
-                 <li key={index}>
-               <h2>Product: {product}</h2>
-                          </li>
-               ))}
-                 </ul>
-    </div>
-)}
-
-
-{/* Product List */}
- {/* Product List */}
- {!filteredP && !filteredD && (
+    {/* Product List */}
+    {!filteredP && !filteredD && (
+        <>
+            <h2>Products Sales</h2>
+            
+                   {/* Pagination */}
+                   <div style={styles.paginationContainer}>
+                        <button
+                            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                            disabled={currentPage === 1}
+                            style={styles.paginationButton}
+                        >
+                            Previous
+                        </button>
+                        <p style={{ margin: '0 10px', fontSize: '16px' }}>
+                            Page {currentPage} of {Math.ceil(Products.length / itemsPerPage)}
+                        </p>
+                        <button
+                            onClick={() =>
+                                setCurrentPage((prev) =>
+                                    Math.min(prev + 1, Math.ceil(Products.length / itemsPerPage))
+                                )
+                            }
+                            disabled={currentPage === Math.ceil(Products.length / itemsPerPage)}
+                            style={styles.paginationButton}
+                        >
+                            Next
+                        </button>
+                    </div>
+            {isLoading ? (
+                <p style={styles.loadingSpinner}>Loading...</p>
+            ) : Products.length > 0 ? (
                 <>
-                    <h2>All Products</h2>
-                    {isLoading ? (
-                        <p style={styles.loadingSpinner}>Loading...</p>
-                    ) : Products.length > 0 ? (
-                        <div style={styles.productGrid}>
-                            {Products.map((Product) => (
-                                <div
-                                    key={Product._id}
+                    <div style={styles.cardsContainer}>
+                        {currentProducts.map((product) => (
+                            <div
+                                key={product._id}
+                                style={{
+                                    ...styles.card,
+                                    ...(hoveredProductId === product._id
+                                        ? styles.cardHover
+                                        : {}),
+                                }}
+                                onMouseEnter={() => setHoveredProductId(product._id)}
+                                onMouseLeave={() => setHoveredProductId(null)}
+                            >
+                                <h3
                                     style={{
-                                        ...styles.productCard,
-                                        ...(hoveredProductId === Product._id
-                                            ? styles.productCardHover
+                                        ...styles.cardTitle,
+                                        ...(hoveredProductId === product._id
+                                            ? styles.cardTitleHover
                                             : {}),
                                     }}
-                                    onMouseEnter={() => setHoveredProductId(Product._id)}
-                                    onMouseLeave={() => setHoveredProductId(null)}
                                 >
-                                    <h3
-                                        style={{
-                                            ...styles.productName,
-                                            ...(hoveredProductId === Product._id
-                                                ? styles.productNameHover
-                                                : {}),
-                                        }}
-                                    >
-                                        {Product.productName}
-                                    </h3>
-                                    <p style={styles.productDetails}>Price: ${Product.price}</p>
-                                    <p style={styles.productDetails}>Sales: {Product.sales}</p>
-                                    <p style={styles.productDetails}>
-                                        Times Purchased:{' '}
-                                        {Product.sales === 0
-                                            ? 0
-                                            : Math.round(Product.sales / Product.price)}
-                                    </p>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <p style={styles.noProducts}>No products found.</p>
-                    )}
+                                    {product.productName}
+                                </h3>
+                                <p style={styles.cardDetails}>Price: ${product.price}</p>
+                                <p style={styles.cardDetails}>Sales: {product.sales}</p>
+                                <p style={styles.cardDetails}>
+                                    Times Purchased: {product.sales === 0 ? 0 : Math.round(product.sales / product.price)}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+
+                  
                 </>
+            ) : (
+                <p style={styles.noProducts}>No products found.</p>
             )}
+        </>
+    )}
+</div>
+</div>
 
-
-        </div>
-    </div>
 );
 }
 
@@ -678,7 +721,7 @@ filterButton: {
 },
 filterSection: {
   display: 'flex',
-  justifyContent: 'flex-start', // Aligns the entire section to the leftmost
+  justifyContent: 'flex-end', // Aligns the entire section to the leftmost
   alignItems: 'center',
   gap: '10px', // Adds spacing between the label and dropdown
   marginTop: '20px',
@@ -788,6 +831,44 @@ filterSelect: {
     sidebarExpanded: {
       width: '200px', // Width when expanded
     },
+
+  cardsContainer: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(2, 1fr)',
+      gap: '20px',
+      marginTop: '20px',
+  },
+  card: {
+      backgroundColor: '#fff',
+      padding: '20px',
+      borderRadius: '10px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      textAlign: 'center',
+  },
+  cardTitle: { fontSize: '18px', fontWeight: 'bold', color: '#0F5132' },
+  cardDetails: { fontSize: '16px', color: '#555' },
+  paginationContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: '20px',
+},
+paginationButton: {
+    backgroundColor: '#0F5132',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    padding: '10px 20px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    margin: '0 5px',
+    transition: 'background-color 0.3s ease',
+},
+paginationButtonDisabled: {
+    backgroundColor: '#aaa',
+    cursor: 'not-allowed',
+},
+
 
 };
 

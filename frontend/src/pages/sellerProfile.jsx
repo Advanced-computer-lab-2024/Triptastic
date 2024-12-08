@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import image from '../images/image.png';
-import { FaUserCircle, FaBell,FaSearch, FaBox, FaPlus, FaUniversity, FaMap, FaRunning, FaPlane, FaHotel, FaClipboardList, FaStar, FaBus } from 'react-icons/fa';
+import { FaUserCircle, FaBell,FaDollarSign,FaChartBar,FaShoppingCart, FaBox, FaPlus, FaUniversity, FaMap, FaRunning, FaPlane, FaHotel, FaClipboardList, FaStar, FaBus } from 'react-icons/fa';
 import { MdNotificationImportant } from 'react-icons/md';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
@@ -425,15 +425,48 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
           const total = products.reduce((sum, product) => sum + product.sales, 0);
           setTotalSales(total);
         };
-        const findMostSold = (x) => {
-          const products = x.map((item) => {
-              return item.product ? item.product : item;
-            });
-          if (products.length > 0) {
-            const mostSoldProduct = products.reduce((max, product) => (product.sales > max.sales ? product : max), products[0]);
-            setMostSold(mostSoldProduct);
-          }
-        };
+       const findMostSold = () => {
+    if (Products && Products.length > 0) {
+      return Products.reduce(
+        (max, product) => (product.sales > max.sales ? product : max),
+        Products[0]
+      );
+    }
+    return null;
+  };
+  useEffect(() => {
+    const calculateTotalSales = () => {
+      if (Products && Products.length > 0) {
+        return Products.reduce((sum, product) => sum + product.sales, 0);
+      }
+      return 0;
+    };
+  
+    const findMostSold = () => {
+      if (Products && Products.length > 0) {
+        return Products.reduce(
+          (max, product) => (product.sales > max.sales ? product : max),
+          Products[0]
+        );
+      }
+      return null;
+    };
+  
+    const findLeastSold = () => {
+      if (Products && Products.length > 0) {
+        return Products.reduce(
+          (min, product) => (product.sales < min.sales ? product : min),
+          Products[0]
+        );
+      }
+      return null;
+    };
+  
+    setTotalSales(calculateTotalSales());
+    setMostSold(findMostSold());
+    setLeastSold(findLeastSold());
+  }, [Products, filteredD, filteredP]); // Recalculate on Products or filter state changes
+  
       
         const findLeastSold = (x) => {
           const products = x.map((item) => {
@@ -544,8 +577,8 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
         <span
         style={{
           position: 'absolute',
-          top: 0,
-          right: 150,
+          top: 10,
+          right: 125,
           backgroundColor: '#ff4d4d',
           color: 'white',
           borderRadius: '50%',
@@ -676,113 +709,322 @@ const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
           </div>
          
         </div>
-       <div>
-       <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            style={{ marginLeft: '10px' }}
-          />
-        <button onClick={() => handleFilterD()}>
-            {filteredD ? 'Clear filter' : 'Filter'}
-          </button>
-          <div>
-              <label htmlFor="productDropdown">Filter by Product:</label>
-              <select
-                id="productDropdown"
-                value={filterP ? filterP._id : ''}
-                onChange={handleFilterChange}
-                style={{ marginLeft: '10px' }}
-              >
-                <option value="">Select an product</option>
-                {Products.map((product) => (
-                  <option key={product._id} value={product._id}>
-                    {product.productName}
-                  </option>
-                ))}
-              </select>
-            </div>
-          {!filteredP && !filteredD && (<h2>Total profit from sales: {totalSales}</h2>)}
-          {!filteredP && !filteredD && (<h3>Most sold product</h3>)}
-          {!filteredP && !filteredD && !isLoading && mostSold && (
-            <div>
-              <p>Product: {mostSold.productName}</p>
-              <p>Price: {mostSold.price}</p>
-              <p>Sales: {mostSold.sales}</p>
-              <p>
-                Times purchased: {mostSold.sales === 0 ? 0 : mostSold.sales / mostSold.price}
-              </p>
-            </div>
-          )}
-         {!filteredP && !filteredD && ( <h3>Least sold product</h3>)}
-          {!filteredP && !filteredD && !isLoading && leastSold && (
-            <div>
-              <p>Product: {leastSold.productName}</p>
-              <p>Price: {leastSold.price}</p>
-              <p>Sales: {leastSold.sales}</p>
-              <p>
-                Times purchased: {leastSold.sales === 0 ? 0 : leastSold.sales / leastSold.price}
-              </p>
-            </div>
-          )}
-        </div>
-        <div>
-        {filteredP && (
-  <div>
-    <h2>Selected product</h2>
-    <p>Name: {filterP.productName}</p>
-    <p>Price: {filterP.price}</p>
-    <p>Sales: {filterP.sales}</p>
 
-    {/* Render purchase dates */}
-    <ul>
-      {DatesQuant.map((dateQuant, index) => (
-        <li key={index}>
-          {/* Accessing the `createdAt` field to display */}
-          <p>Purchased on: {new Date(dateQuant.createdAt).toLocaleDateString()}</p>
-        </li>
-      ))}
-    </ul>
-
-  
-
-
+  {/* Total, Most Sold, Least Sold */}
+  <div
+    style={{
+      backgroundColor: '#f9f9f9',
+      padding: '15px',
+      borderRadius: '8px',
+      marginBottom: '20px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    }}
+  >
+    <h2 style={{ fontSize: "20px",
+    fontWeight: "600",
+    color: "#0F5132", 
+    marginBottom: "15px",
+    textAlign: "center",
+    borderBottom: "2px solid #0F5132", 
+    paddingBottom: "10px",
+    letterSpacing: "1px", 
+    textTransform: "uppercase"}}>
+      <i className="fa fa-dollar-sign"></i> Total Profit from Sales: ${totalSales}
+    </h2>
+    <div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    gap: "20px",
+    alignItems: "flex-start",
+    padding: "20px",
+    border: "1px solid #ddd",
+    borderRadius: "10px",
+    backgroundColor: "#f9f9f9",
+  }}
+>
+  {/* Most Sold Product */}
+  <div style={{ flex: 1, marginRight: "20px"}}>
+    <h3
+      style={{
+        fontSize: "16px",
+        fontWeight: "600",
+        color: "#0F5132",
+        marginBottom: "15px",
+        textAlign: "center",
+        borderBottom: "2px solid #0F5132",
+        paddingBottom: "10px",
+        letterSpacing: "1px",
+      }}
+    >
+      Most Sold Product
+    </h3>
+    {!isLoading && mostSold && (
+      <div style={{ padding: "10px", fontSize: "12px", color: "#333" }}>
+        <p style={{ display: "flex", alignItems: "center", marginBottom: "5px" }}>
+          <FaBox style={{ marginRight: "8px", color: "#0F5132" }} />
+          <strong>Product:</strong> {mostSold.productName}
+        </p>
+        <p style={{ display: "flex", alignItems: "center", marginBottom: "5px" }}>
+          <FaDollarSign style={{ marginRight: "8px", color: "#0F5132" }} />
+          <strong>Price:</strong> ${mostSold.price}
+        </p>
+        <p style={{ display: "flex", alignItems: "center", marginBottom: "5px" }}>
+          <FaChartBar style={{ marginRight: "8px", color: "#0F5132" }} />
+          <strong>Sales:</strong> {mostSold.sales}
+        </p>
+        <p style={{ display: "flex", alignItems: "center" }}>
+          <FaShoppingCart style={{ marginRight: "8px", color: "#0F5132" }} />
+          <strong>Times Purchased:</strong>{" "}
+          {mostSold.sales === 0 ? 0 : mostSold.sales / mostSold.price}
+        </p>
+      </div>
+    )}
   </div>
-)}
+
+  {/* Least Sold Product */}
+  <div style={{ flex: 1 }}>
+    <h3
+      style={{
+        fontSize: "16px",
+        fontWeight: "600",
+        color: "#0F5132",
+        marginBottom: "15px",
+        textAlign: "center",
+        borderBottom: "2px solid #0F5132",
+        paddingBottom: "10px",
+        letterSpacing: "1px",
+      }}
+    >
+      Least Sold Product
+    </h3>
+    {!isLoading && leastSold && (
+      <div style={{ padding: "10px", fontSize: "12px", color: "#333" }}>
+        <p style={{ display: "flex", alignItems: "center", marginBottom: "5px" }}>
+          <FaBox style={{ marginRight: "8px", color: "#0F5132" }} />
+          <strong>Product:</strong> {leastSold.productName}
+        </p>
+        <p style={{ display: "flex", alignItems: "center", marginBottom: "5px" }}>
+          <FaDollarSign style={{ marginRight: "8px", color: "#0F5132" }} />
+          <strong>Price:</strong> ${leastSold.price}
+        </p>
+        <p style={{ display: "flex", alignItems: "center", marginBottom: "5px" }}>
+          <FaChartBar style={{ marginRight: "8px", color: "#0F5132" }} />
+          <strong>Sales:</strong> {leastSold.sales}
+        </p>
+        <p style={{ display: "flex", alignItems: "center" }}>
+          <FaShoppingCart style={{ marginRight: "8px", color: "#0F5132" }} />
+          <strong>Times Purchased:</strong>{" "}
+          {leastSold.sales === 0 ? 0 : leastSold.sales / leastSold.price}
+        </p>
+      </div>
+    )}
+  </div>
+</div>
+  </div>
+  <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', color: '#333' }}>
+  {/* Filter Section */}
+  <div
+    style={{
+      marginBottom: '20px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '15px',
+      backgroundColor: '#f5f5f5',
+      padding: '10px 15px',
+      borderRadius: '8px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    }}
+  >
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+      <label style={{ fontWeight: 'bold', fontSize: '14px', color: '#0F5132' }}>Filter by Date:</label>
+      <input
+        type="date"
+        value={date}
+        onChange={(e) => setDate(e.target.value)}
+        style={{
+          padding: '8px 10px',
+          border: '1px solid #ddd',
+          borderRadius: '5px',
+          fontSize: '12px',
+        }}
+      />
+    </div>
+    <button
+      onClick={() => handleFilterD()}
+      style={{
+        padding: '8px 15px',
+        backgroundColor: filteredD ? '#d9534f' : '#0F5132',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        fontSize: '12px',
+        fontWeight: 'bold',
+      }}
+    >
+      {filteredD ? 'Clear Filter' : 'Filter Date'}
+    </button>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+      <label htmlFor="productDropdown" style={{ fontWeight: 'bold', fontSize: '14px', color: '#0F5132' }}>
+        Filter by Product:
+      </label>
+      <select
+        id="productDropdown"
+        value={filterP ? filterP._id : ''}
+        onChange={handleFilterChange}
+        style={{
+          padding: '8px 10px',
+          border: '1px solid #ddd',
+          borderRadius: '5px',
+          fontSize: '12px',
+        }}
+      >
+        <option value="">Select a product</option>
+        {Products.map((product) => (
+          <option key={product._id} value={product._id}>
+            {product.productName}
+          </option>
+        ))}
+      </select>
+    </div>
+  </div>
+
+  {/* Filtered Products */}
+  {filteredP && (
+    <div
+      style={{
+        backgroundColor: '#f9f9f9',
+        padding: '15px',
+        borderRadius: '8px',
+        marginBottom: '20px',
+        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+      }}
+    >
+      <h2 style={{fontSize: "16px",
+      fontWeight: "600",
+      color: "#0F5132",
+      marginBottom: "15px",
+      textAlign: "center",
+      borderBottom: "2px solid #0F5132",
+      paddingBottom: "10px",
+      letterSpacing: "1px",
+      
+       }}>Selected Product</h2>
+            <h4 style={{ fontSize: '14px', color: '#0F5132' }}><strong>Product:</strong> {filterP.productName}</h4>
+            <h4 style={{ fontSize: '14px', color: '#0F5132' }}><strong>Price:</strong> ${filterP.price}</h4>
+          <h4 style={{ fontSize: '14px', color: '#0F5132' }}><strong>Sales:</strong> ${filterP.sales}</h4>
+      <ul>
+        {DatesQuant.map((dateQuant, index) => (
+          <li key={index}>
+             <h4 style={{ fontSize: '14px', color: '#0F5132' }}>Purchased on: {new Date(dateQuant.createdAt).toLocaleDateString()}</h4>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  {filteredD && (
+    <div
+      style={{
+        marginTop: '20px',
+        backgroundColor: '#f9f9f9',
+        padding: '15px',
+        borderRadius: '8px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      }}
+    >
+      <h3 style={{ fontSize: "16px",
+      fontWeight: "600",
+      color: "#0F5132",
+      marginBottom: "15px",
+      textAlign: "center",
+      borderBottom: "2px solid #0F5132",
+      paddingBottom: "10px",
+      letterSpacing: "1px",
+       }}>
+        <i className="fa fa-filter"></i> Filtered Products
+      </h3>
+      <ul style={{ paddingLeft: '20px', marginTop: '10px' }}>
+        {productQuantity.map((product, index) => (
+          <li key={index} style={{ marginBottom: '10px' }}>
+            <h4 style={{ fontSize: '14px', color: '#0F5132' }}>Product: {product}</h4>
+            <h4 style={{ fontSize: '14px', color: '#0F5132' }}>Sales: {totalSales}</h4>
+
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  {/* All Products */}
+  {!filteredP && !filteredD && !isLoading && Products.length > 0 ? (
+    <div
+      style={{
+        marginTop: '20px',
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+        gap: '20px',
+      }}
+    >
+      {Products.map((Product) => (
+        <div
+          key={Product._id}
+          style={{
+            padding: '15px',
+            border: '1px solid #ddd',
+            borderRadius: '10px',
+            backgroundColor: '#f9f9f9',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            transition: 'transform 0.3s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.03)';
+            e.currentTarget.style.borderColor = '#0F5132';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.borderColor = '#ddd';
+          }}
+        >
+       <div style={{ fontSize: '14px', color: '#333', marginBottom: '10px', lineHeight: '1.6' }}>
+  <p style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+    <FaBox style={{ marginRight: '8px', color: '#0F5132', fontSize: '18px' }} />
+    <strong style={{ fontWeight: 'bold', marginRight: '5px' , fontSize: '18px'}}>Product:</strong>
+    <span style={{ color: '#0F5132', fontWeight: 'bold', fontSize: '15px' }}>
+      {Product.productName}
+    </span>
+  </p>
+  <p style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+    <FaDollarSign style={{ marginRight: '8px', color: '#0F5132', fontSize: '18px' }} />
+    <strong style={{ fontWeight: 'bold', marginRight: '5px' , fontSize: '18px'}}>Price:</strong>
+    <span style={{ color: '#0F5132', fontWeight: 'bold', fontSize: '15px' }}>
+      ${Product.price}
+    </span>
+  </p>
+  <p style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+    <FaChartBar style={{ marginRight: '8px', color: '#0F5132', fontSize: '18px' }} />
+    <strong style={{ fontWeight: 'bold', marginRight: '5px', fontSize: '18px' }}>Sales:</strong>
+    <span style={{ color: '#0F5132', fontWeight: 'bold', fontSize: '15px' }}>
+      ${Product.sales}
+    </span>
+  </p>
+  <p style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+    <FaShoppingCart style={{ marginRight: '8px', color: '#0F5132', fontSize: '18px' }} />
+    <strong style={{ fontWeight: 'bold', marginRight: '5px', fontSize: '18px' }}>Times Purchased:</strong>
+    <span style={{ color: '#0F5132', fontWeight: 'bold', fontSize: '15px' }}>
+      {Product.sales === 0 ? 0 : (Product.sales / Product.price).toFixed(2)}
+    </span>
+  </p>
+</div>
 
         </div>
-        <div>
-         { !filteredP && (<h3>All products</h3>)}
-          {isLoading && <p>Loading...</p>}
-          {filteredD &&(
-            <div>
-                <h3>Filtered products</h3>
-                <ul>
-             {productQuantity.map((product, index) => (
-                 <li key={index}>
-               <h2>Product: {product}</h2>
-                          </li>
-               ))}
-                 </ul>
+      ))}
+    </div>
+  ) : !filteredP && !filteredD && <p>No products found.</p>}
+</div>
 
-           </div>
 
-          )}
-          {!filteredP && !filteredD && !isLoading && Products.length > 0 ? (
-            Products.map((Product) => (
-              <div key={Product._id}>
-                <p>Product: {Product.productName}</p>
-                <p>Price: {Product.price}</p>
-                <p>Sales: {Product.sales}</p>
-                <p>
-                  Times purchased: {Product.sales === 0 ? 0 : Product.sales / Product.price}
-                </p>
-              </div>
-            ))
-          ) :!filteredP && !filteredD && (
-            <p>No products found.</p>
-          )}
-        </div>
 
       
       {/* Modal for Editing Profile */}

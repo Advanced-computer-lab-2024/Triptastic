@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaTag, FaInfoCircle, FaDollarSign, FaBox, FaImage } from 'react-icons/fa';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
-import { FaArrowLeft, FaUser, FaExclamationCircle, FaUserShield,FaHeart, FaFileAlt, FaTrashAlt, FaThList, FaPlus, FaEdit, FaFlag } from 'react-icons/fa';
+import { FaUsersCog, FaUser, FaExclamationCircle, FaUserShield,FaHeart, FaFileAlt, FaTrashAlt, FaThList, FaPlus, FaEdit, FaFlag } from 'react-icons/fa';
 import image from '../images/image.png';
 import { useNavigate } from 'react-router-dom';
 
@@ -146,6 +146,14 @@ const AddProduct = () => {
           Admin Panel
           </span>
         </div>
+
+        <div style={styles.item} onClick={() => navigate('/admincontrol')}>
+          <FaUsersCog   style={styles.icon2} />
+          <span className="label" style={styles.label2}>
+           Admin Control
+          </span>   
+        </div>
+        
         
         <div style={styles.item} onClick={() => navigate('/Complaints')}>
           <FaExclamationCircle style={styles.icon2} />
@@ -186,6 +194,12 @@ const AddProduct = () => {
           <FaFlag   style={styles.icon2} />
           <span className="label" style={styles.label2}>
             Flag Events
+          </span>   
+        </div>
+        <div style={styles.item} onClick={() => navigate('/products_admin')}>
+          <FaBox  style={styles.icon2} />
+          <span className="label" style={styles.label2}>
+            View Products
           </span>   
         </div>
       </div>
