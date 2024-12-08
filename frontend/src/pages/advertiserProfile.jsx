@@ -244,7 +244,17 @@ const [date, setDate] = useState('');
     }
   };
   
+  const handleLogout = () => {
+    const confirmLogout = window.confirm("Are you sure you want to logout?");
 
+    if (confirmLogout) {
+      // Proceed with logout, navigate to '/Guest'
+      navigate('/Guest');
+    } else {
+      // Do nothing if the user cancels the logout
+      console.log("Logout cancelled");
+    }
+  };
   const fetchActivities = async () => {
     const Username = localStorage.getItem('Username');
 
@@ -459,9 +469,10 @@ const [date, setDate] = useState('');
       style={styles.profileIcon}
       onClick={() => setShowDropdown((prev) => !prev)} // Toggle dropdown visibility
     />
-                  <LogoutOutlinedIcon
-      style={{marginLeft:"20",cursor:'pointer'}}
-      onClick={() => navigate('/Guest')}
+      
+     <LogoutOutlinedIcon
+      style={{marginLeft:"20", cursor: 'pointer' }} // You can adjust your styles here
+      onClick={handleLogout}
     />
     {showDropdown && (
       <div style={styles.dropdownMenu}>
