@@ -531,6 +531,8 @@ const handleGetActivity = async (e, Advertiser,name) => {
       borderBottom: '2px solid #0F5132',
       paddingBottom: '10px',
       marginBottom: '20px',
+      textTransform: "uppercase", 
+
     }}
   >
     Your Activities
