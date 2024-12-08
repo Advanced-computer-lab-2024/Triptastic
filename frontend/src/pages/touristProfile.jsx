@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
+import "@fontsource/lora"; // Weight 700 (Bold)
+
 import Slider from "react-slick";
 import { useLocation } from "react-router-dom";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -21,7 +23,7 @@ import shopping from "../images/shopping.jpg";
 import goldBadge from "../images/gold.png";
 import silverBadge from "../images/silver.png";
 import bronzeBadge from "../images/bronze.png";
-
+import { FaCalendar ,FaMapMarkerAlt,FaClock,FaLanguage,FaWheelchair,FaShuttleVan} from 'react-icons/fa';
 import {
   FaLandmark,
   FaUniversity,
@@ -36,6 +38,7 @@ import {
   FaStar,
   FaDollarSign,
   FaSearch,
+ 
 } from "react-icons/fa";
 import MuseumIcon from "@mui/icons-material/Museum";
 
@@ -124,6 +127,16 @@ const TouristProfile = () => {
     shopping: false,
     budget: "",
   });
+  const [isCancelPopupOpen, setIsCancelPopupOpen] = useState(false);
+const [selectedItineraryId, setSelectedItineraryId] = useState(null);
+
+const handleOpenCancelPopup = (itineraryId) => {
+  setSelectedItineraryId(itineraryId);
+  setIsCancelPopupOpen(true);
+};
+
+
+
 
 
 
@@ -482,6 +495,7 @@ const TouristProfile = () => {
       );
 
       if (response.ok) {
+        setIsCancelPopupOpen(false); // Close the popup
         alert("Itinerary booking cancelled successfully!");
         setErrorMessage("");
         fetchBookedItineraries(); // Refresh booked itineraries after cancelling one
@@ -1207,13 +1221,19 @@ const TouristProfile = () => {
 
 
 return (
+  <div style={styles.container}>
   <div style={{marginTop:"70px"}}>
     {/* Header Section */}
     <header style={styles.header}>
       <div style={styles.logoContainer}>
         <img src={logo} alt="Logo" style={styles.logo} />
       </div>
-      <h1 style={styles.title}>Tourist Profile</h1>
+   
+
+      <h1 style={styles.title}>
+  <span style={styles.username}>{localStorage.getItem("Username")}</span>'s Profile
+</h1>
+
       <div style={styles.headerIconsContainer}>
         {/* Notification Bell */}
         <div
@@ -2430,6 +2450,93 @@ return (
           </div>
         )}
       </div>
+      <h3 style={styles.cardTitle}>Your Upcoming Booked Itineraries</h3>
+{upcomingItineraries.length > 0 ? (
+  <div
+              className="carousel-container"
+              style={styles.carouselContainerStyle}
+  >    {upcomingItineraries.map((itinerary) => (
+    <div
+    key={itinerary._id}
+    className="carousel-item"
+    style={{
+      position: "relative",
+      width: "400px",
+      height: "auto",
+      border: "1px solid #ddd",
+      borderRadius: "15px",
+      flexShrink: 0,
+      backgroundColor: "#fff",
+      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+      overflow: "hidden",
+      marginBottom: "10px",
+    }}
+  >
+    
+      <div key={itinerary._id} style={styles.itineraryCard}>
+      
+        <h4 style={styles.itineraryTitle}>Activities Included:</h4>
+        <p style={styles.itineraryText}>{itinerary.Activities.join(", ")}</p>
+        
+        <p style={styles.itineraryText}>
+          <strong ><FaMapMarkerAlt />Locations:</strong> {itinerary.Locations.join(", ")}
+        </p>
+        <p style={styles.itineraryText}>
+          <strong><FaDollarSign /> Price:</strong> {(itinerary.price * conversionRate).toFixed(2)} {selectedCurrency}
+        </p>
+        <p style={styles.itineraryText}>
+          <strong><FaUserCircle />Tour Guide:</strong> {itinerary.TourGuide}
+        </p>
+        <p style={styles.itineraryText}>
+          <strong><FaCalendar />Date:</strong> {new Date(itinerary.DatesTimes).toLocaleDateString()}
+        </p>
+        <p style={styles.hyperlinkText}>
+  <a
+    href="#"
+    onClick={(e) => {
+      e.preventDefault(); // Prevent page reload
+      handleOpenCancelPopup(itinerary._id); // Trigger the popup
+    }}
+    style={styles.hyperlink}
+  >
+    Do you want to cancel your booking? Click here.
+  </a>
+</p>
+{/* Popup Modal */}
+{isCancelPopupOpen && selectedItineraryId === itinerary._id && (
+  <div style={styles.popupOverlay}>
+    <div style={styles.popupContent}>
+      <h4 style={styles.popupTitle}>Confirm Cancellation</h4>
+      <p style={styles.popupMessage}>
+        Do you really want to cancel your booking? You need to cancel at least 2 days before the booking date.
+      </p>
+      <div style={styles.popupButtons}>
+        <button
+          onClick={() => handleCancelItineraryBooking(itinerary._id)}
+          style={styles.confirmButton}
+        >
+          Yes, Cancel Booking
+        </button>
+        <button
+          onClick={() => setIsCancelPopupOpen(false)}
+          style={styles.cancelButton}
+        >
+          No, Keep Booking
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+      
+      </div>
+      </div>
+    ))}
+  </div>
+) : (
+  <p style={styles.emptyMessage}>You have no booked upcoming itineraries.</p>
+)}
+
 
       {/* Dashboard Section */}
       <div
@@ -2440,33 +2547,8 @@ return (
           marginTop: "40px",
         }}
       >
-        <div>
-          <h3 style={styles.cardTitle}>Your Upcoming Booked Itineraries</h3>
-          {upcomingItineraries.length > 0 ? (
-            upcomingItineraries.map((itinerary) => (
-              <div key={itinerary._id} style={styles.itineraryCard}>
-                <h4>Activities Included: {itinerary.Activities.join(", ")}</h4>
-                <p>Locations: {itinerary.Locations.join(", ")}</p>
-                <p>
-                  Price: {(itinerary.price * conversionRate).toFixed(2)}{" "}
-                  {selectedCurrency}
-                </p>
-                <p>Tour Guide: {itinerary.TourGuide}</p>
-                <p>Date: {itinerary.DatesTimes}</p>
-
-                <button
-                  onClick={() => handleCancelItineraryBooking(itinerary._id)}
-                  style={styles.cancelButton}
-                >
-                  Cancel Booking (2 days before)
-                </button>
-              </div>
-            ))
-          ) : (
-            <p style={styles.emptyMessage}>
-              You have no booked upcoming itineraries.
-            </p>
-          )}
+        
+          
         </div>
         <button
           onClick={() => setShowPastItineraries(!showPastItineraries)}
@@ -2629,6 +2711,60 @@ const sliderSettings = {
   adaptiveHeight: true,
 };
 const styles = {
+  hyperlinkText: {
+    textAlign: "center",
+    marginTop: "10px",
+  },
+  hyperlink: {
+    color: "#0F5132",
+    textDecoration: "underline",
+    fontSize: "14px",
+    cursor: "pointer",
+  },
+  popupOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1000,
+  },
+  popupContent: {
+    backgroundColor: "#fff",
+    padding: "20px",
+    borderRadius: "10px",
+    width: "400px",
+    textAlign: "center",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+  },
+  popupTitle: {
+    fontSize: "18px",
+    fontWeight: "bold",
+    marginBottom: "10px",
+  },
+  popupMessage: {
+    fontSize: "14px",
+    color: "#333",
+    marginBottom: "20px",
+  },
+  popupButtons: {
+    display: "flex",
+    justifyContent: "space-between",
+    gap: "10px",
+  },
+  confirmButton: {
+    padding: "10px 20px",
+    backgroundColor: "#dc3545",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    fontWeight: "bold",
+  },
   preferencesForm: {
     marginTop: "20px",
     backgroundColor: "#f9f9f9",
@@ -3218,6 +3354,26 @@ label2: {
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     marginBottom: "20px",
   },
+ 
+  itineraryCard: {
+    backgroundColor: "#f9f9f9",
+    borderRadius: "10px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    padding: "20px",
+    textAlign: "left",
+    margin: "10px",
+  },
+  itineraryTitle: {
+    fontSize: "18px",
+    fontWeight: "600",
+    color: "#0F5132",
+    marginBottom: "10px",
+  },
+  itineraryText: {
+    fontSize: "16px",
+    color: "#333",
+    marginBottom: "8px",
+  },
   cardTitle: {
     fontSize: "18px",
     fontWeight: "bold",
@@ -3297,7 +3453,7 @@ label2: {
     marginTop: "10px",
   },
   container: {
-    maxWidth: "800px",
+    maxWidth: "1400px",
     margin: "20px auto",
     padding: "20px",
     backgroundColor: "#f4f4f4",
@@ -3335,7 +3491,10 @@ label2: {
     overflowX: "auto",
     gap: "20px",
     padding: "20px",
+    scrollbarWidth: "none", // For Firefox
+    msOverflowStyle: "none", // For Internet Explorer/Edge
   },
+  
   item: {
     padding: "10px 0",
   },
@@ -3444,12 +3603,41 @@ label2: {
     alignItems: "flex-end",
     marginTop: "10px",
   },
+  username: {
+    fontSize: "20px", // Adjust font size for better visibility
+    fontWeight: "600", // Semi-bold for better emphasis
+    color: "white", // Matches a contrasting theme
+    marginBottom: "15px",
+    textAlign: "center", // Center-align the username
+    borderBottom: "2px solid #0F5132", // Adds a green underline for emphasis
+    paddingBottom: "10px",
+    letterSpacing: "1px", // Slightly spaced-out letters for readability
+    textTransform: "uppercase", // Ensures all letters are uppercase
+    textShadow: `
+    3px 3px 6px rgba(0, 0, 0, 0.5), 
+    0 0 2px rgba(255, 255, 255, 0.5)
+  `, // Increased shadow, reduced glow
+  },
+  
+
   title: {
     fontSize: "24px",
     fontWeight: "bold",
     color: "white",
     margin: 0,
     marginLeft: "60px",
+
+
+     
+      fontWeight: "bold", // Make it bold
+      fontFamily: "'Poppins', sans-serif", // Use a modern, clean font
+    
+    
+      textAlign: "center", // Center the title
+      letterSpacing: "1.5px", // Add spacing between letters
+      textTransform: "capitalize", // Capitalize the text
+      textShadow: "1px 1px 3px rgba(0, 0, 0, 0.2)", // Add a subtle shadow for depth
+    
   },
 
   addButton: {

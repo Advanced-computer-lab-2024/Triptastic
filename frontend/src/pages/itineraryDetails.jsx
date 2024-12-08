@@ -60,6 +60,20 @@ const ItineraryDetail = () => {
     fetchItinerary();
   }, [id]);
 
+  const handleProfileRedirect = () => {
+    const context = localStorage.getItem('context');
+  
+    if (context === 'tourist') {
+      navigate('/tourist-profile');
+    } else if (context === 'guest') {
+      navigate('/Guest');
+    }  else {
+      console.error('Unknown context');
+      navigate('/'); // Fallback to home
+    }
+  };
+
+
   const submitFeedback = async () => {
     if (!rating) {
       setErrorMessage('Rating is required.');
@@ -97,7 +111,7 @@ const ItineraryDetail = () => {
           <h2 style={styles.title2}>Itineraries</h2>
         </header>
         {/* Sidebar */}
-      <div
+        <div
         style={styles.sidebar}
         onMouseEnter={(e) => {
           e.currentTarget.style.width = '200px';
@@ -112,6 +126,13 @@ const ItineraryDetail = () => {
           );
         }}
       >
+        
+        <div style={styles.item} onClick={() => handleProfileRedirect()}>
+          <FaUserCircle style={styles.icon} />
+          <span className="label" style={styles.label}>
+             Home Page
+          </span>
+        </div>
         <div style={styles.item} onClick={() => navigate('/historical-locations')}>
           <FaUniversity style={styles.icon} />
           <span className="label" style={styles.label}>
@@ -119,7 +140,7 @@ const ItineraryDetail = () => {
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/museums')}>
-          < MuseumIcon style={styles.icon} />
+          <MuseumIcon style={styles.icon} />
           <span className="label" style={styles.label}>
             Museums
           </span>
@@ -157,22 +178,12 @@ const ItineraryDetail = () => {
         <div style={styles.item} onClick={() => navigate('/book-transportation')}>
           <FaBus style={styles.icon} />
           <span className="label" style={styles.label}>
-           Transportation
+            Transportation
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
-          <FaClipboardList style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Past Orders
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
-          <FaStar style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Review Activities
-          </span>
-        </div>
+        
       </div>
+
     <div style={styles.container}>
       {/* Hero Section with Background */}
       <div style={styles.hero}>

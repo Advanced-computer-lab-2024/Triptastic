@@ -80,6 +80,19 @@ const BookHotels = () => {
       [name]: value,
     });
   };
+  const handleProfileRedirect = () => {
+    const context = localStorage.getItem('context');
+
+    if (context === 'tourist') {
+      navigate('/tourist-profile');
+    } 
+    else if (context === 'guest') {
+        navigate('/Guest');
+    } else {
+      console.error('Unknown context');
+      navigate('/'); // Fallback to home
+    }
+  };
 
   const fetchHotelIds = async () => {
     const API_URL =
@@ -476,7 +489,7 @@ const BookHotels = () => {
             );
           }}
         >
-          <div style={styles.item} onClick={() => navigate('/tourist-profile')}>
+          <div style={styles.item} onClick={() => handleProfileRedirect()}>
           <FaUserCircle style={styles.icon} />
           <span className="label" style={styles.label}>
              Home Page

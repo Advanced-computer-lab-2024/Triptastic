@@ -388,7 +388,7 @@ const Products = () => {
             );
           }}
         >
-          <div style={styles.item} onClick={() => navigate('/tourist-profile')}>
+          <div style={styles.item} onClick={() => handleProfileRedirect()}>
           <FaUserCircle style={styles.icon} />
           <span className="label" style={styles.label}>
              Home Page
