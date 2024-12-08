@@ -631,18 +631,41 @@ const Productssel = () => {
                         {product.sales}
                       </p>
 
-                      <p
-                        style={{
-                          fontSize: "14px",
-                          color: "#555",
-                          marginBottom: "8px",
-                        }}
-                      >
-                        <strong>
-                          <FaComments /> Reviews:
-                        </strong>{" "}
-                        {product.review}
-                      </p>
+                      <div>
+      <strong
+        style={{
+          fontSize: "14px",
+          color: "#555",
+          marginBottom: "8px",
+        }}
+      >
+        <FaComments style={{ marginRight: "5px" }} /> Reviews:
+      </strong>
+      <ul
+        style={{
+          listStyleType: "none",
+          padding: 0,
+          marginTop: "5px",
+        }}
+      >
+        {product.reviews.map((review, index) => (
+          <li
+            key={index}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px", // Spacing between bullet and text
+              marginBottom: "5px",
+              fontSize: "14px",
+              color: "#555",
+            }}
+          >
+            <FaCircle style={{ fontSize: "8px", color: "#555" }} />
+            {review}
+          </li>
+        ))}
+      </ul>
+    </div>
                     </div>
 
                     {/* Product Actions */}
