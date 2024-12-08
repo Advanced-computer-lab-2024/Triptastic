@@ -1174,13 +1174,13 @@ const styles = {
   sectionTitle: {
     fontSize: "20px",
     fontWeight: "600",
-    color: "#0F5132", 
+    color: "#0F5132", // Matches the theme
     marginBottom: "15px",
-    textAlign: "center",
-    borderBottom: "2px solid #0F5132", 
-    paddingBottom: "10px",
-    letterSpacing: "1px", 
-    textTransform: "uppercase", 
+    textAlign: "center", // Center-align the title
+    borderBottom: "2px solid #0F5132", // Adds a subtle underline
+    paddingBottom: "10px", // Adds spacing below the text
+    letterSpacing: "1px", // Slightly spaced-out letters for readability
+    textTransform: "uppercase", // Capitalizes all letters for emphasis
   },
   detailsContainer: {
     marginTop: "10px",
