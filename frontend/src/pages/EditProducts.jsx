@@ -114,12 +114,15 @@ const EditProducts = () => {
     } finally {
       setLoading(false);
     }
-  };const archiveProduct = async (productName) => {
+  };
+  
+  const archiveProduct = async (productName) => {
     if (!productName) {
       setError('No product selected to archive.');
       return;
     }
   
+ 
     setLoading(true);
     setError('');
     setSuccessMessage('');
@@ -131,10 +134,10 @@ const EditProducts = () => {
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (response.ok) {
         const result = await response.json();
-        setSuccessMessage(`Product "${productName}" archived successfully.`);
+        window.alert(`Product "${productName}" archived successfully.`); // Show alert
         console.log(`Archived product: ${productName}`);
   
         // Update product list state to reflect the archive
@@ -180,7 +183,7 @@ const EditProducts = () => {
   
       if (response.ok) {
         const result = await response.json();
-        setSuccessMessage(`Product "${productName}" unarchived successfully.`);
+        window.alert(`Product "${productName}" unarchived successfully.`); // Show alert
         console.log(`Unarchived product: ${productName}`);
   
         // Update product list state to reflect the unarchive
@@ -521,24 +524,40 @@ const EditProducts = () => {
     <p style={styles.productDetail}>
       <strong>Rating:</strong> {product.rating || "Not Rated"}
     </p>
+    
   </div>
 </div>
 
-
+{/* Archive Product Button */}
 <button
-  style={styles.archiveButton}
   onClick={() => archiveProduct(product.productName)}
   disabled={product.archived} // Disable if already archived
+  style={{
+    ...styles.archiveButton,
+    boxShadow: product.archived
+      ? 'none' // No shadow for already archived products
+      : '0px 4px 6px rgba(0, 0, 0, 0.2)', // Shadow for active button
+    opacity: product.archived ? 0.5 : 1, // Reduce opacity for inactive button
+  }}
 >
   <FaArchive /> Archive
 </button>
+
+{/* Unarchive Product Button */}
 <button
-  style={styles.unarchiveButton}
   onClick={() => unarchiveProduct(product.productName)}
   disabled={!product.archived} // Disable if not archived
+  style={{
+    ...styles.unarchiveButton,
+    boxShadow: !product.archived
+      ? 'none' // No shadow for non-archived products
+      : '0px 4px 6px rgba(0, 0, 0, 0.2)', // Shadow for active button
+    opacity: !product.archived ? 0.5 : 1, // Reduce opacity for inactive button
+  }}
 >
   <HiOutlineArchiveBoxXMark /> Unarchive
 </button>
+
 
                   </>
                     
