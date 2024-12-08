@@ -1,11 +1,13 @@
 import React, { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {FaUsersCog, FaBell,FaChartBar,FaBox ,FaUserShield } from 'react-icons/fa'; // Importing bell icon
+import {FaUsersCog, FaBell,FaChartBar,FaBox ,FaUserShield,FaArrowUp, FaArrowDown  } from 'react-icons/fa'; // Importing bell icon
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 import { FaUser,FaExclamationCircle, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
 import UserStatistics from './chart';
+import { FaChartLine, FaDollarSign, FaShoppingCart, FaWarehouse } from "react-icons/fa";
+
 
 
 const AdminPage = () => {
@@ -446,6 +448,18 @@ useEffect(() => {
       boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
       textAlign: 'center',
     },
+    profitSummaryHeader: {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center', // Vertically aligns title and amount
+      marginBottom: '20px',
+      borderBottom: '2px solid #0F5132', // Green bottom border
+      paddingBottom: '10px', // Spacing between text and border
+      alignItems: 'center', // Ensures vertical alignment
+      gap: '20px', // Adds space between the title and value
+    },
+    
+    
     summaryTitle: {
       fontSize: '22px',
       fontWeight: 'bold',
@@ -1788,7 +1802,7 @@ loadingText: {
       <div style={userStatsStyles.userStatsContainer}>
   <div style={userStatsStyles.userStatsHeader}>
     <h2 style={userStatsStyles.userStatsTitle}>
-      User Statistics
+      Users Statistics
     </h2>
     <FaChartBar style={userStatsStyles.icon} />
   </div>
@@ -1817,8 +1831,16 @@ loadingText: {
     
 <div style={adminStyles.profitSummaryContainer}>
   {/* Total Profit */}
-  <h2 style={adminStyles.summaryTitle}>Total Profit from Sales</h2>
-  <p style={adminStyles.summaryAmount}>${totalSales}</p>
+  <div style={adminStyles.profitSummaryHeader}>
+    <h2 style={adminStyles.summaryTitle}>
+      Total Profit from Sales
+
+    </h2>
+    <span style={adminStyles.summaryAmount}>${totalSales}</span>
+  </div>
+
+
+
 
   {/* Profits and Product Details */}
   <div style={adminStyles.cardContainer}>
@@ -1832,55 +1854,77 @@ loadingText: {
       <h3 style={adminStyles.profitTitle}>Total Activities Profits</h3>
       <p style={adminStyles.profitAmount}>${actProfits}</p>
     </div>
-    {/* Most Sold Product */}
-    <div style={adminStyles.profitCard}>
-      <h3 style={adminStyles.profitTitle}>Most Sold Product</h3>
-      {!isLoading && mostSold ? (
-        <div style={adminStyles.productDetails}>
-          <p style={adminStyles.productInfo}>
-            <strong>Product:</strong> {mostSold.productName}
-          </p>
-          <p style={adminStyles.productInfo}>
-            <strong>Price:</strong> ${mostSold.price}
-          </p>
-          <p style={adminStyles.productInfo}>
-            <strong>Sales:</strong> {mostSold.sales}
-          </p>
-          <p style={adminStyles.productInfo}>
-            <strong>Times Purchased:</strong>{" "}
-            {mostSold.sales === 0 ? 0 : (mostSold.sales / mostSold.price).toFixed(2)}
-          </p>
-        </div>
-      ) : (
-        <p style={adminStyles.noData}>No data available</p>
-      )}
+{/* Most Sold Product */}
+<div style={adminStyles.profitCard}>
+  <h3 style={adminStyles.profitTitle}>
+    Most Sold Product
+    <FaChartLine style={{ marginLeft: "8px", color: "#28a745", fontSize: "16px" }} />
+  </h3>
+  {!isLoading && mostSold ? (
+    <div style={adminStyles.productDetails}>
+      <p style={adminStyles.productInfo}>
+        <FaBox style={{ marginRight: "8px", color: "#0F5132" }} />
+        <strong>Product:</strong> {mostSold.productName}
+      </p>
+      <p style={adminStyles.productInfo}>
+        <FaDollarSign style={{ marginRight: "8px", color: "#0F5132" }} />
+        <strong>Price:</strong> ${mostSold.price}
+      </p>
+      <p style={adminStyles.productInfo}>
+        <FaChartBar style={{ marginRight: "8px", color: "#0F5132" }} />
+        <strong>Sales:</strong> {mostSold.sales}
+      </p>
+      <p style={adminStyles.productInfo}>
+        <FaShoppingCart style={{ marginRight: "8px", color: "#0F5132" }} />
+        <strong>Times Purchased:</strong>{" "}
+        {mostSold.sales === 0 ? 0 : (mostSold.sales / mostSold.price).toFixed(2)}
+      </p>
+      <p style={adminStyles.productInfo}>
+        <FaChartBar style={{ marginRight: "8px", color: "#28a745" }} />
+        <strong>Stock Trend:</strong> Stock moving up 🚀
+      </p>
     </div>
-    {/* Least Sold Product */}
-    <div style={adminStyles.profitCard}>
-      <h3 style={adminStyles.profitTitle}>Least Sold Product</h3>
-      {!isLoading && leastSold ? (
-        <div style={adminStyles.productDetails}>
-          <p style={adminStyles.productInfo}>
-            <strong>Product:</strong> {leastSold.productName}
-          </p>
-          <p style={adminStyles.productInfo}>
-            <strong>Price:</strong> ${leastSold.price}
-          </p>
-          <p style={adminStyles.productInfo}>
-            <strong>Sales:</strong> {leastSold.sales}
-          </p>
-          <p style={adminStyles.productInfo}>
-            <strong>Times Purchased:</strong>{" "}
-            {leastSold.sales === 0 ? 0 : (leastSold.sales / leastSold.price).toFixed(2)}
-          </p>
-        </div>
-      ) : (
-        <p style={adminStyles.noData}>No data available</p>
-      )}
-    </div>
-  </div>
+  ) : (
+    <p style={adminStyles.noData}>No data available</p>
+  )}
 </div>
 
+{/* Least Sold Product */}
+<div style={adminStyles.profitCard}>
+  <h3 style={adminStyles.profitTitle}>
+    Least Sold Product
+    <FaChartLine style={{ marginLeft: "8px", color: "#dc3545", fontSize: "16px" }} />
+  </h3>
+  {!isLoading && leastSold ? (
+    <div style={adminStyles.productDetails}>
+      <p style={adminStyles.productInfo}>
+        <FaBox style={{ marginRight: "8px", color: "#0F5132" }} />
+        <strong>Product:</strong> {leastSold.productName}
+      </p>
+      <p style={adminStyles.productInfo}>
+        <FaDollarSign style={{ marginRight: "8px", color: "#0F5132" }} />
+        <strong>Price:</strong> ${leastSold.price}
+      </p>
+      <p style={adminStyles.productInfo}>
+        <FaChartBar style={{ marginRight: "8px", color: "#0F5132" }} />
+        <strong>Sales:</strong> {leastSold.sales}
+      </p>
+      <p style={adminStyles.productInfo}>
+        <FaShoppingCart style={{ marginRight: "8px", color: "#0F5132" }} />
+        <strong>Times Purchased:</strong>{" "}
+        {leastSold.sales === 0 ? 0 : (leastSold.sales / leastSold.price).toFixed(2)}
+      </p>
+      <p style={adminStyles.productInfo}>
+        <FaWarehouse style={{ marginRight: "8px", color: "#dc3545" }} />
+        <strong>Stock Trend:</strong> Stock moving down 📉
+      </p>
+    </div>
+  ) : (
+    <p style={adminStyles.noData}>No data available</p>
+  )}
+</div>
+</div>
+</div>
  
 
 

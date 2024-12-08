@@ -466,6 +466,7 @@ const sortProductsByRatingAdmin = async (req, res) => {
       res.status(400).json({error: error.message});
    }    
     }
+
     const flagTouristItinerary= async(req,res)=>{
       const id=req.params.id;
       try{
@@ -891,8 +892,89 @@ const actProfits = async (req, res) => {
   }
 };
 
+const removeFlagFromItinerary = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const itinerary = await itineraryModel.findByIdAndUpdate(
+      id,
+      { FlagInappropriate: false },
+      { new: true }
+    );
+
+    if (!itinerary) {
+      return res.status(404).json({ error: `Itinerary with ID ${id} not found` });
+    }
+
+    const tourGuide = await tourGuideModel.findOne({ Username: itinerary.TourGuide });
+    if (tourGuide) {
+      tourGuide.flaggedItineraries = tourGuide.flaggedItineraries.filter(
+        (itineraryId) => itineraryId.toString() !== id
+      );
+      await tourGuide.save();
+    }
+
+    res.status(200).json({ message: "Flag removed from itinerary", itinerary });
+  } catch (error) {
+    console.error(`Error removing flag from itinerary with ID ${id}:`, error.message);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+const removeFlagFromTouristItinerary = async (req, res) => {
+  const id = req.params.id;
+  try {
+    // Remove the flag from the tourist itinerary
+    const touristItinerary = await touristItineraryModel.findByIdAndUpdate(
+      id,
+      { FlagInappropriate: false },
+      { new: true }
+    );
+
+    if (!touristItinerary) {
+      return res.status(404).json({ error: "Tourist itinerary not found" });
+    }
+
+    res.status(200).json({ message: "Flag removed from tourist itinerary", touristItinerary });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const removeFlagFromActivity = async (req, res) => {
+  const id = req.params.id;
+  try {
+    // Remove the flag from the activity
+    const activity = await activityModel.findByIdAndUpdate(
+      id,
+      { FlagInappropriate: false },
+      { new: true }
+    );
+
+    if (!activity) {
+      return res.status(404).json({ error: "Activity not found" });
+    }
+
+    // Remove the activity ID from the advertiser's flaggedActivities array
+    const advertiser = await advertiserModel.findOne({ Username: activity.Advertiser });
+    if (advertiser) {
+      advertiser.flaggedActivities = advertiser.flaggedActivities.filter(
+        (activityId) => activityId.toString() !== id
+      );
+      await advertiser.save();
+    }
+
+    res.status(200).json({ message: "Flag removed from activity", activity });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 //viewAllProducts
     
-module.exports = {getPromoCodes,createPromoCode,getUserStatistics,replyToComplaint,getPendingDeletionRequests,acceptDeletionRequest,rejectDeletionRequest,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
+module.exports = {  removeFlagFromItinerary,
+  removeFlagFromTouristItinerary,
+  removeFlagFromActivity,getPromoCodes,createPromoCode,getUserStatistics,replyToComplaint,getPendingDeletionRequests,acceptDeletionRequest,rejectDeletionRequest,updateComplaintStatus,getComplaintDetails,changePasswordAdmin,createAdmin ,createCategory, getCategory, updateCategory, deleteCategory,createProduct,getProduct,deleteAdvertiser,deleteSeller,deleteTourGuide,deleteTourismGov,deleteTourist
     ,createPrefTag,getPrefTag,updatePreftag,deletePreftag,viewProducts,sortProductsByRatingAdmin,AdminLogin,addTourismGov,tourismGovLogin,viewAllPrefTag,deleteAdmin
     ,flagItinerary,flagTouristItinerary,flagActivity,getallItineraries,getallActivities,getallTouristItineraries,getComplaints,archiveProduct,unarchiveProduct,getFilteredP,actProfits,itinProfits,getMyProducts};
