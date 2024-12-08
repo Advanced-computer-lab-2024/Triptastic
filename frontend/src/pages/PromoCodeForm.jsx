@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './promoCodeForm.css';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
-import { FaPercentage, FaCalendarAlt, FaTag ,FaUserShield} from 'react-icons/fa';
+import { FaUsersCog,FaPercentage, FaCalendarAlt, FaTag ,FaUserShield} from 'react-icons/fa';
 import { MdDiscount } from 'react-icons/md';
 import image from '../images/image.png';
 import {FaUser,FaBox, FaExclamationCircle, FaHeart, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
@@ -41,17 +41,18 @@ const PromoCodeForm = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       const response = await fetch('http://localhost:8000/createPromoCode', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
-        setMessage(data.message);
+        alert(data.message); // Show success alert immediately
+        setMessage(''); // Clear message state
         setFormData({
           code: '',
           discount: '',
@@ -62,12 +63,15 @@ const PromoCodeForm = () => {
         fetchPromoCodes(); // Refresh promo codes after creation
       } else {
         const errorData = await response.json();
-        setError(errorData.error || 'Failed to create promo code');
+        alert(errorData.error || 'Failed to create promo code'); // Show error alert immediately
+        setError(''); // Clear error state
       }
     } catch (err) {
-      setError('An error occurred while creating the promo code');
+      alert('An error occurred while creating the promo code'); // Show error alert immediately
+      setError('');
     }
   };
+  
 
   const fetchPromoCodes = async () => {
     setLoading(true);
@@ -135,6 +139,13 @@ const PromoCodeForm = () => {
           </span>
         </div>
         
+        <div style={styles.item} onClick={() => navigate('/admincontrol')}>
+          <FaUsersCog   style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Admin Control
+          </span>   
+        </div>
+        
         <div style={styles.item} onClick={() => navigate('/Complaints')}>
           <FaExclamationCircle style={styles.icon} />
           <span className="label" style={styles.label}>
@@ -174,6 +185,12 @@ const PromoCodeForm = () => {
           <FaFlag   style={styles.icon} />
           <span className="label" style={styles.label}>
             Flag Events
+          </span>   
+        </div>
+        <div style={styles.item} onClick={() => navigate('/products_admin')}>
+          <FaBox  style={styles.icon} />
+          <span className="label" style={styles.label}>
+            View Products
           </span>   
         </div>
       </div>

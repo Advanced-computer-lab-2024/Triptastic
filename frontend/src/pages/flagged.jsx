@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaArrowLeft, FaBox,FaEdit,FaUserShield, FaUser, FaExclamationCircle, FaHeart, FaFileAlt, FaTrashAlt, FaThList, FaPlus, FaFlag } from 'react-icons/fa';
+import { FaUsersCog, FaBox,FaEdit,FaUserShield, FaUser, FaExclamationCircle, FaHeart, FaFileAlt, FaTrashAlt, FaThList, FaPlus, FaFlag } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import image from '../images/image.png';
 
@@ -178,6 +178,13 @@ const handlePageChange = (newPage) => {
           Admin Panel
           </span>
         </div>
+
+        <div style={styles.item} onClick={() => navigate('/admincontrol')}>
+          <FaUsersCog   style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Admin Control
+          </span>   
+        </div>
         
         <div style={styles.item} onClick={() => navigate('/Complaints')}>
           <FaExclamationCircle style={styles.icon} />
@@ -218,6 +225,12 @@ const handlePageChange = (newPage) => {
           <FaFlag   style={styles.icon} />
           <span className="label" style={styles.label}>
             Flag Events
+          </span>   
+        </div>
+        <div style={styles.item} onClick={() => navigate('/products_admin')}>
+          <FaBox  style={styles.icon} />
+          <span className="label" style={styles.label}>
+            View Products
           </span>   
         </div>
       </div>

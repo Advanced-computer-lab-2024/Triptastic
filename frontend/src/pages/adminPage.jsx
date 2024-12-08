@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaBell,FaChartBar,FaBox ,FaUserShield } from 'react-icons/fa'; // Importing bell icon
+import {FaUsersCog, FaBell,FaChartBar,FaBox ,FaUserShield } from 'react-icons/fa'; // Importing bell icon
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
@@ -355,91 +355,9 @@ useEffect(() => {
   const [changePasswordError, setChangePasswordError] = useState('');
 
 
-const [createAdminSuccess, setCreateAdminSuccess] = useState('');
-const [createAdminError, setCreateAdminError] = useState('');
-
-const createAdmin = async (e) => {
-  e.preventDefault(); // Prevent the default form submission
-  const { Username, Password, Email } = formData;
-
-  setLoading(true);
-  setCreateAdminSuccess(''); // Clear previous success message
-  setCreateAdminError(''); // Clear previous error message
-
-  try {
-    const response = await fetch('http://localhost:8000/createAdmin', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ Username, Password, Email }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      setCreateAdminSuccess(`Admin "${data.Username}" created successfully!`);
-      setFormData({ Username: '', Password: '', Email: '' }); // Reset the form
-    } else {
-      const errorData = await response.json();
-      setCreateAdminError(errorData.error || 'Failed to create admin.');
-    }
-  } catch (error) {
-    setCreateAdminError('An error occurred while creating the admin.');
-    console.error(error);
-  } finally {
-    setLoading(false);
-  }
-};
-
-const [deleteUserError, setDeleteUserError] = useState('');
-const [deleteUserSuccess, setDeleteUserSuccess] = useState('');
-
-const handleDeleteUser = async () => {
-  setDeleteUserError('');
-  setDeleteUserSuccess('');
-
-  if (!usernameToDelete) {
-    setDeleteUserError('Please enter a username to delete.');
-    return;
-  }
-
-  try {
-    const response = await fetch(
-      `http://localhost:8000/delete${userType}?Username=${usernameToDelete}`,
-      {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-
-    if (response.ok) {
-      const data = await response.json();
-      setDeleteUserSuccess(data.msg || 'User deleted successfully.');
-      setUsernameToDelete('');
-      setUserType('');
-    } else {
-      const errorData = await response.json();
-      setDeleteUserError(errorData.error || `Failed to delete ${userType}.`);
-    }
-  } catch (error) {
-    setDeleteUserError(`An error occurred while deleting the ${userType}.`);
-    console.error(error);
-  }
-};
 
 
-  const toggleModal = (content = null) => {
-    setModalOpen((prev) => !prev);
-    setModalContent(content);
-  
-    // Reset the messages when the modal is closed
-    if (!modalOpen) {
-      setCreateAdminSuccess('');
-      setCreateAdminError('');
-    }
-  };
+
 
   // For getProductByName
   const [getProductErrorMessage, setGetProductErrorMessage] = useState('');
@@ -568,39 +486,6 @@ const handleDeleteUser = async () => {
     }
   };
   
-const [addTourismGovError, setAddTourismGovError] = useState('');
-const [addTourismGovSuccess, setAddTourismGovSuccess] = useState('');
-
-const addTourismGov = async (e) => {
-  e.preventDefault();
-  const { Username, Password } = tourismGovData;
-
-  // Clear previous messages
-  setAddTourismGovError('');
-  setAddTourismGovSuccess('');
-
-  try {
-    const response = await fetch('http://localhost:8000/addTourismGov', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ Username, Password }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      setAddTourismGovSuccess('Tourism Governor added successfully!');
-      setTourismGovData({ Username: '', Password: '' });
-    } else {
-      const errorData = await response.json();
-      setAddTourismGovError(errorData.error || 'Failed to add Tourism Governor.');
-    }
-  } catch (error) {
-    setAddTourismGovError('An error occurred while adding the Tourism Governor.');
-    console.error(error);
-  }
-};
 
 
   const handleTourismGovChange = (e) => {
@@ -1652,15 +1537,6 @@ loadingText: {
         style={styles.dropdownItem}
         onClick={() => {
           setShowDropdown(false); // Close dropdown
-          toggleModal(); // Open Edit Profile modal
-        }}
-      >
-      Admin Control
-      </div>
-      <div
-        style={styles.dropdownItem}
-        onClick={() => {
-          setShowDropdown(false); // Close dropdown
           togglePasswordModal(); // Open Change Password modal
         }}
       >
@@ -1706,6 +1582,14 @@ loadingText: {
           Admin Panel
           </span>
         </div>
+
+        <div style={styles.item} onClick={() => navigate('/admincontrol')}>
+          <FaUsersCog   style={styles.icon} />
+          <span className="label" style={styles.label}>
+           Admin Control
+          </span>   
+        </div>
+        
         
         <div style={styles.item} onClick={() => navigate('/Complaints')}>
           <FaExclamationCircle style={styles.icon} />
@@ -1863,194 +1747,6 @@ loadingText: {
 
  
 
-{/* Modal for Admin Settings */}
-{modalOpen && (
-  <div style={styles.modalOverlay}>
-    <div style={styles.modalContent}>
-      <h2 style={styles.modalContentH2}></h2>
-      <HighlightOffOutlinedIcon
-        onClick={toggleModal}
-        style={styles.cancelIcon} // Apply cancel icon style
-      />
-
-      <div style={styles.modalBody}>
-        {/* Create Admin Form */}
-        <form style={styles.form} onSubmit={createAdmin}>
-          <h3 style={styles.modalContentH2}>Create Admin</h3>
-          {/* Username Input */}
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Username:</label>
-            <input
-              type="text"
-              name="Username"
-              value={formData.Username}
-              onChange={(e) =>
-                setFormData((prevData) => ({
-                  ...prevData,
-                  Username: e.target.value,
-                }))
-              }
-              style={styles.input}
-              required
-            />
-          </div>
-
-          {/* Email Input */}
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Email:</label>
-            <input
-              type="email"
-              name="Email"
-              value={formData.Email}
-              onChange={(e) =>
-                setFormData((prevData) => ({
-                  ...prevData,
-                  Email: e.target.value,
-                }))
-              }
-              style={styles.input}
-              required
-            />
-          </div>
-
-          {/* Password Input */}
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Password:</label>
-            <input
-              type="password"
-              name="Password"
-              value={formData.Password}
-              onChange={(e) =>
-                setFormData((prevData) => ({
-                  ...prevData,
-                  Password: e.target.value,
-                }))
-              }
-              style={styles.input}
-              required
-            />
-          </div>
-
-          {/* Display Success or Error Message */}
-          {createAdminSuccess && (
-            <p style={{ color: 'green', textAlign: 'center' }}>
-              {createAdminSuccess}
-            </p>
-          )}
-          {createAdminError && (
-            <p style={{ color: 'red', textAlign: 'center' }}>
-              {createAdminError}
-            </p>
-          )}
-
-          {/* Create Admin Button */}
-          <button type="submit" style={styles.submitButton}>
-            Create Admin
-          </button>
-        </form>
-
-        <hr style={{ margin: '20px 0' }} />
-
-        {/* Delete User Form */}
-        <form style={styles.form} onSubmit={(e) => { e.preventDefault(); handleDeleteUser(); }}>
-          <h3 style={styles.modalContentH2}>Delete User</h3>
-          {/* Username Input */}
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Username to Delete:</label>
-            <input
-              type="text"
-              value={usernameToDelete}
-              onChange={(e) => setUsernameToDelete(e.target.value)}
-              style={styles.input}
-              required
-            />
-          </div>
-
-          {/* User Type Dropdown */}
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Select User Type:</label>
-            <select
-              value={userType}
-              onChange={(e) => setUserType(e.target.value)}
-              style={styles.input}
-              required
-            >
-              <option value="">Select Type</option>
-              <option value="Admin">Admin</option>
-              <option value="TourismGov">Tourism Governor</option>
-              <option value="Tourist">Tourist</option>
-              <option value="Advertiser">Advertiser</option>
-              <option value="Seller">Seller</option>
-              <option value="TourGuide">Tour Guide</option>
-            </select>
-          </div>
-  {/* Display Success or Error Message */}
-  {deleteUserSuccess && (
-    <p style={{ color: 'green', textAlign: 'center' }}>
-      {deleteUserSuccess}
-    </p>
-  )}
-  {deleteUserError && (
-    <p style={{ color: 'red', textAlign: 'center' }}>
-      {deleteUserError}
-    </p>
-  )}
-          {/* Delete User Button */}
-          <button type="submit" style={styles.deleteButton}>
-            Delete User
-          </button>
-        </form>
-
-                {/* Add Tourism Governor Form */}
-                <form style={styles.form} onSubmit={addTourismGov}>
-          <h3 style={styles.modalContentH2}>Add Tourism Governor</h3>
-          {/* Username Input */}
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Username:</label>
-            <input
-              type="text"
-              name="Username"
-              value={tourismGovData.Username}
-              onChange={handleTourismGovChange}
-              style={styles.input}
-              required
-            />
-          </div>
-
-          {/* Password Input */}
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Password:</label>
-            <input
-              type="password"
-              name="Password"
-              value={tourismGovData.Password}
-              onChange={handleTourismGovChange}
-              style={styles.input}
-              required
-            />
-          </div>
-
-          {/* Submit Button */}
-          <button type="submit" style={styles.submitButton}>
-            Add Tourism Governor
-          </button>
-
-     {/* Display Success or Error Message */}
-  {addTourismGovSuccess && (
-    <p style={{ color: 'green', textAlign: 'center' }}>
-      {addTourismGovSuccess}
-    </p>
-  )}
-  {addTourismGovError && (
-    <p style={{ color: 'red', textAlign: 'center' }}>
-      {addTourismGovError}
-    </p>
-  )}
-          </form>
-      </div>
-    </div>
-  </div>
-)}
 
       {/* Password Modal */}
 {showPasswordModal && (

@@ -36,6 +36,10 @@ import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import "intro.js/introjs.css"; // Import Intro.js styles
 import introJs from "intro.js";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
+
+
+
 
 const TouristProfile = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -76,6 +80,16 @@ const TouristProfile = () => {
   const [pastItineraries, setPastItineraries] = useState([]);
   const [showPastItineraries, setShowPastItineraries] = useState(false);
 
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+
+
+
+
+
+
+
   localStorage.setItem("context", "tourist");
   const { selectedCurrency, conversionRate, fetchConversionRate } =
     useContext(CurrencyContext);
@@ -102,7 +116,17 @@ const TouristProfile = () => {
     shopping: false,
     budget: "",
   });
- 
+  const toggleModal = () => {
+    setModalOpen((prev) => !prev);
+  }; 
+  const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
+  const [isPreferencesVisible, setIsPreferencesVisible] = useState(false);
+  useEffect(() => {
+    const preferencesSubmitted = localStorage.getItem('preferencesSubmitted');
+    if (!preferencesSubmitted) {
+      setIsPreferencesVisible(true); // Show preferences if not submitted
+    }
+  }, []);
   const navigate = useNavigate();
   useEffect(() => {
     fetchNotifications();
@@ -920,7 +944,6 @@ const TouristProfile = () => {
     }));
   };
   
-  const [isPreferencesVisible, setIsPreferencesVisible] = useState(false);
   
   useEffect(() => {
     const username = localStorage.getItem("Username");
@@ -994,25 +1017,36 @@ const TouristProfile = () => {
     const navigate = useNavigate();
   };
 
-  return (
-    <div style={{marginLeft:"40px",marginTop:"50px"}}>
-      {/* Header Section */}
-      <header style={styles.header}>
-        <div style={styles.logoContainer}>
-          <img src={logo} alt="Logo" style={styles.logo} />
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+ 
+
+
+
+return (
+  <div>
+    {/* Header Section */}
+    <header style={styles.header}>
+      <div style={styles.logoContainer}>
+        <img src={logo} alt="Logo" style={styles.logo} />
+      </div>
+      <h1 style={styles.title}>Tourist Profile</h1>
+      <div style={styles.headerIconsContainer}>
+        {/* Notification Bell */}
+        <div
+          style={styles.notificationButton}
+          onClick={handleNotificationClick}
+        >
+          <FaBell style={styles.notificationIcon} />
+          {unreadCount > 0 && (
+            <span style={styles.notificationBadge}>{unreadCount}</span>
+          )}
         </div>
-        <h1 style={styles.title}>Tourist Profile</h1>
-        <div style={styles.headerIconsContainer}>
-          {/* Notification Bell */}
-          <div
-            style={styles.notificationButton}
-            onClick={handleNotificationClick}
-          >
-            <FaBell style={styles.notificationIcon} />
-            {unreadCount > 0 && (
-              <span style={styles.notificationBadge}>{unreadCount}</span>
-            )}
-          </div>
 
           {/* Profile Icon */}
           <ManageAccountsIcon
@@ -1020,6 +1054,119 @@ const TouristProfile = () => {
             style={styles.profileIcon}
             onClick={() => navigate("/touristSettings")}
           />
+          <ManageAccountsIcon
+    style={styles.profileIcon}
+    title="Manage Account Settings"
+    onClick={() => setShowDropdown((prev) => !prev)} // Toggle dropdown
+  />
+  
+  {showDropdown && (
+    <div style={styles.dropdownMenu}>
+      <div
+        style={styles.dropdownItem}
+        onClick={() => {
+          setShowDropdown(false); // Close dropdown
+          toggleModal(); // Open Edit Profile modal
+        }}
+      >
+        Edit Profile
+      </div>
+      <div
+        style={styles.dropdownItem}
+        onClick={() => {
+          setShowDropdown(false); // Close dropdown
+          togglePasswordModal(); // Open Change Password modal
+        }}
+      >
+        Change Password
+      </div>
+    </div>
+  )}
+  {/* Modal */}
+  {modalOpen && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <h2 style={styles.modalContentH2}>Edit Profile Information</h2>
+            <HighlightOffOutlinedIcon
+            style={styles.cancelIcon}
+            onClick={() => setModalOpen(false)} // Close modal on click
+          />
+            <form onSubmit={handleUpdate}>
+              <div style={styles.formGroup}>
+                <label style={styles.label2}>Email:</label>
+                <input
+                   type="email"
+                   name="Email"
+                   value={formData.Email}
+                   onChange={handleInputChange}
+                  style={styles.input}
+                  required
+                />
+              </div>
+             
+              <div style={styles.formGroup}>
+                <label style={styles.label2}>Nationality:</label>
+                <input
+                   type="text"
+                   name="Nationality"
+                   value={formData.Nationality}
+                   onChange={handleInputChange}
+                  style={styles.input}
+                />
+              </div>
+              <div style={styles.formGroup}>
+                <label style={styles.label2}>Date of Birth:</label>
+                <input
+                    type="text" // Display DOB as a string
+                    name="DOB"
+                    value={formData.DOB}
+                    onChange={handleInputChange}
+                  style={styles.input}
+                />
+              </div>
+              <div style={styles.formGroup}>
+                <label style={styles.label2}>Occupation:</label>
+                <input
+                  type="text"
+                  name="Occupation"
+                  value={formData.Occupation}
+                  onChange={handleInputChange}
+                  style={styles.input}
+                />
+              </div>
+              <div style={styles.formGroup}>
+                <label style={styles.label2}>Select Currency:</label>
+                <select
+                  value={selectedCurrency}
+                  onChange={handleCurrencyChange}
+                >
+                  <option value="EGP">Egyptian Pound (EGP)</option>
+                  <option value="USD">US Dollar (USD)</option>
+                  <option value="EUR">Euro (EUR)</option>
+                  <option value="GBP">British Pound (GBP)</option>
+                  {/* Add more currency options as needed */}
+                </select>
+              </div>
+              <div style={styles.walletInfo}>
+              <h3 style={styles.walletTitle}>Wallet Balance:</h3>
+              <p style={styles.walletAmount}>
+                {(touristInfo.Wallet * conversionRate).toFixed(2)}{" "}
+                {selectedCurrency}
+              </p>
+              </div>
+             
+              <div style={styles.buttonGroup}>
+                <button type="submit" style={styles.saveButton}>
+                  Save Changes
+                </button>
+               
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+               
 
           {/* Cart Icon */}
           <div style={styles.cartButton} onClick={() => navigate("/Cart")}>
@@ -1691,6 +1838,194 @@ const TouristProfile = () => {
   );
 };
 const styles = {
+  saveButton: {
+    backgroundColor: '#0F5132',
+    color: 'white',
+    padding: '5px 10px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+  walletInfo: {
+    backgroundColor: "#f7f7f7",
+    padding: "15px",
+    borderRadius: "10px",
+ 
+    textAlign: "center",
+  },
+  walletTitle: {
+    fontSize: "18px",
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: "10px",
+  },
+  walletAmount: {
+    fontSize: "16px",
+    fontWeight: "bold",
+    color: "#0F5132",
+  },
+label2: {
+  fontSize: "14px",
+  fontWeight: "bold",
+  color: "#333", // Visible contrast color
+  marginBottom: "5px", // Space between label and input
+  marginTop: "15px", // Space between label and input
+
+},
+  input: {
+    padding: '10px',
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+  },
+  disabledInput: {
+    padding: '10px',
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+    backgroundColor: '#f0f0f0',
+    cursor: 'not-allowed',
+  },
+  textarea: {
+    padding: '10px',
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+    resize: 'vertical',
+  },
+  buttonContainer: {
+    display: 'flex',
+    justifyContent: 'left', // Center align the buttons
+    gap: '5px', // Add spacing between the buttons
+    //marginTop: '20px',
+  },
+  submitButton: {
+    backgroundColor: '#0F5132',
+    color: 'white',
+    padding: '10px 20px',
+    borderRadius: '5px',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '14px',
+  },
+  deleteButton: {
+    backgroundColor: '#dc3545', // Red color
+    color: 'white',
+    padding: '10px 20px',
+    borderRadius: '5px',
+    border: 'none',
+    cursor: 'pointer',
+    fontSize: '14px',
+  },
+  formGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '5px',
+  },
+  modalOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
+    background: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  modalContent: {
+    background: 'white',
+    padding: '20px',
+    borderRadius: '10px',
+    width: '50%',
+    maxWidth: '600px',
+    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '15px',
+    maxHeight: '80vh',
+    overflowY: 'auto',
+  },
+  modalContentH2: {
+    fontSize: '22px',
+    textAlign: 'center',
+    color: '#333',
+  },
+  modalContentLabel: {
+    fontWeight: 'bold',
+    marginBottom: '5px',
+    display: 'flex', alignItems: 'center', gap: '5px',
+    color: '#555',
+  },
+  modalContentInput: {
+    width: '100%',
+    padding: '10px',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
+    fontSize: '14px',
+  },
+  modalContentTextarea: {
+    width: '100%',
+    padding: '10px',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
+    fontSize: '14px',
+    resize: 'vertical',
+  },
+  modalContentButton: {
+    padding: '10px 20px',
+    border: 'none',
+    background: '#0F5132',
+    color: 'white',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '14px',
+  },
+  passwordSection: {
+    borderTop: '1px solid #ddd',
+    marginTop: '20px',
+    paddingTop: '15px',
+  },
+  cancelIcon: {
+    color: '#0F5132', // Set the color of the icon
+    fontSize: '30px', // Adjust the size as needed
+    cursor: 'pointer', // Ensure it acts as a button
+    position: 'absolute', // Position it correctly in the modal
+    right: '500px', // Adjust placement
+    top: '100px', // Adjust placement
+  },
+  cancelpasswordIcon: {
+    color: '#0F5132', // Set the color of the icon
+    fontSize: '30px', // Adjust the size as needed
+    cursor: 'pointer', // Ensure it acts as a button
+    position: 'absolute', // Position it correctly in the modal
+    right: '490px', // Adjust placement
+    top: '290px', // Adjust placement
+  },
+  manageAccountContainer: {
+    position: "relative",
+    display: "inline-block",
+  },
+  dropdownMenu: {
+    position: "absolute",
+    top: "40px",
+    right: "0",
+    backgroundColor: "#fff",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    zIndex: 1000,
+    minWidth: "150px",
+    overflow: "hidden",
+  },
+  dropdownItem: {
+    padding: "10px 15px",
+    fontSize: "14px",
+    color: "#333",
+    cursor: "pointer",
+    transition: "background-color 0.2s ease",
+  },
+  dropdownItemHover: {
+    backgroundColor: "#f5f5f5",
+  },
   carouselContainerStyle: {
     display: "flex",
     overflowX: "scroll",

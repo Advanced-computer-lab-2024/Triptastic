@@ -1147,6 +1147,7 @@ const getComplaintsByTourist = async (req, res) => {
 
   
 
+
 const changepasswordTourist = async (req, res) => {
   const { Username, currentPassword, newPassword } = req.body;
 
@@ -1158,13 +1159,18 @@ const changepasswordTourist = async (req, res) => {
       return res.status(404).json({ error: "Tourist not found" });
     }
 
-    // Step 2: Compare current password with the one stored in the database (plain text comparison)
-    if (currentPassword !== tourist.Password) {
+    // Step 2: Compare current password with the one stored in the database (hashed password comparison)
+    const isMatch = await bcrypt.compare(currentPassword, tourist.Password);
+
+    if (!isMatch) {
       return res.status(400).json({ error: "Current password is incorrect" });
     }
 
-    // Step 3: Update only the password field
-    tourist.Password = newPassword;
+    // Step 3: Hash the new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10); // 10 is the salt rounds, you can adjust if needed
+
+    // Step 4: Update only the password field with the hashed password
+    tourist.Password = hashedNewPassword;
     await tourist.save();
 
     res.status(200).json({ message: "Password changed successfully" });
@@ -1173,6 +1179,7 @@ const changepasswordTourist = async (req, res) => {
     res.status(500).json({ error: "Error changing password" });
   }
 };
+
 
 
 const calculateAndAddPoints = async (tourist, amountPaid) => {

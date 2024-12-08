@@ -4,78 +4,129 @@ import image from '../images/image.png';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 
 
-const DeletionRequests = () => {
-  const [requests, setRequests] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const resultsPerPage = 4;
-  const indexOfLastRequest = currentPage * resultsPerPage;
-  const indexOfFirstRequest = indexOfLastRequest - resultsPerPage;
-  const [searchTerm, setSearchTerm] = useState('');
-  const navigate = useNavigate(); // Initialize useNavigate for navigation
+const Adminn = () => {
+    const [addTourismGovError, setAddTourismGovError] = useState('');
+    const [tourismGovData, setTourismGovData] = useState({
+        Username: '',
+        Password: ''
+      });
+      const [addTourismGovSuccess, setAddTourismGovSuccess] = useState('');
+      const [formData, setFormData] = useState({
+        Username: '',
+        Password: '',
+        Email:''
+      });
+      useEffect(() => {
+        // Reset form data when the component loads
+        setFormData({ Username: '', Password: '', Email: '' });
+        setTourismGovData({ Username: '', Password: '' });
+      }, []);
+    
+      const [loading, setLoading] = useState(false);
+      const [createAdminSuccess, setCreateAdminSuccess] = useState('');
+      const [createAdminError, setCreateAdminError] = useState('');
+      const [deleteUserError, setDeleteUserError] = useState('');
+      const [userType, setUserType] = useState('');
+      const [deleteUserSuccess, setDeleteUserSuccess] = useState('');
+      const [usernameToDelete, setUsernameToDelete] = useState('');
 
-  const filteredRequests = requests.filter((request) =>
-    request.Username.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-  const currentRequests = filteredRequests.slice(indexOfFirstRequest, indexOfLastRequest);
 
-  useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const response = await fetch('http://localhost:8000/getPendingDeletionRequests');
+  const navigate = useNavigate();
+
+  const createAdmin = async (e) => {
+    e.preventDefault();
+    const { Username, Password, Email } = formData;
+
+    try {
+      const response = await fetch('http://localhost:8000/createAdmin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ Username, Password, Email }),
+      });
+
+      if (response.ok) {
         const data = await response.json();
-        setRequests(data);
-      } catch (error) {
-        console.error('Error fetching requests:', error);
+        if (data.Username) {
+            alert(`Admin "${data.Username}" created successfully!`);
+          } else {
+            alert('Admin created successfully!');
+          }
+        
+        setFormData({ Username: '', Password: '', Email: '' }); // Reset the form state
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || 'Failed to create admin.');
       }
-    };
-
-    fetchRequests();
-  }, []);
-
-  const handleAccept = async (id) => {
-    if (window.confirm('Are you sure you want to accept this request?')) {
-      try {
-        const response = await fetch('http://localhost:8000/acceptDeletionRequest', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ requestId: id }),
-        });
-        const result = await response.json();
-        alert(result.message);
-        setRequests(requests.filter((request) => request._id !== id));
-      } catch (error) {
-        console.error('Error accepting request:', error);
-      }
+    } catch (error) {
+      alert('An error occurred while creating the admin.');
+      console.error(error);
     }
   };
 
-  const handleReject = async (id) => {
-    if (window.confirm('Are you sure you want to reject this request?')) {
-
+const handleDeleteUser = async () => {
+    if (!usernameToDelete) {
+      alert('Please enter a username to delete.');
+      return;
+    }
+  
     try {
-      const response = await fetch('http://localhost:8000/rejectDeletionRequest', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requestId: id }),
-      });
-      const result = await response.json();
-      alert(result.message);
-      setRequests(requests.filter((request) => request._id !== id));
+      const response = await fetch(
+        `http://localhost:8000/delete${userType}?Username=${usernameToDelete}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+  
+      if (response.ok) {
+        const data = await response.json();
+        alert(data.msg || 'User deleted successfully.');
+        setUsernameToDelete('');
+        setUserType('');
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || `Failed to delete ${userType}.`);
+      }
     } catch (error) {
-      console.error('Error rejecting request:', error);
-    }}
+      alert(`An error occurred while deleting the ${userType}.`);
+      console.error(error);
+    }
   };
+  
+  const addTourismGov = async (e) => {
+    e.preventDefault();
+    const { Username, Password } = tourismGovData;
+  
+    try {
+      const response = await fetch('http://localhost:8000/addTourismGov', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ Username, Password }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        alert('Tourism Governor added successfully!');
+        setTourismGovData({ Username: '', Password: '' });
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || 'Failed to add Tourism Governor.');
+      }
+    } catch (error) {
+      alert('An error occurred while adding the Tourism Governor.');
+      console.error(error);
+    }
+  };
+  
 
   const styles = {
-    container: {
-      maxWidth: '900px',
-      margin: '80px auto', // Adjust margin for header
-      padding: '20px',
-      backgroundColor: '#f8f9fa',
-      borderRadius: '10px',
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-      
-    },
+
     heading: {
       fontSize: '24px',
       fontWeight: 'bold',
@@ -148,15 +199,7 @@ const DeletionRequests = () => {
       cursor: 'pointer',
       transition: 'background-color 0.3s ease',
     },
-    container: {
-      maxWidth: '800px',
-      margin: '20px auto',
-      padding: '20px',
-      backgroundColor: '#f4f4f4',
-      borderRadius: '10px',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      marginTop: '80px', 
-    },
+
         
     header: {
       height:'60px',
@@ -335,6 +378,55 @@ const DeletionRequests = () => {
         transition: 'opacity 0.3s ease',
       },
       //
+      container2: {
+        maxWidth: '800px',
+        margin: '100px auto', // Adjusted margin to prevent overlap
+        padding: '20px',
+        backgroundColor: '#f8f9fa',
+        borderRadius: '8px', // Slightly smaller border radius
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Subtle shadow
+      },
+      form2: {
+        marginBottom: '20px',
+        padding: '20px',
+        backgroundColor: '#fff',
+        borderRadius: '10px',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+      },
+      input2: {
+        marginBottom: '10px',
+        padding: '10px',
+        width: '100%',
+        border: '1px solid #ccc',
+        borderRadius: '5px',
+      },
+      label2: {
+        fontSize: '14px',
+        fontWeight: 'bold',
+        marginBottom: '5px',
+        display: 'block',
+      },
+      button2: {
+        padding: '10px 20px',
+        backgroundColor: '#0F5132',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+      },
+      success2: {
+        color: 'green',
+        textAlign: 'center',
+      },
+      error2: {
+        color: 'red',
+        textAlign: 'center',
+      },
+      heading2: {
+        fontSize: '18px',
+        marginBottom: '20px',
+        color: '#0F5132',
+      },
   };
 
   return (
@@ -344,7 +436,7 @@ const DeletionRequests = () => {
       <div style={styles.logoContainer}>
         <img src={image} alt="Logo" style={styles.logo} />
       </div>
-      <h1 style={styles.title2}>Accounts Deletion Requests</h1>
+      <h1 style={styles.title2}>Admin Control</h1>
     </header>
     
     
@@ -379,6 +471,7 @@ const DeletionRequests = () => {
           Admin Panel
           </span>
         </div>
+
         <div style={styles.item} onClick={() => navigate('/admincontrol')}>
           <FaUsersCog   style={styles.icon} />
           <span className="label" style={styles.label}>
@@ -427,84 +520,139 @@ const DeletionRequests = () => {
             Flag Events
           </span>   
         </div>
-        <div style={styles.item} onClick={() => navigate('/products_admin')}>
-          <FaBox  style={styles.icon} />
-          <span className="label" style={styles.label}>
-            View Products
-          </span>   
-        </div>
       </div>
 
-      {/* Search Bar */}
-      <input
-        type="text"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Search by username..."
-        style={styles.searchInput}
-      />
 
-      {/* Pagination */}
-      <div style={styles.paginationContainer}>
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-          style={styles.paginationButton}
-        >
-          Previous
-        </button>
-        <p style={{ margin: '0 10px', fontSize: '16px' }}>
-          Page {currentPage} of {Math.ceil(filteredRequests.length / resultsPerPage)}
-        </p>
-        <button
-          onClick={() =>
-            setCurrentPage((prev) =>
-              Math.min(prev + 1, Math.ceil(filteredRequests.length / resultsPerPage))
-            )
-          }
-          disabled={currentPage === Math.ceil(filteredRequests.length / resultsPerPage)}
-          style={styles.paginationButton}
-        >
-          Next
-        </button>
+
+  <div style={styles.container2}>
+  <h2 style={styles.heading2}>Admin Settings</h2>
+
+  {/* Create Admin Form */}
+  <form style={styles.form2} onSubmit={createAdmin}>
+    <h3>Create Admin</h3>
+    <label style={styles.label2}>Username:</label>
+    <input
+      type="text"
+      placeholder="Enter username"
+      value={formData.Username}
+      onChange={(e) => setFormData({ ...formData, Username: e.target.value })}
+      style={styles.input2}
+      required
+    />
+    <label style={styles.label2}>Email:</label>
+    <input
+      type="email"
+      placeholder="Enter email"
+      value={formData.Email}
+      onChange={(e) => setFormData({ ...formData, Email: e.target.value })}
+      style={styles.input2}
+      required
+    />
+    <label style={styles.label2}>Password:</label>
+    <input
+      type="password"
+      placeholder="Enter password"
+      value={formData.Password}
+      onChange={(e) => setFormData({ ...formData, Password: e.target.value })}
+      style={styles.input2}
+      required
+    />
+    <button type="submit" style={styles.button2}>
+      Create Admin
+    </button>
+    {createAdminSuccess && (
+      <div className="alert alert-success" role="alert">
+        {createAdminSuccess}
       </div>
+    )}
+    {createAdminError && (
+      <div className="alert alert-danger" role="alert">
+        {createAdminError}
+      </div>
+    )}
+  </form>
 
-      {/* Requests List */}
-      {filteredRequests.length === 0 ? (
-        <p style={styles.noRequestsMessage}>No pending requests.</p>
-      ) : (
-        <ul style={styles.requestsList}>
-          {currentRequests.map((request) => (
-            <li key={request._id} style={styles.requestItem}>
-              <p style={styles.detail}>
-                <strong>Username:</strong> {request.Username}
-              </p>
-              <p style={styles.detail}>
-                <strong>Request Date:</strong> {new Date(request.requestDate).toLocaleDateString()}
-              </p>
-              <p style={styles.detail}>
-                <strong>Status:</strong> {request.status}
-              </p>
-              <div style={styles.buttonsContainer}>
-                <button
-                  onClick={() => handleAccept(request._id)}
-                  style={styles.acceptButton}
-                >
-                  Accept
-                </button>
-                <button
-                  onClick={() => handleReject(request._id)}
-                  style={styles.rejectButton}
-                >
-                  Reject
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+  {/* Delete User Form */}
+  <form style={styles.form2} onSubmit={handleDeleteUser}>
+    <h3>Delete User</h3>
+    <label style={styles.label2}>Username:</label>
+    <input
+      type="text"
+      placeholder="Enter username to delete"
+      value={usernameToDelete}
+      onChange={(e) => setUsernameToDelete(e.target.value)}
+      style={styles.input2}
+      required
+    />
+    <label style={styles.label2}>User Type:</label>
+    <select
+      value={userType}
+      onChange={(e) => setUserType(e.target.value)}
+      style={styles.input2}
+      required
+    >
+      <option value="">Select Type</option>
+      <option value="Admin">Admin</option>
+      <option value="TourismGov">Tourism Governor</option>
+      <option value="Tourist">Tourist</option>
+      <option value="Advertiser">Advertiser</option>
+      <option value="Seller">Seller</option>
+      <option value="TourGuide">Tour Guide</option>
+    </select>
+    <button type="submit" style={styles.button2}>
+      Delete User
+    </button>
+    {deleteUserSuccess && (
+      <div className="alert alert-success" role="alert">
+        {deleteUserSuccess}
+      </div>
+    )}
+    {deleteUserError && (
+      <div className="alert alert-danger" role="alert">
+        {deleteUserError}
+      </div>
+    )}
+  </form>
+
+  {/* Add Tourism Governor Form */}
+  <form style={styles.form2} onSubmit={addTourismGov}>
+    <h3>Add Tourism Governor</h3>
+    <label style={styles.label2}>Username:</label>
+    <input
+      type="text"
+      placeholder="Enter username"
+      value={tourismGovData.Username}
+      onChange={(e) => setTourismGovData({ ...tourismGovData, Username: e.target.value })}
+      style={styles.input2}
+      required
+    />
+    <label style={styles.label2}>Password:</label>
+    <input
+      type="password"
+      placeholder="Enter password"
+      value={tourismGovData.Password}
+      onChange={(e) => setTourismGovData({ ...tourismGovData, Password: e.target.value })}
+      style={styles.input2}
+      required
+    />
+    <button type="submit" style={styles.button2}>
+      Add Tourism Governor
+    </button>
+    {addTourismGovSuccess && (
+      <div className="alert alert-success" role="alert">
+        {addTourismGovSuccess}
+      </div>
+    )}
+    {addTourismGovError && (
+      <div className="alert alert-danger" role="alert">
+        {addTourismGovError}
+      </div>
+    )}
+  </form>
+</div>
+
+</div>
   );
 };
 
-export default DeletionRequests;
+export default Adminn;
