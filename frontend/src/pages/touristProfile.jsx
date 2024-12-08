@@ -83,8 +83,12 @@ const TouristProfile = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  
 
 
 
@@ -1155,19 +1159,141 @@ return (
               </p>
               </div>
              
-              <div style={styles.buttonGroup}>
                 <button type="submit" style={styles.saveButton}>
                   Save Changes
                 </button>
+              
+       
+
                
-              </div>
             </form>
+            <div style={styles.buttonGroup}>
+            <button  onClick={() => setShowDeleteModal(true)}  style={styles.deletebutton}>
+          {waiting
+            ? "Waiting to be deleted..."
+            : requestSent
+            ? "Request Sent"
+            : "Delete Account?"}
+        </button>
+        </div>
+            
           </div>
         </div>
       )}
+      
 
-               
+                {/* Change Password Modal */}
+{showPasswordModal && (
+  <div style={styles.modalOverlay}>
+    <div style={styles.modalContent}>
+      <h2 style={styles.modalContentH2}>Change Password</h2>
+      <HighlightOffOutlinedIcon
+        onClick={() => setShowPasswordModal(false)}
+        style={styles.cancelpasswordIcon}
+      />
+      <form onSubmit={handlePasswordChange} style={styles.form}>
+        <div style={styles.formGroup}>
+          <label style={styles.label2}>Current Password:</label>
+          <input
+            type="password"
+            placeholder="Enter Current Password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            required
+            style={styles.input}
+          />
+        </div>
+        <div style={styles.formGroup}>
+          <label style={styles.label2}>New Password:</label>
+          <input
+            type="password"
+            placeholder="Enter New Password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            required
+            style={styles.input}
+          />
+        </div>
+        <div style={styles.formGroup}>
+          <label style={styles.label2}>Confirm New Password:</label>
+          <input
+            type="password"
+            placeholder="Confirm New Password"
+            value={confirmNewPassword}
+            onChange={(e) => setConfirmNewPassword(e.target.value)}
+            required
+            style={styles.input}
+          />
+        </div>
 
+        <div style={styles.buttonContainer}>
+          <button
+            type="submit"
+            disabled={isChangingPassword}
+            style={{
+              ...styles.submitButton,
+              opacity: isChangingPassword ? 0.7 : 1,
+            }}
+          >
+            {isChangingPassword ? 'Changing Password...' : 'Change Password'}
+          </button>
+        </div>
+      </form>
+
+      {passwordChangeMessage && (
+        <p style={{ color: 'green', marginTop: '15px', textAlign: 'center' }}>
+          {passwordChangeMessage}
+        </p>
+      )}
+      {passwordChangeError && (
+        <p style={{ color: 'red', marginTop: '15px', textAlign: 'center' }}>
+          {passwordChangeError}
+        </p>
+      )}
+    </div>
+  </div>
+)}
+
+ {/* Delete Account Modal */}
+ {showDeleteModal && (
+  <div style={styles.modalOverlay2}>
+    <div style={styles.modalContent2}>
+      <h2 style={styles.modalTitle2}>Account Deletion</h2>
+      <p style={styles.modalText2}>
+        Are you sure you want to delete your account? This action cannot be undone.
+      </p>
+      <div style={styles.termsSection}>
+        <h3 style={styles.termsTitle}>Terms and Conditions</h3>
+        <p style={styles.termsText}>
+          - All your data, including preferences, bookings, and wallet balance, will be permanently deleted.
+          <br />
+          - Deletion requests are subject to review and approval.
+          <br />
+          - After approval, account recovery is not possible.
+        </p>
+      </div>
+      <div style={styles.modalButtons}>
+        <button
+          onClick={handleDeleteRequest}
+          disabled={waiting || requestSent}
+          style={styles.confirmButton}
+        >
+          {waiting
+            ? "Processing..."
+            : requestSent
+            ? "Request Sent"
+            : "Confirm Deletion"}
+        </button>
+        <button
+          onClick={() => setShowDeleteModal(false)}
+          style={styles.cancelButton}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
           {/* Cart Icon */}
           <div style={styles.cartButton} onClick={() => navigate("/Cart")}>
             <FaShoppingCart style={styles.cartIcon} />
@@ -1838,8 +1964,90 @@ return (
   );
 };
 const styles = {
+ 
+ 
+  modalOverlay2: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100vw",
+    height: "100vh",
+    background: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1000,
+  },
+  modalContent2: {
+    background: "white",
+    padding: "30px",
+    borderRadius: "15px",
+    width: "90%",
+    maxWidth: "500px",
+    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
+    display: "flex",
+    flexDirection: "column",
+    gap: "20px",
+  },
+  modalTitle2: {
+    fontSize: "22px",
+    textAlign: "center",
+    color: "#333",
+  },
+  modalText2: {
+    fontSize: "16px",
+    color: "#555",
+    lineHeight: "1.5",
+  },
+  termsSection: {
+    backgroundColor: "#f7f7f7",
+    padding: "15px",
+    borderRadius: "10px",
+    marginTop: "15px",
+  },
+  termsTitle: {
+    fontSize: "18px",
+    fontWeight: "bold",
+    color: "#333",
+  },
+  termsText: {
+    fontSize: "14px",
+    color: "#555",
+    lineHeight: "1.5",
+  },
+  modalButtons: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
+  confirmButton: {
+    backgroundColor: "#dc3545", // Red color
+    color: "white",
+    padding: "10px 20px",
+    borderRadius: "5px",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "14px",
+  },
+  cancelButton: {
+    backgroundColor: "#6c757d", // Gray color
+    color: "white",
+    padding: "10px 20px",
+    borderRadius: "5px",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "14px",
+  },
   saveButton: {
     backgroundColor: '#0F5132',
+    color: 'white',
+    padding: '5px 10px',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+  deletebutton: {
+    
+    backgroundColor: '#dc3545',
     color: 'white',
     padding: '5px 10px',
     border: 'none',
@@ -1905,19 +2113,11 @@ label2: {
     cursor: 'pointer',
     fontSize: '14px',
   },
-  deleteButton: {
-    backgroundColor: '#dc3545', // Red color
-    color: 'white',
-    padding: '10px 20px',
-    borderRadius: '5px',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '14px',
-  },
+
   formGroup: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '5px',
+    gap: '1px',
   },
   modalOverlay: {
     position: 'fixed',
@@ -1940,7 +2140,6 @@ label2: {
     boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
     display: 'flex',
     flexDirection: 'column',
-    gap: '15px',
     maxHeight: '80vh',
     overflowY: 'auto',
   },
@@ -1951,8 +2150,7 @@ label2: {
   },
   modalContentLabel: {
     fontWeight: 'bold',
-    marginBottom: '5px',
-    display: 'flex', alignItems: 'center', gap: '5px',
+    display: 'flex', alignItems: 'center', gap: '0px',
     color: '#555',
   },
   modalContentInput: {
@@ -1998,7 +2196,7 @@ label2: {
     cursor: 'pointer', // Ensure it acts as a button
     position: 'absolute', // Position it correctly in the modal
     right: '490px', // Adjust placement
-    top: '290px', // Adjust placement
+    top: '200px', // Adjust placement
   },
   manageAccountContainer: {
     position: "relative",
