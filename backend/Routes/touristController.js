@@ -700,6 +700,7 @@ const sortActPDSCRASC= async(req,res)=>{
    res.status(400).json({ error: error.message })
  }
 }
+
 const sortActPDSCRDSC= async(req,res)=>{
   try{
    const currentDate= new Date();
@@ -723,6 +724,7 @@ const getActivityByCategory= async(req,res) =>{
       res.status(400).json({ error: error.message }); 
   }
 }
+
 const getActivityByname= async(req,res) =>{
   const {name}= req.query;
   
@@ -735,7 +737,6 @@ const getActivityByname= async(req,res) =>{
       res.status(400).json({ error: error.message }); 
   }
 }
-
 
 const sortProductsByRatingTourist = async (req, res) => {
   try {
@@ -869,28 +870,32 @@ const sortProductsByRatingTourist = async (req, res) => {
     }
   };
   
-  
-  
   const searchActivities = async (req, res) => {
     const { name, category, tag } = req.query;
-  
     try {
+      // Check if name is provided, return an error if not
+      if (!name) {
+        return res.status(400).json({ message: 'Error: Name parameter is required for search.' });
+      }
+  
       // Create a dynamic search query
       const searchQuery = {};
   
-      if (name) {
-        searchQuery.name = { $regex: name, $options: 'i' }; // case-insensitive search for name
-      }
+      // Add the name search criteria
+      searchQuery.name = { $regex: name, $options: 'i' }; // Case-insensitive search for name
+  
+      // Optionally add category and tag search criteria if provided
       if (category) {
-        searchQuery.Category = { $regex: category, $options: 'i' }; // case-insensitive search for category
+        searchQuery.Category = { $regex: category, $options: 'i' }; // Case-insensitive search for category
       }
+  
       if (tag) {
-        searchQuery.tags = { $regex: tag, $options: 'i' }; // case-insensitive search for tags
+        searchQuery.tags = { $regex: tag, $options: 'i' }; // Case-insensitive search for tags
       }
-      
+  
       console.log('Search Query:', searchQuery);
   
-      // Check if any activities exist for the specified category before executing full query
+      // Check if any activities exist for the specified category before executing the full query
       if (category) {
         const categoryExists = await activitiesModel.exists({ Category: { $regex: category, $options: 'i' } });
         if (!categoryExists) {
@@ -898,7 +903,14 @@ const sortProductsByRatingTourist = async (req, res) => {
         }
       }
   
-      // Execute full query with dynamic criteria
+      // Get the current date (start of today)
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Normalize to the start of today (midnight)
+  
+      // Add date filter to the query to only include activities that are after today
+      searchQuery.startDate = { $gt: today }; // Activities starting after today
+  
+      // Execute the query with the date filter and other search criteria
       const activities = await activitiesModel.find(searchQuery);
   
       if (activities.length > 0) {
@@ -906,11 +918,13 @@ const sortProductsByRatingTourist = async (req, res) => {
       } else {
         res.status(404).json({ message: 'No activities found matching your criteria.' });
       }
+
     } catch (error) {
       console.error('Error searching activities:', error);
       res.status(500).json({ message: 'Server error while searching for activities.', error: error.message });
     }
   };
+  
   
   const commentOnActivity = async (req, res) => {
     
