@@ -86,17 +86,18 @@ const DeletionRequests = () => {
     paginationContainer: {
       display: 'flex',
       justifyContent: 'center',
-      margin: '20px 0',
+      alignItems: 'center',
+      marginTop: '20px',
+      gap: '8px', // Space between buttons and text
     },
     paginationButton: {
-      padding: '10px 20px',
-      margin: '0 10px',
-      borderRadius: '5px',
-      border: 'none',
-      backgroundColor: '#0F5132',
-      color: '#fff',
-      cursor: 'pointer',
+      padding: '5px 10px', // Smaller button size
       fontSize: '14px',
+      backgroundColor: '#0F5132', // Green background
+      color: 'white',
+      border: 'none',
+      borderRadius: '3px',
+      cursor: 'pointer',
     },
     searchInput: {
       width: '100%',
@@ -335,6 +336,31 @@ const DeletionRequests = () => {
         transition: 'opacity 0.3s ease',
       },
       //
+      paginationContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: '-15px', // Adjust positioning
+        gap: '10px', // Space between elements
+      },
+      paginationButton: {
+        padding: '5px 10px',
+        fontSize: '14px',
+        backgroundColor: '#0F5132',
+        color: 'white',
+        border: 'none',
+        borderRadius: '3px',
+        cursor: 'pointer',
+        transition: 'background-color 0.3s ease',
+      },
+      paginationInfo: {
+        fontSize: '14px', // Match font size to buttons
+        fontWeight: 'bold', // Bold text
+        color: '#0F5132', // Green text to match the theme
+      },
+      paginationButtonDisabled: {
+        cursor: 'not-allowed',
+      },
   };
 
   return (
@@ -444,30 +470,39 @@ const DeletionRequests = () => {
         style={styles.searchInput}
       />
 
-      {/* Pagination */}
-      <div style={styles.paginationContainer}>
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-          style={styles.paginationButton}
-        >
-          Previous
-        </button>
-        <p style={{ margin: '0 10px', fontSize: '16px' }}>
-          Page {currentPage} of {Math.ceil(filteredRequests.length / resultsPerPage)}
-        </p>
-        <button
-          onClick={() =>
-            setCurrentPage((prev) =>
-              Math.min(prev + 1, Math.ceil(filteredRequests.length / resultsPerPage))
-            )
-          }
-          disabled={currentPage === Math.ceil(filteredRequests.length / resultsPerPage)}
-          style={styles.paginationButton}
-        >
-          Next
-        </button>
-      </div>
+<div style={styles.paginationContainer}>
+  <button
+    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+    disabled={currentPage === 1}
+    style={{
+      ...styles.paginationButton,
+      ...(currentPage === 1 ? styles.paginationButtonDisabled : {}),
+    }}
+  >
+    Previous
+  </button>
+  <p style={styles.paginationInfo}>
+    Page {currentPage} of {Math.ceil(filteredRequests.length / resultsPerPage)}
+  </p>
+  <button
+    onClick={() =>
+      setCurrentPage((prev) =>
+        Math.min(prev + 1, Math.ceil(filteredRequests.length / resultsPerPage))
+      )
+    }
+    disabled={currentPage === Math.ceil(filteredRequests.length / resultsPerPage)}
+    style={{
+      ...styles.paginationButton,
+      ...(currentPage === Math.ceil(filteredRequests.length / resultsPerPage)
+        ? styles.paginationButtonDisabled
+        : {}),
+    }}
+  >
+    Next
+  </button>
+</div>
+
+
 
       {/* Requests List */}
       {filteredRequests.length === 0 ? (

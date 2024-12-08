@@ -383,9 +383,9 @@ const handlePageChange = (newPage) => {
             >
               Previous
             </button>
-            <p style={{ margin: '0 10px', fontSize: '16px' }}>
-              Page {currentPage} of {Math.ceil(Itineraries.length / itemsPerPage)}
-            </p>
+            <p style={styles.paginationInfo}>
+    Page {currentPage} of {Math.ceil(Itineraries.length / itemsPerPage)}
+  </p>
             <button
               onClick={() =>
                 setCurrentPage((prev) =>
@@ -522,15 +522,22 @@ const styles = {
     alignItems: 'center',
     marginTop: '20px',
   },
+  paginationContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: '-15px', // Adjust positioning
+    gap: '10px', // Space between elements
+  },
   paginationButton: {
-    padding: '10px 20px',
-    margin: '0 10px',
-    borderRadius: '5px',
-    border: 'none',
-    backgroundColor: '#0F5132',
-    border: '1px solid black', // Black border
-    cursor: 'pointer',
+    padding: '5px 10px',
     fontSize: '14px',
+    backgroundColor: '#0F5132',
+    color: 'white',
+    border: 'none',
+    borderRadius: '3px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease',
   },
   activePaginationButton: {
     backgroundColor: '#007BFF',
@@ -676,6 +683,12 @@ title2: {
             fontSize: '24px',
             marginLeft: '15px', // Move icons slightly to the right
             color: '#fff', // Icons are always white
+          },
+          paginationInfo: {
+            fontSize: '14px', // Match button font size
+            fontWeight: 'bold', // Bold text
+            color: '#0F5132', // Consistent green color
+            textAlign: 'center',
           },
 };
 
