@@ -21,10 +21,117 @@ const Flaged = () => {
     return data.slice(startIndex, endIndex);
   };
 
+  const fetchData = async () => {
+    try {
+      const [itineraryRes, touristRes, activitiesRes] = await Promise.all([
+        fetch('http://localhost:8000/getAllItineraries'),
+        fetch('http://localhost:8000/getAllTouristItineraries'),
+        fetch('http://localhost:8000/getAllActivities'),
+      ]);
+
+      if (itineraryRes.ok && touristRes.ok && activitiesRes.ok) {
+        setItineraries(await itineraryRes.json());
+        setTouristItineraries(await touristRes.json());
+        setActivities(await activitiesRes.json());
+      } else {
+        console.error('Failed to fetch data.');
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  const toggleFlag = async (id, type, currentFlagState) => {
+    const endpoint = currentFlagState
+      ? `http://localhost:8000/removeFlag/${type}/${id}`
+      : `http://localhost:8000/flag${type}/${id}`;
+  
+    try {
+      const response = await fetch(endpoint, { method: 'PATCH', headers: { 'Content-Type': 'application/json' } });
+      const result = await response.json();
+  
+      if (response.ok) {
+        alert(`${currentFlagState ? 'Unflagged' : 'Flagged'} successfully`);
+        console.log('Backend response:', result);
+        fetchData(); // Refresh the list
+      } else {
+        console.error('Backend error response:', result);
+        alert(`Failed to ${currentFlagState ? 'unflag' : 'flag'}. ${result.error || ''}`);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('An error occurred. Please try again.');
+    }
+  };
+  
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+  
 const handlePageChange = (newPage) => {
   setCurrentPage(newPage);
 };
 
+  const handleUnflagItinerary = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8000/removeFlag/itinerary/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        alert('Itinerary unflagged successfully');
+        getItineraries(); // Refresh the itineraries list
+      } else {
+        alert('Failed to unflag the itinerary');
+      }
+    } catch (error) {
+      alert('An error occurred while unflagging the itinerary');
+    }
+  };
+
+  const handleUnflagTouristItinerary = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8000/removeFlag/touristItinerary/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        alert('Tourist itinerary unflagged successfully');
+        getTouristItineraries(); // Refresh the tourist itineraries list
+      } else {
+        alert('Failed to unflag the tourist itinerary');
+      }
+    } catch (error) {
+      alert('An error occurred while unflagging the tourist itinerary');
+    }
+  };
+
+  const handleUnflagActivity = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8000/removeFlag/activity/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        alert('Activity unflagged successfully');
+        getActivities(); // Refresh the activities list
+      } else {
+        alert('Failed to unflag the activity');
+      }
+    } catch (error) {
+      alert('An error occurred while unflagging the activity');
+    }
+  };
 
 
   const handleFlagTouristItinerary = async (id) => {
@@ -235,221 +342,167 @@ const handlePageChange = (newPage) => {
         </div>
       </div>
 
-      
-    <div style={styles.buttonGroup}>
-      
-      <button
-        style={activeSection === 'itineraries' ? styles.activeButton : styles.button}
-        onClick={() => {
-          setActiveSection('itineraries');
-          setCurrentPage(1); // Reset page
-        }}
-      >
-        Itineraries
-      </button>
-      <button
-        style={activeSection === 'tourist' ? styles.activeButton : styles.button}
-        onClick={() => {
-          setActiveSection('tourist');
-          setCurrentPage(1); // Reset page
-        }}
-      >
-        Tourist Itineraries
-      </button>
-      <button
-        style={activeSection === 'activities' ? styles.activeButton : styles.button}
-        onClick={() => {
-          setActiveSection('activities');
-          setCurrentPage(1); // Reset page
-        }}
-      >
-        Activities
-      </button>
-    </div>
-
-    {activeSection === 'itineraries' && (
-      <div style={styles.section}>
-            <div style={styles.paginationContainer}>
-      <button
-        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-        disabled={currentPage === 1}
-        style={styles.paginationButton}
-      >
-        Previous
-      </button>
-      <p style={{ margin: '0 10px', fontSize: '16px' }}>
-        Page {currentPage} of {Math.ceil(Itineraries.length / itemsPerPage)}
-      </p>
-      <button
-        onClick={() =>
-          setCurrentPage((prev) =>
-            Math.min(prev + 1, Math.ceil(Itineraries.length / itemsPerPage))
-          )
-        }
-        disabled={currentPage === Math.ceil(Itineraries.length / itemsPerPage)}
-        style={styles.paginationButton}
-      >
-        Next
-      </button>
-    </div>
-        <h2 style={styles.heading}>Itineraries</h2>
-        {getPaginatedData(Itineraries).map((itinerary) => (
-          <div key={itinerary._id} style={styles.card}>
-  <h4>Locations:</h4>
-  <p>{itinerary.Locations.join(', ')}</p>
-  <p>Dates: {itinerary.DatesTimes}</p>
-  <FaFlag
-    style={styles.flagIcon}
-    onClick={() => {
-      handleFlagItinerary(itinerary._id);
-      alert(flagItineraryMessage); // Display success or error alert
-    }}
-  />
-</div>
-
-        ))}
-</div>
-    )}
-
-    {activeSection === 'tourist' && (
-      <div style={styles.section}>
-        {/* Pagination Above Cards */}
-<div style={styles.paginationContainer}>
-  <button
-    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-    disabled={currentPage === 1}
-    style={styles.paginationButton}
-  >
-    Previous
-  </button>
-  <p style={{ margin: '0 10px', fontSize: '16px' }}>
-    Page {currentPage} of{' '}
-    {Math.ceil(
-      activeSection === 'itineraries'
-        ? Itineraries.length / itemsPerPage
-        : activeSection === 'tourist'
-        ? touristItineraries.length / itemsPerPage
-        : Activities.length / itemsPerPage
-    )}
-  </p>
-  <button
-    onClick={() =>
-      setCurrentPage((prev) =>
-        Math.min(
-          prev + 1,
-          Math.ceil(
-            activeSection === 'itineraries'
-              ? Itineraries.length / itemsPerPage
-              : activeSection === 'tourist'
-              ? touristItineraries.length / itemsPerPage
-              : Activities.length / itemsPerPage
-          )
-        )
-      )
-    }
-    disabled={
-      currentPage ===
-      Math.ceil(
-        activeSection === 'itineraries'
-          ? Itineraries.length / itemsPerPage
-          : activeSection === 'tourist'
-          ? touristItineraries.length / itemsPerPage
-          : Activities.length / itemsPerPage
-      )
-    }
-    style={styles.paginationButton}
-  >
-    Next
-  </button>
-</div>
-        <h2 style={styles.heading}>Tourist Itineraries</h2>
-        {getPaginatedData(touristItineraries).map((itinerary) => (
-          <div key={itinerary._id} style={styles.card}>
-  <h4>Activities:</h4>
-  <p>{itinerary.Activities.join(', ')}</p>
-  <p>Locations: {itinerary.Locations.join(', ')}</p>
-  <FaFlag
-    style={styles.flagIcon}
-    onClick={() => {
-      handleFlagTouristItinerary(itinerary._id);
-      alert(flagTouristItineraryMessage); // Display success or error alert
-    }}
-  />
-</div>
-
-        ))}
+      <div style={styles.buttonGroup}>
+        <button
+          style={activeSection === 'itineraries' ? styles.activeButton : styles.button}
+          onClick={() => {
+            setActiveSection('itineraries');
+            setCurrentPage(1); // Reset page
+          }}
+        >
+          Itineraries
+        </button>
+        <button
+          style={activeSection === 'tourist' ? styles.activeButton : styles.button}
+          onClick={() => {
+            setActiveSection('tourist');
+            setCurrentPage(1); // Reset page
+          }}
+        >
+          Tourist Itineraries
+        </button>
+        <button
+          style={activeSection === 'activities' ? styles.activeButton : styles.button}
+          onClick={() => {
+            setActiveSection('activities');
+            setCurrentPage(1); // Reset page
+          }}
+        >
+          Activities
+        </button>
       </div>
-    )}
 
-    {activeSection === 'activities' && (
-      <div style={styles.section}>
-        {/* Pagination Above Cards */}
-<div style={styles.paginationContainer}>
-  <button
-    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-    disabled={currentPage === 1}
-    style={styles.paginationButton}
-  >
-    Previous
-  </button>
-  <p style={{ margin: '0 10px', fontSize: '16px' }}>
-    Page {currentPage} of{' '}
-    {Math.ceil(
-      activeSection === 'itineraries'
-        ? Itineraries.length / itemsPerPage
-        : activeSection === 'tourist'
-        ? touristItineraries.length / itemsPerPage
-        : Activities.length / itemsPerPage
-    )}
-  </p>
-  <button
-    onClick={() =>
-      setCurrentPage((prev) =>
-        Math.min(
-          prev + 1,
-          Math.ceil(
-            activeSection === 'itineraries'
-              ? Itineraries.length / itemsPerPage
-              : activeSection === 'tourist'
-              ? touristItineraries.length / itemsPerPage
-              : Activities.length / itemsPerPage
-          )
-        )
-      )
-    }
-    disabled={
-      currentPage ===
-      Math.ceil(
-        activeSection === 'itineraries'
-          ? Itineraries.length / itemsPerPage
-          : activeSection === 'tourist'
-          ? touristItineraries.length / itemsPerPage
-          : Activities.length / itemsPerPage
-      )
-    }
-    style={styles.paginationButton}
-  >
-    Next
-  </button>
-</div>
-        <h2 style={styles.heading}>Activities</h2>
-        {getPaginatedData(Activities).map((activity) => (
-          <div key={activity._id} style={styles.card}>
-  <h4>Name:</h4>
-  <p>{activity.Name}</p>
-  <p>Category: {activity.Category}</p>
-  <FaFlag
-    style={styles.flagIcon}
-    onClick={() => {
-      handleFlagActivity(activity._id);
-      alert(flagMessage); // Display success or error alert
-    }}
-  />
-</div>
+      {activeSection === 'itineraries' && (
+        <div style={styles.section}>
+          
+          <div style={styles.paginationContainer}>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              style={styles.paginationButton}
+            >
+              Previous
+            </button>
+            <p style={{ margin: '0 10px', fontSize: '16px' }}>
+              Page {currentPage} of {Math.ceil(Itineraries.length / itemsPerPage)}
+            </p>
+            <button
+              onClick={() =>
+                setCurrentPage((prev) =>
+                  Math.min(prev + 1, Math.ceil(Itineraries.length / itemsPerPage))
+                )
+              }
+              disabled={currentPage === Math.ceil(Itineraries.length / itemsPerPage)}
+              style={styles.paginationButton}
+            >
+              Next
+            </button>
+          </div>
+          <h2 style={styles.heading}>Itineraries</h2>
+          {getPaginatedData(Itineraries).map((itinerary) => (
+            <div key={itinerary._id} style={styles.card}>
+              <h4>Locations:</h4>
+              <p>{itinerary.Locations.join(', ')}</p>
+              <p>Dates: {itinerary.DatesTimes}</p>
+              <FaFlag
+                style={{
+                  ...styles.flagIcon,
+                  color: itinerary.FlagInappropriate ? '#d9534f' : '#28a745',
+                }}
+                onClick={() => toggleFlag(itinerary._id, 'Itinerary', itinerary.FlagInappropriate)}
+              />
+            </div>
+          ))}
+        </div>
+      )}
 
-        ))}
-      </div>
-    )}
+      {activeSection === 'tourist' && (
+        <div style={styles.section}>
+          <div style={styles.paginationContainer}>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              style={styles.paginationButton}
+            >
+              Previous
+            </button>
+            <p style={{ margin: '0 10px', fontSize: '16px' }}>
+              Page {currentPage} of {Math.ceil(touristItineraries.length / itemsPerPage)}
+            </p>
+            <button
+              onClick={() =>
+                setCurrentPage((prev) =>
+                  Math.min(prev + 1, Math.ceil(touristItineraries.length / itemsPerPage))
+                )
+              }
+              disabled={currentPage === Math.ceil(touristItineraries.length / itemsPerPage)}
+              style={styles.paginationButton}
+            >
+              Next
+            </button>
+          </div>
+          <h2 style={styles.heading}>Tourist Itineraries</h2>
+          {getPaginatedData(touristItineraries).map((itinerary) => (
+            <div key={itinerary._id} style={styles.card}>
+              <h4>Activities:</h4>
+              <p>{itinerary.Activities.join(', ')}</p>
+              <p>Locations: {itinerary.Locations.join(', ')}</p>
+              <FaFlag
+                style={{
+                  ...styles.flagIcon,
+                  color: itinerary.FlagInappropriate ? '#d9534f' : '#28a745',
+                }}
+                onClick={() =>
+                  toggleFlag(itinerary._id, 'TouristItinerary', itinerary.FlagInappropriate)
+                }
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {activeSection === 'activities' && (
+        <div style={styles.section}>
+          <div style={styles.paginationContainer}>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              style={styles.paginationButton}
+            >
+              Previous
+            </button>
+            <p style={{ margin: '0 10px', fontSize: '16px' }}>
+              Page {currentPage} of {Math.ceil(Activities.length / itemsPerPage)}
+            </p>
+            <button
+              onClick={() =>
+                setCurrentPage((prev) =>
+                  Math.min(prev + 1, Math.ceil(Activities.length / itemsPerPage))
+                )
+              }
+              disabled={currentPage === Math.ceil(Activities.length / itemsPerPage)}
+              style={styles.paginationButton}
+            >
+              Next
+            </button>
+          </div>
+          <h2 style={styles.heading}>Activities</h2>
+          {getPaginatedData(Activities).map((activity) => (
+            <div key={activity._id} style={styles.card}>
+              <h4>Name:</h4>
+              <p>{activity.Name}</p>
+              <p>Category: {activity.Category}</p>
+              <FaFlag
+                style={{
+                  ...styles.flagIcon,
+                  color: activity.FlagInappropriate ? '#d9534f' : '#28a745',
+                }}
+                onClick={() => toggleFlag(activity._id, 'Activity', activity.FlagInappropriate)}
+              />
+            </div>
+          ))}
+        </div>
+      )}
   </div>
   );
 };
@@ -527,6 +580,11 @@ const styles = {
   //     width: '90%', // Optional: Set a smaller width for the card
   // maxWidth: '300px', // Optional: Cap the maximum width
    margin: '0 auto 8px', // Center-align the card and adjust bottom spacing
+    cursor: 'pointer', // Pointer cursor on hover
+  },
+  cardHover: {
+    transform: 'scale(1.05)', // Slightly increase size
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', // Add depth on hover
   },
   flagButton: {
     padding: '10px 15px',
@@ -619,7 +677,6 @@ title2: {
             marginLeft: '15px', // Move icons slightly to the right
             color: '#fff', // Icons are always white
           },
-
 };
 
 export default Flaged;
