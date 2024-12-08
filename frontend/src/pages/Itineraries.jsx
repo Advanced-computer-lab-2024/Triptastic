@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { CurrencyContext } from '../pages/CurrencyContext';
 import { FaUserCircle,FaCalendar,FaDollarSign ,FaMapMarkerAlt,FaClock,FaLanguage,FaWheelchair,FaShuttleVan} from 'react-icons/fa';
-import { FaBell,FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
+import { FaBell,FaGlobe, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
   FaClipboardList,
   FaStar, } from "react-icons/fa";
 import logo from '../images/image.png';
@@ -406,6 +406,22 @@ const Itineraries = () => {
           <h2 style={styles.title}>Itineraries</h2>
           <div>
 
+
+        {/* Currency Selector */}
+        <div style={styles.currencySelector}>
+  <FaGlobe style={styles.currencyIcon} />
+  <select
+    value={selectedCurrency}
+    onChange={handleCurrencyChange}
+    style={styles.currencyDropdown}
+  >
+    <option value="USD">USD</option>
+    <option value="EUR">EUR</option>
+    <option value="GBP">GBP</option>
+    <option value="EGP">EGP</option>
+    {/* Add other currencies */}
+  </select>
+</div>
           </div>
         </header>
         {/* Sidebar */}
@@ -792,6 +808,22 @@ const Itineraries = () => {
       textAlign: 'center',
       marginBottom: '20px',
       textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)',
+    },
+    currencySelector: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: "5px", // Space between the globe icon and the dropdown
+    },
+    currencyIcon: {
+      fontSize: "18px", // Globe icon size
+      color: "#fff", // White color for the globe icon
+    },
+    currencyDropdown: {
+      border: "1px solid #ddd",
+      borderRadius: "5px",
+      padding: "3px 5px",
+      fontSize: "12px", // Smaller font size for the dropdown
+      cursor: "pointer",
     },
     container: {
       maxWidth: '1200px',
