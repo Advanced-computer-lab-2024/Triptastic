@@ -548,42 +548,43 @@ const Checkout = () => {
       </ul>
 
       {/* Total Price */}
-      <div
-        style={{
-          marginTop: '15px',
-          padding: '15px',
-          border: '1px solid #ddd',
-          borderRadius: '10px',
-          backgroundColor: '#f9f9f9',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <p
-          style={{
-            fontSize: '16px',
-            fontWeight: 'bold',
-            color: '#333',
-            margin: 0,
-          }}
-        >
-          Total Price:
-        </p>
-        <p
-          style={{
-            fontSize: '16px',
-            fontWeight: 'bold',
-            color: '#0F5132',
-            margin: 0,
-          }}
-        >
-          {cartItems.reduce(
-            (total, item) => total + item.price * item.quantity,
-            0
-          )}
-        </p>
-      </div>
+<div
+  style={{
+    marginTop: '15px',
+    padding: '15px',
+    border: '1px solid #ddd',
+    borderRadius: '10px',
+    backgroundColor: '#f9f9f9',
+    display: 'flex',
+    justifyContent: 'center', // Center aligns the text
+    alignItems: 'center',
+    gap: '10px', // Adds spacing between the text and the price
+  }}
+>
+  <p
+    style={{
+      fontSize: '16px',
+      fontWeight: 'bold',
+      color: '#333',
+      margin: 0,
+    }}
+  >
+    Total Price: 
+  </p>
+  <p
+    style={{
+      fontSize: '16px',
+      fontWeight: 'bold',
+      color: '#0F5132',
+      margin: 0,
+    }}
+  >
+    {cartItems.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    )}
+  </p>
+</div>
     </div>
   )}
 
