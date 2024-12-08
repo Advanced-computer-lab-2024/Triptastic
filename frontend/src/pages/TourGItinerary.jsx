@@ -9,6 +9,7 @@ import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import EventOutlinedIcon from '@mui/icons-material/EventOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import TagIcon from '@mui/icons-material/Tag';
 function TourGItinerary() {
     const [itineraries, setItineraries] = useState([]);
     const [filteredItineraries, setFilteredItineraries] = useState([]); // Filtered itineraries
@@ -41,6 +42,7 @@ const [touristItineraryData, setTouristItineraryData] = useState({
     Accesibility: '',
     pickUpDropOff: '',
     bookingOpen: false,
+    PreferenceTag:'',
   });
   const [formData, setFormData] = useState({
     Username: '',
@@ -585,6 +587,24 @@ const [touristItineraryData, setTouristItineraryData] = useState({
               required
             />
           </div>
+          <div style={styles.inputGroup}>
+             <TagIcon style={styles.inputIcon} />
+             <span style={styles.inputLabel}>Preference Tag:</span>
+             <select
+               name="PreferenceTag"
+               value={itineraryData.PreferenceTag}
+               onChange={handleItineraryChange}
+               style={styles.input}
+               required
+             >
+               <option value="">Select an option</option>
+               <option value="historical areas">Historical Areas</option>
+               <option value="shopping">Shopping</option>
+               <option value="family friendly">Family Friendly</option>
+               <option value="beaches">Beaches</option>
+             </select>
+          </div>
+
           <div style={styles.checkboxGroup}>
             <input
               type="checkbox"
@@ -769,6 +789,11 @@ const [touristItineraryData, setTouristItineraryData] = useState({
                   <FaBus style={styles.detailsIcon} />
                   <span>
                     <strong>Pick Up/Drop Off:</strong> {itinerary.pickUpDropOff}
+                  </span>
+                </li> <li style={styles.detailsItem}>
+                  <TagIcon style={styles.detailsIcon} />
+                  <span>
+                    <strong>Preference tag:</strong> {itinerary.PreferenceTag}
                   </span>
                 </li>
                 <li style={styles.detailsItem}>

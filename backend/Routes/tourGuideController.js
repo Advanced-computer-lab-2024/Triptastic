@@ -219,9 +219,9 @@ const createTourGuideInfo = async (req, res) => {
  }
 
  const createItinerary=async(req,res)=>{
-   const{Activities,Locations,Timeline,DurationOfActivity,Language,Price,DatesTimes,Accesibility,pickUpDropOff,bookingOpen,TourGuide}=req.body;
+   const{Activities,Locations,Timeline,DurationOfActivity,Language,Price,DatesTimes,Accesibility,pickUpDropOff,bookingOpen,TourGuide,PreferenceTag}=req.body;
    try{
-      const itinerary=await itineraryModel.create({Activities,Locations,Timeline,DurationOfActivity,Language,Price,DatesTimes,Accesibility,pickUpDropOff,bookingOpen,TourGuide});
+      const itinerary=await itineraryModel.create({Activities,Locations,Timeline,DurationOfActivity,Language,Price,DatesTimes,Accesibility,pickUpDropOff,bookingOpen,TourGuide,PreferenceTag});
       res.status(200).json(itinerary);
    }
    catch(error){
