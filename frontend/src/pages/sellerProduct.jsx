@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import image from "../images/image.png";
 import {
   FaUserCircle,
-  FaBell,
+  FaInfoCircle,
   FaSearch,
   FaBox,
   FaPlus,
-  FaUniversity,
+  FaDollarSign,
   FaMap,
   FaRunning,
   FaPlane,
@@ -612,59 +612,67 @@ const SellerProduct = () => {
         </div>
       </div>
 
-      {/* Add Product Modal */}
-      {showCreateModal && (
-        <div style={styles.modalOverlay}>
-          <div style={styles.modalContent}>
-            <h3 style={styles.cardTitle}>
-              Add Product <Inventory2Icon />
-            </h3>
-
-            {/* Close Modal Icon */}
-            <HighlightOffOutlinedIcon
-              onClick={() => setShowCreateModal(false)}
-              style={styles.cancelIcon}
-            />
-
-            <form onSubmit={handleProductSubmit} style={styles.form}>
-              <input
-                type="text"
-                placeholder="Product Name"
-                name="productName"
-                value={productFormData.productName}
-                onChange={handleProductInputChange}
-                required
-                style={styles.input}
-              />
-              <textarea
-                placeholder="Description"
-                name="description"
-                value={productFormData.description}
-                onChange={handleProductInputChange}
-                required
-                style={styles.textarea}
-              />
-              <input
-                type="number"
-                placeholder="Price"
-                name="price"
-                value={productFormData.price}
-                onChange={handleProductInputChange}
-                required
-                style={styles.input}
-              />
-              <input
-                type="number"
-                placeholder="Stock"
-                name="stock"
-                value={productFormData.stock}
-                onChange={handleProductInputChange}
-                required
-                style={styles.input}
-              />
-              <div style={styles.fileUploadContainer}>
-                <label style={styles.fileLabel} htmlFor="file-upload">
-                  <strong
+     {/* Add Product Modal */}
+{showCreateModal && (
+  <div style={addProductStyles.modalOverlay}>
+    <div style={addProductStyles.modalContent}>
+      <div style={addProductStyles.header}>
+        <h3 style={addProductStyles.modalTitle}>
+          <Inventory2Icon style={addProductStyles.titleIcon} /> Add Product
+        </h3>
+        <HighlightOffOutlinedIcon
+          onClick={() => setShowCreateModal(false)}
+          style={addProductStyles.closeIcon}
+        />
+      </div>
+      <form onSubmit={handleProductSubmit} style={addProductStyles.form}>
+        <div style={addProductStyles.inputGroup}>
+          <input
+            type="text"
+            placeholder="Product Name"
+            name="productName"
+            value={productFormData.productName}
+            onChange={handleProductInputChange}
+            required
+            style={addProductStyles.input}
+          />
+        </div>
+        <div style={addProductStyles.inputGroup}>
+          <textarea
+            placeholder="Description"
+            name="description"
+            value={productFormData.description}
+            onChange={handleProductInputChange}
+            required
+            style={addProductStyles.textarea}
+          />
+        </div>
+        <div style={addProductStyles.inputGroup}>
+          <input
+            type="number"
+            placeholder="Price"
+            name="price"
+            value={productFormData.price}
+            onChange={handleProductInputChange}
+            required
+            style={addProductStyles.input}
+          />
+        </div>
+        <div style={addProductStyles.inputGroup}>
+          <input
+            type="number"
+            placeholder="Stock"
+            name="stock"
+            value={productFormData.stock}
+            onChange={handleProductInputChange}
+            required
+            style={addProductStyles.input}
+          />
+        </div>
+        <div style={addProductStyles.fileUploadContainer}>
+          <label style={addProductStyles.fileLabel} htmlFor="file-upload">
+            <AddPhotoAlternateIcon style={addProductStyles.uploadIcon} />
+            <strong
                     style={{
                       color: "#0F5132",
                       display: "flex",
@@ -673,37 +681,34 @@ const SellerProduct = () => {
                       cursor: "pointer",
                     }}
                   >
-                    Upload Product Image
-                    <AddPhotoAlternateIcon style={styles.iconButton} />
-                  </strong>
-                </label>
-
-                <input
-                  id="file-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  required
-                  style={styles.fileInput}
-                />
-
-                {imagePreview && (
-                  <img
-                    src={imagePreview}
-                    alt="Product Preview"
-                    style={styles.imagePreview}
-                  />
-                )}
-              </div>
-              <button type="submit" style={styles.submitButton}>
-                Submit Product
-              </button>
-            </form>
-          </div>
+            Upload Product Image</strong>
+          </label>
+          <input
+            id="file-upload"
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            required
+            style={addProductStyles.fileInput}
+          />
+          {imagePreview && (
+            <img
+              src={imagePreview}
+              alt="Product Preview"
+              style={addProductStyles.imagePreview}
+            />
+          )}
         </div>
-      )}
+        <button type="submit" style={addProductStyles.submitButton}>
+          Submit Product
+        </button>
+      </form>
+    </div>
+  </div>
+)}
+
       <div style={styles.card}>
-        <h3 style={styles.cardTitle}>Search Product</h3>
+      <h2 style={styles.sectionTitle}>Your Products</h2>
         <form onSubmit={getProductByName} style={styles.formSearch}>
           <input
             type="text"
@@ -725,54 +730,102 @@ const SellerProduct = () => {
             <p style={styles.successMessage}>{successMessage}</p>
           )}
 
-          {productSearchResult && (
-            <div style={styles.searchResult}>
-              <h4 style={styles.resultTitle}>Product Details</h4>
-              <p>
-                <strong>Name:</strong> {productSearchResult.productName}
-              </p>
-              <p>
-                <strong>Description:</strong> {productSearchResult.description}
-              </p>
-              <p>
-                <strong>Price:</strong> {productSearchResult.price}
-              </p>
-              <p>
-                <strong>Rating:</strong> {productSearchResult.rating}
-              </p>
-              <p>
-                <strong>Seller:</strong> {productSearchResult.seller}
-              </p>
-              <p>
-                <strong>Archived:</strong>{" "}
-                {productSearchResult.archived !== undefined
-                  ? productSearchResult.archived.toString()
-                  : "N/A"}
-              </p>
-              <button
-                type="button" // Prevent form submission
-                onClick={() => archiveProduct(productSearchResult.productName)}
-                disabled={loading || productSearchResult.unarchived}
-                style={styles.unarchiveButton}
-              >
-                <FaArchive style={{ marginRight: "5px" }} />
-                Archive Product
-              </button>
-
-              {/* Unarchive Product Button */}
-              <button
-                type="button" // Prevent form submission
-                onClick={() =>
-                  unarchiveProduct(productSearchResult.productName)
-                }
-                disabled={loading || !productSearchResult.archived}
-                style={styles.unarchiveButton}
-              >
-                <HiOutlineArchiveBoxXMark style={{ marginRight: "5px" }} />
-                Unarchive Product
-              </button>
-            </div>
-          )}
+{productSearchResult && (
+  <div
+    style={{
+      padding: '15px',
+      border: '1px solid #ddd',
+      borderRadius: '10px',
+      backgroundColor: '#f9f9f9',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      fontFamily: 'Arial, sans-serif',
+      fontSize: '14px',
+      color: '#333',
+      lineHeight: '1.6',
+    }}
+  >
+    <h4
+      style={{
+        fontSize: '16px',
+        fontWeight: '600',
+        color: '#0F5132',
+        marginBottom: '15px',
+        textAlign: 'center',
+        borderBottom: '2px solid #0F5132',
+        paddingBottom: '10px',
+        letterSpacing: '1px',
+      }}
+    >
+      Product Details
+    </h4>
+    <p style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+      <FaBox style={{ marginRight: '8px', color: '#0F5132', fontSize: '18px' }} />
+      <strong style={{ marginRight: '5px' }}>Name:</strong> {productSearchResult.productName}
+    </p>
+    <p style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+      <FaInfoCircle style={{ marginRight: '8px', color: '#0F5132', fontSize: '18px' }} />
+      <strong style={{ marginRight: '5px' }}>Description:</strong> {productSearchResult.description}
+    </p>
+    <p style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+      <FaDollarSign style={{ marginRight: '8px', color: '#0F5132', fontSize: '18px' }} />
+      <strong style={{ marginRight: '5px' }}>Price:</strong> ${productSearchResult.price}
+    </p>
+    <p style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+      <FaStar style={{ marginRight: '8px', color: '#FFD700', fontSize: '18px' }} />
+      <strong style={{ marginRight: '5px' }}>Rating:</strong> {productSearchResult.rating}
+    </p>
+    <p style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+      <FaUserCircle style={{ marginRight: '8px', color: '#0F5132', fontSize: '18px' }} />
+      <strong style={{ marginRight: '5px' }}>Seller:</strong> {productSearchResult.seller}
+    </p>
+    <p style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+      <FaArchive style={{ marginRight: '8px', color: productSearchResult.archived ? '#0F5132' : '#d9534f', fontSize: '18px' }} />
+      <strong style={{ marginRight: '5px' }}>Archived:</strong> {productSearchResult.archived !== undefined ? productSearchResult.archived.toString() : 'N/A'}
+    </p>
+    <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '15px' }}>
+      <button
+        type="button"
+        onClick={() => archiveProduct(productSearchResult.productName)}
+        disabled={loading || productSearchResult.unarchived}
+        style={{
+          padding: '8px 15px',
+          backgroundColor: '#d9534f',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+          fontSize: '14px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '5px',
+        }}
+      >
+        <FaArchive />
+        Archive
+      </button>
+      <button
+        type="button"
+        onClick={() => unarchiveProduct(productSearchResult.productName)}
+        disabled={loading || !productSearchResult.archived}
+        style={{
+          padding: '8px 15px',
+          backgroundColor: '#0F5132',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+          fontSize: '14px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '5px',
+        }}
+      >
+        <HiOutlineArchiveBoxXMark />
+        Unarchive
+      </button>
+    </div>
+  </div>
+)}
         {sellerProducts.length === 0 && !loading ? (
           <p>No products found.</p>
         ) : (
@@ -783,7 +836,7 @@ const SellerProduct = () => {
                 style={{
                   ...styles.card,
                   position: "relative",
-                  backgroundColor: "#fff",
+                  backgroundColor: "#f9f9f9",
                   border: "1px solid #ddd",
                   borderRadius: "10px",
                   padding: "15px",
@@ -808,6 +861,8 @@ const SellerProduct = () => {
                 }}
               >
                 <h4 style={styles.cardTitle}>
+                <strong>Name:</strong>{" "}
+
                   {editProductId === product._id ? (
                     <input
                       type="text"
@@ -821,6 +876,8 @@ const SellerProduct = () => {
                   )}
                 </h4>
                 <p style={styles.cardDescription}>
+                <strong>Description:</strong>{" "}
+
                   {editProductId === product._id ? (
                     <textarea
                       name="description"
@@ -1069,7 +1126,7 @@ const styles = {
   },
   container: {
     margin: "90px auto",
-    maxWidth: "1000px",
+    maxWidth: "1200px",
     padding: "20px",
     backgroundColor: "#f9f9f9",
     borderRadius: "10px",
@@ -1102,7 +1159,7 @@ const styles = {
     fontSize: "24px",
     margin: 0,
     fontWeight: "bold",
-    marginLeft: "90px",
+    marginLeft: "150px",
   },
   profileIcon: {
     fontSize: "30px",
@@ -1195,6 +1252,17 @@ const styles = {
     right: "490px", // Adjust placement
     top: "280px", // Adjust placement
   },
+  sectionTitle: {
+    fontSize: "20px",
+    fontWeight: "600",
+    color: "#0F5132", 
+    marginBottom: "15px",
+    textAlign: "center",
+    borderBottom: "2px solid #0F5132", 
+    paddingBottom: "10px",
+    letterSpacing: "1px", 
+    textTransform: "uppercase", 
+  },
   cardTitle: {
     fontSize: "18px", // Smaller font size for professional appearance
     fontWeight: "600", // Slightly bold for prominence
@@ -1202,7 +1270,7 @@ const styles = {
     lineHeight: "1.4", // Good readability
   },
   cardDescription: {
-    fontSize: "12px", // Smaller font for compact look
+    fontSize: "14px", // Smaller font for compact look
     color: "#555",
     marginBottom: "10px",
     lineHeight: "1.4",
@@ -1217,7 +1285,7 @@ const styles = {
     padding: "4px 8px",
     border: "1px solid #ddd",
     borderRadius: "5px",
-    fontSize: "18px",
+    fontSize: "16px",
     width: "100%",
   },
   textarea: {
@@ -1284,9 +1352,12 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     gap: "15px",
-    width: "40%", // Maintain consistent form width
+    width: "30%", // Maintain consistent form width
     alignItems: "center", // Center-align the form
-    marginLeft: "60px", // Center the form on the page
+    marginLeft: "370px", // Center the form on the page
+    marginTop:'10px',
+    marginBottom:'10px',
+
   },
   searchButton: {
     backgroundColor: "#0F5132",
@@ -1301,7 +1372,7 @@ const styles = {
     display: "flex",
     bottom: "-17px",
     alignItems: "center",
-    marginBottom: "20px",
+    marginBottom: "15px",
   },
 
   errorMessage: {
@@ -1332,11 +1403,10 @@ const styles = {
     padding: "20px",
   },
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: "#f9f9f9",
     border: "1px solid #ddd",
     borderRadius: "10px",
     padding: "20px",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
@@ -1400,5 +1470,118 @@ const styles = {
     textAlign: "center",
   },
 };
-
+const addProductStyles = {
+    modalOverlay: {
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 1000,
+    },
+    modalContent: {
+      backgroundColor: "#fff",
+      borderRadius: "10px",
+      padding: "30px",
+      maxWidth: "600px",
+      width: "100%",
+      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)",
+      position: "relative",
+    },
+    header: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: "20px",
+    },
+    modalTitle: {
+      fontSize: "20px",
+      fontWeight: "600",
+      color: "#0F5132",
+      display: "flex",
+      alignItems: "center",
+      gap: "10px",
+    },
+    titleIcon: {
+      color: "#0F5132",
+      fontSize: "24px",
+    },
+    closeIcon: {
+      fontSize: "27px",
+      cursor: "pointer",
+      color: "#0F5132",
+      transition: "color 0.3s",
+    },
+    form: {
+      display: "flex",
+      flexDirection: "column",
+      gap: "15px",
+    },
+    inputGroup: {
+      display: "flex",
+      flexDirection: "column",
+    },
+    input: {
+      padding: "10px",
+      border: "1px solid #ddd",
+      borderRadius: "5px",
+      fontSize: "14px",
+      width: "100%",
+    },
+    textarea: {
+      padding: "10px",
+      border: "1px solid #ddd",
+      borderRadius: "5px",
+      fontSize: "14px",
+      width: "100%",
+      minHeight: "100px",
+    },
+    fileUploadContainer: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        marginTop: "20px",
+      },
+      fileLabel: {
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      },
+    
+    uploadIcon: {
+    color: "#0F5132",
+    fontSize: "24px",
+    cursor: "pointer",
+    transition: "background-color 0.3s ease, transform 0.2s ease",
+    },
+    fileInput: {
+        display: "none", // Hides the native file input
+      },
+      imagePreview: {
+        marginTop: "10px",
+        width: "150px",
+        height: "150px",
+        objectFit: "cover",
+        border: "1px solid #ddd",
+        borderRadius: "5px",
+      },
+ 
+    submitButton: {
+      padding: "10px 20px",
+      backgroundColor: "#0F5132",
+      color: "#fff",
+      border: "none",
+      borderRadius: "5px",
+      cursor: "pointer",
+      fontWeight: "bold",
+      fontSize: "16px",
+      transition: "background-color 0.3s",
+    },
+  };
+  
 export default SellerProduct;

@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
+import Slider from "react-slick";
+
+
 import "./TouristProfile.css"; // Assuming you create a CSS file for styling
 import {
   BrowserRouter as Router,
@@ -40,7 +43,18 @@ import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 
 
 
-
+// ComplaintSlider Component
+const ComplaintSlider = ({ complaints }) => {
+  const settings = {
+    dots: true, // Show navigation dots
+    infinite: true, // Loop the slides
+    speed: 500, // Transition speed
+    slidesToShow: 1, // Show one slide at a time
+    slidesToScroll: 1, // Scroll one slide at a time
+    autoplay: true, // Automatically move slides
+    autoplaySpeed: 3000, // Speed of autoplay
+  };
+}
 const TouristProfile = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -83,12 +97,15 @@ const TouristProfile = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showComplaintModal, setShowComplaintModal] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [activeTab, setActiveTab] = useState("fileComplaint");
 
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  
+
+
 
 
 
@@ -124,6 +141,8 @@ const TouristProfile = () => {
     setModalOpen((prev) => !prev);
   }; 
   const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
+  const toggleComplaint = () => setShowComplaintModal((prev) => !prev);
+
   const [isPreferencesVisible, setIsPreferencesVisible] = useState(false);
   useEffect(() => {
     const preferencesSubmitted = localStorage.getItem('preferencesSubmitted');
@@ -141,6 +160,8 @@ const TouristProfile = () => {
     sendReminders();
     sendItineraryReminders();
   }, []); // Empty dependency array means this runs once after the first render
+
+
 
   const fetchNotifications = async () => {
     const username = localStorage.getItem("Username"); // Assuming username is stored in local storage
@@ -1084,6 +1105,15 @@ return (
       >
         Change Password
       </div>
+      <div
+        style={styles.dropdownItem}
+        onClick={() => {
+          setShowDropdown(false); // Close dropdown
+          setShowComplaintModal(true); // Open File Complaint modal
+        }}
+      >
+        File a Complaint
+      </div>
     </div>
   )}
   {/* Modal */}
@@ -1294,6 +1324,141 @@ return (
     </div>
   </div>
 )}
+{/* File Complaint Modal */}
+{showComplaintModal && (
+  <div style={styles.modalOverlay}>
+    <div style={styles.modalContent}>
+      <HighlightOffOutlinedIcon
+        style={styles.cancelIcon3}
+        onClick={() => setShowComplaintModal(false)} // Close modal
+      />
+
+      {/* Tabs for Switching Between Filing and Viewing Complaints */}
+      <div style={styles.tabContainer}>
+        <button
+          style={
+            activeTab === "fileComplaint"
+              ? styles.activeTabButton
+              : styles.tabButton
+          }
+          onClick={() => setActiveTab("fileComplaint")}
+        >
+          File a Complaint
+        </button>
+        <button
+          style={
+            activeTab === "viewComplaints"
+              ? styles.activeTabButton
+              : styles.tabButton
+          }
+          onClick={() => setActiveTab("viewComplaints")}
+        >
+          View Complaints
+        </button>
+      </div>
+
+      {/* Content Based on Active Tab */}
+      {activeTab === "fileComplaint" && (
+        <div style={styles.tabContent}>
+          <h2 style={styles.modalTitle}>File a Complaint</h2>
+          <form onSubmit={handleSubmitComplaint}>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Title:</label>
+              <input
+                type="text"
+                name="title"
+                placeholder="Complaint Title"
+                value={formData.title}
+                onChange={handleInputChange}
+                required
+                style={styles.input}
+              />
+            </div>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Description:</label>
+              <textarea
+                name="body"
+                placeholder="Describe your issue..."
+                value={formData.body}
+                onChange={handleInputChange}
+                required
+                style={styles.textarea}
+              />
+            </div>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Date:</label>
+              <input
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleInputChange}
+                required
+                style={styles.input}
+              />
+            </div>
+            <button type="submit" style={styles.submitButton}>
+              Submit Complaint
+            </button>
+          </form>
+        </div>
+      )}
+
+{activeTab === "viewComplaints" && (
+        <div style={styles.tabContent}>
+          <h2 style={styles.modalTitle}>Your Complaints</h2>
+          {complaints.length === 0 ? (
+            <p style={styles.emptyText}>No complaints filed yet.</p>
+            
+          ) : (
+            
+            <div style={styles.complaintsList}>
+                <Slider {...sliderSettings}>
+              {complaints.map((complaint) => (
+                <div key={complaint._id} style={styles.complaintCard}>
+                  <p style={styles.complaintText}>
+                    <strong>Title:</strong> {complaint.title}
+                  </p>
+                  <p style={styles.complaintText}>
+                    <strong>Status:</strong> {complaint.status}
+                  </p>
+                  <p style={styles.complaintText}>
+                    <strong>Date:</strong>{" "}
+                    {new Date(complaint.date).toLocaleDateString()}
+                  </p>
+                  {complaint.replies && complaint.replies.length > 0 ? (
+                    <div style={styles.repliesSection}>
+                      <h4 style={styles.repliesTitle}>Replies:</h4>
+                      {complaint.replies.map((reply, index) => (
+                         <div key={index} style={styles.replyCard}>
+                         <p style={styles.complaintText}><strong>Reply:</strong> {reply.content}</p>
+                         <p style={styles.complaintText}><strong>Date:</strong> {new Date(reply.date).toLocaleDateString()}</p>
+                         {reply.replier && <p style={styles.complaintText}><strong>Replier:</strong> {reply.replier}</p>}
+                       </div>
+                      ))}
+                   
+                    </div>
+                  ) : (
+
+                    <p style={styles.noRepliesText}>
+                      <em>No replies yet.</em>
+                    </p>
+                    
+                    
+                  )}
+                </div>
+              ))}
+              </Slider>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  </div>
+)}
+
+
+
+   
           {/* Cart Icon */}
           <div style={styles.cartButton} onClick={() => navigate("/Cart")}>
             <FaShoppingCart style={styles.cartIcon} />
@@ -1963,32 +2128,196 @@ return (
     </div>
   );
 };
+const sliderSettings = {
+  dots: true,
+  infinite: false,
+  speed: 500,
+  slidesToShow: 1,
+  slidesToScroll: 1,
+  adaptiveHeight: true,
+};
 const styles = {
- 
- 
-  modalOverlay2: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100vw",
-    height: "100vh",
-    background: "rgba(0, 0, 0, 0.5)",
+
+  
+  sliderItem: {
+    padding: '10px',
+    backgroundColor: '#fff',
+    borderRadius: '10px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    textAlign: 'left',
+  },
+  tabContainer: {
     display: "flex",
     justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1000,
+    gap: "10px",
+    marginBottom: "20px",
   },
-  modalContent2: {
-    background: "white",
-    padding: "30px",
-    borderRadius: "15px",
-    width: "90%",
-    maxWidth: "500px",
-    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
+  tabButton: {
+    padding: "10px 20px",
+    background: "#f1f1f1",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    fontWeight: "bold",
+    fontSize: "14px",
+    color: "#555",
+  },
+  activeTabButton: {
+    padding: "10px 20px",
+    background: "#0F5132",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    fontWeight: "bold",
+    fontSize: "14px",
+  },
+  formGroup: {
     display: "flex",
     flexDirection: "column",
-    gap: "20px",
+    gap: "5px",
+    marginBottom: "15px",
   },
+
+  textarea: {
+    padding: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    fontSize: "14px",
+    resize: "vertical",
+  },
+  submitButton: {
+    background: "#0F5132",
+    color: "white",
+    padding: "10px 20px",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    fontWeight: "bold",
+  },
+  complaintsList: {
+    padding: "10px",
+    margin: "0 auto",
+    width: "100%", // Ensure full width for slider
+    height:"100%"
+  },
+  
+ 
+  repliesSection: {
+    backgroundColor: "#ffffff",
+    padding: "15px",
+    borderRadius: "10px",
+    marginTop: "10px",
+    border: "1px solid #ddd",
+    width: "100%",
+  },
+  
+  
+  repliesTitle: {
+    fontSize:"16px",
+    fontWeight: "bold",
+    marginBottom: "5px",
+    color: "#0F5132",
+  },
+  replyCard: {
+    backgroundColor: "#f9f9f9",
+    padding: "15px",
+    borderRadius: "8px",
+    marginBottom: "10px",
+    fontSize: "14px",
+    color: "#333",
+    lineHeight: "1.5",
+  },
+  
+  
+  noRepliesText: {
+    fontStyle: "italic",
+    color: "#666",
+    fontSize: "13px",
+  },
+  tabButton: {
+    padding: "8px 16px",
+    border: "1px solid #ccc",
+    borderRadius: "5px",
+    backgroundColor: "#f1f1f1",
+    color: "#333",
+    cursor: "pointer",
+    fontWeight: "bold",
+  },
+  activeTabButton: {
+    padding: "8px 16px",
+    border: "1px solid #ccc",
+    borderRadius: "5px",
+    backgroundColor: "#0F5132",
+    color: "white",
+    fontWeight: "bold",
+  },
+  complaintCard: {
+    backgroundColor: '#ffffff', // Clean white background for better readability
+    padding: '20px',
+    borderRadius: '10px',
+    marginBottom: '15px',
+    border: '1px solid #eee',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // Light shadow for depth
+    fontSize: '14px', // Slightly smaller text for compactness
+    lineHeight: '1.6',
+    color: '#333',
+    height:"100%"
+  },
+  complaintText: {
+    fontSize: '13px',
+    color: '#555',
+    marginBottom: '8px',
+  },
+ 
+  emptyText: {
+    fontSize: '14px',
+    textAlign: 'center',
+    color: '#777',
+    fontStyle: 'italic',
+  },
+
+  
+ 
+
+  
+  statusIndicator: (status) => ({
+    padding: '5px 10px',
+    borderRadius: '10px',
+    color: '#fff',
+    backgroundColor: status === 'resolved' ? '#0F5132' : '#FFC107',
+    fontSize: '12px',
+    fontWeight: 'bold',
+    display: 'inline-block',
+  }),
+  
+    modalOverlay2: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      animation: 'fadeIn 0.3s ease-in-out',
+      zIndex: 1000,
+    },
+    modalContent2: {
+      background: 'white',
+      padding: '20px',
+      borderRadius: '10px',
+      width: '40%',
+      maxWidth: '500px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      textAlign: 'center',
+      animation: 'slideDown 0.3s ease-in-out',
+    },
+  
+
+  
+ 
   modalTitle2: {
     fontSize: "22px",
     textAlign: "center",
@@ -2189,6 +2518,14 @@ label2: {
     position: 'absolute', // Position it correctly in the modal
     right: '500px', // Adjust placement
     top: '100px', // Adjust placement
+  },
+  cancelIcon3: {
+    color: '#0F5132', // Set the color of the icon
+    fontSize: '30px', // Adjust the size as needed
+    cursor: 'pointer', // Ensure it acts as a button
+    position: 'absolute', // Position it correctly in the modal
+    right: '500px', // Adjust placement
+    top: '250px', // Adjust placement
   },
   cancelpasswordIcon: {
     color: '#0F5132', // Set the color of the icon
