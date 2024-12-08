@@ -575,7 +575,7 @@ return (
   style={{
     ...styles.navigationButton,
     position: 'absolute',
-    left: '1400px', // Moves the bookmark button 20px from the right edge
+    left: '1440px', // Moves the bookmark button 20px from the right edge
   }}
   onClick={() =>localStorage.getItem('context') === 'guest'? alert("please login to access bookmarks") : navigate('/BookmarkedEvents')}
 >
@@ -922,7 +922,7 @@ return (
            {/* Display Average Rating */}
            <div style={{ display: 'flex', alignItems: 'center', gap: '10px',marginRight:'20px' }}>
       <span style={styles.stars}>
-      {'★'.repeat(Math.floor(activity.rating || 0)) + '☆'.repeat(5 - Math.floor(activity.rating || 0))}
+     {'★'.repeat(Math.floor(activity.rating || 0)) + '☆'.repeat(5 - Math.floor(activity.rating || 0))}
       </span>
     </div>
         </div>
@@ -984,7 +984,7 @@ const styles = {
   searchInput: {
     flex: 1, // Expand the input field to take available space
     padding: '12px 100px',
-    fontSize: '16px',
+    fontSize: '13px',
     borderRadius: '30px',
     border: '1px solid rgba(0, 0, 0, 0.2)',
     outline: 'none',
@@ -1036,6 +1036,7 @@ const styles = {
     display: "inline-flex",
     alignItems: "center",
     gap: "5px", // Space between the globe icon and the dropdown
+    marginRight:"70px"
   },
   currencyIcon: {
     fontSize: "18px", // Globe icon size
@@ -1146,6 +1147,7 @@ item: {
 title: {
   fontSize: '24px',
   color: 'white',
+  marginLeft:'40px'
 },
 
 section: {
