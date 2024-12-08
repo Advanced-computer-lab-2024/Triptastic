@@ -15,7 +15,7 @@
 
 
 
-## Code Styles and Conventions
+## Code Styles 
 
 ### Naming Conventions
 - Camel Case for Variables and Functions
@@ -25,8 +25,10 @@
 - Descriptive and Meaningful Variable Names
   - Clear naming that indicates purpose: `Username`, `Email`, `DOB`
 
-
-
+### General guidelines
+  - Always handle errors with meaningful messages. Use try-catch blocks for asynchronous code.
+  
+  - Functions should be defined as const to ensure they are not reassigned, maintaining consistency and avoiding accidental errors. 
 
 
 
@@ -34,17 +36,30 @@
 
 
 ## Screenshots
+![Screenshot](README_screenshots/1.png)
 
-*Provide a few screenshots or images to showcase the project.*
+![Screenshot](README_screenshots/2.png)
 
-![Screenshot](link-to-image)
+![Screenshot](README_screenshots/3.png)
+
+![Screenshot](README_screenshots/4.png)
+
+
 
 ## Tech/Framework Used
 
-- MongoDb
-- Express.js
-- React.js
-- Node.js
+- **MongoDB**  
+  MongoDB is a NoSQL database that stores data in a flexible, JSON-like format. It is highly scalable, making it ideal for applications that require handling large volumes of data with varying structures.
+
+- **Express.js**  
+  Express.js is a fast Node.js web application framework designed to build network applications quickly and efficiently, offering a minimal set of features for routing and middleware.
+
+- **React.js**  
+  React.js is a JavaScript library for building user interfaces, particularly single-page applications, with a component-based architecture for reusable UI elements and efficient rendering.
+
+- **Node.js**  
+  Node.js is a runtime environment that enables JavaScript execution on the server side, known for its event-driven, non-blocking I/O, making it perfect for building scalable, high-performance applications.
+
 
 
 
@@ -54,6 +69,13 @@
 - Hotel Booking
 - Activity and Itinerary booking
 - Product Buying and Selling
+- Transportation Booking
+- Advertising activities
+- Posting historial sites
+
+
+
+
 
 
 
@@ -62,7 +84,7 @@
 
 ### 1. **Tourist creation**
 This example shows how to create a new tourist.
-
+```javascript
 const createTourist = async (req, res) => {
   const { Username, Email, Password, Nationality, DOB, Occupation, showIntro } = req.body;
 
@@ -98,14 +120,14 @@ const createTourist = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-
+```
 
 
 
 ### 2. **Adding a new product**
 This example shows how to add a new product to the website.
 
-
+ ```javascript
  const createProductseller = async (req, res) => {
   const { productName,description,price,rating,seller,review,stock } = req.body;
   const image = req.file ? req.file.path : null;
@@ -116,7 +138,35 @@ This example shows how to add a new product to the website.
     res.status(400).json({ error: error.message });
   }
 };
+```
+### 3. **Fetching itineraries**
+This example shows how itineraries get fetched in the frontend.
+```javascript
+  const fetchASCItineraries = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/sortItinPASC`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
+      if (response.ok) {
+        const data = await response.json();
+        const filteredItineraries = data.filter(itinerary => !itinerary.FlagInappropriate && itinerary.active);
+        setItineraries(filteredItineraries);
+        setErrorMessage('');
+      } else {
+        throw new Error('Failed to fetch itineraries');
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred while fetching itineraries');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  ```
 
 
 
@@ -125,7 +175,30 @@ This example shows how to add a new product to the website.
 
 ## Installation
 
-*To install this project simply clone this repository and open it in vscode or your preferred text editor then open up 2 new terminals in your text editor.In the first terminal run cd backend then npm i and in the second terminal run cd frontend then npm i that should install all the necessary frameworks and libraries needed for you to run this project.*
+Follow these steps to set up the project locally:
+
+1. **Clone the Repository**  
+   First, clone the repository to your local machine using the following command:  
+   ```bash
+   git clone https://github.com/Advanced-computer-lab-2024/Triptastic
+   ```
+2. **Navigate to the Project Directory**
+  After cloning, navigate into the project directory:
+
+  ```bash
+  cd Triptastic
+  ```
+3. **Install the necessary dependencies using npm**
+  ```bash
+  npm i
+  ```
+Now you will have installed the project along with its necessary dependancies
+    
+
+
+
+
+
 
 
 
@@ -164,12 +237,38 @@ GET:http://localhost:8000/getPreferences?username=${username}
 
 
 ## How to Use
+1. **Set Up Environment Variables**
+   Create a .env and add the uri to your mongo cluster and any API keys you will need
+2. **Run the Application**  
+   To run this application after you have installed all necessary dependancies you need to open 2 terminals in the first one you will run the server by running 
+   ```bash
+   cd backend
+   ```
+   ```bash
+   nodemon server.js
+   ```
+   Then in the 2nd terminal to run the application itself run
+   ```bash
+   cd frontend
+   ```
+   ```bash
+   npm start
+   ```
+   you should now have the application up and running you can test all different functionalities like signing up logging in booking flights etc.
 
 
 ## Contribute
+We welcome contributions from the community! Whether you want to fix a bug, add a new feature, or improve the documentation, your help is appreciated.
+### How to Contribute
+- **Create a New Branch**: Always create a new branch for each feature or bug fix you work on.
+- **Submit a Pull Request**: Once you've made your changes, submit a pull request to the main repository. Make sure to include a clear description of your changes.
+
 
 
 ## Credits
+https://www.youtube.com/channel/UC29ju8bIPH5as8OGnQzwJyA
+
+https://www.youtube.com/channel/UCW5YeuERMmlnqo4oq8vwUpg   
 
 
 ## License
@@ -178,7 +277,7 @@ Apache License 2.0
 
 Copyright [2024] [Triptastic]
 
-Licensed under the Apache License, Version 2.0 (the "License");
+Licensed under the Apache License, Version 2.0 
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
