@@ -35,6 +35,7 @@ const Activities = () => {
   const navigate = useNavigate();
   const [isBookmarked, setIsBookmarked] = useState(false); // State to toggle fill
   const [showEmailInput, setShowEmailInput] = useState(false);
+  const [filtersApplied, setFiltersApplied] = useState(false); // Track if filters have been applied
 
 
   const handleBookmarkToggle = (activityId) => {
@@ -95,38 +96,146 @@ const Activities = () => {
   const handleCurrencyChange = (event) => {
     fetchConversionRate(event.target.value);
   };
-  // Fetch activities with filters
-  const fetchFilteredActivities = async () => {
-    try {
-      const filterParams = new URLSearchParams();
-      if (filterCategory) filterParams.append('Category', filterCategory);
-      if (filterDate) filterParams.append('date', filterDate);
-      if (minBudget) filterParams.append('minBudget', minBudget);
-      if (maxBudget) filterParams.append('maxBudget', maxBudget);
-      if (filterRating) filterParams.append('rating', filterRating);
+  
+// const fetchFilteredActivities = async () => {
+ 
+//   setLoading(true);
+//   setErrorMessage(""); // Clear previous error messages
+//   try {
+//     // Prepare filter parameters
+//     const filterParams = new URLSearchParams();
+//     if (filterCategory) {
+//       filterParams.append("Category", filterCategory);
+//     }
+//     if (filterDate) {
+//       filterParams.append("date", filterDate);
+//     }
+//     if (minBudget) {
+//       filterParams.append("minBudget", minBudget);
+//     }
+//     if (maxBudget) {
+//       filterParams.append("maxBudget", maxBudget);
+//     }
+//     if (filterRating) {
+//       filterParams.append("rating", filterRating);
+//     }
 
-      const response = await fetch(`http://localhost:8000/filterActivities?${filterParams.toString()}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+    
 
-      if (response.ok) {
-        const data = await response.json();
-        const filteredActivities = data.filter(activity => !activity.FlagInappropriate);
-        setActivities(filteredActivities);
-        setErrorMessage('');
-      } else {
-        throw new Error('Failed to fetch activities');
+//     // Fetch activities from the server
+//     const response = await fetch(
+//       `http://localhost:8000/filterActivities?${filterParams.toString()}`,
+//       {
+//         method: "GET",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//       }
+//     );
+
+//     if (response.ok) {
+//       const data = await response.json();
+
+//       // Filter out inappropriate activities
+//       const filteredActivities = data.filter(
+//         (activity) => !activity.FlagInappropriate
+//       );
+//       console.log(
+//         filteredActivities
+//       );
+
+//       setActivities(filteredActivities);
+//       setErrorMessage("");
+//       setFiltersApplied(true); // Mark that filters have been applied
+//     } else {
+//       console.error(
+//         "Failed to fetch activities. HTTP Status:",
+//         response.status
+//       );
+//       setErrorMessage("Failed to fetch activities");
+//     }
+//   } catch (error) {
+//     console.error("Error occurred while fetching activities:", error);
+//     setErrorMessage("An error occurred while fetching activities");
+//   } finally {
+//     console.log("Fetch process completed.");
+//     setLoading(false);
+//   }
+// };
+
+const fetchFilteredActivities = async () => {
+  setLoading(true);
+  setErrorMessage(''); // Clear previous error messages
+
+  try {
+    // Fetch all upcoming activities first
+    const response = await fetch('http://localhost:8000/viewAllUpcomingActivitiesTourist', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json(); // Get all upcoming activities
+
+      // Filter out inappropriate activities
+      let filteredActivities = data.filter(activity => !activity.FlagInappropriate);
+
+      // Apply additional filters if specified
+
+      // Filter by category
+      if (filterCategory) {
+        filteredActivities = filteredActivities.filter(activity =>
+          activity.Category.toLowerCase().includes(filterCategory.toLowerCase())
+        );
       }
-    } catch (error) {
-      setErrorMessage('An error occurred while fetching activities');
-      console.error(error);
-    } finally {
-      setLoading(false);
+
+      // Filter by date (if provided)
+      if (filterDate) {
+        const filterDateObj = new Date(filterDate);
+        filteredActivities = filteredActivities.filter(activity => {
+          const activityDate = new Date(activity.date);
+          return activityDate.toDateString() === filterDateObj.toDateString();
+        });
+      }
+
+      // Filter by budget range (if provided)
+      if (minBudget || maxBudget) {
+        filteredActivities = filteredActivities.filter(activity => {
+          const activityPrice = activity.price;
+          const isWithinBudget = (!minBudget || activityPrice >= minBudget) &&
+                                 (!maxBudget || activityPrice <= maxBudget);
+          return isWithinBudget;
+        });
+      }
+
+      // Filter by rating (if provided)
+      if (filterRating) {
+        filteredActivities = filteredActivities.filter(activity =>
+          activity.rating >= filterRating
+        );
+      }
+
+      // Update the UI with filtered activities
+      setActivities(filteredActivities);
+      setErrorMessage(''); // Clear any previous error messages
+      setFiltersApplied(true); // Mark that filters have been applied
+    } else {
+      console.error('Failed to fetch activities. HTTP Status:', response.status);
+      setErrorMessage('Failed to fetch upcoming activities');
+      setActivities([]); // Ensure activities list is empty
     }
-  };
+  } catch (error) {
+    console.error('Error occurred while fetching activities:', error);
+    setErrorMessage('An error occurred while fetching activities');
+    setActivities([]); // Ensure activities list is empty
+  } finally {
+    console.log('Fetch process completed.');
+    setLoading(false); // Hide loading state
+  }
+};
+
 
   // Fetch activities with search
   // const fetchSearchedActivities = async () => {
@@ -468,8 +577,9 @@ return (
 >
   <FaBookmark style={{ fontSize: '20px', color: '#FFD700',marginBottom:'5px'}} />
 </button>
+<div>
 
-      <FaUserCircle style={styles.profileIcon} onClick={handleProfileRedirect} />
+</div>
       
     </header>
     
@@ -504,6 +614,12 @@ return (
           );
         }}
       >
+        <div style={styles.item} onClick={() => navigate('/tourist-profile')}>
+          <FaUserCircle style={styles.icon} />
+          <span className="label" style={styles.label}>
+             Home Page
+          </span>
+        </div>
         <div   style={styles.item} onClick={() => navigate('/historical-locations')}>
           <FaUniversity style={styles.icon} />
           <span className="label" style={styles.label}>
@@ -552,18 +668,7 @@ return (
            Transportation
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
-          <FaClipboardList style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Past Orders
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
-          <FaStar style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Review Activities
-          </span>
-        </div>
+       
       </div>
 
         {/* Filter Form */}

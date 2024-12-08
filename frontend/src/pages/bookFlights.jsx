@@ -706,10 +706,9 @@ const BookFlights = () => {
             <img src={logo} alt="Logo" style={styles.logo} />
           </div>
           <h1 style={styles.title}>Book Flights</h1>
-          <FaUserCircle
-            style={styles.profileIcon}
-            onClick={() => navigate("/touristSettings")}
-          />
+         <div>
+
+         </div>
         </header>
 
         {/* Sidebar */}
@@ -728,6 +727,12 @@ const BookFlights = () => {
             );
           }}
         >
+          <div style={styles.item} onClick={() => navigate('/tourist-profile')}>
+          <FaUserCircle style={styles.icons} />
+          <span className="label" style={styles.label}>
+             Home Page
+          </span>
+        </div>
           <div
             style={styles.item}
             onClick={() => navigate("/historical-locations")}
@@ -782,21 +787,7 @@ const BookFlights = () => {
               Transportation
             </span>
           </div>
-          <div style={styles.item} onClick={() => navigate("/tourist-orders")}>
-            <FaClipboardList style={styles.icons} />
-            <span className="label" style={styles.label}>
-              Past Orders
-            </span>
-          </div>
-          <div
-            style={styles.item}
-            onClick={() => navigate("/AttendedActivitiesPage")}
-          >
-            <FaStar style={styles.icons} />
-            <span className="label" style={styles.label}>
-              Review Activities
-            </span>
-          </div>
+         
         </div>
 
         <div style={styles.flightsContainer}>

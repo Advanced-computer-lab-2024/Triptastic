@@ -95,7 +95,6 @@ const Itineraries = () => {
       setLoading(false);
     }
   };
-
   const fetchFilteredItineraries = async () => {
     const { minBudget, maxBudget, date, preferences, language } = filters;
     let query = `http://localhost:8000/filterItineraries?`;
@@ -372,7 +371,9 @@ const Itineraries = () => {
         <header style={styles.header}>
           <img src={logo} alt="Logo" style={styles.logo} />
           <h2 style={styles.title}>Itineraries</h2>
-          <FaUserCircle style={styles.profileIcon} onClick={handleProfileRedirect} />
+          <div>
+
+          </div>
         </header>
         {/* Sidebar */}
       <div
@@ -390,6 +391,12 @@ const Itineraries = () => {
           );
         }}
       >
+        <div style={styles.item} onClick={() => navigate('/tourist-profile')}>
+          <FaUserCircle style={styles.icon} />
+          <span className="label" style={styles.label}>
+             Home Page
+          </span>
+        </div>
         <div style={styles.item} onClick={() => navigate('/historical-locations')}>
           <FaUniversity style={styles.icon} />
           <span className="label" style={styles.label}>
@@ -438,18 +445,7 @@ const Itineraries = () => {
            Transportation
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
-          <FaClipboardList style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Past Orders
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
-          <FaStar style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Review Activities
-          </span>
-        </div>
+       
       </div>
         {loading ? (
           <p style={styles.loading}>Loading itineraries...</p>
@@ -801,6 +797,7 @@ const Itineraries = () => {
       fontSize: '24px',
       color: 'white',
       fontWeight: 'bold',
+      marginRight:'50px'
     },
     profileIcon: {
       fontSize: '40px',

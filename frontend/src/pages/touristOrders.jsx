@@ -166,10 +166,9 @@ const TouristOrders = () => {
           <img src={logo} alt="Logo" style={styles.logo} />
         </div>
         <h1 style={styles.title}>My Orders</h1>
-        <FaUserCircle
-          style={styles.profileIcon}
-          onClick={() => navigate("/tourist-profile")}
-        />
+       <div>
+
+       </div>
       </header>
       <div
         style={styles.sidebar}
@@ -186,6 +185,12 @@ const TouristOrders = () => {
           );
         }}
       >
+        <div style={styles.item} onClick={() => navigate('/tourist-profile')}>
+          <FaUserCircle style={styles.icon} />
+          <span className="label" style={styles.label}>
+             Home Page
+          </span>
+        </div>
         <div   style={styles.item} onClick={() => navigate('/historical-locations')}>
           <FaUniversity style={styles.icon} />
           <span className="label" style={styles.label}>
@@ -234,18 +239,7 @@ const TouristOrders = () => {
            Transportation
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
-          <FaClipboardList style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Past Orders
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
-          <FaStar style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Review Activities
-          </span>
-        </div>
+       
       </div>
 
 

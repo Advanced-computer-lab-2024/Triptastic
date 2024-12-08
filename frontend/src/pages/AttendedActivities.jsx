@@ -140,10 +140,9 @@ const AttendedActivitiesPage = () => {
           <img src={logo} alt="Logo" style={styles.logo} />
         </div>
         <h1 style={styles.title}>My Attended Activities</h1>
-        <FaUserCircle
-          style={styles.profileIcon}
-          onClick={() => navigate("/tourist-profile")}
-        />
+        <div>
+
+        </div>
       </header>
       {/* Sidebar */}
       <div
@@ -161,6 +160,12 @@ const AttendedActivitiesPage = () => {
           );
         }}
       >
+        <div style={styles.item} onClick={() => navigate('/tourist-profile')}>
+          <FaUserCircle style={styles.iconn} />
+          <span className="label" style={styles.label}>
+             Home Page
+          </span>
+        </div>
         <div className="historical" style={styles.item} onClick={() => navigate('/historical-locations')}>
           <FaLandmark style={styles.iconn} />
           <span className="label" style={styles.label}>
@@ -209,18 +214,7 @@ const AttendedActivitiesPage = () => {
            Transportation
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
-          <FaClipboardList style={styles.iconn} />
-          <span className="label" style={styles.label}>
-            Past Orders
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
-          <FaStar style={styles.iconn} />
-          <span className="label" style={styles.label}>
-            Review Activities
-          </span>
-        </div>
+       
       </div>
       <div style={styles.content}>
         {errorMessage && <p style={styles.error}>{errorMessage}</p>}
@@ -531,7 +525,8 @@ const styles = {
     fontWeight: 'bold',
     color: 'white',
     margin: 0,
-    marginLeft:'60px'
+    marginRight:'40px'
+
   },
 
   commentDate: {

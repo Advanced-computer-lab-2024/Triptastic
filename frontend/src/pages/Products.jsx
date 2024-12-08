@@ -346,12 +346,7 @@ const Products = () => {
           </div>
           <h1 style={styles.title}>Products</h1>
           <div style={styles.headerIcons}>
-            {/* Profile Icon */}
-            <FaUserCircle
-              alt="Profile Icon"
-              style={styles.profileIcon}
-              onClick={handleProfileRedirect} // Navigate to profile
-            />
+          
             {/* Wishlist Icon */}
             <div
               style={styles.wishlistIcon}
@@ -393,6 +388,12 @@ const Products = () => {
             );
           }}
         >
+          <div style={styles.item} onClick={() => navigate('/tourist-profile')}>
+          <FaUserCircle style={styles.icon} />
+          <span className="label" style={styles.label}>
+             Home Page
+          </span>
+        </div>
           <div
             style={styles.item}
             onClick={() => navigate("/historical-locations")}
@@ -447,21 +448,7 @@ const Products = () => {
               Transportation
             </span>
           </div>
-          <div style={styles.item} onClick={() => navigate("/tourist-orders")}>
-            <FaClipboardList style={styles.icon} />
-            <span className="label" style={styles.label}>
-              Past Orders
-            </span>
-          </div>
-          <div
-            style={styles.item}
-            onClick={() => navigate("/AttendedActivitiesPage")}
-          >
-            <FaStar style={styles.icon} />
-            <span className="label" style={styles.label}>
-              Review Activities
-            </span>
-          </div>
+         
         </div>
 
         <div className="card" style={styles.card}>
