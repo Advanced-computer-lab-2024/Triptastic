@@ -31,7 +31,7 @@ const TouristOrders = () => {
   const [productName, setProductName] = useState("");
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showModal, setShowModal] = useState(false);
-
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -298,38 +298,50 @@ const TouristOrders = () => {
 
       {/* Modal for submitting review */}
       {showModal && (
-        <div style={styles.modalContainer}>
-          <div style={styles.modalContent}>
-            <h3 style={styles.reviewTitle}>
-              Submit Review for <span style={styles.productName}>{productName}</span>
-            </h3>
-            <textarea
-              style={styles.reviewInput}
-              placeholder="Write your review here"
-              value={review}
-              onChange={(e) => setReview(e.target.value)}
-            />
-            <div style={styles.ratingContainer}>
-              {renderSmileyRating()}
-            </div>
-            <div style={styles.buttonContainer}>
-              <button
-                onClick={() => submitReview(productName)}
-                style={styles.submitButton}
-                disabled={!review.trim()} // Disable button if review is empty
-              >
-                Submit Review
-              </button>
-              <button
-                onClick={() => setShowModal(false)} // Close modal on cancel
-                style={styles.cancelButton}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
+  <div style={styles.modalContainer}>
+    <div style={styles.modalContent}>
+      <h3 style={styles.reviewTitle}>
+        Submit Review for <span style={styles.productName}>{productName}</span>
+      </h3>
+      <textarea
+        style={styles.reviewInput}
+        placeholder="Write your review here"
+        value={review}
+        onChange={(e) => setReview(e.target.value)}
+      />
+      <div style={styles.ratingContainer}>{renderSmileyRating()}</div>
+      {errorMessage && ( // Conditionally render the error message
+        <p style={styles.errorMessage}>{errorMessage}</p>
       )}
+      <div style={styles.buttonContainer}>
+        <button
+          onClick={() => {
+            if (!review.trim()) {
+              setErrorMessage('Please fill in your review before submitting.');
+              return;
+            }
+            if (!rating) {
+              setErrorMessage('Please select a rating before submitting.');
+              return;
+            }
+            submitReview(productName); // Submit if both fields are valid
+            setErrorMessage(''); // Clear the error message
+          }}
+          style={styles.submitButton}
+        >
+          Submit Review
+        </button>
+        <button
+          onClick={() => setShowModal(false)} // Close modal on cancel
+          style={styles.cancelButton}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
     </div>
 

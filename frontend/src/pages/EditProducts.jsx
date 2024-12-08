@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaEdit, FaSave, FaBox, FaUserShield, FaTasks, FaArchive } from 'react-icons/fa';
-import { FaUsersCog, FaTag, FaUser, FaExclamationCircle, FaHeart, FaFileAlt, FaTrashAlt, FaThList, FaPlus, FaFlag,FaSearch } from 'react-icons/fa';
+import { FaUsersCog, FaDollarSign, FaUser, FaExclamationCircle, FaStar, FaFileAlt, FaTrashAlt, FaShoppingCart, FaFlag,FaSearch } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import image from '../images/image.png';
 import { HiOutlineArchiveBoxXMark } from "react-icons/hi2";
@@ -114,12 +114,15 @@ const EditProducts = () => {
     } finally {
       setLoading(false);
     }
-  };const archiveProduct = async (productName) => {
+  };
+  
+  const archiveProduct = async (productName) => {
     if (!productName) {
       setError('No product selected to archive.');
       return;
     }
   
+ 
     setLoading(true);
     setError('');
     setSuccessMessage('');
@@ -131,10 +134,10 @@ const EditProducts = () => {
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (response.ok) {
         const result = await response.json();
-        setSuccessMessage(`Product "${productName}" archived successfully.`);
+        window.alert(`Product "${productName}" archived successfully.`); // Show alert
         console.log(`Archived product: ${productName}`);
   
         // Update product list state to reflect the archive
@@ -180,7 +183,7 @@ const EditProducts = () => {
   
       if (response.ok) {
         const result = await response.json();
-        setSuccessMessage(`Product "${productName}" unarchived successfully.`);
+        window.alert(`Product "${productName}" unarchived successfully.`); // Show alert
         console.log(`Unarchived product: ${productName}`);
   
         // Update product list state to reflect the unarchive
@@ -394,23 +397,31 @@ const EditProducts = () => {
             : 'N/A'}
         </p>
         <button
-      onClick={() => archiveProduct(productSearchResult.productName)}
-      disabled={loading || productSearchResult.unarchived}
-      style={styles.archiveButton}
-    >
-      <FaArchive style={{ marginRight: '5px' }} />
-      Archive Product
-    </button>
+  onClick={() => archiveProduct(productSearchResult.productName)}
+  disabled={loading || productSearchResult.unarchived}
+  style={{
+    ...styles.archiveButton,
+    padding: '4px 8px', // Reduced padding
+    fontSize: '12px', // Smaller font size
+  }}
+>
+  <FaArchive style={{ marginRight: '3px', fontSize: '14px' }} /> {/* Smaller icon */}
+  Archive
+</button>
 
-    {/* Unarchive Product Button */}
-    <button
-      onClick={() => unarchiveProduct(productSearchResult.productName)}
-      disabled={loading || !productSearchResult.archived}
-      style={styles.unarchiveButton}
-    >
-      <HiOutlineArchiveBoxXMark style={{ marginRight: '5px' }} />
-      Unarchive Product
-    </button>
+{/* Unarchive Product Button */}
+<button
+  onClick={() => unarchiveProduct(productSearchResult.productName)}
+  disabled={loading || !productSearchResult.archived}
+  style={{
+    ...styles.unarchiveButton,
+    padding: '4px 8px', // Reduced padding
+    fontSize: '12px', // Smaller font size
+  }}
+>
+  <HiOutlineArchiveBoxXMark style={{ marginRight: '3px', fontSize: '14px' }} /> {/* Smaller icon */}
+  Unarchive
+</button>
       </div>
     )}
   </div>
@@ -481,36 +492,72 @@ const EditProducts = () => {
                   </div>
                 ) : (
                   <>
-<h3 style={styles.productName}>
-  <FaBox style={styles.productIcon} /> {product.productName}
-</h3>
-<p style={styles.productDescription}>{product.description}</p>
-<div style={styles.productDetailsContainer}>
-<p style={styles.productDetail}>
-  <strong>Price:</strong> <span style={styles.price}>${product.price}</span>
-</p>
-
-  <p style={styles.productDetail}>
-    <strong>Stock:</strong> {product.stock}
-  </p>
-  <p style={styles.productDetail}>
-    <strong>Rating:</strong> {product.rating}
-  </p>
+<div style={styles.productCardHeader}>
+  <h3 style={styles.productName}>
+    <FaBox style={styles.productIcon} /> {product.productName}
+  </h3>
+  <button
+    style={styles.editButton}
+    onClick={() => handleProductEdit(product._id)}
+  >
+    <FaEdit style={styles.editIcon} /> Edit
+  </button>
 </div>
+<p style={styles.productDescription}>
+  {product.description || "No description available"}
+</p>
+<div style={styles.productDetailsContainer}>
+  <div style={styles.productDetailRow}>
+    <FaDollarSign style={styles.detailIcon} />
+    <p style={styles.productDetail}>
+      <strong>Price:</strong> <span style={styles.price}>${product.price}</span>
+    </p>
+  </div>
+  <div style={styles.productDetailRow}>
+    <FaShoppingCart style={styles.detailIcon} />
+    <p style={styles.productDetail}>
+      <strong>Stock:</strong> {product.stock > 0 ? product.stock : "Out of Stock"}
+    </p>
+  </div>
+  <div style={styles.productDetailRow}>
+    <FaStar style={styles.detailIcon} />
+    <p style={styles.productDetail}>
+      <strong>Rating:</strong> {product.rating || "Not Rated"}
+    </p>
+    
+  </div>
+</div>
+
+{/* Archive Product Button */}
 <button
-  style={styles.archiveButton}
   onClick={() => archiveProduct(product.productName)}
   disabled={product.archived} // Disable if already archived
+  style={{
+    ...styles.archiveButton,
+    boxShadow: product.archived
+      ? 'none' // No shadow for already archived products
+      : '0px 4px 6px rgba(0, 0, 0, 0.2)', // Shadow for active button
+    opacity: product.archived ? 0.5 : 1, // Reduce opacity for inactive button
+  }}
 >
   <FaArchive /> Archive
 </button>
+
+{/* Unarchive Product Button */}
 <button
-  style={styles.unarchiveButton}
   onClick={() => unarchiveProduct(product.productName)}
   disabled={!product.archived} // Disable if not archived
+  style={{
+    ...styles.unarchiveButton,
+    boxShadow: !product.archived
+      ? 'none' // No shadow for non-archived products
+      : '0px 4px 6px rgba(0, 0, 0, 0.2)', // Shadow for active button
+    opacity: !product.archived ? 0.5 : 1, // Reduce opacity for inactive button
+  }}
 >
   <HiOutlineArchiveBoxXMark /> Unarchive
 </button>
+
 
                   </>
                     
@@ -522,7 +569,6 @@ const EditProducts = () => {
       )}
     </div>
   );
-  
 };
 
 const styles = {
@@ -760,7 +806,104 @@ title2: {
             cursor: 'pointer',
             transition: 'background-color 0.3s ease',
           },
-      
+          productCardHeader: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: '10px',
+          },
+          productName: {
+            fontSize: '18px',
+            fontWeight: 'bold',
+            color: '#0F5132',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          },
+          productIcon: {
+            color: '#0F5132',
+            fontSize: '20px',
+          },
+          productDescription: {
+            fontSize: '14px',
+            color: '#555',
+            marginBottom: '15px',
+          },
+          productDetailsContainer: {
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+          },
+          productDetailRow: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          },
+          productDetail: {
+            fontSize: '14px',
+            color: '#333',
+            margin: 0,
+          },
+          detailIcon: {
+            color: '#0F5132',
+            fontSize: '16px',
+          },
+          price: {
+            fontWeight: 'bold',
+            color: '#0F5132',
+          },
+          editButton: {
+            padding: '5px 10px',
+            fontSize: '12px',
+            backgroundColor: '#0F5132',
+            color: 'white',
+            border: 'none',
+            borderRadius: '3px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '5px',
+            transition: 'background-color 0.3s ease',
+          },
+          editIcon: {
+            fontSize: '14px',
+            color: 'white',
+          },
+          editButtonHover: {
+            backgroundColor: '#155724',
+          },
+          buttonContainer: {
+            display: 'flex', // Align buttons side-by-side
+            gap: '10px', // Add spacing between buttons
+            marginTop: '10px', // Optional margin for spacing
+            justifyContent: 'flex-start', // Align buttons to the left (adjust as needed)
+          },
+          archiveButton: {
+            padding: '4px 8px', // Smaller padding
+            fontSize: '12px', // Smaller font size
+            backgroundColor: '#0F5132', // Green background
+            color: 'white', // White text
+            border: 'none',
+            borderRadius: '3px', // Slightly rounded corners
+            cursor: 'pointer',
+            display: 'flex', // Align icon and text
+            alignItems: 'center',
+            gap: '5px', // Space between icon and text
+            transition: 'background-color 0.3s ease',
+          },
+          unarchiveButton: {
+            padding: '4px 8px', // Smaller padding
+            fontSize: '12px', // Smaller font size
+            backgroundColor: '#d9534f', // Red background
+            color: 'white', // White text
+            border: 'none',
+            borderRadius: '3px', // Slightly rounded corners
+            cursor: 'pointer',
+            display: 'flex', // Align icon and text
+            alignItems: 'center',
+            gap: '5px', // Space between icon and text
+            transition: 'background-color 0.3s ease',
+          },
 };
 
 export default EditProducts;
