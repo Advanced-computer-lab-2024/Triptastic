@@ -1,7 +1,9 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import Slider from "react-slick";
-
-
+import { useLocation } from "react-router-dom";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import StarIcon from "@mui/icons-material/Star";
+import { motion } from "framer-motion";
 import "./TouristProfile.css"; // Assuming you create a CSS file for styling
 import {
   BrowserRouter as Router,
@@ -43,24 +45,14 @@ import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 
 
 
-// ComplaintSlider Component
-const ComplaintSlider = ({ complaints }) => {
-  const settings = {
-    dots: true, // Show navigation dots
-    infinite: true, // Loop the slides
-    speed: 500, // Transition speed
-    slidesToShow: 1, // Show one slide at a time
-    slidesToScroll: 1, // Scroll one slide at a time
-    autoplay: true, // Automatically move slides
-    autoplaySpeed: 3000, // Speed of autoplay
-  };
-}
+
 const TouristProfile = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [upcomingItineraries, setUpcomingItineraries] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [touristInfo, setTouristInfo] = useState(null);
   const [complaints, setComplaints] = useState([]); // New state for complaints
@@ -104,7 +96,22 @@ const TouristProfile = () => {
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-
+  const [showAddresses, setShowAddresses] = useState(false);
+  const [showAddressForm, setShowAddressForm] = useState(false);
+  const [addresses, setAddresses] = useState([]);
+  const targetRef = useRef(null); // Reference to target section
+  const location = useLocation();
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [newAddress, setNewAddress] = useState({
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    state: "",
+    postalCode: "",
+    country: "",
+    phoneNumber: "",
+    isPrimary: false,
+  });
 
 
 
@@ -137,6 +144,23 @@ const TouristProfile = () => {
     shopping: false,
     budget: "",
   });
+ 
+
+  useEffect(() => {
+    if (location.hash === "#target-section" && targetRef.current) {
+      setTimeout(() => {
+        targetRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 400); // Delay to ensure all rendering is done
+    }
+  }, [location]);
+
+
+
+
+
   const toggleModal = () => {
     setModalOpen((prev) => !prev);
   }; 
@@ -1050,7 +1074,81 @@ const TouristProfile = () => {
     }));
   };
  
+  const fetchAddresses = async () => {
+    const Username = localStorage.getItem("Username");
+    try {
+      const response = await fetch(
+        `http://localhost:8000/getAddresses?username=${Username}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
 
+      if (response.ok) {
+        const data = await response.json();
+        setAddresses(data);
+        setErrorMessage("");
+      } else {
+        throw new Error("Failed to fetch addresses");
+      }
+    } catch (error) {
+      setErrorMessage("An error occurred while fetching addresses");
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+     fetchAddresses();
+  }, [showAddresses]);
+
+  const handleAddAddress = async (e) => {
+    e.preventDefault();
+    const Username = localStorage.getItem("Username");
+    try {
+      const response = await fetch(
+        `http://localhost:8000/addAddress?username=${Username}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newAddress),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setAddresses(data.addresses);
+        setShowAddressForm(false);
+        setNewAddress({
+          addressLine1: "",
+          addressLine2: "",
+          city: "",
+          state: "",
+          postalCode: "",
+          country: "",
+          phoneNumber: "",
+          isPrimary: false,
+        });
+        setErrorMessage("");
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to add address");
+      }
+    } catch (error) {
+      setErrorMessage(error.message);
+      console.error(error);
+    }
+  };
+
+  const handleAddressInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setNewAddress((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
 
 
 return (
@@ -1113,6 +1211,34 @@ return (
         }}
       >
         File a Complaint
+      </div>
+      <div
+        style={styles.dropdownItem}
+        onClick={() => {
+          setShowDropdown(false); // Close dropdown
+          setShowAddressModal(true); // Open File Complaint modal
+        }}
+      >
+        Add Address
+      </div>
+      <div
+        style={styles.dropdownItem}
+        onClick={() => {
+          setShowDropdown(false); // Close dropdown
+          navigate("/tourist-orders")
+
+        }}
+      >
+        Past Orders
+      </div>
+      <div
+        style={styles.dropdownItem}
+        onClick={() => {
+          setShowDropdown(false); // Close dropdown
+          navigate("/AttendedActivitiesPage")
+        }}
+      >
+        Review Activities
       </div>
     </div>
   )}
@@ -1458,6 +1584,234 @@ return (
 
 
 
+
+
+{showAddressModal && (
+  <div style={styles.modalOverlay}>
+    <motion.div
+      style={styles.modalContent}
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      {/* Close Icon */}
+      <HighlightOffOutlinedIcon
+        style={styles.cancelIcon4}
+        onClick={() => setShowAddressModal(false)} // Close modal
+      />
+
+      {/* Tabs */}
+      <div style={styles.tabContainer}>
+        <button
+          style={
+            activeTab === "viewAddresses"
+              ? { ...styles.tabButton, ...styles.activeTab }
+              : styles.tabButton
+          }
+          onClick={() => setActiveTab("viewAddresses")}
+        >
+          View Addresses
+        </button>
+        <button
+          style={
+            activeTab === "addAddress"
+              ? { ...styles.tabButton, ...styles.activeTab }
+              : styles.tabButton
+          }
+          onClick={() => setActiveTab("addAddress")}
+        >
+          Add Address
+        </button>
+      </div>
+
+      {/* View Addresses Content */}
+      {activeTab === "viewAddresses" && (
+        <motion.div
+          style={styles.tabContent}
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <h2 style={styles.modalTitle}>Your Addresses</h2>
+          {addresses.length === 0 ? (
+            <p style={styles.noAddressesText}>
+              You haven't added any addresses yet.
+            </p>
+          ) : (
+            <div style={styles.addressGrid}>
+              {addresses.map((address, index) => (
+                <motion.div
+                  key={index}
+                  style={styles.addressCard}
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <div style={styles.iconWrapper}>
+                    <LocationOnIcon style={{ color: "#0F5123", fontSize: "24px" }} />
+                  </div>
+                  <p style={styles.addressLine}>
+                    <strong>{address.addressLine1}</strong>
+                  </p>
+                  {address.addressLine2 && <p style={styles.complaintText}>{address.addressLine2}</p>}
+                  <p style={styles.complaintText}>
+                    {address.city}, {address.state && `${address.state},`} {address.country}
+                  </p>
+                  <p style={styles.complaintText}>Postal Code: {address.postalCode}</p>
+                  <p style={styles.complaintText}>Phone: {address.phoneNumber}</p>
+                  {address.isPrimary && (
+                    <span style={styles.primaryBadge}>
+                      <StarIcon style={{ fontSize: "16px", marginRight: "5px" }} />
+                      Primary Address
+                    </span>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </motion.div>
+      )}
+
+      {/* Add Address Content */}
+      {activeTab === "addAddress" && (
+        <motion.div
+          style={styles.tabContent}
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <h2 style={styles.modalTitle}>Add New Address</h2>
+          <form onSubmit={handleAddAddress} style={styles.container}>
+            <input
+              style={{
+                width: "100%",
+                padding: "10px",
+                marginBottom: "10px",
+                borderRadius: "5px",
+                border: "1px solid #ddd",
+              }}
+              name="addressLine1"
+              value={newAddress.addressLine1}
+              onChange={handleAddressInputChange}
+              placeholder="Address Line 1"
+              required
+            />
+
+            <input
+              style={{
+                width: "100%",
+                padding: "10px",
+                marginBottom: "10px",
+                borderRadius: "5px",
+                border: "1px solid #ddd",
+              }}
+              name="addressLine2"
+              value={newAddress.addressLine2}
+              onChange={handleAddressInputChange}
+              placeholder="Address Line 2"
+            />
+
+            <input
+              style={{
+                width: "100%",
+                padding: "10px",
+                marginBottom: "10px",
+                borderRadius: "5px",
+                border: "1px solid #ddd",
+              }}
+              name="city"
+              value={newAddress.city}
+              onChange={handleAddressInputChange}
+              placeholder="City"
+              required
+            />
+
+            <input
+              style={{
+                width: "100%",
+                padding: "10px",
+                marginBottom: "10px",
+                borderRadius: "5px",
+                border: "1px solid #ddd",
+              }}
+              name="state"
+              value={newAddress.state}
+              onChange={handleAddressInputChange}
+              placeholder="State"
+            />
+
+            <input
+              type="number"
+              style={{
+                width: "100%",
+                padding: "10px",
+                marginBottom: "10px",
+                borderRadius: "5px",
+                border: "1px solid #ddd",
+              }}
+              name="postalCode"
+              value={newAddress.postalCode}
+              onChange={handleAddressInputChange}
+              placeholder="Postal Code"
+            />
+
+            <input
+              style={{
+                width: "100%",
+                padding: "10px",
+                marginBottom: "10px",
+                borderRadius: "5px",
+                border: "1px solid #ddd",
+              }}
+              name="country"
+              value={newAddress.country}
+              onChange={handleAddressInputChange}
+              placeholder="Country"
+              required
+            />
+
+            <input
+              type="number"
+              style={{
+                width: "100%",
+                padding: "10px",
+                marginBottom: "10px",
+                borderRadius: "5px",
+                border: "1px solid #ddd",
+              }}
+              name="phoneNumber"
+              value={newAddress.phoneNumber}
+              onChange={handleAddressInputChange}
+              placeholder="Phone Number"
+            />
+
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <label style={{ marginRight: "10px" ,color:"black"}}>Is Primary</label>
+              <input
+                type="checkbox"
+                name="isPrimary"
+                checked={newAddress.isPrimary}
+                onChange={handleAddressInputChange}
+              />
+            </div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <button type="submit" style={styles.addButton}>
+                Submit Address
+              </button>
+             
+            </div>
+          </form>
+        </motion.div>
+      )}
+    </motion.div>
+  </div>
+)}
+
+
+
    
           {/* Cart Icon */}
           <div style={styles.cartButton} onClick={() => navigate("/Cart")}>
@@ -1605,21 +1959,8 @@ return (
             Transportation
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate("/tourist-orders")}>
-          <FaClipboardList style={styles.iconn} />
-          <span className="label" style={styles.label}>
-            Past Orders
-          </span>
-        </div>
-        <div
-          style={styles.item}
-          onClick={() => navigate("/AttendedActivitiesPage")}
-        >
-          <FaStar style={styles.iconn} />
-          <span className="label" style={styles.label}>
-            Review Activities
-          </span>
-        </div>
+        
+       
       </div>
 
       <div>
@@ -2137,7 +2478,40 @@ const sliderSettings = {
   adaptiveHeight: true,
 };
 const styles = {
-
+  noAddressesText: {
+    textAlign: "center",
+    fontSize: "18px",
+    color: "#666",
+  },
+  addressGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+    gap: "15px",
+    marginTop: "20px",
+  },
+  addressCard: {
+    backgroundColor: "#f9f9f9",
+    padding: "15px",
+    borderRadius: "8px",
+    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+    border: "1px solid #ddd",
+  },
+  addressLine: {
+    fontWeight: "bold",
+    fontSize: "16px",
+    marginBottom: "5px",
+    color: "#333",
+  },
+  primaryBadge: {
+    display: "inline-block",
+    marginTop: "10px",
+    padding: "5px 10px",
+    fontSize: "12px",
+    fontWeight: "bold",
+    color: "#fff",
+    backgroundColor: "#28a745",
+    borderRadius: "20px",
+  },
   
   sliderItem: {
     padding: '10px',
@@ -2265,7 +2639,7 @@ const styles = {
     height:"100%"
   },
   complaintText: {
-    fontSize: '13px',
+    fontSize: '15px',
     color: '#555',
     marginBottom: '8px',
   },
@@ -2518,6 +2892,14 @@ label2: {
     position: 'absolute', // Position it correctly in the modal
     right: '500px', // Adjust placement
     top: '100px', // Adjust placement
+  },
+  cancelIcon4: {
+    color: '#0F5132', // Set the color of the icon
+    fontSize: '30px', // Adjust the size as needed
+    cursor: 'pointer', // Ensure it acts as a button
+    position: 'absolute', // Position it correctly in the modal
+    right: '500px', // Adjust placement
+    top: '150px', // Adjust placement
   },
   cancelIcon3: {
     color: '#0F5132', // Set the color of the icon
