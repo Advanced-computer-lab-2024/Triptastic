@@ -559,14 +559,16 @@ const getUniqueHistoricalPeriods = async (req, res) => {
 
 
  //need to add to other methods still
-const viewProductsTourist = async (req, res) => {
+ const viewProductsTourist = async (req, res) => { 
   try {
-    const products = await productModel.find({ archived: false });
+    // Fetch products that are not archived and have a stock of 1 or more
+    const products = await productModel.find({ archived: false, stock: { $gte: 1 } });
     res.json(products); 
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 const filterProductsByPriceRange = async (req, res) => {
   const { minPrice, maxPrice } = req.query;
@@ -1897,7 +1899,7 @@ const addProductToCart = async (req, res) => {
     // Check if the product is already in the cart
     const existingProductIndex = cart.products.findIndex(item => item.productName === productName);
 
-    if (existingProductIndex > -1) {
+    if (existingProductIndex > 0) {
       // Product exists, update the quantity
       cart.products[existingProductIndex].quantity += quantity;
     } else {

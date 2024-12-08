@@ -3,6 +3,7 @@ import { FaHeart } from "react-icons/fa";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import { CurrencyContext } from "../pages/CurrencyContext";
 import logo from "../images/image.png"; // Replace with your logo path
+import HotelIcon from '@mui/icons-material/Hotel';
 import {
   FaUserCircle,
   FaShoppingCart,
@@ -14,6 +15,7 @@ import {
   FaChartBar,
   FaBars,FaCircle
 } 
+
 
 from "react-icons/fa";
 import { IoIosStarOutline } from "react-icons/io";
@@ -104,6 +106,7 @@ const Products = () => {
       setLoading(false);
     }
   };
+
   const fetchProducts = async (minPrice = "", maxPrice = "") => {
     setLoading(true);
     setError("");
@@ -230,7 +233,7 @@ const Products = () => {
     navigate("/Wishlist"); // Navigate to Wishlist page
   };
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 8; // Customize the number of items per page
   const totalPages = Math.ceil(products.length / itemsPerPage);
   const currentProducts = products.slice(
@@ -398,7 +401,7 @@ const Products = () => {
             style={styles.item}
             onClick={() => navigate("/historical-locations")}
           >
-            <FaLandmark style={styles.icon} />
+            <FaUniversity style={styles.icon} />
             <span className="label" style={styles.label}>
               Historical Sites
             </span>
@@ -434,7 +437,7 @@ const Products = () => {
             </span>
           </div>
           <div style={styles.item} onClick={() => navigate("/book-hotels")}>
-            <FaHotel style={styles.icon} />
+            <HotelIcon style={styles.icon} />
             <span className="label" style={styles.label}>
               Book a Hotel
             </span>
