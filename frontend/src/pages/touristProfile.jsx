@@ -57,13 +57,24 @@ import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 
 
 const TouristProfile = () => {
+  const location = useLocation();
+
+  const addressesSectionRef = useRef(null); // Ref to target the section
+
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [upcomingItineraries, setUpcomingItineraries] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+useEffect(() => {
+  if (location.hash === "#viewAddressesSection") {
+    setIsModalOpen(true); // Open the modal if hash matches
+  }
+}, [location]);
   const [touristInfo, setTouristInfo] = useState(null);
   const [complaints, setComplaints] = useState([]); // New state for complaints
   const [errorMessage, setErrorMessage] = useState("");
@@ -112,7 +123,6 @@ const TouristProfile = () => {
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [addresses, setAddresses] = useState([]);
   const targetRef = useRef(null); // Reference to target section
-  const location = useLocation();
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [newAddress, setNewAddress] = useState({
     addressLine1: "",
@@ -1174,6 +1184,13 @@ const handleOpenCancelPopup2 = (itineraryId) => {
   useEffect(() => {
      fetchAddresses();
   }, [showAddresses]);
+  useEffect(() => {
+    if (location.hash === '#viewAddressesSection') {
+      setShowAddressModal(true);
+    } else {
+      setShowAddressModal(false);
+    }
+  }, [location]);
 
   const handleAddAddress = async (e) => {
     e.preventDefault();
@@ -1793,6 +1810,9 @@ return (
 {showAddressModal && (
   <div style={styles.modalOverlay}>
     <motion.div
+
+
+
       style={styles.modalContent}
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
@@ -1817,6 +1837,8 @@ return (
           View Addresses
         </button>
         <button
+              id="viewAddressesSection"
+              ref={addressesSectionRef}
           style={
             activeTab === "addAddress"
               ? { ...styles.tabButton, ...styles.activeTab }
@@ -1829,7 +1851,7 @@ return (
       </div>
 
       {/* View Addresses Content */}
-      {activeTab === "viewAddresses" && (
+      {activeTab === "viewAddresses"  && (
         <motion.div
           style={styles.tabContent}
           initial={{ y: 20, opacity: 0 }}

@@ -683,7 +683,7 @@ const Checkout = () => {
       justifyContent: 'center',
       gap: '10px',
     }}
-    onClick={() => (window.location.href = '/touristsettings#target-section')}
+    onClick={() => (window.location.href = '/tourist-profile#viewAddressesSection')}
   >
     <AddBoxOutlinedIcon style={{ fontSize: '18px', color: 'black' }}/>Add Address
   </button>
