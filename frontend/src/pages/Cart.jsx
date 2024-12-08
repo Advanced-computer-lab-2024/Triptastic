@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { CurrencyContext } from '../pages/CurrencyContext';
 import logo from '../images/image.png'; // Logo image
-import { FaUserCircle ,FaMoneyBillWave,FaRegFileAlt, FaDollarSign,FaBoxes} from 'react-icons/fa';
+import { FaUserCircle ,FaCartArrowDown,FaRegFileAlt, FaDollarSign,FaBoxes} from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
+import MuseumIcon from '@mui/icons-material/Museum';
+import HotelIcon from '@mui/icons-material/Hotel';
+import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
+import { FaTrash, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel, FaShoppingCart,
   FaClipboardList,
   FaStar, } from "react-icons/fa";
 
@@ -131,11 +134,24 @@ const Cart = () => {
         <img src={logo} alt="Logo" style={styles.logo} />
         <h1 style={styles.title}>My Cart</h1>
         <button
-          style={styles.profileButton}
-          onClick={handleProfileRedirect}
-        >
-          <FaUserCircle alt="Profile" style={styles.profileIcon} />
-        </button>
+    style={{
+      padding: '12px 20px',
+      border: 'none',
+      borderRadius: '5px',
+      backgroundColor: '#0F5132',
+      color: '#fff',
+      fontWeight: 'bold',
+      fontSize: '16px',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+    }}
+    onClick={() => navigate('/Checkout', { state: { from: '/products' } })}
+  >
+    <ShoppingCartCheckoutIcon style={{ fontSize: '20px', color: '#fff' }} />
+    Proceed to Checkout
+  </button>
       </header>
       {/* Sidebar */}
       <div
@@ -153,14 +169,25 @@ const Cart = () => {
           );
         }}
       >
-        <div style={styles.item} onClick={() => navigate('/historical-locations')}>
-          <FaLandmark style={styles.icon} />
+         
+        
+        <div style={styles.item} onClick={() => navigate('/tourist-profile')}>
+
+          <FaUserCircle  style={styles.icon} />
           <span className="label" style={styles.label}>
-            Historical Loc
+            Home Page
+          </span>
+        </div>
+        
+        <div style={styles.item} onClick={() => navigate('/historical-locations')}>
+          
+          <FaUniversity style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Historical Sites
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/museums')}>
-          <FaUniversity style={styles.icon} />
+          <MuseumIcon style={styles.icon} />
           <span className="label" style={styles.label}>
             Museums
           </span>
@@ -190,7 +217,7 @@ const Cart = () => {
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/book-hotels')}>
-          <FaHotel style={styles.icon} />
+          <HotelIcon style={styles.icon} />
           <span className="label" style={styles.label}>
             Book a Hotel
           </span>
@@ -201,151 +228,311 @@ const Cart = () => {
            Transportation
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
-          <FaClipboardList style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Past Orders
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
-          <FaStar style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Review Activities
-          </span>
-        </div>
       </div>
-      {/* Currency Dropdown for All Products */}
-      <div style={styles.dropdownContainer}>
-        <label style={styles.dropdownLabel}><FaMoneyBillWave/>Select Currency:</label>
-        <select
-          value={selectedCurrency}
-          onChange={handleCurrencyChange}
-          style={styles.currencyDropdown}
+     
+
+{/* Cart Items */}
+<div style={{ padding: '20px',marginTop:'20' }}>
+  {cartItems.map((item, index) => (
+    <div
+      key={index}
+      style={{
+        marginBottom: '20px',
+        padding: '20px',
+        border: '1px solid #ddd',
+        borderRadius: '10px',
+        backgroundColor: '#f9f9f9',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        position: 'relative',
+        transition: 'transform 0.3s ease, border-color 0.3s ease',
+        cursor: 'pointer',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = '#0F5132';
+        e.currentTarget.style.transform = 'scale(1.03)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = '#ddd';
+        e.currentTarget.style.transform = 'scale(1)';
+      }}
+    >
+      {/* Product Details */}
+      <div>
+        <h2
+          style={{
+            fontSize: '20px',
+            fontWeight: 'bold',
+            color: '#333',
+            marginBottom: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}
         >
-          <option value="EGP">Egyptian Pound (EGP)</option>
-          <option value="USD">US Dollar (USD)</option>
-          <option value="EUR">Euro (EUR)</option>
-          <option value="GBP">British Pound (GBP)</option>
-        </select>
+          <FaCartArrowDown style={{ fontSize: '18px', color: '#0F5132' }} />{' '}
+          {item.productName}
+        </h2>
+        <p
+          style={{
+            fontSize: '14px',
+            marginBottom: '8px',
+            color: '#333',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '5px',
+          }}
+        >
+          <FaDollarSign style={{ fontSize: '14px', color: '#0F5132' }} />
+          <strong>Price:</strong> {selectedCurrency}{' '}
+          {(item.price * conversionRate).toFixed(2)}
+        </p>
+        <p
+          style={{
+            fontSize: '14px',
+            marginBottom: '8px',
+            color: '#333',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '5px',
+          }}
+        >
+          <FaBoxes style={{ fontSize: '14px', color: '#0F5132' }} />
+          <strong>Quantity:</strong>{' '}
+          <button
+            style={{
+              padding: '5px',
+              border: '1px solid #ddd',
+              borderRadius: '5px',
+              backgroundColor: '#0F5312',
+              color: '#fff',
+              cursor: 'pointer',
+              margin: '0 5px',
+            }}
+            onClick={() =>
+              handleQuantityChange(item.productName, item.quantity, -1)
+            }
+          >
+            -
+          </button>
+          {item.quantity}
+          <button
+            style={{
+              padding: '5px',
+              border: '1px solid #ddd',
+              borderRadius: '5px',
+              backgroundColor: '#0F5312',
+              color: '#fff',
+              cursor: 'pointer',
+              margin: '0 5px',
+            }}
+            onClick={() =>
+              handleQuantityChange(item.productName, item.quantity, 1)
+            }
+          >
+            +
+          </button>
+        </p>
+        <p
+          style={{
+            fontSize: '14px',
+            marginBottom: '8px',
+            color: '#333',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '5px',
+          }}
+        >
+          <FaRegFileAlt style={{ fontSize: '14px', color: '#0F5132' }} />
+          <strong>Description:</strong> {item.description}
+        </p>
       </div>
 
-      <div style={styles.cartContent}>
-        {loading ? (
-          <p style={styles.loading}>Loading cart...</p>
-        ) : error ? (
-          <p style={styles.emptyMessage}>{error}</p>
-        ) : cartItems.length === 0 ? (
-          <p style={styles.emptyMessage}>Your cart is empty.</p>
-        ) : (
-          <ul style={styles.cartList}>
-            {cartItems.map((item, index) => (
-              <li key={index} style={styles.cartItem}>
-                <h2 style={styles.productName}>{item.productName}</h2>
-                <p>
-                  <strong><FaDollarSign/>Price:</strong> {selectedCurrency}{' '}
-                  {(item.price * conversionRate).toFixed(2)}
-                </p>
-                <p>
-                  <strong><FaBoxes/>Quantity:</strong> {item.quantity}{' '}
-                  <button
-                    style={styles.quantityButton}
-                    onClick={() => handleQuantityChange(item.productName, item.quantity, -1)}
-                  >
-                    -
-                  </button>
-                  <button
-                    style={styles.quantityButton}
-                    onClick={() => handleQuantityChange(item.productName, item.quantity, 1)}
-                  >
-                    +
-                  </button>
-                </p>
-                <p>
-                  <strong><FaRegFileAlt/>Description:</strong> {item.description}
-                </p>
-                <button
-                  style={styles.removeButton}
-                  onClick={() => removeFromCart(item.productName, item.quantity)}
-                >
-                  Remove from Cart
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-      <div style={styles.checkoutContainer}>
-            <button style={styles.checkoutButton} onClick={() => navigate('/Checkout',{ state: { from: '/products' } })}>
-              Proceed to Checkout
-            </button>
-          </div>
+      {/* Remove Button */}
+      <button
+        style={{
+          position: 'absolute',
+          top: '10px',
+          right: '10px',
+          padding: '5px 10px',
+          border: '1px solid #dc3545',
+          borderRadius: '5px',
+          backgroundColor: '#dc3545',
+          color: '#fff',
+          fontWeight: 'bold',
+          fontSize: '12px',
+          cursor: 'pointer',
+        }}
+        onClick={() => removeFromCart(item.productName, item.quantity)}
+      >
+       <FaTrash/> Remove from cart
+      </button>
     </div>
+  ))}
+</div>
+
+
+</div>
+
+
+
   );
 };
 
 const styles = {
   container: {
-    marginTop:'150px',
-    maxWidth: '1200px',
-    margin: '20px auto',
-    padding: '20px',
-    backgroundColor: '#f4f4f4',
-    borderRadius: '10px',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    marginTop:'100px',
+    maxWidth: "1200px",
+    margin: "20px auto",
+    padding: "20px",
+    backgroundColor: "#f4f4f4",
+    borderRadius: "10px",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
   },
   header: {
-    height:'90px',
-  position: 'fixed', // Make the header fixed
-  top: '0', // Stick to the top of the viewport
-  left: '0',
-  width: '100%', // Make it span the full width of the viewport
-  backgroundColor: '#0F5132', // Green background
-  color: 'white', // White text
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  padding: '10px 20px',
-  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Add shadow for depth
-  zIndex: '1000', // Ensure it appears above other content
+    height: "60px",
+    position: "fixed", // Make the header fixed
+    top: "0", // Stick to the top of the viewport
+    left: "0",
+    width: "100%", // Make it span the full width of the viewport
+    backgroundColor: "#0F5132", // Green background
+    color: "white", // White text
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "10px 20px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // Add shadow for depth
+    zIndex: "1000", // Ensure it appears above other content
   },
   logoContainer: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
   },
   logo: {
-    height: '70px',
-    width: '80px',
-    borderRadius: '10px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+    height: "60px",
+    width: "70px",
+    borderRadius: "10px",
   },
   profileIcon: {
-    fontSize: '40px',
+    fontSize: '30px',
     color: 'white',
     cursor: 'pointer',
     borderRadius: '20px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
   },
-  cartIcon: {
-    width: '50px',
-    height: '50px',
-    color:'#0F5132',
-    cursor: 'pointer',
-    marginLeft:'700px'
+  cartContainer: {
+    padding: '20px',
+    backgroundColor: '#f9f9f9',
+    borderRadius: '10px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  },
+  cartList: {
+    listStyleType: 'none',
+    padding: 0,
+    margin: 0,
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+    gap: '20px',
+  },
+  cartItem: {
+    backgroundColor: '#fff',
+    padding: '15px',
+    borderRadius: '10px',
+    border: '1px solid #ddd',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
+    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+  },
+  productImageContainer: {
+    textAlign: 'center',
+    marginBottom: '10px',
+  },
+  productImage: {
+    width: '80px',
+    height: '80px',
+    objectFit: 'cover',
+    borderRadius: '8px',
+  },
+  productDetails: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '5px',
+  },
+  productName: {
+    fontSize: '16px',
+    fontWeight: 'bold',
+    color: '#333',
+    margin: 0,
+    display: 'flex',
+    alignItems: 'center',
+    gap: '5px',
+  },
+  productInfo: {
+    fontSize: '14px',
+    color: '#666',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '5px',
+  },
+  icon: {
+    fontSize: '14px',
+    color: '#0F5132',
   },
   quantityButton: {
-    margin: '0 5px',
+    marginLeft: '5px',
+    marginRight: '5px',
+    padding: '5px',
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+    backgroundColor: '#f1f1f1',
+    cursor: 'pointer',
+    transition: 'background-color 0.2s',
+  },
+  removeButton: {
+    padding: '8px 12px',
+    backgroundColor: '#dc3545',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    fontSize: '14px',
+    cursor: 'pointer',
+    alignSelf: 'center',
+    marginTop: '10px',
+    transition: 'background-color 0.3s ease',
+  },
+  removeButtonHover: {
+    backgroundColor: '#c82333',
+  },
+  checkoutContainer: {
+    marginTop: '20px',
+    textAlign: 'center',
+  },
+  checkoutButton: {
+    padding: '12px 20px',
     backgroundColor: '#0F5132',
     color: 'white',
     border: 'none',
-    padding: '5px 10px',
     borderRadius: '5px',
+    fontSize: '16px',
     cursor: 'pointer',
+    transition: 'background-color 0.3s ease',
+  },
+  checkoutButtonHover: {
+    backgroundColor: '#084B24',
   },
   title: {
     fontSize: '24px',
     fontWeight: 'bold',
     color: 'white',
+    position: 'absolute', // Make it position-relative to the container
+    left: '50%', // Position the title to the center horizontally
+    transform: 'translateX(-50%)', // Offset it back by 50% of its width to center
     margin: 0,
+    top: '50%', // Optional: if vertical centering within the container is required
+    transform: 'translate(-50%, -50%)', // Combine horizontal and vertical centering
+  },
+  item:{
+    padding: "10px 0",
   },
   dropdownContainer: {
     display: 'flex',
@@ -408,7 +595,8 @@ const styles = {
   },
   sidebar: {
     position: 'fixed',
-    top: '90px',
+    top: "60px",
+    top: "60px",
     left: 0,
     height: '100vh',
     width: '50px', // Default width when collapsed
