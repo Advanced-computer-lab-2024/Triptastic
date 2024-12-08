@@ -11,6 +11,8 @@ import {
   FaUser,
   FaWalking,
 } from 'react-icons/fa';
+import { CiHeart } from "react-icons/ci";
+
 import Slider from 'react-slick';
 import HotelIcon from '@mui/icons-material/Hotel';
 import MuseumIcon from '@mui/icons-material/Museum';
@@ -201,6 +203,7 @@ const ItineraryDetail = () => {
             <span style={styles.detailLabel}>Date & Time:</span>
             <span style={styles.detailValue}>{new Date(itinerary.DatesTimes).toLocaleString()}</span>
           </div>
+          
           <div style={styles.detailItem}>
             <FaDollarSign style={styles.icon2} />
             <span style={styles.detailLabel}>Price:</span>
@@ -228,7 +231,11 @@ const ItineraryDetail = () => {
 
              <span style={styles.detailValue}>{itinerary.pickUpDropOff}</span>
              </div>
-                        
+             <div style={styles.detailItem}>
+            <CiHeart style={styles.icon2} />
+            <span style={styles.detailLabel}>Prefrence tag:</span>
+            <span style={styles.detailValue}>{itinerary.PreferenceTag}</span>
+          </div>
           <div style={styles.detailItem}>
               <strong>Booked:</strong> {itinerary.Booked ? 'Yes' : 'No'}
           </div>

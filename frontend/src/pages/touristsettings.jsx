@@ -13,6 +13,7 @@ import { FaBars, FaTimes, FaUserCircle } from "react-icons/fa"; // For menu icon
 import { FaPercentage, FaCalendarAlt, FaTag } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
 
+
 const TouristSettings = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [touristInfo, setTouristInfo] = useState(null);
