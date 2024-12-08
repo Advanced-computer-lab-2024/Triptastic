@@ -265,6 +265,12 @@ const HistoricalLocations = () => {
           );
         }}
       >
+        <div style={styles.item} onClick={() => navigate('/tourist-profile')}>
+          <FaUserCircle style={styles.icon} />
+          <span className="label" style={styles.label}>
+             Home Page
+          </span>
+        </div>
         <div style={styles.item} onClick={() => navigate('/historical-locations')}>
           <FaUniversity style={styles.icon} />
           <span className="label" style={styles.label}>
@@ -313,18 +319,7 @@ const HistoricalLocations = () => {
             Transportation
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
-          <FaClipboardList style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Past Orders
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
-          <FaStar style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Review Activities
-          </span>
-        </div>
+        
       </div>
 
       {/* Main Content Section */}
@@ -469,11 +464,10 @@ const HistoricalLocations = () => {
             <img src={logo} alt="Logo" style={styles.logo} />
           </div>
           <h1 style={{ fontSize: '24px', marginTop: '20px' }}>Historical Places</h1>
-          <FaUserCircle
-            alt="Profile Icon"
-            style={styles.profileIcon}
-            onClick={handleProfileRedirect}
-          />
+         <div>
+
+         </div>
+
         </header>
 
 

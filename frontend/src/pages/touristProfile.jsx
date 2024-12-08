@@ -1152,7 +1152,7 @@ const TouristProfile = () => {
 
 
 return (
-  <div>
+  <div style={{marginTop:"70px"}}>
     {/* Header Section */}
     <header style={styles.header}>
       <div style={styles.logoContainer}>

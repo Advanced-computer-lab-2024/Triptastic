@@ -445,24 +445,23 @@ const fileComplaint = async (req, res) => {
   }
 };
 
-
 const filterActivities = async (req, res) => {
   // Extract parameters from the query string for GET requests
   const { Category, date, minBudget, maxBudget, rating } = req.query;
-  
+
   let filter = {};
 
-  // Filter by category if provided
+  // Filter by category if provided (case-insensitive)
   if (Category) {
-     filter.Category = Category;
+    filter.Category = { $regex: new RegExp(Category, "i") }; // 'i' makes it case-insensitive
   }
 
   // Filter by price (minBudget and maxBudget)
   if (minBudget !== undefined && maxBudget !== undefined) {
-     filter.price = {
-        $gte: Number(minBudget), // Convert to number for comparison
-        $lte: Number(maxBudget), // Convert to number for comparison
-     };
+    filter.price = {
+      $gte: Number(minBudget), // Convert to number for comparison
+      $lte: Number(maxBudget), // Convert to number for comparison
+    };
   }
 
   if (date) {
@@ -470,32 +469,31 @@ const filterActivities = async (req, res) => {
     const inputDate = new Date(date);
     const localDate = new Date(inputDate.setHours(0, 0, 0, 0)); // Normalize to local time start of the day
     filter.date = {
-        $gte: localDate,  // Activities on or after the provided date (local time)
-        $lt: new Date(localDate.getTime() + 24 * 60 * 60 * 1000) // Before the next day
+      $gte: localDate, // Activities on or after the provided date (local time)
+      $lt: new Date(localDate.getTime() + 24 * 60 * 60 * 1000), // Before the next day
     };
-} else {
+  } else {
     // If no date is provided, filter activities from today onwards (local time)
     const today = new Date();
     const localToday = new Date(today.setHours(0, 0, 0, 0)); // Normalize to local time start of today
     filter.date = { $gte: localToday }; // Activities today or later
-}
-
-
+  }
 
   // Filter by rating (if provided)
   if (rating) {
-     filter.rating = { $gte: Number(rating) }; // Convert to number for comparison
+    filter.rating = { $gte: Number(rating) }; // Convert to number for comparison
   }
 
   try {
-     
-     const activities = await activitiesModel.find(filter);
-     console.log("Filter object:", filter);
-     res.json(activities); // Return the filtered activities
+    const activities = await activitiesModel.find(filter);
+    console.log("Filter object:", filter);
+    res.json(activities); // Return the filtered activities
   } catch (error) {
-     res.status(500).json({ error: 'Server error' });
+    console.error("Error fetching activities:", error);
+    res.status(500).json({ error: 'Server error' });
   }
 };
+
 
 
 
@@ -628,14 +626,21 @@ const viewAllMuseumsTourist = async (req, res) => {
       res.status(500).json({ error: 'Error fetching  museums' });
   }
  };
-
-const viewAllItinerariesTourist = async (req, res) => {
+ const viewAllItinerariesTourist = async (req, res) => {
   try {
+    // Get the current date and set the time to midnight to start from today
     const currentDate = new Date();
-      const itineraries = await itineraryModel.find({ DatesTimes: { $gte: currentDate } });
-      res.status(200).json(itineraries);
+    currentDate.setHours(0, 0, 0, 0); // Reset to midnight of today
+    
+    // Move to the next day (tomorrow)
+    currentDate.setDate(currentDate.getDate() + 1); // Set date to tomorrow
+
+    // Fetch itineraries starting from tomorrow onwards
+    const itineraries = await itineraryModel.find({ DatesTimes: { $gte: currentDate } });
+
+    res.status(200).json(itineraries);
   } catch (error) {
-      res.status(500).json({ error: 'Error fetching itineraries' });
+    res.status(500).json({ error: 'Error fetching itineraries' });
   }
 };
 
@@ -817,16 +822,26 @@ const sortProductsByRatingTourist = async (req, res) => {
   
     // Date filter (for itineraries that are upcoming)
     if (date) {
+      // If a date is provided, filter by that specific date (exact match)
       const inputDate = new Date(date);
+      inputDate.setHours(0, 0, 0, 0); // Normalize to the start of the provided day
+    
+      // Filter activities for the exact date provided
       filter.DatesTimes = {
-        $gte: inputDate // Itineraries on or after the given date
+        $gte: inputDate, // Activities on or after the given date (local time start of the day)
+        $lt: new Date(inputDate.getTime() + 24 * 60 * 60 * 1000), // Before the next day (exclusive)
       };
     } else {
+      // If no date is provided, filter activities from today onwards (local time)
       const today = new Date();
+      today.setHours(0, 0, 0, 0); // Normalize to the start of today
+    
       filter.DatesTimes = {
-        $gte: today // Upcoming itineraries starting today or later
+        $gte: today, // Activities starting today or later
       };
     }
+    
+    
   
     // Preferences filter (historic areas, beaches, family-friendly, shopping)
     if (preferences) {
