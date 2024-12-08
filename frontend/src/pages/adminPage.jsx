@@ -355,9 +355,155 @@ useEffect(() => {
   const [changePasswordError, setChangePasswordError] = useState('');
 
 
-
-
-
+  const userStatsStyles = {
+    userStatsContainer: {
+      margin: '20px auto',
+      padding: '20px',
+      maxWidth: '900px', // Matches the profits container width
+      backgroundColor: '#f9f9f9',
+      borderRadius: '10px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      textAlign: 'center',
+    },
+    userStatsHeader: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '10px',
+      marginBottom: '20px',
+      borderBottom: '2px solid #0F5132',
+      paddingBottom: '10px',
+    },
+    userStatsTitle: {
+      fontSize: '20px',
+      fontWeight: 'bold',
+      color: '#0F5132',
+      margin: '0',
+      textTransform: 'uppercase',
+    },
+    icon: {
+      fontSize: '24px',
+      color: '#0F5132',
+    },
+    statsContent: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      gap: '20px',
+    },
+    statsBox: {
+      flex: '0 0 100px', // Smaller width for total users box
+      padding: '10px',
+      backgroundColor: '#ffffff',
+      borderRadius: '8px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      textAlign: 'center',
+      border: '1px solid #0F5132',
+    },
+    statsBoxTitle: {
+      fontSize: '12px', // Smaller font for title
+      fontWeight: 'bold',
+      color: '#0F5132',
+      marginBottom: '5px',
+    },
+    statsBoxValue: {
+      fontSize: '24px', // Smaller size for value
+      fontWeight: 'bold',
+      color: '#0F5132',
+    },
+    chartBox: {
+      flex: '1', // Make the chart take up the majority of the space
+      padding: '20px',
+      backgroundColor: '#ffffff',
+      borderRadius: '8px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      textAlign: 'center',
+      border: '1px solid #0F5132',
+      height: '400px', // Increased height for the chart
+      width: '100%', // Full width inside the container
+    },
+    errorText: {
+      color: 'red',
+      fontWeight: 'bold',
+      marginBottom: '20px',
+    },
+    loadingText: {
+      color: '#0F5132',
+      fontStyle: 'italic',
+      marginTop: '20px',
+    },
+  };
+  
+  
+  const adminStyles = {
+    profitSummaryContainer: {
+      margin: '20px auto',
+      maxWidth: '900px',
+      padding: '20px',
+      backgroundColor: '#f9f9f9',
+      borderRadius: '10px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      textAlign: 'center',
+    },
+    summaryTitle: {
+      fontSize: '22px',
+      fontWeight: 'bold',
+      color: '#0F5132',
+      marginBottom: '15px',
+      textTransform: 'uppercase',
+      letterSpacing: '1px',
+    },
+    summaryAmount: {
+      fontSize: '24px',
+      fontWeight: 'bold',
+      color: '#0F5132',
+      marginBottom: '20px',
+    },
+    cardContainer: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+      gap: '20px',
+    },
+    profitCard: {
+      flex: '1 1 calc(50% - 20px)',
+      padding: '15px',
+      backgroundColor: '#ffffff',
+      borderRadius: '8px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      textAlign: 'center',
+      border: '1px solid #0F5132',
+    },
+    profitTitle: {
+      fontSize: '16px',
+      fontWeight: 'bold',
+      color: '#0F5132',
+      marginBottom: '10px',
+      borderBottom: '2px solid #0F5132',
+      paddingBottom: '5px',
+    },
+    profitAmount: {
+      fontSize: '20px',
+      fontWeight: 'bold',
+      color: '#0F5132',
+      marginBottom: '10px',
+    },
+    productDetails: {
+      textAlign: 'left',
+      marginTop: '10px',
+    },
+    productInfo: {
+      fontSize: '14px',
+      color: '#333',
+      marginBottom: '5px',
+    },
+    noData: {
+      fontSize: '14px',
+      color: '#888',
+    },
+  };
+  
 
   // For getProductByName
   const [getProductErrorMessage, setGetProductErrorMessage] = useState('');
@@ -1639,111 +1785,101 @@ loadingText: {
         </div>
       </div>
 
- 
-      <div style={styles.userStatsContainer}>    
-<div style={styles.profitSummary}>
-    <div
-      style={{
-        display: 'flex', // Flexbox for alignment
-        alignItems: 'center', // Vertical alignment
-        justifyContent: 'center', // Horizontal alignment
-        gap: '10px', // Space between title and icon
-      }}
-    >
-      <h2 style={{ fontSize: '20px', fontWeight: 'bold', margin: '0' }}>
-        User Statistics
-      </h2>
-      <FaChartBar style={{ fontSize: '24px', color: '#0F5132' }} />
-</div>
-</div>
+      <div style={userStatsStyles.userStatsContainer}>
+  <div style={userStatsStyles.userStatsHeader}>
+    <h2 style={userStatsStyles.userStatsTitle}>
+      User Statistics
+    </h2>
+    <FaChartBar style={userStatsStyles.icon} />
+  </div>
 
-  {statsError && <p style={styles.errorText}>{statsError}</p>}
+  {statsError && <p style={userStatsStyles.errorText}>{statsError}</p>}
   {statistics ? (
-    <div style={styles.contentRow}>
+    <div style={userStatsStyles.statsContent}>
       {/* Total Users Box */}
-      <div style={styles.totalUsersBox}>
-        <p style={styles.totalUsersTitle}>Total Users</p>
-        <p style={styles.totalUsersValue}>{statistics.totalUsers}</p>
+      <div style={userStatsStyles.statsBox}>
+        <p style={userStatsStyles.statsBoxTitle}>Total Users</p>
+        <p style={userStatsStyles.statsBoxValue}>{statistics.totalUsers}</p>
       </div>
 
-      {/* Chart */}
-      <div style={styles.chartContainer}>
-        
+      {/* Larger Chart */}
+      <div style={userStatsStyles.chartBox}>
         <UserStatistics statistics={statistics} />
-     
       </div>
     </div>
   ) : (
-    <p style={styles.loadingText}>Fetching statistics...</p>
+    <p style={userStatsStyles.loadingText}>Fetching statistics...</p>
   )}
 </div>
 
 
 
     
-      <div style={styles.profitSummary}>
-  <h2 style={styles.summaryTitle}>Total Profit from Sales</h2>
-  <p style={styles.summaryAmount}>${totalSales}</p>
-</div>
+<div style={adminStyles.profitSummaryContainer}>
+  {/* Total Profit */}
+  <h2 style={adminStyles.summaryTitle}>Total Profit from Sales</h2>
+  <p style={adminStyles.summaryAmount}>${totalSales}</p>
 
-<div style={styles.profitSummaryContainer}>
-  <div style={styles.profitCard}>
-    <h3 style={styles.profitTitle}>Total Itinerary Profits</h3>
-    <p style={styles.profitAmount}>${itinProfits}</p>
-  </div>
-  <div style={styles.profitCard}>
-    <h3 style={styles.profitTitle}>Total Activities Profits</h3>
-    <p style={styles.profitAmount}>${actProfits}</p>
-  </div>
-</div>
-
-{!filteredP && !filteredD && (
-  <div style={styles.profitSummaryContainer}>
-    <div style={styles.profitCard}>
-      <h3 style={styles.profitTitle}>Most Sold Product</h3>
+  {/* Profits and Product Details */}
+  <div style={adminStyles.cardContainer}>
+    {/* Total Itinerary Profits */}
+    <div style={adminStyles.profitCard}>
+      <h3 style={adminStyles.profitTitle}>Total Itinerary Profits</h3>
+      <p style={adminStyles.profitAmount}>${itinProfits}</p>
+    </div>
+    {/* Total Activities Profits */}
+    <div style={adminStyles.profitCard}>
+      <h3 style={adminStyles.profitTitle}>Total Activities Profits</h3>
+      <p style={adminStyles.profitAmount}>${actProfits}</p>
+    </div>
+    {/* Most Sold Product */}
+    <div style={adminStyles.profitCard}>
+      <h3 style={adminStyles.profitTitle}>Most Sold Product</h3>
       {!isLoading && mostSold ? (
-        <div style={styles.productDetails}>
-          <p style={styles.productInfo}>
-            <strong>Product Name:</strong> {mostSold.productName}
+        <div style={adminStyles.productDetails}>
+          <p style={adminStyles.productInfo}>
+            <strong>Product:</strong> {mostSold.productName}
           </p>
-          <p style={styles.productInfo}>
+          <p style={adminStyles.productInfo}>
             <strong>Price:</strong> ${mostSold.price}
           </p>
-          <p style={styles.productInfo}>
+          <p style={adminStyles.productInfo}>
             <strong>Sales:</strong> {mostSold.sales}
           </p>
-          <p style={styles.productInfo}>
-            <strong>Times Purchased:</strong> {mostSold.sales === 0 ? 0 : (mostSold.sales / mostSold.price).toFixed(2)}
+          <p style={adminStyles.productInfo}>
+            <strong>Times Purchased:</strong>{" "}
+            {mostSold.sales === 0 ? 0 : (mostSold.sales / mostSold.price).toFixed(2)}
           </p>
         </div>
       ) : (
-        <p style={styles.noData}>No data available</p>
+        <p style={adminStyles.noData}>No data available</p>
       )}
     </div>
-
-    <div style={styles.profitCard}>
-      <h3 style={styles.profitTitle}>Least Sold Product</h3>
+    {/* Least Sold Product */}
+    <div style={adminStyles.profitCard}>
+      <h3 style={adminStyles.profitTitle}>Least Sold Product</h3>
       {!isLoading && leastSold ? (
-        <div style={styles.productDetails}>
-          <p style={styles.productInfo}>
-            <strong>Product Name:</strong> {leastSold.productName}
+        <div style={adminStyles.productDetails}>
+          <p style={adminStyles.productInfo}>
+            <strong>Product:</strong> {leastSold.productName}
           </p>
-          <p style={styles.productInfo}>
+          <p style={adminStyles.productInfo}>
             <strong>Price:</strong> ${leastSold.price}
           </p>
-          <p style={styles.productInfo}>
+          <p style={adminStyles.productInfo}>
             <strong>Sales:</strong> {leastSold.sales}
           </p>
-          <p style={styles.productInfo}>
-            <strong>Times Purchased:</strong> {leastSold.sales === 0 ? 0 : (leastSold.sales / leastSold.price).toFixed(2)}
+          <p style={adminStyles.productInfo}>
+            <strong>Times Purchased:</strong>{" "}
+            {leastSold.sales === 0 ? 0 : (leastSold.sales / leastSold.price).toFixed(2)}
           </p>
         </div>
       ) : (
-        <p style={styles.noData}>No data available</p>
+        <p style={adminStyles.noData}>No data available</p>
       )}
     </div>
   </div>
-)}
+</div>
 
  
 
