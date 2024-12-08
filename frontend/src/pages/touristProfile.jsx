@@ -106,6 +106,8 @@ const TouristProfile = () => {
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+
+
   const [showAddresses, setShowAddresses] = useState(false);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [addresses, setAddresses] = useState([]);
@@ -1337,8 +1339,9 @@ return (
           navigate("/AttendedActivitiesPage")
         }}
       >
-        Review Activities
+        Review  Activities
       </div>
+     
     </div>
   )}
   {/* Modal */}
@@ -2673,33 +2676,10 @@ return (
         
           
         </div>
-        <button
-          onClick={() => setShowPastItineraries(!showPastItineraries)}
-          style={{
-            marginTop: "20px",
-            padding: "10px 20px",
-            backgroundColor: "#0F5132",
-            color: "#fff",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          {showPastItineraries
-            ? "Hide Past Itineraries"
-            : "Show Past Itineraries"}
-        </button>
 
-        {showPastItineraries && (
-          <div
-            className="card"
-            style={{
-              marginTop: "20px",
-              padding: "10px",
-              backgroundColor: "#f9f9f9",
-              borderRadius: "5px",
-            }}
-          >
+       
+
+        
             <h3 style={{ fontSize: "18px", marginBottom: "10px" }}>
               Past Itineraries
             </h3>
@@ -2789,36 +2769,9 @@ return (
             ) : (
               <p style={styles.emptyMessage}>You have no past itineraries</p>
             )}
-          </div>
-        )}
+          
 
-        <div className="card" style={styles.card}>
-          <h3 style={styles.cardTitle}>Your Upcoming Booked Activities</h3>
-          {bookedActivities.length > 0 ? (
-            bookedActivities.map((Activity) => (
-              <div key={Activity._id} style={styles.activityCard}>
-                <h4>Activity Name: {Activity.name}</h4>
-                <p>Category: {Activity.Category}</p>
-                <p>
-                  Price: {(Activity.price * conversionRate).toFixed(2)}{" "}
-                  {selectedCurrency}
-                </p>
-                <p>Date: {Activity.date}</p>
-                <p>Location: {Activity.Location}</p>
-                <button
-                  onClick={() => handleCancelActivityBooking(Activity._id)}
-                  style={styles.cancelButton}
-                >
-                  Cancel Booking (2 days before)
-                </button>
-              </div>
-            ))
-          ) : (
-            <p style={styles.emptyMessage}>
-              You have no upcoming booked activities.
-            </p>
-          )}
-        </div>
+       
 
         {successMessage && <div style={styles.success}>{successMessage}</div>}
       </div>

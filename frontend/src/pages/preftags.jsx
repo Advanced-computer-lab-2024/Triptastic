@@ -208,6 +208,7 @@ const Preftags = () => {
               value={createPrefTagName}
               onChange={(e) => setCreatePrefTagName(e.target.value)}
               required
+              placeholder="Enter a new preference tag name" // Added placeholder here
               style={styles.input}
             />
           </div>
