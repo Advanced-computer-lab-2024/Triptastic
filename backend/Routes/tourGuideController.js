@@ -487,34 +487,39 @@ const requestAccountDeletionTourG = async (req, res) => {
 
 
 const changePasswordTourGuide = async (req, res) => {
-   const { Username, currentPassword, newPassword } = req.body;
- 
-   try {
-     // Step 1: Find the tour guide by Username
-     const tourGuide = await tourGuideModel.findOne({ Username });
- 
-     if (!tourGuide) {
-       return res.status(404).json({ error: "Tour Guide not found" });
-     }
- 
-     // Step 2: Compare current password with the one stored in the database (plain text comparison)
-     if (currentPassword !== tourGuide.Password) {
-       return res.status(400).json({ error: "Current password is incorrect" });
-     }
- 
-     // Step 3: Update only the password field using findOneAndUpdate
-     await tourGuideModel.findOneAndUpdate(
-       { Username },  // Find by Username
-       { $set: { Password: newPassword } },  // Update the password field only
-       { new: true, runValidators: false }   // Disable validation, return updated document
-     );
- 
-     res.status(200).json({ message: "Password changed successfully" });
-   } catch (error) {
-     console.error("Error changing password:", error.message);
-     res.status(500).json({ error: "Error changing password" });
-   }
- };
+  const { Username, currentPassword, newPassword } = req.body;
+
+  try {
+    // Step 1: Find the tour guide by Username
+    const tourGuide = await tourGuideModel.findOne({ Username });
+
+    if (!tourGuide) {
+      return res.status(404).json({ error: "Tour Guide not found" });
+    }
+
+    // Step 2: Compare current password with the one stored in the database (hashed password comparison)
+    const isMatch = await bcrypt.compare(currentPassword, tourGuide.Password);
+
+    if (!isMatch) {
+      return res.status(400).json({ error: "Current password is incorrect" });
+    }
+
+    // Step 3: Hash the new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10); // 10 is the salt rounds, you can adjust if needed
+
+    // Step 4: Update only the password field using findOneAndUpdate with the hashed new password
+    await tourGuideModel.findOneAndUpdate(
+      { Username },  // Find by Username
+      { $set: { Password: hashedNewPassword } },  // Update password with hashed password
+      { new: true, runValidators: false }   // Disable validation, return updated document
+    );
+
+    res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    console.error("Error changing password:", error.message);
+    res.status(500).json({ error: "Error changing password" });
+  }
+};
  const getPendingTourGuides=async(req,res)=>{
    try{
       const x=await tourGuideModel.find({docsApproved: 'pending'});
