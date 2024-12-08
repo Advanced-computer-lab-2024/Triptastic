@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
-import { FaUserCircle,FaShoppingCart,FaRegFileAlt, FaDollarSign, FaStar, FaComments, FaWarehouse, FaChartBar,FaBars} from 'react-icons/fa';
-import { FaLandmark, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel,
+import { FaUserCircle,FaCartArrowDown,FaRegFileAlt, FaDollarSign, FaStar, FaComments, FaWarehouse, FaChartBar,FaBars} from 'react-icons/fa';
+import { FaBoxes, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, FaHotel,
   FaClipboardList } from "react-icons/fa";
+  import MuseumIcon from '@mui/icons-material/Museum';
+import HotelIcon from '@mui/icons-material/Hotel';
+import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
+import PaymentOutlinedIcon from '@mui/icons-material/PaymentOutlined';
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+import AttachMoneyOutlinedIcon from '@mui/icons-material/AttachMoneyOutlined';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
   import { FaHeart } from 'react-icons/fa';
 const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -127,6 +135,9 @@ const Checkout = () => {
       cursor: 'pointer',
       marginBottom: '10px',
     },
+    item:{
+      padding: "10px 0",
+    },
     addressButton: {
       display: 'block',
       width: '100%',
@@ -181,6 +192,17 @@ const Checkout = () => {
     selectedAddress: {
       fontSize: '16px',
       color: '#333',
+    },
+    title: {
+      fontSize: '24px',
+      fontWeight: 'bold',
+      color: 'white',
+      position: 'absolute', // Make it position-relative to the container
+      left: '50%', // Position the title to the center horizontally
+      transform: 'translateX(-50%)', // Offset it back by 50% of its width to center
+      margin: 0,
+      top: '50%', // Optional: if vertical centering within the container is required
+      transform: 'translate(-50%, -50%)', // Combine horizontal and vertical centering
     },
   };
   
@@ -243,10 +265,9 @@ const Checkout = () => {
   // Proceed to payment
   const handleProceedToPayment = async () => {
     if (!selectedAddress) {
-      setErrorMessage('Please select an address');
+      alert('Please select an address');
       return;
     }
-  
   
     const total = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   
@@ -283,10 +304,31 @@ const Checkout = () => {
     }
   };
   
+  const clearCart = async () => { 
+    const username = localStorage.getItem("Username");
+    if (!username) {
+      console.error("No username found");
+      return;
+    }
+    try {
+      const response = await fetch(`http://localhost:8000/clearCart?username=${username}`, {
+        method: "PATCH", // Use PATCH as defined in the backend
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to clear the cart");
+      }
+  
+      const data = await response.json();
+      console.log("Cart cleared:", data.message);
+    } catch (error) {
+      console.error("Error clearing cart:", error.message);
+    }
+  };
   
   const handleCashOnDelivery = async () => {
     if (!selectedAddress) {
-      setErrorMessage('Please select an address');
+      alert('Please select an address');
       return;
     }
   
@@ -313,6 +355,9 @@ const Checkout = () => {
       if (response.ok) {
         // Order created successfully, show order confirmation or navigate
         alert('Order created successfully with COD!');
+        await clearCart();
+
+        navigate('/tourist-orders');
         setErrorMessage(''); // Clear any previous error messages
       } else {
         setErrorMessage(data.message || 'Failed to create order');
@@ -337,20 +382,25 @@ const Checkout = () => {
     <img src={logo} alt="Logo" style={styles.logo} />
   </div>
   <h1 style={styles.title}>Checkout</h1>
-  <div style={styles.headerIconsContainer}>
-
-    {/* Profile Icon */}
-    <FaUserCircle
-      alt="Profile Icon"
-      style={styles.profileIcon}
-      onClick={() => navigate('/touristSettings')}
-    />
-
-    {/* Cart Icon */}
-    <div style={styles.cartButton} onClick={() => navigate('/Cart')}>
-      <FaShoppingCart style={styles.cartIcon} />
-    </div>
-  </div>
+  <button
+    style={{
+      padding: '12px 20px',
+      border: 'none',
+      borderRadius: '5px',
+      backgroundColor: '#0F5132',
+      color: '#fff',
+      fontWeight: 'bold',
+      fontSize: '16px',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+    }}
+    onClick={() => navigate('/Cart', { state: { from: '/products' } })}
+  >
+    <ShoppingCartOutlinedIcon style={{ fontSize: '20px', color: '#fff' }} />
+    Back to Cart
+  </button>
 </header>
   
       {/* Sidebar */}
@@ -369,14 +419,23 @@ const Checkout = () => {
           );
         }}
       >
-        <div style={styles.item} onClick={() => navigate('/historical-locations')}>
-          <FaLandmark style={styles.icon} />
+         <div style={styles.item} onClick={() => navigate('/tourist-profile')}>
+
+          <FaUserCircle  style={styles.icon} />
           <span className="label" style={styles.label}>
-            Historical Loc
+            Home Page
+          </span>
+        </div>
+        
+        <div style={styles.item} onClick={() => navigate('/historical-locations')}>
+          
+          <FaUniversity style={styles.icon} />
+          <span className="label" style={styles.label}>
+            Historical Sites
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/museums')}>
-          <FaUniversity style={styles.icon} />
+          <MuseumIcon style={styles.icon} />
           <span className="label" style={styles.label}>
             Museums
           </span>
@@ -406,7 +465,7 @@ const Checkout = () => {
           </span>
         </div>
         <div style={styles.item} onClick={() => navigate('/book-hotels')}>
-          <FaHotel style={styles.icon} />
+          <HotelIcon style={styles.icon} />
           <span className="label" style={styles.label}>
             Book a Hotel
           </span>
@@ -414,131 +473,276 @@ const Checkout = () => {
         <div style={styles.item} onClick={() => navigate('/book-transportation')}>
           <FaBus style={styles.icon} />
           <span className="label" style={styles.label}>
-            Transportation
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
-          <FaClipboardList style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Past Orders
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
-          <FaStar style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Review Activities
+           Transportation
           </span>
         </div>
       </div>
   
       <div style={styles.container}>
-        <h1 style={styles.cartContent}>Checkout</h1>
         <h3>{errorMessage}</h3>
-        {/* Cart Items Section */}
-        <div style={styles.cartContent}>
+{/* Cart Items Section */}
+<div style={{ padding: '20px' }}>
   {cartItems.length === 0 ? (
-    <p style={styles.emptyMessage}>Your cart is empty</p>
+    <p style={{ textAlign: 'center', fontSize: '16px', color: '#555' }}>
+      Your cart is empty
+    </p>
   ) : (
     <div>
-      <ul style={styles.cartList}>
+      <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
         {cartItems.map((item, index) => (
-          <li key={index} style={styles.cartItem}>
-            <h2 style={styles.productName}>{item.productName}</h2>
-            <p>
+          <li
+            key={index}
+            style={{
+              marginBottom: '15px',
+              padding: '15px',
+              border: '1px solid #ddd',
+              borderRadius: '10px',
+              backgroundColor: '#f9f9f9',
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '10px',
+            }}
+          >
+            <h3
+              style={{
+                fontSize: '18px',
+                fontWeight: 'bold',
+                color: '#0F5132',
+                margin: 0,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              <FaCartArrowDown style={{ fontSize: '16px' }} /> {item.productName}
+            </h3>
+            <p
+              style={{
+                fontSize: '14px',
+                margin: 0,
+                color: '#333',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+              }}
+            >
+              <FaDollarSign style={{ fontSize: '14px', color: '#0F5132' }} />
               <strong>Price:</strong> {item.price}
             </p>
-            <p>
+            <p
+              style={{
+                fontSize: '14px',
+                margin: 0,
+                color: '#333',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+              }}
+            >
+              <FaBoxes style={{ fontSize: '14px', color: '#0F5132' }} />
               <strong>Quantity:</strong> {item.quantity}
             </p>
           </li>
         ))}
       </ul>
-      {/* Display total price */}
-      <div style={styles.totalPriceContainer}>
-        <p style={styles.totalPrice}>
-          <strong>Total Price: </strong> 
-          {cartItems.reduce((total, item) => total + (item.price * item.quantity), 0)}
+
+      {/* Total Price */}
+      <div
+        style={{
+          marginTop: '15px',
+          padding: '15px',
+          border: '1px solid #ddd',
+          borderRadius: '10px',
+          backgroundColor: '#f9f9f9',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
+        <p
+          style={{
+            fontSize: '16px',
+            fontWeight: 'bold',
+            color: '#333',
+            margin: 0,
+          }}
+        >
+          Total Price:
+        </p>
+        <p
+          style={{
+            fontSize: '16px',
+            fontWeight: 'bold',
+            color: '#0F5132',
+            margin: 0,
+          }}
+        >
+          {cartItems.reduce(
+            (total, item) => total + item.price * item.quantity,
+            0
+          )}
         </p>
       </div>
     </div>
   )}
-</div>
 
-  
-        <button
-          style={styles.addButton}
-          onClick={() => setShowAddresses((prev) => !prev)} // Toggle addresses visibility
-        >
-          {showAddresses ? 'Hide Addresses' : 'Select Address'}
-        </button>
-  
-        {isLoading && <p style={styles.emptyMessage}>Loading addresses...</p>}
+  {/* Select Address */}
+  <button 
+    style={{
+      padding: '10px 20px',
+      backgroundColor: '#f9f9f9',
+      color: 'black',
+      fontSize: '14px',
+      fontWeight: 'bold',
+      border: '1px solid #ddd',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '10px',
+    }}
+    onClick={() => setShowAddresses((prev) => !prev)}
+  >
+    <HomeOutlinedIcon style={{ fontSize: '18px', color: 'black' }}/>{showAddresses ? 'Hide Addresses' : 'Select Address'}
+  </button>
 
-{showAddresses && !isLoading && (
-  <div>
-    {addresses.length === 0 ? (  // Show message if no addresses exist
-      <p>No addresses available.</p>
-    ) : (
-      <div>
-        {addresses.map((address, index) => (
-          <button
-            key={index}
-            style={{
-              ...styles.addressButton, // Use addressButton style
-              ...(selectedAddress?.id === address.id ? styles.selectedAddressButton : {}),
-            }}
-            onClick={() => handleAddressSelect(address)} // Select the address
-          >
-            {address.addressLine1}, {address.city}, {address.country}
-            {address.isPrimary && (
-              <span style={{ color: '#0F5132', fontWeight: 'bold' }}>
-                {' '}
-                (Primary Address)
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
-    )}
-  </div>
-)}
+  {isLoading && (
+    <p style={{ textAlign: 'center', fontSize: '14px', color: '#555' }}>
+      Loading addresses...
+    </p>
+  )}
 
-  
-        {/* Display the selected address with a label */}
-        {selectedAddress && (
-          <div style={styles.selectedAddressContainer}>
-            <p style={styles.selectedAddressLabel}>Selected Address:</p>
-            <p style={styles.selectedAddress}>
-              {selectedAddress.addressLine1}, {selectedAddress.city}, {selectedAddress.country}
-              {selectedAddress.isPrimary && (
+  {showAddresses && !isLoading && (
+    <div style={{ marginTop: '10px' }}>
+      {addresses.length === 0 ? (
+        <p style={{ textAlign: 'center', fontSize: '14px', color: '#555' }}>
+          No addresses available.
+        </p>
+      ) : (
+        <ul style={{ listStyleType: 'none', padding: 0, margin: 0,cursor:'pointer' }}>
+          {addresses.map((address, index) => (
+            <li
+              key={index}
+              style={{
+                marginBottom: '10px',
+                padding: '10px',
+                border: '1px solid #ddd',
+                borderRadius: '5px',
+                backgroundColor: selectedAddress?.id === address.id
+                  ? '#eef9f0'
+                  : '#f9f9f9',
+                color: '#333',
+                fontSize: '14px',
+              }}
+              onClick={() => handleAddressSelect(address)}
+            >
+              {address.addressLine1}, {address.city}, {address.country}{' '}
+              {address.isPrimary && (
                 <span style={{ color: '#0F5132', fontWeight: 'bold' }}>
-                  {' '}
-                  (Primary Address)
+                  (Primary)
                 </span>
               )}
-            </p>
-          </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )}
+
+  {selectedAddress && (
+    <div style={{ marginTop: '15px', padding: '10px' }}>
+      <p style={{ fontSize: '16px', color: '#0F5132', fontWeight: 'bold' }}>
+        Selected Address:
+      </p>
+      <p style={{ fontSize: '14px', color: '#333' }}>
+        {selectedAddress.addressLine1}, {selectedAddress.city},{' '}
+        {selectedAddress.country}
+        {selectedAddress.isPrimary && (
+          <span style={{ color: '#0F5132', fontWeight: 'bold' }}> (Primary)</span>
         )}
+      </p>
+    </div>
+  )}
+
+  {/* Add Address */}
+  <button
+    style={{
+      padding: '10px 20px',
+      backgroundColor: '#f9f9f9',
+      color: 'black',
+      fontSize: '14px',
+      fontWeight: 'bold',
+      border: '1px solid #ddd',
+      borderRadius: '8px',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '10px',
+    }}
+    onClick={() => (window.location.href = '/touristsettings#target-section')}
+  >
+    <AddBoxOutlinedIcon style={{ fontSize: '18px', color: 'black' }}/>Add Address
+  </button>
+
+  {/* Proceed to Payment and Cash on Delivery */}
+  <div
+    style={{
+      marginTop: '20px',
+      display: 'flex',
+      justifyContent: 'space-between',
+    }}
+  >
+    <button
+      onClick={handleProceedToPayment}
+      style={{
+        padding: '10px 20px',
+        backgroundColor: '#0F5132',
+        color: '#fff',
+        fontSize: '14px',
+        fontWeight: 'bold',
+        border: 'none',
+        borderRadius: '5px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        cursor: 'pointer',
+      }}
+      disabled={cartItems.length === 0 || !selectedAddress}
+    >
+      <PaymentOutlinedIcon style={{ fontSize: '18px', color: '#fff' }} />
+      Proceed to Payment
+    </button>
+    <button
+  onClick={handleCashOnDelivery}
+  style={{
+    padding: '10px 20px',
+    backgroundColor: '#0F5312',
+    color: 'white',
+    fontSize: '14px',
+    fontWeight: 'bold',
+    border: '1px solid #ddd',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '10px',
+    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  }}
   
-        <button
-          style={styles.addButton}
-          onClick={() => (window.location.href = '/touristsettings#target-section')}
-        >
-          Add Address
-        </button>
-  
-        {/* Proceed to Payment Button */}
-        <div style={styles.cartContent}>
-          <button
-            onClick={()=>handleProceedToPayment()}
-            style={styles.button}
-            disabled={cartItems.length === 0 || !selectedAddress}
-          >
-            Proceed to Payment
-          </button>
-          <button onClick={handleCashOnDelivery} style={styles.cartContent}>Cash on delivery</button>
-        </div>
-      </div>
+>
+  <AttachMoneyOutlinedIcon style={{ fontSize: '18px', color: 'white' }} />
+  Cash on Delivery
+</button>
+  </div>
+</div>
+
+  </div>
+
     </div>
   );
 }
