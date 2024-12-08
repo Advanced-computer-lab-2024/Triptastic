@@ -537,7 +537,7 @@ return (
     style={{
       ...productStyles.paginationButton,
       ...(currentPage === 1
-        ? { cursor: 'not-allowed', opacity: 0.8 } // Slightly reduce opacity when disabled
+        ? { cursor: 'not-allowed', } // Slightly reduce opacity when disabled
         : {}),
     }}
   >
@@ -556,7 +556,7 @@ return (
     style={{
       ...productStyles.paginationButton,
       ...(currentPage === Math.ceil(Products.length / itemsPerPage)
-        ? { cursor: 'not-allowed', opacity: 0.8 } // Slightly reduce opacity when disabled
+        ? { cursor: 'not-allowed', } // Slightly reduce opacity when disabled
         : {}),
     }}
   >
