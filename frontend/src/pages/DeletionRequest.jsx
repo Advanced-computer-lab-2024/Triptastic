@@ -50,6 +50,8 @@ const DeletionRequests = () => {
   };
 
   const handleReject = async (id) => {
+    if (window.confirm('Are you sure you want to reject this request?')) {
+
     try {
       const response = await fetch('http://localhost:8000/rejectDeletionRequest', {
         method: 'POST',
@@ -61,7 +63,7 @@ const DeletionRequests = () => {
       setRequests(requests.filter((request) => request._id !== id));
     } catch (error) {
       console.error('Error rejecting request:', error);
-    }
+    }}
   };
 
   const styles = {

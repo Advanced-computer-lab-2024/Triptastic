@@ -453,7 +453,7 @@ const Productssel = () => {
           >
             <FaUserCircle style={styles.iconn} />
             <span className="label" style={styles.label}>
-              My products
+               Profile
             </span>
           </div>
           <div
