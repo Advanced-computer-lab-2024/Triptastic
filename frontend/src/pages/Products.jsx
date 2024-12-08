@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { FaHeart } from "react-icons/fa";
+import { FaGlobe } from "react-icons/fa";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import { CurrencyContext } from "../pages/CurrencyContext";
 import logo from "../images/image.png"; // Replace with your logo path
@@ -50,6 +50,9 @@ const Products = () => {
   const [error, setError] = useState("");
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
 
+  const handleCurrencyChange = (event) => {
+    fetchConversionRate(event.target.value);
+  };
   // Carousel Handlers
   const handleNextReview = (reviews) => {
     setCurrentReviewIndex((prevIndex) =>
@@ -364,6 +367,23 @@ const Products = () => {
           </div>
           <h1 style={styles.title}>Products</h1>
           <div style={styles.headerIcons}>
+
+            
+        {/* Currency Selector */}
+<div style={styles.currencySelector}>
+  <FaGlobe style={styles.currencyIcon} />
+  <select
+    value={selectedCurrency}
+    onChange={handleCurrencyChange}
+    style={styles.currencyDropdown}
+  >
+    <option value="USD">USD</option>
+    <option value="EUR">EUR</option>
+    <option value="GBP">GBP</option>
+    <option value="EGP">EGP</option>
+    {/* Add other currencies */}
+  </select>
+</div>
 
             {/* Wishlist Icon */}
             <div
@@ -802,7 +822,22 @@ const styles = {
     backgroundColor: "#fff",
     cursor: "pointer",
   },
-
+  currencySelector: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "5px", // Space between the globe icon and the dropdown
+  },
+  currencyIcon: {
+    fontSize: "18px", // Globe icon size
+    color: "#fff", // White color for the globe icon
+  },
+  currencyDropdown: {
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    padding: "3px 5px",
+    fontSize: "12px", // Smaller font size for the dropdown
+    cursor: "pointer",
+  },
   searchButton: {
     padding: "12px 20px",
     fontSize: "16px",
