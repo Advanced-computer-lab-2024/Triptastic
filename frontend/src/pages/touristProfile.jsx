@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
 import "@fontsource/lora"; // Weight 700 (Bold)
+import { FaTag } from "react-icons/fa";
 
 import Slider from "react-slick";
 import { useLocation } from "react-router-dom";
@@ -23,6 +24,8 @@ import shopping from "../images/shopping.jpg";
 import goldBadge from "../images/gold.png";
 import silverBadge from "../images/silver.png";
 import bronzeBadge from "../images/bronze.png";
+import { FaGlobe } from "react-icons/fa";
+
 import { FaCalendar ,FaMapMarkerAlt,FaClock,FaLanguage,FaWheelchair,FaShuttleVan} from 'react-icons/fa';
 import {
   FaLandmark,
@@ -129,12 +132,19 @@ const TouristProfile = () => {
   });
   const [isCancelPopupOpen, setIsCancelPopupOpen] = useState(false);
 const [selectedItineraryId, setSelectedItineraryId] = useState(null);
+const [selectedActivityId, setSelectedActivityId] = useState(null);
+const [isCancelPopupOpen2, setIsCancelPopupOpen2] = useState(false);
+
 
 const handleOpenCancelPopup = (itineraryId) => {
   setSelectedItineraryId(itineraryId);
   setIsCancelPopupOpen(true);
 };
 
+const handleOpenCancelPopup2 = (itineraryId) => {
+  setSelectedItineraryId(itineraryId);
+  setIsCancelPopupOpen2(true);
+};
 
 
 
@@ -470,6 +480,7 @@ const handleOpenCancelPopup = (itineraryId) => {
       );
 
       if (response.ok) {
+        setIsCancelPopupOpen2(false); // Close the popup
         alert("Activity booking cancelled successfully!");
         setErrorMessage("");
         fetchBookedActivities(); // Refresh booked activities after cancelling one
@@ -590,12 +601,16 @@ const handleOpenCancelPopup = (itineraryId) => {
   };
   
   const handlePreferenceChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    
-    setUpdatedPreferences((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+    const { name, type, checked ,value} = e.target;
+  
+    setPreferences((prev) => {
+      const updated = {
+        ...prev,
+        [name]: type === "checkbox" ? checked : value,
+      };
+      console.log("Updated Preferences:", updated); // Log after updating
+      return updated;
+    });
   };
   const fetchTouristInfo = async () => {
     setLoading(true);
@@ -1235,6 +1250,21 @@ return (
 </h1>
 
       <div style={styles.headerIconsContainer}>
+        {/* Currency Selector */}
+<div style={styles.currencySelector}>
+  <FaGlobe style={styles.currencyIcon} />
+  <select
+    value={selectedCurrency}
+    onChange={handleCurrencyChange}
+    style={styles.currencyDropdown}
+  >
+    <option value="USD">USD</option>
+    <option value="EUR">EUR</option>
+    <option value="GBP">GBP</option>
+    <option value="EGP">EGP</option>
+    {/* Add other currencies */}
+  </select>
+</div>
         {/* Notification Bell */}
         <div
           style={styles.notificationButton}
@@ -2537,6 +2567,99 @@ return (
   <p style={styles.emptyMessage}>You have no booked upcoming itineraries.</p>
 )}
 
+<h3 style={styles.cardTitle}>Your Upcoming Booked Activities</h3>
+{bookedActivities.length > 0 ? (
+  <div className="carousel-container" style={styles.carouselContainerStyle}>
+    {bookedActivities.map((activity) => (
+      <div
+        key={activity._id}
+        className="carousel-item"
+        style={{
+          position: "relative",
+          width: "400px",
+          height: "auto",
+          border: "1px solid #ddd",
+          borderRadius: "15px",
+          flexShrink: 0,
+          backgroundColor: "#fff",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          overflow: "hidden",
+          marginBottom: "10px",
+        }}
+      >
+        <div key={activity._id} style={styles.itineraryCard}>
+          <h4 style={styles.itineraryTitle}>
+            <FaTag /> Activity Name:
+          </h4>
+          <p style={styles.itineraryText}>{activity.name}</p>
+          <p style={styles.itineraryText}>
+            <FaTag  /> <strong>Category:</strong>{" "}
+            {activity.Category}
+          </p>
+          <p style={styles.itineraryText}>
+            <FaDollarSign  /> <strong>Price:</strong>{" "}
+            {(activity.price * conversionRate).toFixed(2)} {selectedCurrency}
+          </p>
+          <p style={styles.itineraryText}>
+            <FaMapMarkerAlt  /> <strong>Location:</strong>{" "}
+            {activity.Location}
+          </p>
+          <p style={styles.itineraryText}>
+            <FaCalendar  /> <strong>Date:</strong>{" "}
+            {new Date(activity.date).toLocaleDateString()}
+          </p>
+          <p style={styles.hyperlinkText}>
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault(); // Prevent page reload
+                setSelectedActivityId(activity._id);
+                setIsCancelPopupOpen2(true);
+              }}
+              style={styles.hyperlink}
+            >
+              Do you want to cancel your booking? Click here.
+            </a>
+          </p>
+          {/* Popup Modal */}
+          {isCancelPopupOpen2 && selectedActivityId === activity._id && (
+            <div style={styles.popupOverlay}>
+              <div style={styles.popupContent}>
+                <h4 style={styles.popupTitle}>Confirm Cancellation</h4>
+                <p style={styles.popupMessage}>
+                  Do you really want to cancel your booking? You need to
+                  cancel at least 2 days before the booking date.
+                </p>
+                <div style={styles.popupButtons}>
+                  <button
+                    onClick={() =>
+                      handleCancelActivityBooking(activity._id)
+                    }
+                    style={styles.confirmButton}
+                  >
+                    Yes, Cancel Booking
+                  </button>
+                  <button
+                    onClick={() => setIsCancelPopupOpen2(false)}
+                    style={styles.cancelButton}
+                  >
+                    No, Keep Booking
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    ))}
+  </div>
+) : (
+  <p style={styles.emptyMessage}>
+    You have no upcoming booked activities.
+  </p>
+)}
+
+
 
       {/* Dashboard Section */}
       <div
@@ -2711,6 +2834,22 @@ const sliderSettings = {
   adaptiveHeight: true,
 };
 const styles = {
+  currencySelector: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "5px", // Space between the globe icon and the dropdown
+  },
+  currencyIcon: {
+    fontSize: "18px", // Globe icon size
+    color: "#fff", // White color for the globe icon
+  },
+  currencyDropdown: {
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    padding: "3px 5px",
+    fontSize: "12px", // Smaller font size for the dropdown
+    cursor: "pointer",
+  },
   hyperlinkText: {
     textAlign: "center",
     marginTop: "10px",
