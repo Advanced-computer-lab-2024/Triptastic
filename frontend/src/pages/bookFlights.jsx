@@ -20,6 +20,7 @@ import {
   FaUserCircle,
 } from "react-icons/fa";
 import MuseumIcon from '@mui/icons-material/Museum';
+import HotelIcon from '@mui/icons-material/Hotel';
 
 import logo from "../images/image.png"; // Adjust the path based on your folder structure
 import flight from "../images/flight.jpg"; // Adjust the path as necessary
@@ -749,7 +750,7 @@ const BookFlights = () => {
             style={styles.item}
             onClick={() => navigate("/historical-locations")}
           >
-            <FaLandmark style={styles.icons} />
+            <FaUniversity style={styles.icons} />
             <span className="label" style={styles.label}>
               Historical Sites
             </span>
@@ -785,7 +786,7 @@ const BookFlights = () => {
             </span>
           </div>
           <div style={styles.item} onClick={() => navigate("/book-hotels")}>
-            <FaHotel style={styles.icons} />
+            <HotelIcon style={styles.icons} />
             <span className="label" style={styles.label}>
               Book a Hotel
             </span>

@@ -19,6 +19,7 @@ import {
 
 } from "react-icons/fa";
 import MuseumIcon from '@mui/icons-material/Museum';
+import HotelIcon from '@mui/icons-material/Hotel';
 
 import logo from "../images/image.png"; // Adjust the path as necessary
 import hotel from "../images/hotel.jpg"; // Adjust the path as necessary
@@ -499,9 +500,9 @@ const BookHotels = () => {
             style={styles.item}
             onClick={() => navigate("/historical-locations")}
           >
-            <FaLandmark style={styles.icon} />
+            <FaUniversity style={styles.icon} />
             <span className="label" style={styles.label}>
-              Historical Loc
+              Historical Sites
             </span>
           </div>
           <div style={styles.item} onClick={() => navigate("/museums")}>
@@ -535,7 +536,7 @@ const BookHotels = () => {
             </span>
           </div>
           <div style={styles.item} onClick={() => navigate("/book-hotels")}>
-            <FaHotel style={styles.icon} />
+            <HotelIcon style={styles.icon} />
             <span className="label" style={styles.label}>
               Book a Hotel
             </span>
