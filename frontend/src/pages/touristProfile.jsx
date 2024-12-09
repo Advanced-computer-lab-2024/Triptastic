@@ -7,6 +7,8 @@ import { useLocation } from "react-router-dom";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import StarIcon from "@mui/icons-material/Star";
 import { motion } from "framer-motion";
+import HotelIcon from '@mui/icons-material/Hotel';
+
 import "./TouristProfile.css"; // Assuming you create a CSS file for styling
 import {
   BrowserRouter as Router,
@@ -24,6 +26,20 @@ import shopping from "../images/shopping.jpg";
 import goldBadge from "../images/gold.png";
 import silverBadge from "../images/silver.png";
 import bronzeBadge from "../images/bronze.png";
+import Cyc from "../images/cyc.jpg";
+import City from "../images/city.jpg";
+import parag from "../images/parag.jpeg";
+
+import berlin from "../images/berlin.jpg";
+import salz from "../images/salz.jpg";
+import barc from "../images/barc.jpg";
+import pariss from "../images/pariss.jpg";
+import cai from "../images/cai.jpg";
+
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+
+
+
 import { FaGlobe } from "react-icons/fa";
 
 import { FaCalendar ,FaMapMarkerAlt,FaClock,FaLanguage,FaWheelchair,FaShuttleVan} from 'react-icons/fa';
@@ -1234,8 +1250,75 @@ const handleOpenCancelPopup2 = (itineraryId) => {
         return null; // Optional: Return null or a default badge
     }
   };
+
   
 
+  const images = [
+    {
+      src: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDF8fGhpa2luZ3xlbnwwfHx8fDE2NzA3NTkwMTg&ixlib=rb-1.2.1&q=80&w=1080",
+      alt: "Hiking",
+      title: "Hiking Adventure",
+      reviews: 150,
+    },
+    {
+      src: "https://images.unsplash.com/photo-1493558103817-58b2924bce98?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDR8fGJlYWNoZXN8ZW58MHx8fHwxNjcwNzU5MDM4&ixlib=rb-1.2.1&q=80&w=1080",
+      alt: "Beach",
+      title: "Beach Getaway",
+      reviews: 200,
+    },
+    {
+      src:City,
+      alt: "City Tours",
+      title: "Explore the City",
+      reviews: 300,
+    },
+    {
+      src: parag,
+      alt: "Paragliding",
+      title: "Paragliding",
+      reviews: 120,
+    },
+    {
+      src: Cyc,
+      alt: "Cycling",
+      title: "Cycling Adventure",
+      reviews: 90,
+    },
+  ];
+  const images2 = [
+    {
+      src: berlin,
+      alt: "Berlin",
+      title: "Berlin",
+      reviews: 150,
+    },
+    {
+      src:salz,
+      alt: "Salzburg",
+      title: "Salzburg",
+      reviews: 200,
+    },
+    {
+      src:barc,
+      alt: "Barcelona",
+      title: "Barcelona",
+      reviews: 300,
+    },
+    {
+      src: pariss,
+      alt: "Paris",
+      title: "Paris",
+      reviews: 120,
+    },
+    {
+      src: cai,
+      alt: "Cairo",
+      title: "Cairo",
+      reviews: 90,
+    },
+  ];
+  
+  
 
 return (
   <div style={styles.container}>
@@ -1787,6 +1870,7 @@ return (
 )}
 
 
+  
 
 
 
@@ -2019,7 +2103,7 @@ return (
    
           {/* Cart Icon */}
           <div style={styles.cartButton} onClick={() => navigate("/Cart")}>
-            <FaShoppingCart style={styles.cartIcon} />
+            <ShoppingCartOutlinedIcon style={styles.cartIcon} />
           </div>
           {/* Logout Icon */}
           <div style={styles.logoutButton} onClick={() => navigate("/Guest")}>
@@ -2027,6 +2111,8 @@ return (
           </div>
         </div>
       </header>
+      
+    
 
       {/* Notification Dropdown */}
       {showNotifications && (
@@ -2088,9 +2174,9 @@ return (
           style={styles.item}
           onClick={() => navigate("/historical-locations")}
         >
-          <FaLandmark style={styles.iconn} />
+          <FaUniversity style={styles.iconn} />
           <span className="label" style={styles.label}>
-            Historical Loc
+            Historical Sites
           </span>
         </div>
         <div
@@ -2148,7 +2234,7 @@ return (
           style={styles.item}
           onClick={() => navigate("/book-hotels")}
         >
-          <FaHotel style={styles.iconn} />
+          <HotelIcon style={styles.iconn} />
           <span className="label" style={styles.label}>
             Book a Hotel
           </span>
@@ -2483,6 +2569,140 @@ return (
           </div>
         )}
       </div>
+    
+      <div style={{ marginTop: "20px", padding: "0 20px" }}>
+  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <h3 style={{ fontSize: "22px", color: "#0F5132", fontWeight: "bold" }}>Top Destinations</h3>
+    <span
+          onClick={() => navigate("/book-flights")}
+          style={{
+            fontSize: "16px",
+            color: "#0F5132",
+            textDecoration: "none",
+            fontWeight: "bold",
+            cursor: "pointer",
+          }}
+        >
+          See all
+        </span>
+  </div>
+  <div className="carousel-container" style={styles.carouselContainerStyle}>
+    {images2.map((image, index) => (
+      <div
+        key={index}
+        className="carousel-item"
+        style={{
+          position: "relative",
+          width: "250px",
+          border: "1px solid #ddd",
+          borderRadius: "15px",
+          flexShrink: 0,
+          backgroundColor: "#fff",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          overflow: "hidden",
+          marginRight: "15px",
+        }}
+      >
+        <img
+          src={image.src}
+          alt={image.alt}
+          style={{
+            width: "100%",
+            height: "150px",
+            objectFit: "cover",
+            borderTopLeftRadius: "15px",
+            borderTopRightRadius: "15px",
+          }}
+        />
+        <div style={{ padding: "10px" }}>
+          <h4
+            style={{
+              fontSize: "16px",
+              fontWeight: "bold",
+              color: "#333",
+              marginBottom: "5px",
+            }}
+          >
+            {image.title}
+          </h4>
+          <div style={{ display: "flex", alignItems: "center", marginTop: "5px" }}>
+            <span style={{ color: "green", fontSize: "14px", marginRight: "5px" }}>●●●●●</span>
+            <span style={{ fontSize: "14px", color: "#555" }}>{image.reviews} reviews</span>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+<div style={{ marginTop: "20px", padding: "0 20px" }}>
+  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <h3 style={{ fontSize: "22px", color: "#0F5132", fontWeight: "bold" }}>Top global attractions</h3>
+    <span
+          onClick={() => navigate("/historical-locations")}
+          style={{
+            fontSize: "16px",
+            color: "#0F5132",
+            textDecoration: "none",
+            fontWeight: "bold",
+            cursor: "pointer",
+          }}
+        >
+          See all
+        </span>
+  </div>
+  <div className="carousel-container" style={styles.carouselContainerStyle}>
+    {images.map((image, index) => (
+      <div
+        key={index}
+        className="carousel-item"
+        style={{
+          position: "relative",
+          width: "250px",
+          border: "1px solid #ddd",
+          borderRadius: "15px",
+          flexShrink: 0,
+          backgroundColor: "#fff",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          overflow: "hidden",
+          marginRight: "15px",
+        }}
+      >
+        <img
+          src={image.src}
+          alt={image.alt}
+          style={{
+            width: "100%",
+            height: "150px",
+            objectFit: "cover",
+            borderTopLeftRadius: "15px",
+            borderTopRightRadius: "15px",
+          }}
+        />
+        <div style={{ padding: "10px" }}>
+          <h4
+            style={{
+              fontSize: "16px",
+              fontWeight: "bold",
+              color: "#333",
+              marginBottom: "5px",
+            }}
+          >
+            {image.title}
+          </h4>
+          <div style={{ display: "flex", alignItems: "center", marginTop: "5px" }}>
+            <span style={{ color: "green", fontSize: "14px", marginRight: "5px" }}>●●●●●</span>
+            <span style={{ fontSize: "14px", color: "#555" }}>{image.reviews} reviews</span>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+
+
+
+
       <h3 style={styles.cardTitle}>Your Upcoming Booked Itineraries</h3>
 {upcomingItineraries.length > 0 ? (
   <div
@@ -2778,6 +2998,7 @@ return (
     </div>
   );
 };
+
 const sliderSettings = {
   dots: true,
   infinite: false,
@@ -2787,6 +3008,15 @@ const sliderSettings = {
   adaptiveHeight: true,
 };
 const styles = {
+  carouselContainerStyle4: {
+    display: "flex",
+    overflowX: "auto",
+    gap: "10px",
+    padding: "10px 0",
+    scrollBehavior: "smooth",
+    scrollbarWidth: "none", // For Firefox
+    msOverflowStyle: "none", // For Internet Explorer/Edge
+  },
   currencySelector: {
     display: "inline-flex",
     alignItems: "center",
