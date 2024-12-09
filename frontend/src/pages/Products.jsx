@@ -976,13 +976,13 @@ const styles = {
     zIndex: "1000", // Ensure it appears above other content
   },
   logoContainer: {
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
   },
   logo: {
-    height: "60px",
-    width: "70px",
-    borderRadius: "10px",
+    height: '60px',
+    width: '70px',
+    borderRadius: '10px',
   },
   headerIcons: {
     display: "flex",

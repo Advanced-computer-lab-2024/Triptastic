@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
 import "@fontsource/lora"; // Weight 700 (Bold)
-import { FaTag } from "react-icons/fa";
+import { FaTag, FaCalendarAlt } from "react-icons/fa";
 
 import Slider from "react-slick";
 import { useLocation } from "react-router-dom";
@@ -8,7 +8,11 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import StarIcon from "@mui/icons-material/Star";
 import { motion } from "framer-motion";
 import HotelIcon from '@mui/icons-material/Hotel';
-
+import SentimentVeryDissatisfiedOutlinedIcon from "@mui/icons-material/SentimentVeryDissatisfiedOutlined";
+import SentimentDissatisfiedOutlinedIcon from "@mui/icons-material/SentimentDissatisfiedOutlined";
+import SentimentNeutralOutlinedIcon from "@mui/icons-material/SentimentNeutralOutlined";
+import SentimentSatisfiedOutlinedIcon from "@mui/icons-material/SentimentSatisfiedOutlined";
+import SentimentVerySatisfiedOutlinedIcon from "@mui/icons-material/SentimentVerySatisfiedOutlined";
 import "./TouristProfile.css"; // Assuming you create a CSS file for styling
 import {
   BrowserRouter as Router,
@@ -42,7 +46,7 @@ import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 
 import { FaGlobe } from "react-icons/fa";
 
-import { FaCalendar ,FaMapMarkerAlt,FaClock,FaLanguage,FaWheelchair,FaShuttleVan} from 'react-icons/fa';
+import { FaCalendar, FaMapMarkerAlt, FaClock, FaLanguage, FaWheelchair, FaShuttleVan } from 'react-icons/fa';
 import {
   FaLandmark,
   FaUniversity,
@@ -57,7 +61,7 @@ import {
   FaStar,
   FaDollarSign,
   FaSearch,
- 
+
 } from "react-icons/fa";
 import MuseumIcon from "@mui/icons-material/Museum";
 
@@ -86,11 +90,11 @@ const TouristProfile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-useEffect(() => {
-  if (location.hash === "#viewAddressesSection") {
-    setIsModalOpen(true); // Open the modal if hash matches
-  }
-}, [location]);
+  useEffect(() => {
+    if (location.hash === "#viewAddressesSection") {
+      setIsModalOpen(true); // Open the modal if hash matches
+    }
+  }, [location]);
   const [touristInfo, setTouristInfo] = useState(null);
   const [complaints, setComplaints] = useState([]); // New state for complaints
   const [errorMessage, setErrorMessage] = useState("");
@@ -159,20 +163,20 @@ useEffect(() => {
     budget: "",
   });
   const [isCancelPopupOpen, setIsCancelPopupOpen] = useState(false);
-const [selectedItineraryId, setSelectedItineraryId] = useState(null);
-const [selectedActivityId, setSelectedActivityId] = useState(null);
-const [isCancelPopupOpen2, setIsCancelPopupOpen2] = useState(false);
+  const [selectedItineraryId, setSelectedItineraryId] = useState(null);
+  const [selectedActivityId, setSelectedActivityId] = useState(null);
+  const [isCancelPopupOpen2, setIsCancelPopupOpen2] = useState(false);
 
 
-const handleOpenCancelPopup = (itineraryId) => {
-  setSelectedItineraryId(itineraryId);
-  setIsCancelPopupOpen(true);
-};
+  const handleOpenCancelPopup = (itineraryId) => {
+    setSelectedItineraryId(itineraryId);
+    setIsCancelPopupOpen(true);
+  };
 
-const handleOpenCancelPopup2 = (itineraryId) => {
-  setSelectedItineraryId(itineraryId);
-  setIsCancelPopupOpen2(true);
-};
+  const handleOpenCancelPopup2 = (itineraryId) => {
+    setSelectedItineraryId(itineraryId);
+    setIsCancelPopupOpen2(true);
+  };
 
 
 
@@ -201,7 +205,7 @@ const handleOpenCancelPopup2 = (itineraryId) => {
   });
 
 
- 
+
 
   useEffect(() => {
     if (location.hash === "#target-section" && targetRef.current) {
@@ -220,7 +224,7 @@ const handleOpenCancelPopup2 = (itineraryId) => {
 
   const toggleModal = () => {
     setModalOpen((prev) => !prev);
-  }; 
+  };
   const togglePasswordModal = () => setShowPasswordModal(!showPasswordModal);
   const toggleComplaint = () => setShowComplaintModal((prev) => !prev);
 
@@ -493,7 +497,7 @@ const handleOpenCancelPopup2 = (itineraryId) => {
     }
   };
 
- 
+
   const handleCancelActivityBooking = async (id) => {
     const username = localStorage.getItem("Username");
     try {
@@ -615,7 +619,7 @@ const handleOpenCancelPopup2 = (itineraryId) => {
   const submitUpdatedPreferences = async () => {
     try {
       const username = localStorage.getItem("Username");
-  
+
       const response = await fetch(
         `http://localhost:8000/setPreferences?username=${username}`,
         {
@@ -626,7 +630,7 @@ const handleOpenCancelPopup2 = (itineraryId) => {
           body: JSON.stringify(updatedPreferences),
         }
       );
-  
+
       if (response.ok) {
         alert("Preferences updated successfully!");
         setPreferences(updatedPreferences);
@@ -638,10 +642,10 @@ const handleOpenCancelPopup2 = (itineraryId) => {
       setErrorMessage("Error updating preferences");
     }
   };
-  
+
   const handlePreferenceChange = (e) => {
-    const { name, type, checked ,value} = e.target;
-  
+    const { name, type, checked, value } = e.target;
+
     setPreferences((prev) => {
       const updated = {
         ...prev,
@@ -904,23 +908,23 @@ const handleOpenCancelPopup2 = (itineraryId) => {
   };
   const submitFeedbackItinerary = async (Itinerary) => {
     const username = localStorage.getItem("Username");
-  
+
     const itineraryEndDate = new Date(Itinerary.DatesTimes);
     const currentDate = new Date();
-  
+
     if (itineraryEndDate > currentDate) {
       alert("You cannot submit feedback for an upcoming itinerary.");
       return;
     }
-  
+
     const rating = ratingsI[Itinerary._id];
     const comment = commentsI[Itinerary._id];
-  
+
     if (!rating) {
       alert("Please provide a rating.");
       return;
     }
-  
+
     try {
       const response = await axios.post(
         `http://localhost:8000/submitFeedbackItinerary?username=${username}`,
@@ -935,7 +939,7 @@ const handleOpenCancelPopup2 = (itineraryId) => {
           },
         }
       );
-  
+
       if (response.status === 200) {
         alert("Feedback submitted successfully!");
         // Clear rating and comment
@@ -949,27 +953,27 @@ const handleOpenCancelPopup2 = (itineraryId) => {
       );
     }
   };
-  
+
   const submitFeedback = async (Itinerary) => {
     const username = localStorage.getItem("Username");
     const tourGuideUsername = Itinerary.TourGuide;
-  
+
     const itineraryEndDate = new Date(Itinerary.DatesTimes);
     const currentDate = new Date();
-  
+
     if (itineraryEndDate > currentDate) {
       alert("You cannot submit feedback for an upcoming itinerary.");
       return;
     }
-  
+
     const rating = ratings[Itinerary._id];
     const comment = comments[Itinerary._id];
-  
+
     if (!rating) {
       alert("Please provide a rating.");
       return;
     }
-  
+
     try {
       const response = await axios.post(
         `http://localhost:8000/submitFeedback?username=${username}`,
@@ -985,7 +989,7 @@ const handleOpenCancelPopup2 = (itineraryId) => {
           },
         }
       );
-  
+
       if (response.status === 200) {
         alert("Feedback submitted successfully!");
         // Clear rating and comment
@@ -999,7 +1003,7 @@ const handleOpenCancelPopup2 = (itineraryId) => {
       );
     }
   };
-  
+
   const handleRatingChangeI = (itinerary, value) => {
     setRatingsI((prevRatings) => ({
       ...prevRatings,
@@ -1036,11 +1040,11 @@ const handleOpenCancelPopup2 = (itineraryId) => {
   const submitPreferences = async () => {
     try {
       const username = localStorage.getItem("Username");
-  
+
       if (!username) {
         throw new Error("Username not found in localStorage");
       }
-  
+
       const response = await fetch(
         `http://localhost:8000/setPreferences?username=${username}`,
         {
@@ -1051,12 +1055,12 @@ const handleOpenCancelPopup2 = (itineraryId) => {
           body: JSON.stringify(preferences),
         }
       );
-  
+
       if (response.ok) {
         setSuccessMessage("Preferences updated successfully!");
         setErrorMessage("");
         setIsPreferencesVisible(false); // Hide preferences section
-  
+
         // Save a flag specific to the user in localStorage
         localStorage.setItem(`${username}_preferencesSubmitted`, "true");
       } else {
@@ -1067,23 +1071,23 @@ const handleOpenCancelPopup2 = (itineraryId) => {
       console.error(error);
     }
   };
-  
 
-  
-  
+
+
+
   useEffect(() => {
     const username = localStorage.getItem("Username");
-  
+
     if (username) {
       const preferencesSubmitted = localStorage.getItem(
         `${username}_preferencesSubmitted`
       );
-  
+
       // Show preferences only if they haven't been submitted for this user
       setIsPreferencesVisible(!preferencesSubmitted);
     }
   }, []);
-  
+
 
   const handleDeleteRequest = async () => {
     const Username = localStorage.getItem("Username");
@@ -1128,11 +1132,11 @@ const handleOpenCancelPopup2 = (itineraryId) => {
         prevPastItineraries.map((item) =>
           item._id === Itineraries._id
             ? {
-                ...item,
-                feedbackSubmitted: true,
-                rating: "",
-                comment: "",
-              }
+              ...item,
+              feedbackSubmitted: true,
+              rating: "",
+              comment: "",
+            }
             : item
         )
       );
@@ -1150,7 +1154,7 @@ const handleOpenCancelPopup2 = (itineraryId) => {
       [name]: value,
     }));
   };
- 
+
   const fetchAddresses = async () => {
     const Username = localStorage.getItem("Username");
     try {
@@ -1176,7 +1180,7 @@ const handleOpenCancelPopup2 = (itineraryId) => {
   };
 
   useEffect(() => {
-     fetchAddresses();
+    fetchAddresses();
   }, [showAddresses]);
   useEffect(() => {
     if (location.hash === '#viewAddressesSection') {
@@ -1246,7 +1250,7 @@ const handleOpenCancelPopup2 = (itineraryId) => {
     }
   };
 
-  
+
 
   const images = [
     {
@@ -1262,7 +1266,7 @@ const handleOpenCancelPopup2 = (itineraryId) => {
       reviews: 200,
     },
     {
-      src:City,
+      src: City,
       alt: "City Tours",
       title: "Explore the City",
       reviews: 300,
@@ -1288,13 +1292,13 @@ const handleOpenCancelPopup2 = (itineraryId) => {
       reviews: 150,
     },
     {
-      src:salz,
+      src: salz,
       alt: "Salzburg",
       title: "Salzburg",
       reviews: 200,
     },
     {
-      src:barc,
+      src: barc,
       alt: "Barcelona",
       title: "Barcelona",
       reviews: 300,
@@ -1312,1682 +1316,1814 @@ const handleOpenCancelPopup2 = (itineraryId) => {
       reviews: 90,
     },
   ];
-  
-  
 
-return (
-  <div style={styles.container}>
-  <div style={{marginTop:"70px"}}>
-    {/* Header Section */}
-    <header style={styles.header}>
-      <div style={styles.logoContainer}>
-        <img src={logo} alt="Logo" style={styles.logo} />
-      </div>
-   
+  const renderSmileyRating = (currentRating = 0, itinerary) => {
+    const smileys = [
+      () => <SentimentVeryDissatisfiedOutlinedIcon />,
+      () => <SentimentDissatisfiedOutlinedIcon />,
+      () => <SentimentNeutralOutlinedIcon />,
+      () => <SentimentSatisfiedOutlinedIcon />,
+      () => <SentimentVerySatisfiedOutlinedIcon />,
+    ];
 
-      <h1 style={styles.title}>
-  <span style={styles.username}>{localStorage.getItem("Username")}</span>'s Profile
-</h1>
-
-      <div style={styles.headerIconsContainer}>
-        {/* Currency Selector */}
-<div style={styles.currencySelector}>
-  <FaGlobe style={styles.currencyIcon} />
-  <select
-    value={selectedCurrency}
-    onChange={handleCurrencyChange}
-    style={styles.currencyDropdown}
-  >
-    <option value="USD">USD</option>
-    <option value="EUR">EUR</option>
-    <option value="GBP">GBP</option>
-    <option value="EGP">EGP</option>
-    {/* Add other currencies */}
-  </select>
-</div>
-        {/* Notification Bell */}
-        <div
-          style={styles.notificationButton}
-          onClick={handleNotificationClick}
-        >
-          <FaBell style={styles.notificationIcon} />
-          {unreadCount > 0 && (
-            <span style={styles.notificationBadge}>{unreadCount}</span>
-          )}
-        </div>
-
-          <ManageAccountsIcon
-    style={styles.profileIcon}
-    title="Manage Account Settings"
-    onClick={() => setShowDropdown((prev) => !prev)} // Toggle dropdown
-  />
-  
-  {showDropdown && (
-    <div style={styles.dropdownMenu}>
-      <div
-        style={styles.dropdownItem}
-        onClick={() => {
-          setShowDropdown(false); // Close dropdown
-          toggleModal(); // Open Edit Profile modal
-        }}
-      >
-        Edit Profile
-      </div>
-      <div
-        style={styles.dropdownItem}
-        onClick={() => {
-          setShowDropdown(false); // Close dropdown
-          togglePasswordModal(); // Open Change Password modal
-        }}
-      >
-        Change Password
-      </div>
-      <div
-        style={styles.dropdownItem}
-        onClick={() => {
-          setShowDropdown(false); // Close dropdown
-          setShowComplaintModal(true); // Open File Complaint modal
-        }}
-      >
-        File a Complaint
-      </div>
-      <div
-        style={styles.dropdownItem}
-        onClick={() => {
-          setShowDropdown(false); // Close dropdown
-          setShowAddressModal(true); // Open File Complaint modal
-        }}
-      >
-        Add Address
-      </div>
-      <div
-        style={styles.dropdownItem}
-        onClick={() => {
-          setShowDropdown(false); // Close dropdown
-          navigate("/tourist-orders")
-
-        }}
-      >
-        Past Orders
-      </div>
-      <div
-        style={styles.dropdownItem}
-        onClick={() => {
-          setShowDropdown(false); // Close dropdown
-          navigate("/AttendedActivitiesPage")
-        }}
-      >
-        Review  Activities
-      </div>
-     
-    </div>
-  )}
-  {/* Modal */}
-  {modalOpen && (
-        <div style={styles.modalOverlay}>
-          <div style={styles.modalContent}>
-            <h2 style={styles.modalContentH2}>Edit Profile Information</h2>
-            <HighlightOffOutlinedIcon
-            style={styles.cancelIcon}
-            onClick={() => setModalOpen(false)} // Close modal on click
-          />
-         <div style={styles.walletInfo}>
-  <h3 style={styles.walletTitle}>Wallet Balance</h3>
-  <div style={styles.walletDetails}>
-    {/* Wallet */}
-    <div style={styles.walletItem}>
-      <p style={styles.walletAmount}>
-        {(touristInfo.Wallet * conversionRate).toFixed(2)} {selectedCurrency}
-      </p>
-      <span style={styles.walletLabel}>Wallet</span>
-    </div>
-
-    {/* Points */}
-    <div style={styles.walletItem}>
-      <p style={styles.walletAmount}>{touristInfo.points}</p>
-      <span style={styles.walletLabel}>Points</span>
-    </div>
-
-    {/* Badge */}
-    <div style={styles.walletItem}>
-        <img
-          src={getBadgeIcon(touristInfo.badge)}
-          alt={`Badge Level ${touristInfo.badge}`}
-          style={styles.badgeImage}
-        />
-        <span style={styles.walletLabel}>Badge</span>
-        <p style={styles.walletLabel}>{touristInfo.badge}</p>
-      </div>
-  </div>
-</div>
-
-            
-            <form onSubmit={handleUpdate}>
-              <div style={styles.formGroup}>
-                <label style={styles.label2}>Email:</label>
-                <input
-                   type="email"
-                   name="Email"
-                   value={formData.Email}
-                   onChange={handleInputChange}
-                  style={styles.input}
-                  required
-                />
-              </div>
-             
-              <div style={styles.formGroup}>
-                <label style={styles.label2}>Nationality:</label>
-                <input
-                   type="text"
-                   name="Nationality"
-                   value={formData.Nationality}
-                   onChange={handleInputChange}
-                  style={styles.input}
-                />
-              </div>
-              <div style={styles.formGroup}>
-                <label style={styles.label2}>Date of Birth:</label>
-                <input
-                    type="text" // Display DOB as a string
-                    name="DOB"
-                    value={formData.DOB}
-                    onChange={handleInputChange}
-                  style={styles.input}
-                />
-              </div>
-              <div style={styles.formGroup}>
-                <label style={styles.label2}>Occupation:</label>
-                <input
-                  type="text"
-                  name="Occupation"
-                  value={formData.Occupation}
-                  onChange={handleInputChange}
-                  style={styles.input}
-                />
-              </div>
-              <div style={styles.formGroup}>
-                <label style={styles.label2}>Select Currency:</label>
-                <select
-                  value={selectedCurrency}
-                  onChange={handleCurrencyChange}
-                >
-                  <option value="EGP">Egyptian Pound (EGP)</option>
-                  <option value="USD">US Dollar (USD)</option>
-                  <option value="EUR">Euro (EUR)</option>
-                  <option value="GBP">British Pound (GBP)</option>
-                  {/* Add more currency options as needed */}
-                </select>
-              </div>
-             
-             
-                <button type="submit" style={styles.saveButton}>
-                  Save Changes
-                </button>
-                
-              
-       
-
-               
-            </form>
-          
-            {Object.keys(preferences).length > 0 ? (
-  <form style={styles.preferencesForm}>
-    {/* Preferences Header */}
-    <h3 style={styles.preferencesHeader}>Preferences</h3>
-
-    {/* Preferences Checkboxes */}
-    <div style={styles.preferencesGroup}>
-      <label style={styles.preferenceItem}>
-        <input
-          type="checkbox"
-          name="historicAreas"
-          checked={updatedPreferences.historicAreas || false}
-          onChange={handlePreferenceChange}
-        />
-        <span>Historic Areas</span>
-      </label>
-      <label style={styles.preferenceItem}>
-        <input
-          type="checkbox"
-          name="beaches"
-          checked={updatedPreferences.beaches || false}
-          onChange={handlePreferenceChange}
-        />
-        <span>Beaches</span>
-      </label>
-      <label style={styles.preferenceItem}>
-        <input
-          type="checkbox"
-          name="familyFriendly"
-          checked={updatedPreferences.familyFriendly || false}
-          onChange={handlePreferenceChange}
-        />
-        <span>Family-Friendly</span>
-      </label>
-      <label style={styles.preferenceItem}>
-        <input
-          type="checkbox"
-          name="shopping"
-          checked={updatedPreferences.shopping || false}
-          onChange={handlePreferenceChange}
-        />
-        <span>Shopping</span>
-      </label>
-    </div>
-
-    {/* Budget Selector */}
-    <div style={styles.budgetSection}>
-      <label style={styles.label2}>Select Budget:</label>
-      <select
-        name="budget"
-        value={updatedPreferences.budget || ''}
-        onChange={handlePreferenceChange}
-        style={styles.budgetDropdown}
-      >
-        <option value="">Select Budget</option>
-        <option value="low">Low</option>
-        <option value="medium">Medium</option>
-        <option value="high">High</option>
-      </select>
-    </div>
-
-    {/* Submit Button */}
-    <button
-      type="button"
-      onClick={submitUpdatedPreferences}
-      style={styles.submitButton}
-    >
-      Submit Preferences
-    </button>
-  </form>
-) : (
-  <p>No preferences available.</p>
-)}
-
-            
-            <div style={styles.buttonGroup}>
-            <button  onClick={() => setShowDeleteModal(true)}  style={styles.deletebutton}>
-          {waiting
-            ? "Waiting to be deleted..."
-            : requestSent
-            ? "Request Sent"
-            : "Delete Account?"}
-        </button>
-        </div>
-            
-          </div>
-        </div>
-      )}
-      
-
-                {/* Change Password Modal */}
-{showPasswordModal && (
-  <div style={styles.modalOverlay}>
-    <div style={styles.modalContent}>
-      <h2 style={styles.modalContentH2}>Change Password</h2>
-      <HighlightOffOutlinedIcon
-        onClick={() => setShowPasswordModal(false)}
-        style={styles.cancelpasswordIcon}
-      />
-      <form onSubmit={handlePasswordChange} style={styles.form}>
-        <div style={styles.formGroup}>
-          <label style={styles.label2}>Current Password:</label>
-          <input
-            type="password"
-            placeholder="Enter Current Password"
-            value={currentPassword}
-            onChange={(e) => setCurrentPassword(e.target.value)}
-            required
-            style={styles.input}
-          />
-        </div>
-        <div style={styles.formGroup}>
-          <label style={styles.label2}>New Password:</label>
-          <input
-            type="password"
-            placeholder="Enter New Password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            required
-            style={styles.input}
-          />
-        </div>
-        <div style={styles.formGroup}>
-          <label style={styles.label2}>Confirm New Password:</label>
-          <input
-            type="password"
-            placeholder="Confirm New Password"
-            value={confirmNewPassword}
-            onChange={(e) => setConfirmNewPassword(e.target.value)}
-            required
-            style={styles.input}
-          />
-        </div>
-
-        <div style={styles.buttonContainer}>
-          <button
-            type="submit"
-            disabled={isChangingPassword}
+    return (
+      <div style={styles.smileyContainer}>
+        {smileys.map((Smiley, index) => (
+          <div
+            key={index}
+            onClick={() => handleRatingChangeI(itinerary, index + 1)} // For Itineraries
             style={{
-              ...styles.submitButton,
-              opacity: isChangingPassword ? 0.7 : 1,
+              ...styles.smiley,
+              color: currentRating === index + 1 ? "#0F5132" : "#ddd",
+              cursor: "pointer",
             }}
           >
-            {isChangingPassword ? 'Changing Password...' : 'Change Password'}
-          </button>
-        </div>
-      </form>
-
-      {passwordChangeMessage && (
-        <p style={{ color: 'green', marginTop: '15px', textAlign: 'center' }}>
-          {passwordChangeMessage}
-        </p>
-      )}
-      {passwordChangeError && (
-        <p style={{ color: 'red', marginTop: '15px', textAlign: 'center' }}>
-          {passwordChangeError}
-        </p>
-      )}
-    </div>
-  </div>
-)}
-
- {/* Delete Account Modal */}
- {showDeleteModal && (
-  <div style={styles.modalOverlay2}>
-    <div style={styles.modalContent2}>
-      <h2 style={styles.modalTitle2}>Account Deletion</h2>
-      <p style={styles.modalText2}>
-        Are you sure you want to delete your account? This action cannot be undone.
-      </p>
-      <div style={styles.termsSection}>
-        <h3 style={styles.termsTitle}>Terms and Conditions</h3>
-        <p style={styles.termsText}>
-          - All your data, including preferences, bookings, and wallet balance, will be permanently deleted.
-          <br />
-          - Deletion requests are subject to review and approval.
-          <br />
-          - After approval, account recovery is not possible.
-        </p>
-      </div>
-      <div style={styles.modalButtons}>
-        <button
-          onClick={handleDeleteRequest}
-          disabled={waiting || requestSent}
-          style={styles.confirmButton}
-        >
-          {waiting
-            ? "Processing..."
-            : requestSent
-            ? "Request Sent"
-            : "Confirm Deletion"}
-        </button>
-        <button
-          onClick={() => setShowDeleteModal(false)}
-          style={styles.cancelButton}
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-{/* File Complaint Modal */}
-{showComplaintModal && (
-  <div style={styles.modalOverlay}>
-    <div style={styles.modalContent}>
-      <HighlightOffOutlinedIcon
-        style={styles.cancelIcon3}
-        onClick={() => setShowComplaintModal(false)} // Close modal
-      />
-
-      {/* Tabs for Switching Between Filing and Viewing Complaints */}
-      <div style={styles.tabContainer}>
-        <button
-          style={
-            activeTab === "fileComplaint"
-              ? styles.activeTabButton
-              : styles.tabButton
-          }
-          onClick={() => setActiveTab("fileComplaint")}
-        >
-          File a Complaint
-        </button>
-        <button
-          style={
-            activeTab === "viewComplaints"
-              ? styles.activeTabButton
-              : styles.tabButton
-          }
-          onClick={() => setActiveTab("viewComplaints")}
-        >
-          View Complaints
-        </button>
-      </div>
-
-      {/* Content Based on Active Tab */}
-      {activeTab === "fileComplaint" && (
-        <div style={styles.tabContent}>
-          <h2 style={styles.modalTitle}>File a Complaint</h2>
-          <form onSubmit={handleSubmitComplaint}>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Title:</label>
-              <input
-                type="text"
-                name="title"
-                placeholder="Complaint Title"
-                value={formData.title}
-                onChange={handleInputChange}
-                required
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Description:</label>
-              <textarea
-                name="body"
-                placeholder="Describe your issue..."
-                value={formData.body}
-                onChange={handleInputChange}
-                required
-                style={styles.textarea}
-              />
-            </div>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Date:</label>
-              <input
-                type="date"
-                name="date"
-                value={formData.date}
-                onChange={handleInputChange}
-                required
-                style={styles.input}
-              />
-            </div>
-            <button type="submit" style={styles.submitButton}>
-              Submit Complaint
-            </button>
-          </form>
-        </div>
-      )}
-
-{activeTab === "viewComplaints" && (
-        <div style={styles.tabContent}>
-          <h2 style={styles.modalTitle}>Your Complaints</h2>
-          {complaints.length === 0 ? (
-            <p style={styles.emptyText}>No complaints filed yet.</p>
-            
-          ) : (
-            
-            <div style={styles.complaintsList}>
-                <Slider {...sliderSettings}>
-              {complaints.map((complaint) => (
-                <div key={complaint._id} style={styles.complaintCard}>
-                  <p style={styles.complaintText}>
-                    <strong>Title:</strong> {complaint.title}
-                  </p>
-                  <p style={styles.complaintText}>
-                    <strong>Status:</strong> {complaint.status}
-                  </p>
-                  <p style={styles.complaintText}>
-                    <strong>Date:</strong>{" "}
-                    {new Date(complaint.date).toLocaleDateString()}
-                  </p>
-                  {complaint.replies && complaint.replies.length > 0 ? (
-                    <div style={styles.repliesSection}>
-                      <h4 style={styles.repliesTitle}>Replies:</h4>
-                      {complaint.replies.map((reply, index) => (
-                         <div key={index} style={styles.replyCard}>
-                         <p style={styles.complaintText}><strong>Reply:</strong> {reply.content}</p>
-                         <p style={styles.complaintText}><strong>Date:</strong> {new Date(reply.date).toLocaleDateString()}</p>
-                         {reply.replier && <p style={styles.complaintText}><strong>Replier:</strong> {reply.replier}</p>}
-                       </div>
-                      ))}
-                   
-                    </div>
-                  ) : (
-
-                    <p style={styles.noRepliesText}>
-                      <em>No replies yet.</em>
-                    </p>
-                    
-                    
-                  )}
-                </div>
-              ))}
-              </Slider>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  </div>
-)}
-
-
-  
-
-
-
-{showAddressModal && (
-  <div style={styles.modalOverlay}>
-    <motion.div
-
-
-
-      style={styles.modalContent}
-      initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 0.3 }}
-    >
-      {/* Close Icon */}
-      <HighlightOffOutlinedIcon
-        style={styles.cancelIcon4}
-        onClick={() => setShowAddressModal(false)} // Close modal
-      />
-
-      {/* Tabs */}
-      <div style={styles.tabContainer}>
-        <button
-          style={
-            activeTab === "viewAddresses"
-              ? { ...styles.tabButton, ...styles.activeTab }
-              : styles.tabButton
-          }
-          onClick={() => setActiveTab("viewAddresses")}
-        >
-          View Addresses
-        </button>
-        <button
-              id="viewAddressesSection"
-              ref={addressesSectionRef}
-          style={
-            activeTab === "addAddress"
-              ? { ...styles.tabButton, ...styles.activeTab }
-              : styles.tabButton
-          }
-          onClick={() => setActiveTab("addAddress")}
-        >
-          Add Address
-        </button>
-      </div>
-
-      {/* View Addresses Content */}
-      {activeTab === "viewAddresses"  && (
-        <motion.div
-          style={styles.tabContent}
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          <h2 style={styles.modalTitle}>Your Addresses</h2>
-          {addresses.length === 0 ? (
-            <p style={styles.noAddressesText}>
-              You haven't added any addresses yet.
-            </p>
-          ) : (
-            <div style={styles.addressGrid}>
-              {addresses.map((address, index) => (
-                <motion.div
-                  key={index}
-                  style={styles.addressCard}
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <div style={styles.iconWrapper}>
-                    <LocationOnIcon style={{ color: "#0F5123", fontSize: "24px" }} />
-                  </div>
-                  <p style={styles.addressLine}>
-                    <strong>{address.addressLine1}</strong>
-                  </p>
-                  {address.addressLine2 && <p style={styles.complaintText}>{address.addressLine2}</p>}
-                  <p style={styles.complaintText}>
-                    {address.city}, {address.state && `${address.state},`} {address.country}
-                  </p>
-                  <p style={styles.complaintText}>Postal Code: {address.postalCode}</p>
-                  <p style={styles.complaintText}>Phone: {address.phoneNumber}</p>
-                  {address.isPrimary && (
-                    <span style={styles.primaryBadge}>
-                      <StarIcon style={{ fontSize: "16px", marginRight: "5px" }} />
-                      Primary Address
-                    </span>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </motion.div>
-      )}
-
-      {/* Add Address Content */}
-      {activeTab === "addAddress" && (
-        <motion.div
-          style={styles.tabContent}
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          <h2 style={styles.modalTitle}>Add New Address</h2>
-          <form onSubmit={handleAddAddress} style={styles.container}>
-            <input
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "10px",
-                borderRadius: "5px",
-                border: "1px solid #ddd",
-              }}
-              name="addressLine1"
-              value={newAddress.addressLine1}
-              onChange={handleAddressInputChange}
-              placeholder="Address Line 1"
-              required
-            />
-
-            <input
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "10px",
-                borderRadius: "5px",
-                border: "1px solid #ddd",
-              }}
-              name="addressLine2"
-              value={newAddress.addressLine2}
-              onChange={handleAddressInputChange}
-              placeholder="Address Line 2"
-            />
-
-            <input
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "10px",
-                borderRadius: "5px",
-                border: "1px solid #ddd",
-              }}
-              name="city"
-              value={newAddress.city}
-              onChange={handleAddressInputChange}
-              placeholder="City"
-              required
-            />
-
-            <input
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "10px",
-                borderRadius: "5px",
-                border: "1px solid #ddd",
-              }}
-              name="state"
-              value={newAddress.state}
-              onChange={handleAddressInputChange}
-              placeholder="State"
-            />
-
-            <input
-              type="number"
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "10px",
-                borderRadius: "5px",
-                border: "1px solid #ddd",
-              }}
-              name="postalCode"
-              value={newAddress.postalCode}
-              onChange={handleAddressInputChange}
-              placeholder="Postal Code"
-            />
-
-            <input
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "10px",
-                borderRadius: "5px",
-                border: "1px solid #ddd",
-              }}
-              name="country"
-              value={newAddress.country}
-              onChange={handleAddressInputChange}
-              placeholder="Country"
-              required
-            />
-
-            <input
-              type="number"
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginBottom: "10px",
-                borderRadius: "5px",
-                border: "1px solid #ddd",
-              }}
-              name="phoneNumber"
-              value={newAddress.phoneNumber}
-              onChange={handleAddressInputChange}
-              placeholder="Phone Number"
-            />
-
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <label style={{ marginRight: "10px" ,color:"black"}}>Is Primary</label>
-              <input
-                type="checkbox"
-                name="isPrimary"
-                checked={newAddress.isPrimary}
-                onChange={handleAddressInputChange}
-              />
-            </div>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <button type="submit" style={styles.addButton}>
-                Submit Address
-              </button>
-             
-            </div>
-          </form>
-        </motion.div>
-      )}
-    </motion.div>
-  </div>
-)}
-   
-          {/* Cart Icon */}
-          <div style={styles.cartButton} onClick={() => navigate("/Cart")}>
-            <ShoppingCartOutlinedIcon style={styles.cartIcon} />
+            <Smiley />
           </div>
-          {/* Logout Icon */}
-          <LogoutOutlinedIcon
-      style={{ cursor: 'pointer',marginLeft:'0px' }} // You can adjust your styles here
-      onClick={handleLogout}
-    />
+        ))}
+        <div style={styles.ratingDisplay}>
+          <span style={styles.ratingLabel}>Rating:</span>
+          <span style={styles.ratingValue}>{currentRating}/5</span>
         </div>
-      </header>
-
-      {/* Notification Dropdown */}
-      {showNotifications && (
-        <div style={styles.notificationDropdown}>
-          <h3 style={styles.dropdownHeader}>Notifications</h3>
-          {notifications.length > 0 ? (
-            notifications.map((notification, index) => (
-              <div key={index} style={styles.notificationItem}>
-                <li
-                  key={notification.id}
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "flex-start",
-                    backgroundColor: "#f9f9f9",
-                    border: "1px solid #ddd",
-                    borderRadius: "5px",
-                    padding: "10px",
-                    borderBottom: "1px solid #f0f0f0",
-                    fontSize: "10px",
-                  }}
-                >
-                  <MdNotificationImportant
-                    size={50}
-                    style={{ marginRight: "10px", color: "#ff9800" }}
-                  />
-                  <p>{notification.message}</p>
-                </li>
-                <span style={styles.notificationDate}>
-                  {new Date(notification.date).toLocaleString()}
-                </span>
-              </div>
-            ))
-          ) : (
-            <p style={styles.noNotifications}>No notifications available</p>
-          )}
-        </div>
-      )}
-
-      {/* Main Content */}
-      {/* Sidebar */}
-      <div
-        style={styles.sidebar}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.width = "200px";
-          Array.from(e.currentTarget.querySelectorAll(".label")).forEach(
-            (label) => (label.style.opacity = "1")
-          );
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.width = "60px";
-          Array.from(e.currentTarget.querySelectorAll(".label")).forEach(
-            (label) => (label.style.opacity = "0")
-          );
-        }}
-      >
-        <div
-          className="historical"
-          style={styles.item}
-          onClick={() => navigate("/historical-locations")}
-        >
-          <FaUniversity style={styles.iconn} />
-          <span className="label" style={styles.label}>
-            Historical Sites
-          </span>
-        </div>
-        <div
-          className="museums"
-          style={styles.item}
-          onClick={() => navigate("/museums")}
-        >
-          <MuseumIcon style={styles.iconn} />
-          <span className="label" style={styles.label}>
-            Museums
-          </span>
-        </div>
-        <div
-          className="products"
-          style={styles.item}
-          onClick={() => navigate("/products")}
-        >
-          <FaBox style={styles.iconn} />
-          <span className="label" style={styles.label}>
-            Products
-          </span>
-        </div>
-        <div
-          className="itineraries"
-          style={styles.item}
-          onClick={() => navigate("/itineraries")}
-        >
-          <FaMap style={styles.iconn} />
-          <span className="label" style={styles.label}>
-            Itineraries
-          </span>
-        </div>
-        <div
-          className="activities"
-          style={styles.item}
-          onClick={() => navigate("/activities")}
-        >
-          <FaRunning style={styles.iconn} />
-          <span className="label" style={styles.label}>
-            Activities
-          </span>
-        </div>
-        <div
-          className="flights"
-          style={styles.item}
-          onClick={() => navigate("/book-flights")}
-        >
-          <FaPlane style={styles.iconn} />
-          <span className="label" style={styles.label}>
-            Book Flights
-          </span>
-        </div>
-        <div
-          className="hotels"
-          style={styles.item}
-          onClick={() => navigate("/book-hotels")}
-        >
-          <HotelIcon style={styles.iconn} />
-          <span className="label" style={styles.label}>
-            Book a Hotel
-          </span>
-        </div>
-        <div
-          className="transportation"
-          style={styles.item}
-          onClick={() => navigate("/book-transportation")}
-        >
-          <FaBus style={styles.iconn} />
-          <span className="label" style={styles.label}>
-            Transportation
-          </span>
-        </div>
-        
-       
       </div>
+    );
+  };
 
-      <div>
-        {isPreferencesVisible && (
+  const renderSmileyRatingForTourGuide = (currentRating = 0, itinerary) => {
+    const smileys = [
+      () => <SentimentVeryDissatisfiedOutlinedIcon />,
+      () => <SentimentDissatisfiedOutlinedIcon />,
+      () => <SentimentNeutralOutlinedIcon />,
+      () => <SentimentSatisfiedOutlinedIcon />,
+      () => <SentimentVerySatisfiedOutlinedIcon />,
+    ];
+
+    return (
+      <div style={styles.smileyContainer}>
+        {smileys.map((Smiley, index) => (
           <div
-            className="preferences-section"
-            style={{ margin: "20px 0", textAlign: "center" }}
+            key={index}
+            onClick={() => handleRatingChange(itinerary, index + 1)} // For Tour Guides
+            style={{
+              ...styles.smiley,
+              color: currentRating === index + 1 ? "#0F5132" : "#ddd",
+              cursor: "pointer",
+            }}
           >
-            <h3
-              style={{ fontSize: "18px", marginBottom: "20px", color: "#333" }}
-            >
-              Select Your Vacation Preferences
-            </h3>
-            <div
-              className="carousel-container"
-              style={styles.carouselContainerStyle}
-            >
-              {/* Historic Areas */}
-              <div
-                className="carousel-item"
-                style={{
-                  position: "relative",
-                  width: "450px",
-                  height: "290px",
-                  border: "1px solid #ddd",
-                  borderRadius: "15px",
-                  flexShrink: 0,
-                  backgroundColor: "#fff",
-                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                  overflow: "hidden",
-                }}
-              >
-                <img
-                  src={historic}
-                  alt="Historic Areas"
-                  style={{
-                    width: "100%",
-                    height: "250px",
-                    objectFit: "cover",
-                    borderTopLeftRadius: "15px",
-                    borderTopRightRadius: "15px",
-                  }}
-                />
-                <div
-                  style={{
-                    padding: "10px",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <label
-                    style={{
-                      fontSize: "16px",
-                      fontWeight: "bold",
-                      marginBottom: "0",
-                      marginRight: "10px",
-                      color: "#0F5132",
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    Historic Areas
-                    <input
-                      type="checkbox"
-                      name="historicAreas"
-                      checked={preferences.historicAreas}
-                      onChange={handlePreferenceChange}
-                      style={{
-                        width: "20px",
-                        height: "20px",
-                        cursor: "pointer",
-                        marginLeft: "10px",
-                      }}
-                    />
-                  </label>
-                </div>
-              </div>
+            <Smiley />
+          </div>
+        ))}
+        <div style={styles.ratingDisplay}>
+          <span style={styles.ratingLabel}>Rating:</span>
+          <span style={styles.ratingValue}>{currentRating}/5</span>
+        </div>
+      </div>
+    );
+  };
 
-              {/* Beaches */}
-              <div
-                className="carousel-item"
-                style={{
-                  position: "relative",
-                  width: "450px",
-                  height: "290px",
-                  border: "1px solid #ddd",
-                  borderRadius: "15px",
-                  flexShrink: 0,
-                  backgroundColor: "#fff",
-                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                  overflow: "hidden",
-                }}
-              >
-                <img
-                  src={beach}
-                  alt="Beaches"
-                  style={{
-                    width: "100%",
-                    height: "250px",
-                    objectFit: "cover",
-                    borderTopLeftRadius: "15px",
-                    borderTopRightRadius: "15px",
-                  }}
-                />
-                <div
-                  style={{
-                    padding: "10px",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <label
-                    style={{
-                      fontSize: "16px",
-                      fontWeight: "bold",
-                      marginBottom: "0",
-                      marginRight: "10px",
-                      color: "#0F5132",
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    Beaches
-                    <input
-                      type="checkbox"
-                      name="beaches"
-                      checked={preferences.beaches}
-                      onChange={handlePreferenceChange}
-                      style={{
-                        width: "20px",
-                        height: "20px",
-                        cursor: "pointer",
-                        marginLeft: "10px",
-                      }}
-                    />
-                  </label>
-                </div>
-              </div>
 
-              {/* Family-Friendly */}
-              <div
-                className="carousel-item"
-                style={{
-                  position: "relative",
-                  width: "450px",
-                  height: "290px",
-                  border: "1px solid #ddd",
-                  borderRadius: "15px",
-                  flexShrink: 0,
-                  backgroundColor: "#fff",
-                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                  overflow: "hidden",
-                }}
-              >
-                <img
-                  src={family}
-                  alt="Family-Friendly"
-                  style={{
-                    width: "100%",
-                    height: "250px",
-                    objectFit: "cover",
-                    borderTopLeftRadius: "15px",
-                    borderTopRightRadius: "15px",
-                  }}
-                />
-                <div
-                  style={{
-                    padding: "10px",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <label
-                    style={{
-                      fontSize: "16px",
-                      fontWeight: "bold",
-                      marginBottom: "0",
-                      marginRight: "10px",
-                      color: "#0F5132",
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    Family-Friendly
-                    <input
-                      type="checkbox"
-                      name="familyFriendly"
-                      checked={preferences.familyFriendly}
-                      onChange={handlePreferenceChange}
-                      style={{
-                        width: "20px",
-                        height: "20px",
-                        cursor: "pointer",
-                        marginLeft: "10px",
-                      }}
-                    />
-                  </label>
-                </div>
-              </div>
+  return (
+    <div style={styles.container}>
+      <div style={{ marginTop: "70px" }}>
+        {/* Header Section */}
+        <header style={styles.header}>
+          <div style={styles.logoContainer}>
+            <img src={logo} alt="Logo" style={styles.logo} />
+          </div>
 
-              {/* Shopping */}
-              <div
-                className="carousel-item"
-                style={{
-                  position: "relative",
-                  width: "450px",
-                  height: "290px",
-                  border: "1px solid #ddd",
-                  borderRadius: "15px",
-                  flexShrink: 0,
-                  backgroundColor: "#fff",
-                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                  overflow: "hidden",
-                }}
-              >
-                <img
-                  src={shopping}
-                  alt="Shopping"
-                  style={{
-                    width: "100%",
-                    height: "250px",
-                    objectFit: "cover",
-                    borderTopLeftRadius: "15px",
-                    borderTopRightRadius: "15px",
-                  }}
-                />
-                <div
-                  style={{
-                    padding: "10px",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <label
-                    style={{
-                      fontSize: "16px",
-                      fontWeight: "bold",
-                      marginBottom: "0",
-                      marginRight: "10px",
-                      color: "#0F5132",
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    Shopping
-                    <input
-                      type="checkbox"
-                      name="shopping"
-                      checked={preferences.shopping}
-                      onChange={handlePreferenceChange}
-                      style={{
-                        width: "20px",
-                        height: "20px",
-                        cursor: "pointer",
-                        marginLeft: "10px",
-                      }}
-                    />
-                  </label>
-                </div>
-              </div>
-            </div>
 
-            {/* Budget Selection */}
-            <div
-              className="budget-selection"
-              style={{ marginTop: "30px", textAlign: "center" }}
-            >
-              <label
-                style={{
-                  fontWeight: "bold",
-                  marginRight: "10px",
-                  fontSize: "16px",
-                }}
-              >
-                Budget:
-              </label>
+          <h1 style={styles.title}>
+            <span style={styles.username}>{localStorage.getItem("Username")}</span>'s Profile
+          </h1>
+
+          <div style={styles.headerIconsContainer}>
+            {/* Currency Selector */}
+            <div style={styles.currencySelector}>
+              <FaGlobe style={styles.currencyIcon} />
               <select
-                name="budget"
-                value={preferences.budget}
-                onChange={handlePreferenceChange}
-                style={{
-                  padding: "10px",
-                  fontSize: "16px",
-                  border: "1px solid #ddd",
-                  borderRadius: "5px",
-                }}
+                value={selectedCurrency}
+                onChange={handleCurrencyChange}
+                style={styles.currencyDropdown}
               >
-                <option value="">Select</option>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+                <option value="EGP">EGP</option>
+                {/* Add other currencies */}
               </select>
-              <button
-                onClick={submitPreferences}
-                style={{
-                  marginTop: "30px",
-                  padding: "12px 20px",
-                  backgroundColor: "#0F5132",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "5px",
-                  cursor: "pointer",
-                  fontSize: "16px",
-                }}
-              >
-                Save Preferences
-              </button>
-              {successMessage && (
-                <p style={{ color: "#0F5132" }}>{successMessage}</p>
+            </div>
+            {/* Notification Bell */}
+            <div
+              style={styles.notificationButton}
+              onClick={handleNotificationClick}
+            >
+              <FaBell style={styles.notificationIcon} />
+              {unreadCount > 0 && (
+                <span style={styles.notificationBadge}>{unreadCount}</span>
               )}
             </div>
-          </div>
-        )}
-      </div>
-    
-      <div style={{ marginTop: "20px", padding: "0 20px" }}>
-  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-    <h3 style={{ fontSize: "22px", color: "#0F5132", fontWeight: "bold" }}>Top Destinations</h3>
-    <span
-          onClick={() => navigate("/book-flights")}
-          style={{
-            fontSize: "16px",
-            color: "#0F5132",
-            textDecoration: "none",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          See all
-        </span>
-  </div>
-  <div className="carousel-container" style={styles.carouselContainerStyle}>
-    {images2.map((image, index) => (
-      <div
-        key={index}
-        className="carousel-item"
-        style={{
-          position: "relative",
-          width: "250px",
-          border: "1px solid #ddd",
-          borderRadius: "15px",
-          flexShrink: 0,
-          backgroundColor: "#fff",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          overflow: "hidden",
-          marginRight: "15px",
-        }}
-      >
-        <img
-          src={image.src}
-          alt={image.alt}
-          style={{
-            width: "100%",
-            height: "150px",
-            objectFit: "cover",
-            borderTopLeftRadius: "15px",
-            borderTopRightRadius: "15px",
-          }}
-        />
-        <div style={{ padding: "10px" }}>
-          <h4
-            style={{
-              fontSize: "16px",
-              fontWeight: "bold",
-              color: "#333",
-              marginBottom: "5px",
-            }}
-          >
-            {image.title}
-          </h4>
-          <div style={{ display: "flex", alignItems: "center", marginTop: "5px" }}>
-            <span style={{ color: "green", fontSize: "14px", marginRight: "5px" }}>●●●●●</span>
-            <span style={{ fontSize: "14px", color: "#555" }}>{image.reviews} reviews</span>
-          </div>
-        </div>
-      </div>
-    ))}
-  </div>
-</div>
-<div style={{ marginTop: "20px", padding: "0 20px" }}>
-  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-    <h3 style={{ fontSize: "22px", color: "#0F5132", fontWeight: "bold" }}>Top global attractions</h3>
-    <span
-          onClick={() => navigate("/historical-locations")}
-          style={{
-            fontSize: "16px",
-            color: "#0F5132",
-            textDecoration: "none",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          See all
-        </span>
-  </div>
-  <div className="carousel-container" style={styles.carouselContainerStyle}>
-    {images.map((image, index) => (
-      <div
-        key={index}
-        className="carousel-item"
-        style={{
-          position: "relative",
-          width: "250px",
-          border: "1px solid #ddd",
-          borderRadius: "15px",
-          flexShrink: 0,
-          backgroundColor: "#fff",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          overflow: "hidden",
-          marginRight: "15px",
-        }}
-      >
-        <img
-          src={image.src}
-          alt={image.alt}
-          style={{
-            width: "100%",
-            height: "150px",
-            objectFit: "cover",
-            borderTopLeftRadius: "15px",
-            borderTopRightRadius: "15px",
-          }}
-        />
-        <div style={{ padding: "10px" }}>
-          <h4
-            style={{
-              fontSize: "16px",
-              fontWeight: "bold",
-              color: "#333",
-              marginBottom: "5px",
-            }}
-          >
-            {image.title}
-          </h4>
-          <div style={{ display: "flex", alignItems: "center", marginTop: "5px" }}>
-            <span style={{ color: "green", fontSize: "14px", marginRight: "5px" }}>●●●●●</span>
-            <span style={{ fontSize: "14px", color: "#555" }}>{image.reviews} reviews</span>
-          </div>
-        </div>
-      </div>
-    ))}
-  </div>
-</div>
 
+            <ManageAccountsIcon
+              style={styles.profileIcon}
+              title="Manage Account Settings"
+              onClick={() => setShowDropdown((prev) => !prev)} // Toggle dropdown
+            />
 
-
-
-
-      <h3 style={styles.cardTitle}>Your Upcoming Booked Itineraries</h3>
-{upcomingItineraries.length > 0 ? (
-  <div
-              className="carousel-container"
-              style={styles.carouselContainerStyle}
-  >    {upcomingItineraries.map((itinerary) => (
-    <div
-    key={itinerary._id}
-    className="carousel-item"
-    style={{
-      position: "relative",
-      width: "400px",
-      height: "auto",
-      border: "1px solid #ddd",
-      borderRadius: "15px",
-      flexShrink: 0,
-      backgroundColor: "#fff",
-      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-      overflow: "hidden",
-      marginBottom: "10px",
-    }}
-  >
-    
-      <div key={itinerary._id} style={styles.itineraryCard}>
-      
-        <h4 style={styles.itineraryTitle}>Activities Included:</h4>
-        <p style={styles.itineraryText}>{itinerary.Activities.join(", ")}</p>
-        
-        <p style={styles.itineraryText}>
-          <strong ><FaMapMarkerAlt />Locations:</strong> {itinerary.Locations.join(", ")}
-        </p>
-        <p style={styles.itineraryText}>
-          <strong><FaDollarSign /> Price:</strong> {(itinerary.price * conversionRate).toFixed(2)} {selectedCurrency}
-        </p>
-        <p style={styles.itineraryText}>
-          <strong><FaUserCircle />Tour Guide:</strong> {itinerary.TourGuide}
-        </p>
-        <p style={styles.itineraryText}>
-          <strong><FaCalendar />Date:</strong> {new Date(itinerary.DatesTimes).toLocaleDateString()}
-        </p>
-        <p style={styles.hyperlinkText}>
-  <a
-    href="#"
-    onClick={(e) => {
-      e.preventDefault(); // Prevent page reload
-      handleOpenCancelPopup(itinerary._id); // Trigger the popup
-    }}
-    style={styles.hyperlink}
-  >
-    Do you want to cancel your booking? Click here.
-  </a>
-</p>
-{/* Popup Modal */}
-{isCancelPopupOpen && selectedItineraryId === itinerary._id && (
-  <div style={styles.popupOverlay}>
-    <div style={styles.popupContent}>
-      <h4 style={styles.popupTitle}>Confirm Cancellation</h4>
-      <p style={styles.popupMessage}>
-        Do you really want to cancel your booking? You need to cancel at least 2 days before the booking date.
-      </p>
-      <div style={styles.popupButtons}>
-        <button
-          onClick={() => handleCancelItineraryBooking(itinerary._id)}
-          style={styles.confirmButton}
-        >
-          Yes, Cancel Booking
-        </button>
-        <button
-          onClick={() => setIsCancelPopupOpen(false)}
-          style={styles.cancelButton}
-        >
-          No, Keep Booking
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
-      
-      </div>
-      </div>
-    ))}
-  </div>
-) : (
-  <p style={styles.emptyMessage}>You have no booked upcoming itineraries.</p>
-)}
-
-<h3 style={styles.cardTitle}>Your Upcoming Booked Activities</h3>
-{bookedActivities.length > 0 ? (
-  <div className="carousel-container" style={styles.carouselContainerStyle}>
-    {bookedActivities.map((activity) => (
-      <div
-        key={activity._id}
-        className="carousel-item"
-        style={{
-          position: "relative",
-          width: "400px",
-          height: "auto",
-          border: "1px solid #ddd",
-          borderRadius: "15px",
-          flexShrink: 0,
-          backgroundColor: "#fff",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          overflow: "hidden",
-          marginBottom: "10px",
-        }}
-      >
-        <div key={activity._id} style={styles.itineraryCard}>
-          <h4 style={styles.itineraryTitle}>
-            <FaTag /> Activity Name:
-          </h4>
-          <p style={styles.itineraryText}>{activity.name}</p>
-          <p style={styles.itineraryText}>
-            <FaTag  /> <strong>Category:</strong>{" "}
-            {activity.Category}
-          </p>
-          <p style={styles.itineraryText}>
-            <FaDollarSign  /> <strong>Price:</strong>{" "}
-            {(activity.price * conversionRate).toFixed(2)} {selectedCurrency}
-          </p>
-          <p style={styles.itineraryText}>
-            <FaMapMarkerAlt  /> <strong>Location:</strong>{" "}
-            {activity.Location}
-          </p>
-          <p style={styles.itineraryText}>
-            <FaCalendar  /> <strong>Date:</strong>{" "}
-            {new Date(activity.date).toLocaleDateString()}
-          </p>
-          <p style={styles.hyperlinkText}>
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault(); // Prevent page reload
-                setSelectedActivityId(activity._id);
-                setIsCancelPopupOpen2(true);
-              }}
-              style={styles.hyperlink}
-            >
-              Do you want to cancel your booking? Click here.
-            </a>
-          </p>
-          {/* Popup Modal */}
-          {isCancelPopupOpen2 && selectedActivityId === activity._id && (
-            <div style={styles.popupOverlay}>
-              <div style={styles.popupContent}>
-                <h4 style={styles.popupTitle}>Confirm Cancellation</h4>
-                <p style={styles.popupMessage}>
-                  Do you really want to cancel your booking? You need to
-                  cancel at least 2 days before the booking date.
-                </p>
-                <div style={styles.popupButtons}>
-                  <button
-                    onClick={() =>
-                      handleCancelActivityBooking(activity._id)
-                    }
-                    style={styles.confirmButton}
-                  >
-                    Yes, Cancel Booking
-                  </button>
-                  <button
-                    onClick={() => setIsCancelPopupOpen2(false)}
-                    style={styles.cancelButton}
-                  >
-                    No, Keep Booking
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    ))}
-  </div>
-) : (
-  <p style={styles.emptyMessage}>
-    You have no upcoming booked activities.
-  </p>
-)}
-
-
-
-      {/* Dashboard Section */}
-      <div
-        className="dashboard-section"
-        style={{
-          padding: "20px",
-          fontFamily: "Arial, sans-serif",
-          marginTop: "40px",
-        }}
-      >
-        
-          
-        </div>
-
-       
-
-        
-            <h3 style={{ fontSize: "18px", marginBottom: "10px" }}>
-              Past Itineraries
-            </h3>
-            {pastItineraries.length > 0 ? (
-              pastItineraries.map((itinerary) => (
+            {showDropdown && (
+              <div style={styles.dropdownMenu}>
                 <div
-                  key={itinerary._id}
-                  style={{
-                    marginBottom: "10px",
-                    padding: "10px",
-                    border: "1px solid #ddd",
-                    borderRadius: "5px",
+                  style={styles.dropdownItem}
+                  onClick={() => {
+                    setShowDropdown(false); // Close dropdown
+                    toggleModal(); // Open Edit Profile modal
                   }}
                 >
-                  <h4>
-                    Activities Included: {itinerary.Activities.join(", ")}
-                  </h4>
-                  <p>Locations: {itinerary.Locations.join(", ")}</p>
-                  <p>
-                    Price: {(itinerary.price * conversionRate).toFixed(2)}{" "}
-                    {selectedCurrency}
-                  </p>
-                  <p>Tour Guide: {itinerary.TourGuide}</p>
-                  <p>Date: {itinerary.DatesTimes}</p>
+                  Edit Profile
+                </div>
+                <div
+                  style={styles.dropdownItem}
+                  onClick={() => {
+                    setShowDropdown(false); // Close dropdown
+                    togglePasswordModal(); // Open Change Password modal
+                  }}
+                >
+                  Change Password
+                </div>
+                <div
+                  style={styles.dropdownItem}
+                  onClick={() => {
+                    setShowDropdown(false); // Close dropdown
+                    setShowComplaintModal(true); // Open File Complaint modal
+                  }}
+                >
+                  File a Complaint
+                </div>
+                <div
+                  style={styles.dropdownItem}
+                  onClick={() => {
+                    setShowDropdown(false); // Close dropdown
+                    setShowAddressModal(true); // Open File Complaint modal
+                  }}
+                >
+                  Add Address
+                </div>
+                <div
+                  style={styles.dropdownItem}
+                  onClick={() => {
+                    setShowDropdown(false); // Close dropdown
+                    navigate("/tourist-orders")
 
-                  {!itinerary.feedbackSubmitted && (
-                    <div style={styles.feedbackSection}>
-                      <h4>Leave Feedback on Itinerary</h4>
+                  }}
+                >
+                  Past Orders
+                </div>
+                <div
+                  style={styles.dropdownItem}
+                  onClick={() => {
+                    setShowDropdown(false); // Close dropdown
+                    navigate("/AttendedActivitiesPage")
+                  }}
+                >
+                  Review  Activities
+                </div>
+
+              </div>
+            )}
+            {/* Modal */}
+            {modalOpen && (
+              <div style={styles.modalOverlay}>
+                <div style={styles.modalContent}>
+                  <h2 style={styles.modalContentH2}>Edit Profile Information</h2>
+                  <HighlightOffOutlinedIcon
+                    style={styles.cancelIcon}
+                    onClick={() => setModalOpen(false)} // Close modal on click
+                  />
+                  <div style={styles.walletInfo}>
+                    <h3 style={styles.walletTitle}>Wallet Balance</h3>
+                    <div style={styles.walletDetails}>
+                      {/* Wallet */}
+                      <div style={styles.walletItem}>
+                        <p style={styles.walletAmount}>
+                          {(touristInfo.Wallet * conversionRate).toFixed(2)} {selectedCurrency}
+                        </p>
+                        <span style={styles.walletLabel}>Wallet</span>
+                      </div>
+
+                      {/* Points */}
+                      <div style={styles.walletItem}>
+                        <p style={styles.walletAmount}>{touristInfo.points}</p>
+                        <span style={styles.walletLabel}>Points</span>
+                      </div>
+
+                      {/* Badge */}
+                      <div style={styles.walletItem}>
+                        <img
+                          src={getBadgeIcon(touristInfo.badge)}
+                          alt={`Badge Level ${touristInfo.badge}`}
+                          style={styles.badgeImage}
+                        />
+                        <span style={styles.walletLabel}>Badge</span>
+                        <p style={styles.walletLabel}>{touristInfo.badge}</p>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <form onSubmit={handleUpdate}>
+                    <div style={styles.formGroup}>
+                      <label style={styles.label2}>Email:</label>
                       <input
-                        type="number"
-                        placeholder="Rating"
-                        value={ratingsI[itinerary._id] || ""} // Ensure correct binding
-                        onChange={(e) =>
-                          handleRatingChangeI(itinerary, e.target.value)
-                        }
+                        type="email"
+                        name="Email"
+                        value={formData.Email}
+                        onChange={handleInputChange}
                         style={styles.input}
-                        min="1"
-                        max="5"
+                        required
                       />
+                    </div>
+
+                    <div style={styles.formGroup}>
+                      <label style={styles.label2}>Nationality:</label>
                       <input
                         type="text"
-                        placeholder="Comment"
-                        value={commentsI[itinerary._id] || ""} // Ensure correct binding
-                        onChange={(e) =>
-                          handleCommentChangeI(itinerary, e.target.value)
-                        }
+                        name="Nationality"
+                        value={formData.Nationality}
+                        onChange={handleInputChange}
                         style={styles.input}
                       />
-                      <button
-                        onClick={() => submitFeedbackItinerary(itinerary)}
-                        style={styles.button}
-                      >
-                        Submit Feedback
-                      </button>
                     </div>
+                    <div style={styles.formGroup}>
+                      <label style={styles.label2}>Date of Birth:</label>
+                      <input
+                        type="text" // Display DOB as a string
+                        name="DOB"
+                        value={formData.DOB}
+                        onChange={handleInputChange}
+                        style={styles.input}
+                      />
+                    </div>
+                    <div style={styles.formGroup}>
+                      <label style={styles.label2}>Occupation:</label>
+                      <input
+                        type="text"
+                        name="Occupation"
+                        value={formData.Occupation}
+                        onChange={handleInputChange}
+                        style={styles.input}
+                      />
+                    </div>
+                    <div style={styles.formGroup}>
+                      <label style={styles.label2}>Select Currency:</label>
+                      <select
+                        value={selectedCurrency}
+                        onChange={handleCurrencyChange}
+                      >
+                        <option value="EGP">Egyptian Pound (EGP)</option>
+                        <option value="USD">US Dollar (USD)</option>
+                        <option value="EUR">Euro (EUR)</option>
+                        <option value="GBP">British Pound (GBP)</option>
+                        {/* Add more currency options as needed */}
+                      </select>
+                    </div>
+
+
+                    <button type="submit" style={styles.saveButton}>
+                      Save Changes
+                    </button>
+
+
+
+
+
+                  </form>
+
+                  {Object.keys(preferences).length > 0 ? (
+                    <form style={styles.preferencesForm}>
+                      {/* Preferences Header */}
+                      <h3 style={styles.preferencesHeader}>Preferences</h3>
+
+                      {/* Preferences Checkboxes */}
+                      <div style={styles.preferencesGroup}>
+                        <label style={styles.preferenceItem}>
+                          <input
+                            type="checkbox"
+                            name="historicAreas"
+                            checked={updatedPreferences.historicAreas || false}
+                            onChange={handlePreferenceChange}
+                          />
+                          <span>Historic Areas</span>
+                        </label>
+                        <label style={styles.preferenceItem}>
+                          <input
+                            type="checkbox"
+                            name="beaches"
+                            checked={updatedPreferences.beaches || false}
+                            onChange={handlePreferenceChange}
+                          />
+                          <span>Beaches</span>
+                        </label>
+                        <label style={styles.preferenceItem}>
+                          <input
+                            type="checkbox"
+                            name="familyFriendly"
+                            checked={updatedPreferences.familyFriendly || false}
+                            onChange={handlePreferenceChange}
+                          />
+                          <span>Family-Friendly</span>
+                        </label>
+                        <label style={styles.preferenceItem}>
+                          <input
+                            type="checkbox"
+                            name="shopping"
+                            checked={updatedPreferences.shopping || false}
+                            onChange={handlePreferenceChange}
+                          />
+                          <span>Shopping</span>
+                        </label>
+                      </div>
+
+                      {/* Budget Selector */}
+                      <div style={styles.budgetSection}>
+                        <label style={styles.label2}>Select Budget:</label>
+                        <select
+                          name="budget"
+                          value={updatedPreferences.budget || ''}
+                          onChange={handlePreferenceChange}
+                          style={styles.budgetDropdown}
+                        >
+                          <option value="">Select Budget</option>
+                          <option value="low">Low</option>
+                          <option value="medium">Medium</option>
+                          <option value="high">High</option>
+                        </select>
+                      </div>
+
+                      {/* Submit Button */}
+                      <button
+                        type="button"
+                        onClick={submitUpdatedPreferences}
+                        style={styles.submitButton}
+                      >
+                        Submit Preferences
+                      </button>
+                    </form>
+                  ) : (
+                    <p>No preferences available.</p>
                   )}
 
-                  <div style={styles.feedbackSection}>
-                    <h4>Leave Feedback on Tour Guide</h4>
-                    <input
-                      type="number"
-                      placeholder="Rating"
-                      value={ratings[itinerary._id] || ""} // Ensure correct binding
-                      onChange={(e) =>
-                        handleRatingChange(itinerary, e.target.value)
-                      }
-                      style={styles.input}
-                    />
-                    <input
-                      type="text"
-                      placeholder="Comment"
-                      value={comments[itinerary._id] || ""} // Ensure correct binding
-                      onChange={(e) =>
-                        handleCommentChange(itinerary, e.target.value)
-                      }
-                      style={styles.input}
-                    />
+
+                  <div style={styles.buttonGroup}>
+                    <button onClick={() => setShowDeleteModal(true)} style={styles.deletebutton}>
+                      {waiting
+                        ? "Waiting to be deleted..."
+                        : requestSent
+                          ? "Request Sent"
+                          : "Delete Account?"}
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+            )}
+
+
+            {/* Change Password Modal */}
+            {showPasswordModal && (
+              <div style={styles.modalOverlay}>
+                <div style={styles.modalContent}>
+                  <h2 style={styles.modalContentH2}>Change Password</h2>
+                  <HighlightOffOutlinedIcon
+                    onClick={() => setShowPasswordModal(false)}
+                    style={styles.cancelpasswordIcon}
+                  />
+                  <form onSubmit={handlePasswordChange} style={styles.form}>
+                    <div style={styles.formGroup}>
+                      <label style={styles.label2}>Current Password:</label>
+                      <input
+                        type="password"
+                        placeholder="Enter Current Password"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        required
+                        style={styles.input}
+                      />
+                    </div>
+                    <div style={styles.formGroup}>
+                      <label style={styles.label2}>New Password:</label>
+                      <input
+                        type="password"
+                        placeholder="Enter New Password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        required
+                        style={styles.input}
+                      />
+                    </div>
+                    <div style={styles.formGroup}>
+                      <label style={styles.label2}>Confirm New Password:</label>
+                      <input
+                        type="password"
+                        placeholder="Confirm New Password"
+                        value={confirmNewPassword}
+                        onChange={(e) => setConfirmNewPassword(e.target.value)}
+                        required
+                        style={styles.input}
+                      />
+                    </div>
+
+                    <div style={styles.buttonContainer}>
+                      <button
+                        type="submit"
+                        disabled={isChangingPassword}
+                        style={{
+                          ...styles.submitButton,
+                          opacity: isChangingPassword ? 0.7 : 1,
+                        }}
+                      >
+                        {isChangingPassword ? 'Changing Password...' : 'Change Password'}
+                      </button>
+                    </div>
+                  </form>
+
+                  {passwordChangeMessage && (
+                    <p style={{ color: 'green', marginTop: '15px', textAlign: 'center' }}>
+                      {passwordChangeMessage}
+                    </p>
+                  )}
+                  {passwordChangeError && (
+                    <p style={{ color: 'red', marginTop: '15px', textAlign: 'center' }}>
+                      {passwordChangeError}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Delete Account Modal */}
+            {showDeleteModal && (
+              <div style={styles.modalOverlay2}>
+                <div style={styles.modalContent2}>
+                  <h2 style={styles.modalTitle2}>Account Deletion</h2>
+                  <p style={styles.modalText2}>
+                    Are you sure you want to delete your account? This action cannot be undone.
+                  </p>
+                  <div style={styles.termsSection}>
+                    <h3 style={styles.termsTitle}>Terms and Conditions</h3>
+                    <p style={styles.termsText}>
+                      - All your data, including preferences, bookings, and wallet balance, will be permanently deleted.
+                      <br />
+                      - Deletion requests are subject to review and approval.
+                      <br />
+                      - After approval, account recovery is not possible.
+                    </p>
+                  </div>
+                  <div style={styles.modalButtons}>
                     <button
-                      onClick={() => submitFeedback(itinerary)}
-                      style={styles.button}
+                      onClick={handleDeleteRequest}
+                      disabled={waiting || requestSent}
+                      style={styles.confirmButton}
                     >
-                      Submit Feedback
+                      {waiting
+                        ? "Processing..."
+                        : requestSent
+                          ? "Request Sent"
+                          : "Confirm Deletion"}
+                    </button>
+                    <button
+                      onClick={() => setShowDeleteModal(false)}
+                      style={styles.cancelButton}
+                    >
+                      Cancel
                     </button>
                   </div>
                 </div>
+              </div>
+            )}
+            {/* File Complaint Modal */}
+            {showComplaintModal && (
+              <div style={styles.modalOverlay}>
+                <div style={styles.modalContent}>
+                  <HighlightOffOutlinedIcon
+                    style={styles.cancelIcon3}
+                    onClick={() => setShowComplaintModal(false)} // Close modal
+                  />
+
+                  {/* Tabs for Switching Between Filing and Viewing Complaints */}
+                  <div style={styles.tabContainer}>
+                    <button
+                      style={
+                        activeTab === "fileComplaint"
+                          ? styles.activeTabButton
+                          : styles.tabButton
+                      }
+                      onClick={() => setActiveTab("fileComplaint")}
+                    >
+                      File a Complaint
+                    </button>
+                    <button
+                      style={
+                        activeTab === "viewComplaints"
+                          ? styles.activeTabButton
+                          : styles.tabButton
+                      }
+                      onClick={() => setActiveTab("viewComplaints")}
+                    >
+                      View Complaints
+                    </button>
+                  </div>
+
+                  {/* Content Based on Active Tab */}
+                  {activeTab === "fileComplaint" && (
+                    <div style={styles.tabContent}>
+                      <h2 style={styles.modalTitle}>File a Complaint</h2>
+                      <form onSubmit={handleSubmitComplaint}>
+                        <div style={styles.formGroup}>
+                          <label style={styles.label}>Title:</label>
+                          <input
+                            type="text"
+                            name="title"
+                            placeholder="Complaint Title"
+                            value={formData.title}
+                            onChange={handleInputChange}
+                            required
+                            style={styles.input}
+                          />
+                        </div>
+                        <div style={styles.formGroup}>
+                          <label style={styles.label}>Description:</label>
+                          <textarea
+                            name="body"
+                            placeholder="Describe your issue..."
+                            value={formData.body}
+                            onChange={handleInputChange}
+                            required
+                            style={styles.textarea}
+                          />
+                        </div>
+                        <div style={styles.formGroup}>
+                          <label style={styles.label}>Date:</label>
+                          <input
+                            type="date"
+                            name="date"
+                            value={formData.date}
+                            onChange={handleInputChange}
+                            required
+                            style={styles.input}
+                          />
+                        </div>
+                        <button type="submit" style={styles.submitButton}>
+                          Submit Complaint
+                        </button>
+                      </form>
+                    </div>
+                  )}
+
+                  {activeTab === "viewComplaints" && (
+                    <div style={styles.tabContent}>
+                      <h2 style={styles.modalTitle}>Your Complaints</h2>
+                      {complaints.length === 0 ? (
+                        <p style={styles.emptyText}>No complaints filed yet.</p>
+
+                      ) : (
+
+                        <div style={styles.complaintsList}>
+                          <Slider {...sliderSettings}>
+                            {complaints.map((complaint) => (
+                              <div key={complaint._id} style={styles.complaintCard}>
+                                <p style={styles.complaintText}>
+                                  <strong>Title:</strong> {complaint.title}
+                                </p>
+                                <p style={styles.complaintText}>
+                                  <strong>Status:</strong> {complaint.status}
+                                </p>
+                                <p style={styles.complaintText}>
+                                  <strong>Date:</strong>{" "}
+                                  {new Date(complaint.date).toLocaleDateString()}
+                                </p>
+                                {complaint.replies && complaint.replies.length > 0 ? (
+                                  <div style={styles.repliesSection}>
+                                    <h4 style={styles.repliesTitle}>Replies:</h4>
+                                    {complaint.replies.map((reply, index) => (
+                                      <div key={index} style={styles.replyCard}>
+                                        <p style={styles.complaintText}><strong>Reply:</strong> {reply.content}</p>
+                                        <p style={styles.complaintText}><strong>Date:</strong> {new Date(reply.date).toLocaleDateString()}</p>
+                                        {reply.replier && <p style={styles.complaintText}><strong>Replier:</strong> {reply.replier}</p>}
+                                      </div>
+                                    ))}
+
+                                  </div>
+                                ) : (
+
+                                  <p style={styles.noRepliesText}>
+                                    <em>No replies yet.</em>
+                                  </p>
+
+
+                                )}
+                              </div>
+                            ))}
+                          </Slider>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+
+
+
+
+
+            {showAddressModal && (
+              <div style={styles.modalOverlay}>
+                <motion.div
+
+
+
+                  style={styles.modalContent}
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {/* Close Icon */}
+                  <HighlightOffOutlinedIcon
+                    style={styles.cancelIcon4}
+                    onClick={() => setShowAddressModal(false)} // Close modal
+                  />
+
+                  {/* Tabs */}
+                  <div style={styles.tabContainer}>
+                    <button
+                      style={
+                        activeTab === "viewAddresses"
+                          ? { ...styles.tabButton, ...styles.activeTab }
+                          : styles.tabButton
+                      }
+                      onClick={() => setActiveTab("viewAddresses")}
+                    >
+                      View Addresses
+                    </button>
+                    <button
+                      id="viewAddressesSection"
+                      ref={addressesSectionRef}
+                      style={
+                        activeTab === "addAddress"
+                          ? { ...styles.tabButton, ...styles.activeTab }
+                          : styles.tabButton
+                      }
+                      onClick={() => setActiveTab("addAddress")}
+                    >
+                      Add Address
+                    </button>
+                  </div>
+
+                  {/* View Addresses Content */}
+                  {activeTab === "viewAddresses" && (
+                    <motion.div
+                      style={styles.tabContent}
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <h2 style={styles.modalTitle}>Your Addresses</h2>
+                      {addresses.length === 0 ? (
+                        <p style={styles.noAddressesText}>
+                          You haven't added any addresses yet.
+                        </p>
+                      ) : (
+                        <div style={styles.addressGrid}>
+                          {addresses.map((address, index) => (
+                            <motion.div
+                              key={index}
+                              style={styles.addressCard}
+                              whileHover={{ scale: 1.05 }}
+                            >
+                              <div style={styles.iconWrapper}>
+                                <LocationOnIcon style={{ color: "#0F5123", fontSize: "24px" }} />
+                              </div>
+                              <p style={styles.addressLine}>
+                                <strong>{address.addressLine1}</strong>
+                              </p>
+                              {address.addressLine2 && <p style={styles.complaintText}>{address.addressLine2}</p>}
+                              <p style={styles.complaintText}>
+                                {address.city}, {address.state && `${address.state},`} {address.country}
+                              </p>
+                              <p style={styles.complaintText}>Postal Code: {address.postalCode}</p>
+                              <p style={styles.complaintText}>Phone: {address.phoneNumber}</p>
+                              {address.isPrimary && (
+                                <span style={styles.primaryBadge}>
+                                  <StarIcon style={{ fontSize: "16px", marginRight: "5px" }} />
+                                  Primary Address
+                                </span>
+                              )}
+                            </motion.div>
+                          ))}
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+
+                  {/* Add Address Content */}
+                  {activeTab === "addAddress" && (
+                    <motion.div
+                      style={styles.tabContent}
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <h2 style={styles.modalTitle}>Add New Address</h2>
+                      <form onSubmit={handleAddAddress} style={styles.container}>
+                        <input
+                          style={{
+                            width: "100%",
+                            padding: "10px",
+                            marginBottom: "10px",
+                            borderRadius: "5px",
+                            border: "1px solid #ddd",
+                          }}
+                          name="addressLine1"
+                          value={newAddress.addressLine1}
+                          onChange={handleAddressInputChange}
+                          placeholder="Address Line 1"
+                          required
+                        />
+
+                        <input
+                          style={{
+                            width: "100%",
+                            padding: "10px",
+                            marginBottom: "10px",
+                            borderRadius: "5px",
+                            border: "1px solid #ddd",
+                          }}
+                          name="addressLine2"
+                          value={newAddress.addressLine2}
+                          onChange={handleAddressInputChange}
+                          placeholder="Address Line 2"
+                        />
+
+                        <input
+                          style={{
+                            width: "100%",
+                            padding: "10px",
+                            marginBottom: "10px",
+                            borderRadius: "5px",
+                            border: "1px solid #ddd",
+                          }}
+                          name="city"
+                          value={newAddress.city}
+                          onChange={handleAddressInputChange}
+                          placeholder="City"
+                          required
+                        />
+
+                        <input
+                          style={{
+                            width: "100%",
+                            padding: "10px",
+                            marginBottom: "10px",
+                            borderRadius: "5px",
+                            border: "1px solid #ddd",
+                          }}
+                          name="state"
+                          value={newAddress.state}
+                          onChange={handleAddressInputChange}
+                          placeholder="State"
+                        />
+
+                        <input
+                          type="number"
+                          style={{
+                            width: "100%",
+                            padding: "10px",
+                            marginBottom: "10px",
+                            borderRadius: "5px",
+                            border: "1px solid #ddd",
+                          }}
+                          name="postalCode"
+                          value={newAddress.postalCode}
+                          onChange={handleAddressInputChange}
+                          placeholder="Postal Code"
+                        />
+
+                        <input
+                          style={{
+                            width: "100%",
+                            padding: "10px",
+                            marginBottom: "10px",
+                            borderRadius: "5px",
+                            border: "1px solid #ddd",
+                          }}
+                          name="country"
+                          value={newAddress.country}
+                          onChange={handleAddressInputChange}
+                          placeholder="Country"
+                          required
+                        />
+
+                        <input
+                          type="number"
+                          style={{
+                            width: "100%",
+                            padding: "10px",
+                            marginBottom: "10px",
+                            borderRadius: "5px",
+                            border: "1px solid #ddd",
+                          }}
+                          name="phoneNumber"
+                          value={newAddress.phoneNumber}
+                          onChange={handleAddressInputChange}
+                          placeholder="Phone Number"
+                        />
+
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                          <label style={{ marginRight: "10px", color: "black" }}>Is Primary</label>
+                          <input
+                            type="checkbox"
+                            name="isPrimary"
+                            checked={newAddress.isPrimary}
+                            onChange={handleAddressInputChange}
+                          />
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <button type="submit" style={styles.addButton}>
+                            Submit Address
+                          </button>
+
+                        </div>
+                      </form>
+                    </motion.div>
+                  )}
+                </motion.div>
+              </div>
+            )}
+
+            {/* Cart Icon */}
+            <div style={styles.cartButton} onClick={() => navigate("/Cart")}>
+              <ShoppingCartOutlinedIcon style={styles.cartIcon} />
+            </div>
+            {/* Logout Icon */}
+            <LogoutOutlinedIcon
+              style={{ cursor: 'pointer', marginLeft: '0px' }} // You can adjust your styles here
+              onClick={handleLogout}
+            />
+          </div>
+        </header>
+
+        {/* Notification Dropdown */}
+        {showNotifications && (
+          <div style={styles.notificationDropdown}>
+            <h3 style={styles.dropdownHeader}>Notifications</h3>
+            {notifications.length > 0 ? (
+              notifications.map((notification, index) => (
+                <div key={index} style={styles.notificationItem}>
+                  <li
+                    key={notification.id}
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "flex-start",
+                      backgroundColor: "#f9f9f9",
+                      border: "1px solid #ddd",
+                      borderRadius: "5px",
+                      padding: "10px",
+                      borderBottom: "1px solid #f0f0f0",
+                      fontSize: "10px",
+                    }}
+                  >
+                    <MdNotificationImportant
+                      size={50}
+                      style={{ marginRight: "10px", color: "#ff9800" }}
+                    />
+                    <p>{notification.message}</p>
+                  </li>
+                  <span style={styles.notificationDate}>
+                    {new Date(notification.date).toLocaleString()}
+                  </span>
+                </div>
               ))
             ) : (
-              <p style={styles.emptyMessage}>You have no past itineraries</p>
+              <p style={styles.noNotifications}>No notifications available</p>
             )}
-          
+          </div>
+        )}
 
-       
+        {/* Main Content */}
+        {/* Sidebar */}
+        <div
+          style={styles.sidebar}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.width = "200px";
+            Array.from(e.currentTarget.querySelectorAll(".label")).forEach(
+              (label) => (label.style.opacity = "1")
+            );
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.width = "60px";
+            Array.from(e.currentTarget.querySelectorAll(".label")).forEach(
+              (label) => (label.style.opacity = "0")
+            );
+          }}
+        >
+          <div
+            className="historical"
+            style={styles.item}
+            onClick={() => navigate("/historical-locations")}
+          >
+            <FaUniversity style={styles.iconn} />
+            <span className="label" style={styles.label}>
+              Historical Sites
+            </span>
+          </div>
+          <div
+            className="museums"
+            style={styles.item}
+            onClick={() => navigate("/museums")}
+          >
+            <MuseumIcon style={styles.iconn} />
+            <span className="label" style={styles.label}>
+              Museums
+            </span>
+          </div>
+          <div
+            className="products"
+            style={styles.item}
+            onClick={() => navigate("/products")}
+          >
+            <FaBox style={styles.iconn} />
+            <span className="label" style={styles.label}>
+              Products
+            </span>
+          </div>
+          <div
+            className="itineraries"
+            style={styles.item}
+            onClick={() => navigate("/itineraries")}
+          >
+            <FaMap style={styles.iconn} />
+            <span className="label" style={styles.label}>
+              Itineraries
+            </span>
+          </div>
+          <div
+            className="activities"
+            style={styles.item}
+            onClick={() => navigate("/activities")}
+          >
+            <FaRunning style={styles.iconn} />
+            <span className="label" style={styles.label}>
+              Activities
+            </span>
+          </div>
+          <div
+            className="flights"
+            style={styles.item}
+            onClick={() => navigate("/book-flights")}
+          >
+            <FaPlane style={styles.iconn} />
+            <span className="label" style={styles.label}>
+              Book Flights
+            </span>
+          </div>
+          <div
+            className="hotels"
+            style={styles.item}
+            onClick={() => navigate("/book-hotels")}
+          >
+            <HotelIcon style={styles.iconn} />
+            <span className="label" style={styles.label}>
+              Book a Hotel
+            </span>
+          </div>
+          <div
+            className="transportation"
+            style={styles.item}
+            onClick={() => navigate("/book-transportation")}
+          >
+            <FaBus style={styles.iconn} />
+            <span className="label" style={styles.label}>
+              Transportation
+            </span>
+          </div>
+
+
+        </div>
+
+        <div>
+          {isPreferencesVisible && (
+            <div
+              className="preferences-section"
+              style={{ margin: "20px 0", textAlign: "center" }}
+            >
+              <h3
+                style={{ fontSize: "18px", marginBottom: "20px", color: "#333" }}
+              >
+                Select Your Vacation Preferences
+              </h3>
+              <div
+                className="carousel-container"
+                style={styles.carouselContainerStyle}
+              >
+                {/* Historic Areas */}
+                <div
+                  className="carousel-item"
+                  style={{
+                    position: "relative",
+                    width: "450px",
+                    height: "290px",
+                    border: "1px solid #ddd",
+                    borderRadius: "15px",
+                    flexShrink: 0,
+                    backgroundColor: "#fff",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    overflow: "hidden",
+                  }}
+                >
+                  <img
+                    src={historic}
+                    alt="Historic Areas"
+                    style={{
+                      width: "100%",
+                      height: "250px",
+                      objectFit: "cover",
+                      borderTopLeftRadius: "15px",
+                      borderTopRightRadius: "15px",
+                    }}
+                  />
+                  <div
+                    style={{
+                      padding: "10px",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <label
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        marginBottom: "0",
+                        marginRight: "10px",
+                        color: "#0F5132",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      Historic Areas
+                      <input
+                        type="checkbox"
+                        name="historicAreas"
+                        checked={preferences.historicAreas}
+                        onChange={handlePreferenceChange}
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          cursor: "pointer",
+                          marginLeft: "10px",
+                        }}
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                {/* Beaches */}
+                <div
+                  className="carousel-item"
+                  style={{
+                    position: "relative",
+                    width: "450px",
+                    height: "290px",
+                    border: "1px solid #ddd",
+                    borderRadius: "15px",
+                    flexShrink: 0,
+                    backgroundColor: "#fff",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    overflow: "hidden",
+                  }}
+                >
+                  <img
+                    src={beach}
+                    alt="Beaches"
+                    style={{
+                      width: "100%",
+                      height: "250px",
+                      objectFit: "cover",
+                      borderTopLeftRadius: "15px",
+                      borderTopRightRadius: "15px",
+                    }}
+                  />
+                  <div
+                    style={{
+                      padding: "10px",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <label
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        marginBottom: "0",
+                        marginRight: "10px",
+                        color: "#0F5132",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      Beaches
+                      <input
+                        type="checkbox"
+                        name="beaches"
+                        checked={preferences.beaches}
+                        onChange={handlePreferenceChange}
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          cursor: "pointer",
+                          marginLeft: "10px",
+                        }}
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                {/* Family-Friendly */}
+                <div
+                  className="carousel-item"
+                  style={{
+                    position: "relative",
+                    width: "450px",
+                    height: "290px",
+                    border: "1px solid #ddd",
+                    borderRadius: "15px",
+                    flexShrink: 0,
+                    backgroundColor: "#fff",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    overflow: "hidden",
+                  }}
+                >
+                  <img
+                    src={family}
+                    alt="Family-Friendly"
+                    style={{
+                      width: "100%",
+                      height: "250px",
+                      objectFit: "cover",
+                      borderTopLeftRadius: "15px",
+                      borderTopRightRadius: "15px",
+                    }}
+                  />
+                  <div
+                    style={{
+                      padding: "10px",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <label
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        marginBottom: "0",
+                        marginRight: "10px",
+                        color: "#0F5132",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      Family-Friendly
+                      <input
+                        type="checkbox"
+                        name="familyFriendly"
+                        checked={preferences.familyFriendly}
+                        onChange={handlePreferenceChange}
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          cursor: "pointer",
+                          marginLeft: "10px",
+                        }}
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                {/* Shopping */}
+                <div
+                  className="carousel-item"
+                  style={{
+                    position: "relative",
+                    width: "450px",
+                    height: "290px",
+                    border: "1px solid #ddd",
+                    borderRadius: "15px",
+                    flexShrink: 0,
+                    backgroundColor: "#fff",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    overflow: "hidden",
+                  }}
+                >
+                  <img
+                    src={shopping}
+                    alt="Shopping"
+                    style={{
+                      width: "100%",
+                      height: "250px",
+                      objectFit: "cover",
+                      borderTopLeftRadius: "15px",
+                      borderTopRightRadius: "15px",
+                    }}
+                  />
+                  <div
+                    style={{
+                      padding: "10px",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <label
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                        marginBottom: "0",
+                        marginRight: "10px",
+                        color: "#0F5132",
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      Shopping
+                      <input
+                        type="checkbox"
+                        name="shopping"
+                        checked={preferences.shopping}
+                        onChange={handlePreferenceChange}
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          cursor: "pointer",
+                          marginLeft: "10px",
+                        }}
+                      />
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Budget Selection */}
+              <div
+                className="budget-selection"
+                style={{ marginTop: "30px", textAlign: "center" }}
+              >
+                <label
+                  style={{
+                    fontWeight: "bold",
+                    marginRight: "10px",
+                    fontSize: "16px",
+                  }}
+                >
+                  Budget:
+                </label>
+                <select
+                  name="budget"
+                  value={preferences.budget}
+                  onChange={handlePreferenceChange}
+                  style={{
+                    padding: "10px",
+                    fontSize: "16px",
+                    border: "1px solid #ddd",
+                    borderRadius: "5px",
+                  }}
+                >
+                  <option value="">Select</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+                <button
+                  onClick={submitPreferences}
+                  style={{
+                    marginTop: "30px",
+                    padding: "12px 20px",
+                    backgroundColor: "#0F5132",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                    fontSize: "16px",
+                  }}
+                >
+                  Save Preferences
+                </button>
+                {successMessage && (
+                  <p style={{ color: "#0F5132" }}>{successMessage}</p>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div style={{ marginTop: "20px", padding: "0 20px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <h3 style={{ fontSize: "22px", color: "#0F5132", fontWeight: "bold" }}>Top Destinations</h3>
+            <span
+              onClick={() => navigate("/book-flights")}
+              style={{
+                fontSize: "16px",
+                color: "#0F5132",
+                textDecoration: "none",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+            >
+              See all
+            </span>
+          </div>
+          <div className="carousel-container" style={styles.carouselContainerStyle}>
+            {images2.map((image, index) => (
+              <div
+                key={index}
+                className="carousel-item"
+                style={{
+                  position: "relative",
+                  width: "250px",
+                  border: "1px solid #ddd",
+                  borderRadius: "15px",
+                  flexShrink: 0,
+                  backgroundColor: "#fff",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  overflow: "hidden",
+                  marginRight: "15px",
+                }}
+              >
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  style={{
+                    width: "100%",
+                    height: "150px",
+                    objectFit: "cover",
+                    borderTopLeftRadius: "15px",
+                    borderTopRightRadius: "15px",
+                  }}
+                />
+                <div style={{ padding: "10px" }}>
+                  <h4
+                    style={{
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      color: "#333",
+                      marginBottom: "5px",
+                    }}
+                  >
+                    {image.title}
+                  </h4>
+                  <div style={{ display: "flex", alignItems: "center", marginTop: "5px" }}>
+                    <span style={{ color: "green", fontSize: "14px", marginRight: "5px" }}>●●●●●</span>
+                    <span style={{ fontSize: "14px", color: "#555" }}>{image.reviews} reviews</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={{ marginTop: "20px", padding: "0 20px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <h3 style={{ fontSize: "22px", color: "#0F5132", fontWeight: "bold" }}>Top global attractions</h3>
+            <span
+              onClick={() => navigate("/historical-locations")}
+              style={{
+                fontSize: "16px",
+                color: "#0F5132",
+                textDecoration: "none",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+            >
+              See all
+            </span>
+          </div>
+          <div className="carousel-container" style={styles.carouselContainerStyle}>
+            {images.map((image, index) => (
+              <div
+                key={index}
+                className="carousel-item"
+                style={{
+                  position: "relative",
+                  width: "250px",
+                  border: "1px solid #ddd",
+                  borderRadius: "15px",
+                  flexShrink: 0,
+                  backgroundColor: "#fff",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  overflow: "hidden",
+                  marginRight: "15px",
+                }}
+              >
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  style={{
+                    width: "100%",
+                    height: "150px",
+                    objectFit: "cover",
+                    borderTopLeftRadius: "15px",
+                    borderTopRightRadius: "15px",
+                  }}
+                />
+                <div style={{ padding: "10px" }}>
+                  <h4
+                    style={{
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      color: "#333",
+                      marginBottom: "5px",
+                    }}
+                  >
+                    {image.title}
+                  </h4>
+                  <div style={{ display: "flex", alignItems: "center", marginTop: "5px" }}>
+                    <span style={{ color: "green", fontSize: "14px", marginRight: "5px" }}>●●●●●</span>
+                    <span style={{ fontSize: "14px", color: "#555" }}>{image.reviews} reviews</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+
+
+
+
+        <h3 style={styles.cardTitle}>Your Upcoming Booked Itineraries</h3>
+        {upcomingItineraries.length > 0 ? (
+          <div
+            className="carousel-container"
+            style={styles.carouselContainerStyle}
+          >    {upcomingItineraries.map((itinerary) => (
+            <div
+              key={itinerary._id}
+              className="carousel-item"
+              style={{
+                position: "relative",
+                width: "400px",
+                height: "auto",
+                border: "1px solid #ddd",
+                borderRadius: "15px",
+                flexShrink: 0,
+                backgroundColor: "#fff",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                overflow: "hidden",
+                marginBottom: "10px",
+              }}
+            >
+
+              <div key={itinerary._id} style={styles.itineraryCard}>
+
+                <h4 style={styles.itineraryTitle}>Activities Included:</h4>
+                <p style={styles.itineraryText}>{itinerary.Activities.join(", ")}</p>
+
+                <p style={styles.itineraryText}>
+                  <strong ><FaMapMarkerAlt />Locations:</strong> {itinerary.Locations.join(", ")}
+                </p>
+                <p style={styles.itineraryText}>
+                  <strong><FaDollarSign /> Price:</strong> {(itinerary.price * conversionRate).toFixed(2)} {selectedCurrency}
+                </p>
+                <p style={styles.itineraryText}>
+                  <strong><FaUserCircle />Tour Guide:</strong> {itinerary.TourGuide}
+                </p>
+                <p style={styles.itineraryText}>
+                  <strong><FaCalendar />Date:</strong> {new Date(itinerary.DatesTimes).toLocaleDateString()}
+                </p>
+                <p style={styles.hyperlinkText}>
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault(); // Prevent page reload
+                      handleOpenCancelPopup(itinerary._id); // Trigger the popup
+                    }}
+                    style={styles.hyperlink}
+                  >
+                    Do you want to cancel your booking? Click here.
+                  </a>
+                </p>
+                {/* Popup Modal */}
+                {isCancelPopupOpen && selectedItineraryId === itinerary._id && (
+                  <div style={styles.popupOverlay}>
+                    <div style={styles.popupContent}>
+                      <h4 style={styles.popupTitle}>Confirm Cancellation</h4>
+                      <p style={styles.popupMessage}>
+                        Do you really want to cancel your booking? You need to cancel at least 2 days before the booking date.
+                      </p>
+                      <div style={styles.popupButtons}>
+                        <button
+                          onClick={() => handleCancelItineraryBooking(itinerary._id)}
+                          style={styles.confirmButton}
+                        >
+                          Yes, Cancel Booking
+                        </button>
+                        <button
+                          onClick={() => setIsCancelPopupOpen(false)}
+                          style={styles.cancelButton}
+                        >
+                          No, Keep Booking
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+
+              </div>
+            </div>
+          ))}
+          </div>
+        ) : (
+          <p style={styles.emptyMessage}>You have no booked upcoming itineraries.</p>
+        )}
+
+        <h3 style={styles.cardTitle}>Your Upcoming Booked Activities</h3>
+        {bookedActivities.length > 0 ? (
+          <div className="carousel-container" style={styles.carouselContainerStyle}>
+            {bookedActivities.map((activity) => (
+              <div
+                key={activity._id}
+                className="carousel-item"
+                style={{
+                  position: "relative",
+                  width: "400px",
+                  height: "auto",
+                  border: "1px solid #ddd",
+                  borderRadius: "15px",
+                  flexShrink: 0,
+                  backgroundColor: "#fff",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  overflow: "hidden",
+                  marginBottom: "10px",
+                }}
+              >
+                <div key={activity._id} style={styles.itineraryCard}>
+                  <h4 style={styles.itineraryTitle}>
+                    <FaTag /> Activity Name:
+                  </h4>
+                  <p style={styles.itineraryText}>{activity.name}</p>
+                  <p style={styles.itineraryText}>
+                    <FaTag /> <strong>Category:</strong>{" "}
+                    {activity.Category}
+                  </p>
+                  <p style={styles.itineraryText}>
+                    <FaDollarSign /> <strong>Price:</strong>{" "}
+                    {(activity.price * conversionRate).toFixed(2)} {selectedCurrency}
+                  </p>
+                  <p style={styles.itineraryText}>
+                    <FaMapMarkerAlt /> <strong>Location:</strong>{" "}
+                    {activity.Location}
+                  </p>
+                  <p style={styles.itineraryText}>
+                    <FaCalendar /> <strong>Date:</strong>{" "}
+                    {new Date(activity.date).toLocaleDateString()}
+                  </p>
+                  <p style={styles.hyperlinkText}>
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault(); // Prevent page reload
+                        setSelectedActivityId(activity._id);
+                        setIsCancelPopupOpen2(true);
+                      }}
+                      style={styles.hyperlink}
+                    >
+                      Do you want to cancel your booking? Click here.
+                    </a>
+                  </p>
+                  {/* Popup Modal */}
+                  {isCancelPopupOpen2 && selectedActivityId === activity._id && (
+                    <div style={styles.popupOverlay}>
+                      <div style={styles.popupContent}>
+                        <h4 style={styles.popupTitle}>Confirm Cancellation</h4>
+                        <p style={styles.popupMessage}>
+                          Do you really want to cancel your booking? You need to
+                          cancel at least 2 days before the booking date.
+                        </p>
+                        <div style={styles.popupButtons}>
+                          <button
+                            onClick={() =>
+                              handleCancelActivityBooking(activity._id)
+                            }
+                            style={styles.confirmButton}
+                          >
+                            Yes, Cancel Booking
+                          </button>
+                          <button
+                            onClick={() => setIsCancelPopupOpen2(false)}
+                            style={styles.cancelButton}
+                          >
+                            No, Keep Booking
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p style={styles.emptyMessage}>
+            You have no upcoming booked activities.
+          </p>
+        )}
+
+
+
+        {/* Dashboard Section */}
+        <div
+          className="dashboard-section"
+          style={{
+            padding: "20px",
+            fontFamily: "Arial, sans-serif",
+            marginTop: "40px",
+          }}
+        >
+
+
+        </div>
+
+
+
+
+        <h3
+          style={{
+            fontSize: "24px",
+            marginBottom: "20px",
+            color: "#0F5132",
+            fontWeight: "bold",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+          }}
+        >
+          <FaClock style={{ fontSize: "20px", color: "#0F5132" }} /> Past Itineraries
+        </h3>
+        {pastItineraries.length > 0 ? (
+          pastItineraries.map((itinerary) => (
+            <div
+              key={itinerary._id}
+              style={{
+                marginBottom: "15px",
+                padding: "20px",
+                border: "1px solid #ddd",
+                borderRadius: "10px",
+                backgroundColor: "#f9f9f9",
+                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                transition: "transform 0.3s ease, border-color 0.3s ease",
+                cursor: "pointer",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.02)";
+                e.currentTarget.style.borderColor = "#0F5132";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.borderColor = "#ddd";
+              }}
+            >
+              <h4
+                style={{
+                  fontSize: "18px",
+                  fontWeight: "bold",
+                  marginBottom: "10px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                <FaMapMarkerAlt style={{ fontSize: "18px", color: "#0F5132" }} />
+                Activities Included: {itinerary.Activities.join(", ")}
+              </h4>
+              <p style={{ fontSize: "14px", marginBottom: "8px", color: "#555" }}>
+                <FaMap style={{ marginRight: "5px", color: "#0F5132" }} /> Locations:{" "}
+                {itinerary.Locations.join(", ")}
+              </p>
+              <p style={{ fontSize: "14px", marginBottom: "8px", color: "#555" }}>
+                <FaDollarSign style={{ marginRight: "5px", color: "#0F5132" }} /> Price:{" "}
+                {(itinerary.price * conversionRate).toFixed(2)} {selectedCurrency}
+              </p>
+              <p style={{ fontSize: "14px", marginBottom: "8px", color: "#555" }}>
+                <FaUserCircle style={{ marginRight: "5px", color: "#0F5132" }} /> Tour
+                Guide: {itinerary.TourGuide}
+              </p>
+              <p style={{ fontSize: "14px", marginBottom: "15px", color: "#555" }}>
+                <FaCalendarAlt style={{ marginRight: "5px", color: "#0F5132" }} /> Date:{" "}
+                {itinerary.DatesTimes}
+              </p>
+
+              {/* Feedback Section */}
+              {!itinerary.feedbackSubmitted && (
+                <div style={{ marginTop: "10px" }}>
+                  <h4
+                    style={{
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                      marginBottom: "10px",
+                      color: "#0F5132",
+                    }}
+                  >
+                    <FaStar style={{ marginRight: "5px", color: "#FFD700" }} />
+                    Leave Feedback on Itinerary
+                  </h4>
+                  {renderSmileyRating(ratingsI[itinerary._id] || 0, itinerary)}
+                  <input
+                    type="text"
+                    placeholder="Comment"
+                    value={commentsI[itinerary._id] || ""}
+                    onChange={(e) => handleCommentChangeI(itinerary, e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "8px",
+                      marginBottom: "10px",
+                      borderRadius: "5px",
+                      border: "1px solid #ddd",
+                    }}
+                  />
+                  <button
+                    onClick={() => submitFeedbackItinerary(itinerary)}
+                    style={{
+                      padding: "10px",
+                      backgroundColor: "#0F5132",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                    }}
+                  >
+                    Submit Feedback
+                  </button>
+                </div>
+              )}
+
+              <div style={{ marginTop: "20px" }}>
+                <h4
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                    marginBottom: "10px",
+                    color: "#0F5132",
+                  }}
+                >
+                  <FaStar style={{ marginRight: "5px", color: "#FFD700" }} />
+                  Leave Feedback on Tour Guide
+                </h4>
+                {renderSmileyRatingForTourGuide(ratings[itinerary._id] || 0, itinerary)}
+                <input
+                  type="text"
+                  placeholder="Comment"
+                  value={comments[itinerary._id] || ""}
+                  onChange={(e) => handleCommentChange(itinerary, e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "8px",
+                    marginBottom: "10px",
+                    borderRadius: "5px",
+                    border: "1px solid #ddd",
+                  }}
+                />
+                <button
+                  onClick={() => submitFeedback(itinerary)}
+                  style={{
+                    padding: "10px",
+                    backgroundColor: "#0F5132",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                  }}
+                >
+                  Submit Feedback
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p style={{ fontSize: "14px", color: "#555" }}>No past itineraries found.</p>
+        )}
+
+
+
+
 
         {successMessage && <div style={styles.success}>{successMessage}</div>}
       </div>
@@ -3251,7 +3387,7 @@ const styles = {
     backgroundColor: "#28a745",
     borderRadius: "20px",
   },
-  
+
   sliderItem: {
     padding: '10px',
     backgroundColor: '#fff',
@@ -3304,10 +3440,10 @@ const styles = {
     padding: "10px",
     margin: "0 auto",
     width: "100%", // Ensure full width for slider
-    height:"100%"
+    height: "100%"
   },
-  
- 
+
+
   repliesSection: {
     backgroundColor: "#ffffff",
     padding: "15px",
@@ -3316,10 +3452,10 @@ const styles = {
     border: "1px solid #ddd",
     width: "100%",
   },
-  
-  
+
+
   repliesTitle: {
-    fontSize:"16px",
+    fontSize: "16px",
     fontWeight: "bold",
     marginBottom: "5px",
     color: "#0F5132",
@@ -3333,8 +3469,8 @@ const styles = {
     color: "#333",
     lineHeight: "1.5",
   },
-  
-  
+
+
   noRepliesText: {
     fontStyle: "italic",
     color: "#666",
@@ -3367,14 +3503,14 @@ const styles = {
     fontSize: '14px', // Slightly smaller text for compactness
     lineHeight: '1.6',
     color: '#333',
-    height:"100%"
+    height: "100%"
   },
   complaintText: {
     fontSize: '15px',
     color: '#555',
     marginBottom: '8px',
   },
- 
+
   emptyText: {
     fontSize: '14px',
     textAlign: 'center',
@@ -3382,10 +3518,10 @@ const styles = {
     fontStyle: 'italic',
   },
 
-  
- 
 
-  
+
+
+
   statusIndicator: (status) => ({
     padding: '5px 10px',
     borderRadius: '10px',
@@ -3395,34 +3531,34 @@ const styles = {
     fontWeight: 'bold',
     display: 'inline-block',
   }),
-  
-    modalOverlay2: {
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      animation: 'fadeIn 0.3s ease-in-out',
-      zIndex: 1000,
-    },
-    modalContent2: {
-      background: 'white',
-      padding: '20px',
-      borderRadius: '10px',
-      width: '40%',
-      maxWidth: '500px',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      textAlign: 'center',
-      animation: 'slideDown 0.3s ease-in-out',
-    },
-  
 
-  
- 
+  modalOverlay2: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    animation: 'fadeIn 0.3s ease-in-out',
+    zIndex: 1000,
+  },
+  modalContent2: {
+    background: 'white',
+    padding: '20px',
+    borderRadius: '10px',
+    width: '40%',
+    maxWidth: '500px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    textAlign: 'center',
+    animation: 'slideDown 0.3s ease-in-out',
+  },
+
+
+
+
   modalTitle2: {
     fontSize: "22px",
     textAlign: "center",
@@ -3480,7 +3616,7 @@ const styles = {
     cursor: 'pointer',
   },
   deletebutton: {
-    
+
     backgroundColor: '#dc3545',
     color: 'white',
     padding: '5px 10px',
@@ -3488,15 +3624,15 @@ const styles = {
     borderRadius: '5px',
     cursor: 'pointer',
   },
- 
-label2: {
-  fontSize: "14px",
-  fontWeight: "bold",
-  color: "#333", // Visible contrast color
-  marginBottom: "5px", // Space between label and input
-  marginTop: "15px", // Space between label and input
 
-},
+  label2: {
+    fontSize: "14px",
+    fontWeight: "bold",
+    color: "#333", // Visible contrast color
+    marginBottom: "5px", // Space between label and input
+    marginTop: "15px", // Space between label and input
+
+  },
   input: {
     padding: '10px',
     border: '1px solid #ddd',
@@ -3672,7 +3808,7 @@ label2: {
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     marginBottom: "20px",
   },
- 
+
   itineraryCard: {
     backgroundColor: "#f9f9f9",
     borderRadius: "10px",
@@ -3777,6 +3913,7 @@ label2: {
     backgroundColor: "#f4f4f4",
     borderRadius: "10px",
     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+    marginRight:'35px'
   },
   header: {
     height: "60px",
@@ -3812,7 +3949,7 @@ label2: {
     scrollbarWidth: "none", // For Firefox
     msOverflowStyle: "none", // For Internet Explorer/Edge
   },
-  
+
   item: {
     padding: "10px 0",
   },
@@ -3936,26 +4073,26 @@ label2: {
     0 0 2px rgba(255, 255, 255, 0.5)
   `, // Increased shadow, reduced glow
   },
-  
+
 
   title: {
     fontSize: "24px",
     fontWeight: "bold",
     color: "white",
     margin: 0,
-    marginLeft: "60px",
+    marginLeft: "230px",
 
 
-     
-      fontWeight: "bold", // Make it bold
-      fontFamily: "'Poppins', sans-serif", // Use a modern, clean font
-    
-    
-      textAlign: "center", // Center the title
-      letterSpacing: "1.5px", // Add spacing between letters
-      textTransform: "capitalize", // Capitalize the text
-      textShadow: "1px 1px 3px rgba(0, 0, 0, 0.2)", // Add a subtle shadow for depth
-    
+
+    fontWeight: "bold", // Make it bold
+    fontFamily: "'Poppins', sans-serif", // Use a modern, clean font
+
+
+    textAlign: "center", // Center the title
+    letterSpacing: "1.5px", // Add spacing between letters
+    textTransform: "capitalize", // Capitalize the text
+    textShadow: "1px 1px 3px rgba(0, 0, 0, 0.2)", // Add a subtle shadow for depth
+
   },
 
   addButton: {
@@ -4034,6 +4171,29 @@ label2: {
   },
   cartLabel: {
     fontSize: "16px",
+    fontWeight: "bold",
+  },
+  smileyContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    marginBottom: "10px",
+  },
+  smiley: {
+    fontSize: "30px",
+    transition: "color 0.3s ease",
+  },
+  ratingDisplay: {
+    marginTop: "10px",
+    fontSize: "14px",
+    color: "#555",
+  },
+  ratingLabel: {
+    fontWeight: "bold",
+    marginRight: "5px",
+  },
+  ratingValue: {
+    color: "#0F5132",
     fontWeight: "bold",
   },
 };
