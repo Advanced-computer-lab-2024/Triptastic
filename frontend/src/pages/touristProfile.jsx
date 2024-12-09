@@ -893,41 +893,24 @@ const handleOpenCancelPopup2 = (itineraryId) => {
   };
   const submitFeedbackItinerary = async (Itinerary) => {
     const username = localStorage.getItem("Username");
-
-    console.log("Submitting feedback for itinerary:", Itinerary); // Log itinerary details
-
-    // Check if the itinerary is in the past
+  
     const itineraryEndDate = new Date(Itinerary.DatesTimes);
     const currentDate = new Date();
-
-    console.log("Itinerary end date:", itineraryEndDate); // Log end date
-    console.log("Current date:", currentDate); // Log current date
-
+  
     if (itineraryEndDate > currentDate) {
-      setErrorMessage("You cannot submit feedback for an upcoming itinerary.");
-      setSuccessMessage("");
+      alert("You cannot submit feedback for an upcoming itinerary.");
       return;
     }
-
+  
     const rating = ratingsI[Itinerary._id];
     const comment = commentsI[Itinerary._id];
-
-    console.log("Rating for itinerary:", rating); // Log rating
-    console.log("Comment for itinerary:", comment); // Log comment
-
+  
     if (!rating) {
-      setErrorMessage("Please provide a rating.");
+      alert("Please provide a rating.");
       return;
     }
-
+  
     try {
-      console.log(
-        "Submitting to server with rating:",
-        rating,
-        "and comment:",
-        comment
-      );
-
       const response = await axios.post(
         `http://localhost:8000/submitFeedbackItinerary?username=${username}`,
         {
@@ -941,87 +924,71 @@ const handleOpenCancelPopup2 = (itineraryId) => {
           },
         }
       );
-
-      console.log("Server response:", response.data); // Log server response
-
+  
       if (response.status === 200) {
-        setSuccessMessage("Feedback submitted successfully!");
-        setErrorMessage("");
-
+        alert("Feedback submitted successfully!");
         // Clear rating and comment
         setRatingsI((prev) => ({ ...prev, [Itinerary._id]: "" }));
         setCommentsI((prev) => ({ ...prev, [Itinerary._id]: "" }));
       }
     } catch (err) {
-      console.error("Feedback submission error:", err); // Log error details
-      setErrorMessage(
+      console.error("Feedback submission error:", err);
+      alert(
         err.response?.data?.message || "Failed to submit feedback"
       );
-      setSuccessMessage("");
     }
   };
+  
   const submitFeedback = async (Itinerary) => {
     const username = localStorage.getItem("Username");
-    const tourGuideUsername = Itinerary.TourGuide; // This should be the tour guide's username, ensure it's valid
-
-    console.log("Submitting tour guide feedback for itinerary:", Itinerary);
-
+    const tourGuideUsername = Itinerary.TourGuide;
+  
     const itineraryEndDate = new Date(Itinerary.DatesTimes);
     const currentDate = new Date();
-
+  
     if (itineraryEndDate > currentDate) {
-      setErrorMessage("You cannot submit feedback for an upcoming itinerary.");
-      setSuccessMessage("");
+      alert("You cannot submit feedback for an upcoming itinerary.");
       return;
     }
-
+  
     const rating = ratings[Itinerary._id];
     const comment = comments[Itinerary._id];
-
+  
     if (!rating) {
-      setErrorMessage("Please provide a rating.");
+      alert("Please provide a rating.");
       return;
     }
-
+  
     try {
-      console.log(
-        "Submitting to server with rating:",
-        rating,
-        "and comment:",
-        comment
-      );
       const response = await axios.post(
         `http://localhost:8000/submitFeedback?username=${username}`,
         {
           itineraryId: Itinerary._id,
-          tourGuideUsername: tourGuideUsername, // Pass the tour guide's username here
+          tourGuideUsername: tourGuideUsername,
           rating,
-          comment: comment || "", // If no comment, send an empty string
+          comment: comment || "",
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Use token for auth
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
-
+  
       if (response.status === 200) {
-        console.log("Server response:", response.data);
-        setSuccessMessage("Feedback submitted successfully!");
-        setErrorMessage("");
-
+        alert("Feedback submitted successfully!");
+        // Clear rating and comment
         setRatings((prev) => ({ ...prev, [Itinerary._id]: "" }));
         setComments((prev) => ({ ...prev, [Itinerary._id]: "" }));
       }
     } catch (err) {
       console.error("Feedback submission error:", err);
-      setErrorMessage(
+      alert(
         err.response?.data?.message || "Failed to submit feedback"
       );
-      setSuccessMessage("");
     }
   };
-
+  
   const handleRatingChangeI = (itinerary, value) => {
     setRatingsI((prevRatings) => ({
       ...prevRatings,
