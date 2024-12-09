@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import { FiCopy } from 'react-icons/fi'; // Import a copy icon
-import activity from '../images/cyc.jpg';
+import activity from '../images/dk3.jpg';
 import HotelIcon from '@mui/icons-material/Hotel';
 import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
 
