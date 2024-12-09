@@ -276,7 +276,7 @@ const TouristOrders = () => {
                 style={styles.cancelButtonn}
               >
                 Cancel Order
-              </button>)};
+              </button>)}
           
               <h4 style={styles.productsTitle}>Products in this Order</h4>
               {order.products.map((product) => (
