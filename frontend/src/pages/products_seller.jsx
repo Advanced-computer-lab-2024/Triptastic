@@ -832,6 +832,11 @@ const styles = {
   },
   priceRangeDisplay: {
     fontSize: "16px",
+    textShadow: '0 4px 8px rgba(0, 0, 0, 0.4)', // Add shadow for depth
+    background: 'rgba(255, 255, 255, 0.4)', // Semi-transparent white background
+      border: 'none', // Remove any border
+      borderRadius: '20px', // Optional rounded corners
+      padding: '10px 20px', // Optional padding for better button sizing
     color: "white",
     fontWeight: "bold",
   },
