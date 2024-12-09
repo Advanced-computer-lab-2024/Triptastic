@@ -1,12 +1,13 @@
 import React, { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {FaUsersCog, FaBell,FaChartBar,FaBox ,FaUserShield,FaArrowUp, FaArrowDown  } from 'react-icons/fa'; // Importing bell icon
+import {FaUsersCog, FaBell,FaChartBar,FaBox ,FaUserShield,FaArrowUp, FaArrowDown,  } from 'react-icons/fa'; // Importing bell icon
 import logo from '../images/image.png'; // Adjust the path based on your folder structure
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
 import { FaUser,FaExclamationCircle, FaFileAlt,FaTrashAlt ,FaThList,FaPlus,FaEdit ,FaFlag} from 'react-icons/fa';
 import UserStatistics from './chart';
 import { FaChartLine, FaDollarSign, FaShoppingCart, FaWarehouse } from "react-icons/fa";
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 
 
 
@@ -75,7 +76,17 @@ const AdminPage = () => {
     stock: '',
     rating: ''
   });
+  const handleLogout = () => {
+    const confirmLogout = window.confirm("Are you sure you want to logout?");
 
+    if (confirmLogout) {
+      // Proceed with logout, navigate to '/Guest'
+      navigate('/Guest');
+    } else {
+      // Do nothing if the user cancels the logout
+      console.log("Logout cancelled");
+    }
+  };
   const [productFormData, setProductFormData] = useState({
     productName: '',
     description: '',
@@ -1704,10 +1715,16 @@ loadingText: {
       </div>
     </div>
   )}
+
+          {/* Logout Icon */}
+          <LogoutOutlinedIcon
+      onClick={handleLogout}
+    />
+
 </div>
 
-  </div>
 
+  </div>
 
 </header>
 
