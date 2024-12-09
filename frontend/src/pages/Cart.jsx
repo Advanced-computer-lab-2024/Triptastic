@@ -32,6 +32,7 @@ const Cart = () => {
         setCartItems(data.products);
       } else {
         setCartItems([]);
+        setError("Your cart is empty.")
       }
     } catch (error) {
       console.error(error.message);
@@ -171,6 +172,8 @@ const Cart = () => {
         Proceed to Checkout
       </button>
     </header>
+    {error && <p style={styles.error}>{error}</p>}
+
       {/* Sidebar */}
       <div
         style={styles.sidebar}
@@ -247,7 +250,7 @@ const Cart = () => {
           </span>
         </div>
       </div>
-     
+
 
 {/* Cart Items */}
 <div style={{ padding: '20px',marginTop:'20' }}>
@@ -274,6 +277,7 @@ const Cart = () => {
         e.currentTarget.style.transform = 'scale(1)';
       }}
     >
+      
       {/* Product Details */}
       <div>
         <h2
@@ -611,7 +615,12 @@ const styles = {
     fontSize: '18px',
     color: '#555',
   },
-  
+  error: {
+    color: "#6C757D", // Neutral gray color for error message
+    marginTop: "26px",
+    textAlign: "left", // Aligns the text to the left
+    fontSize: "29px", // Adjust font size for better readability
+  },
   currencySelector: {
     display: "inline-flex",
     alignItems: "center",
