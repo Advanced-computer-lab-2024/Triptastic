@@ -8,7 +8,7 @@ import { FaBell,FaGlobe, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, 
   FaClipboardList,
   FaStar, } from "react-icons/fa";
 import logo from '../images/image.png';
-import itineraries from '../images/it.png';
+import itineraries from '../images/iten.jpg';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import { FiCopy } from 'react-icons/fi'; // Import a copy icon
@@ -763,7 +763,7 @@ const Itineraries = () => {
       display: 'flex',
       flexDirection: 'column',
       fontSize: '16px',
-      color: '#333',
+      color: 'white',
     },
     filterInput: {
       padding: '8px',
@@ -895,13 +895,18 @@ const Itineraries = () => {
       border: '1px solid #ccc',
       width: '100%',
     },
-    buttonSort:{
-      color:'#0F5132',
+    buttonSort: {
+      color: 'white',
       fontSize: '18px',
-
-      marginTop:'40px',
-      background:'transparent'
+      textShadow: '0 4px 8px rgba(0, 0, 0, 0.4)', // Add shadow for depth
+      marginTop: '40px',
+      background: 'rgba(255, 255, 255, 0.4)', // Semi-transparent white background
+      border: 'none', // Remove any border
+      borderRadius: '20px', // Optional rounded corners
+      padding: '10px 20px', // Optional padding for better button sizing
+      cursor: 'pointer', // Add a pointer cursor for better UX
     },
+    
    
     list: {
       listStyleType: 'none',

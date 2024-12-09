@@ -161,13 +161,21 @@ const Productsad = () => {
     }
   };
   const handleSearchProduct = (productName) => {
-    const lowercasedProductName = productName.toLowerCase(); // Case-insensitive search
-
+    // Check if productName is undefined or empty
+    if (!productName || !productName.trim()) {
+      setErrorMessage("Please enter a product name to search.");
+      setProducts([]); // Clear the products if no input is provided
+      return; // Exit the function
+    }
+  
+    // Convert input to lowercase for case-insensitive search
+    const lowercasedProductName = productName.toLowerCase();
+  
     // Filter the products based on the search query
     const filteredProducts = originalProducts.filter((product) =>
       product.productName.toLowerCase().includes(lowercasedProductName)
     );
-
+  
     if (filteredProducts.length > 0) {
       setProducts(filteredProducts); // Set the filtered products to display
       setErrorMessage(""); // Clear any previous error messages
