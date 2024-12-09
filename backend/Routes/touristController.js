@@ -258,20 +258,39 @@ const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString()
 const requestOTP = async (req, res) => {
   const { Email } = req.body;
 
+  // Define the list of user models to search
+  const userModels = [
+    touristModel,
+    tourGuideModel,
+    sellerModel,
+    advertiserModel,
+  ];
+
+  let user = null;
+  let foundModel = null;
+
   try {
-    const tourist = await touristModel.findOne({ Email });
-    if (!tourist) {
+    // Search for the user in each model
+    for (const model of userModels) {
+      user = await model.findOne({ Email });
+      if (user) {
+        foundModel = model;
+        break;
+      }
+    }
+
+    if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
     const otp = generateOTP();
 
     // Save the OTP and expiration in the database
-    tourist.otp = otp;
-    tourist.otpExpiry = Date.now() + 10 * 60 * 1000; // Valid for 10 minutes
-    await tourist.save();
+    user.otp = otp;
+    user.otpExpiry = Date.now() + 10 * 60 * 1000; // Valid for 10 minutes
+    await user.save();
 
-    // Send OTP to email
+    // Configure nodemailer
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -295,17 +314,35 @@ const requestOTP = async (req, res) => {
     res.status(500).json({ error: 'Failed to send OTP' });
   }
 };
-
 const resetPassword = async (req, res) => {
   const { Email, otp, newPassword } = req.body;
 
+  // Define the list of user models to search
+  const userModels = [
+    touristModel,
+    tourGuideModel,
+    sellerModel,
+    advertiserModel,
+  ];
+
+  let user = null;
+  let foundModel = null;
+
   try {
-    const tourist = await touristModel.findOne({ Email });
-    if (!tourist) {
+    // Search for the user in each model
+    for (const model of userModels) {
+      user = await model.findOne({ Email });
+      if (user) {
+        foundModel = model;
+        break;
+      }
+    }
+
+    if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    if (tourist.otp !== otp || Date.now() > tourist.otpExpiry) {
+    if (user.otp !== otp || Date.now() > user.otpExpiry) {
       return res.status(400).json({ error: 'Invalid or expired OTP' });
     }
 
@@ -313,10 +350,10 @@ const resetPassword = async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     // Update the password and clear the OTP fields
-    tourist.Password = hashedPassword;
-    tourist.otp = null;
-    tourist.otpExpiry = null;
-    await tourist.save();
+    user.Password = hashedPassword;
+    user.otp = null;
+    user.otpExpiry = null;
+    await user.save();
 
     res.status(200).json({ message: 'Password reset successful' });
   } catch (error) {
@@ -324,7 +361,6 @@ const resetPassword = async (req, res) => {
     res.status(500).json({ error: 'Failed to reset password' });
   }
 };
-
 
 
 

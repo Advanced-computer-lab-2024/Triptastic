@@ -466,7 +466,7 @@ const handleResetPassword = async (e) => {
     });
 
     if (response.ok) {
-      setSuccessMessage('Password reset successful!');
+      alert('Password reset successful!');
       setErrorMessage('');
       setOtpFormData({ Email: '', otp: '', newPassword: '', emailForReset: '' }); // Reset form data
       setIsForgotPassword(false); // Optionally, you can redirect back to login or homepage
@@ -938,70 +938,89 @@ return (
       </form>
     )}
 
-    {/* Reset Password Form */}
-    {otpSent && (
-      <form
-        onSubmit={handleResetPassword}
+   {/* Reset Password Form */}
+{otpSent && (
+  <form
+    onSubmit={handleResetPassword}
+    style={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '5px',
+      right: '55%',
+    }}
+  >
+    <div>
+      <label htmlFor="emailForReset">Email:</label>
+      <input
+        type="email"
+        id="emailForReset"
+        name="emailForReset"
+        value={otpFormData.emailForReset}
+        onChange={handleOTPChange}
+        required
         style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '5px',
-          right: '55%',
+          width: '100%',
+          padding: '10px',
+          borderRadius: '5px',
+          border: '1px solid #ccc',
+          fontSize: '14px',
         }}
-      >
-        <div>
-          <label htmlFor="otpCode">OTP:</label>
-          <input
-            type="text"
-            id="otpCode"
-            name="otp"
-            value={otpFormData.otp}
-            onChange={handleOTPChange}
-            required
-            style={{
-              width: '100%',
-              padding: '10px',
-              borderRadius: '5px',
-              border: '1px solid #ccc',
-              fontSize: '14px',
-            }}
-          />
-        </div>
-        <div>
-          <label htmlFor="newPassword">New Password:</label>
-          <input
-            type="password"
-            id="newPassword"
-            name="newPassword"
-            value={otpFormData.newPassword}
-            onChange={handleOTPChange}
-            required
-            style={{
-              width: '100%',
-              padding: '10px',
-              borderRadius: '5px',
-              border: '1px solid #ccc',
-              fontSize: '14px',
-            }}
-          />
-        </div>
-        <button
-          type="submit"
-          style={{
-            width: '50%',
-            padding: '10px',
-            borderRadius: '15px',
-            border: 'none',
-            backgroundColor: '#0F5132',
-            color: '#fff',
-            fontSize: '12px',
-            cursor: 'pointer',
-          }}
-        >
-          Reset Password
-        </button>
-      </form>
-    )}
+      />
+    </div>
+    <div>
+      <label htmlFor="otpCode">OTP:</label>
+      <input
+        type="text"
+        id="otpCode"
+        name="otp"
+        value={otpFormData.otp}
+        onChange={handleOTPChange}
+        required
+        style={{
+          width: '100%',
+          padding: '10px',
+          borderRadius: '5px',
+          border: '1px solid #ccc',
+          fontSize: '14px',
+        }}
+      />
+    </div>
+    <div>
+      <label htmlFor="newPassword">New Password:</label>
+      <input
+        type="password"
+        id="newPassword"
+        name="newPassword"
+        value={otpFormData.newPassword}
+        onChange={handleOTPChange}
+        required
+        style={{
+          width: '100%',
+          padding: '10px',
+          borderRadius: '5px',
+          border: '1px solid #ccc',
+          fontSize: '14px',
+        }}
+      />
+    </div>
+    <button
+      type="submit"
+      style={{
+        width: '50%',
+        padding: '10px',
+        borderRadius: '15px',
+        border: 'none',
+        backgroundColor: '#0F5132',
+        color: '#fff',
+        fontSize: '12px',
+        cursor: 'pointer',
+      }}
+    >
+      Reset Password
+    </button>
+  </form>
+)}
+
     <button
       onClick={() => {
         setShowOTPForm(false);
