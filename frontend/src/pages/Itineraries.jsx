@@ -15,6 +15,9 @@ import { FiCopy } from 'react-icons/fi'; // Import a copy icon
 import HotelIcon from '@mui/icons-material/Hotel';
 import MuseumIcon from '@mui/icons-material/Museum';
 
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+
+
 
 const Itineraries = () => {
   const [itineraries, setItineraries] = useState([]);
@@ -616,14 +619,20 @@ const Itineraries = () => {
             <strong><FaUserCircle />Tour Guide:</strong> {itinerary.TourGuide}
           </p>
           <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
-            <strong>Booking Open:</strong> {itinerary.bookingOpen ? 'Yes' : 'No'}
-            {!itinerary.bookingOpen && (
-              <FaBell
-                style={{ cursor: 'pointer', marginLeft: '10px', color: '#FFD700' }}
-                onClick={() => handleNotificationRequest(itinerary._id)}
-              />
-            )}
-          </p>
+  <strong>Booking Open:</strong> {itinerary.bookingOpen ? 'Yes' : 'No'}
+  {!itinerary.bookingOpen && (
+    <>
+      <FaBell
+        style={{ cursor: 'pointer', marginLeft: '10px', color: '#FFD700' }}
+        onClick={() => handleNotificationRequest(itinerary._id)}
+        data-tooltip-id="booking-bookings-tooltip"
+      />
+      <ReactTooltip id="booking-bookings-tooltip" content="Booking closed. Click to be notified." />
+    </>
+  )}
+</p>
+
+          
         </div>
         <a
   href="#"
