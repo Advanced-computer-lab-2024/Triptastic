@@ -151,18 +151,6 @@ const HistoricalDetail = () => {
            Transportation
           </span>
         </div>
-        <div style={styles.item} onClick={() => navigate('/tourist-orders')}>
-          <FaClipboardList style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Past Orders
-          </span>
-        </div>
-        <div style={styles.item} onClick={() => navigate('/AttendedActivitiesPage')}>
-          <FaStar style={styles.icon} />
-          <span className="label" style={styles.label}>
-            Review Activities
-          </span>
-        </div>
       </div>
       <div style={styles.imageContainer}>
       {historical.image && (
