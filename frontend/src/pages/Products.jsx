@@ -35,7 +35,7 @@ import {
 } from "react-icons/fa";
 import MuseumIcon from '@mui/icons-material/Museum';
 
-import activity from "../images/shopping.jpg";
+import activity from "../images/shop7.jpg";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 
@@ -908,7 +908,7 @@ const styles = {
   },
   priceRangeDisplay: {
     fontSize: "16px",
-    color: "#333",
+    color: "white",
     fontWeight: "bold",
   },
   productCard: {
