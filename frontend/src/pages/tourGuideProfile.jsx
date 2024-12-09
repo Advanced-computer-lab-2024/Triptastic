@@ -404,8 +404,7 @@ const [showDropdown, setShowDropdown] = useState(false);
           setRequestSent(false); // Reset to allow another deletion request
           alert(data.msg); // Show the rejection message
          }
- 
-        
+
     } catch (error) {
         alert('Error deleting account');
     }
@@ -414,6 +413,7 @@ const [showDropdown, setShowDropdown] = useState(false);
   };
 
 };
+
 const navigate = useNavigate();
 const handleViewReport = async (itineraryId) => {
   const tourGuideUsername = localStorage.getItem('Username');
@@ -442,16 +442,17 @@ const handleViewReport = async (itineraryId) => {
         ...prevReports,
         [itineraryId]: {
           ...data.report, // Add the report data
-          visible: true,  // Set visibility to true
+          visible: true, // Set visibility to true
         },
       }));
     } else {
       const errorData = await response.json();
-      setErrorMessage(errorData.message || 'Failed to fetch report');
+      const errorMessage = errorData.message || 'Failed to fetch report';
+      alert(errorMessage); // Display the error message as a pop-up
     }
   } catch (error) {
     console.error('An error occurred while fetching the report:', error);
-    setErrorMessage('An error occurred while fetching the report');
+    alert('An error occurred while fetching the report'); // Pop-up for network or unexpected errors
   }
 };
 
@@ -471,10 +472,12 @@ const handleViewReport = async (itineraryId) => {
     title="Manage Account Settings"
     onClick={() => setShowDropdown((prev) => !prev)} // Toggle dropdown
   />
+
            <LogoutOutlinedIcon
       style={{ cursor: 'pointer',marginLeft:'20px' }} // You can adjust your styles here
       onClick={handleLogout}
     />
+
   {showDropdown && (
     <div style={styles.dropdownMenu}>
       <div
@@ -508,32 +511,34 @@ const handleViewReport = async (itineraryId) => {
             (label) => (label.style.opacity = '1')
           );
         }}
+
         onMouseLeave={(e) => {
           e.currentTarget.style.width = '60px';
           Array.from(e.currentTarget.querySelectorAll('.label')).forEach(
             (label) => (label.style.opacity = '0')
           );
         }}
+
       >   <div  class="profile" style={styles.item} onClick={() => navigate('/tour-guide-profile')}>
       <FaUserCircle style={styles.icon} />
       <span className="label" style={styles.label}>
         Profile
       </span>
     </div>
+
         <div  class="itineraries" style={styles.item} onClick={() => navigate('/my-itineraries')}>
           <FaMap style={styles.icon} />
           <span className="label" style={styles.label}>
             My Itineraries
           </span>
         </div>
+
         <div  class="report" style={styles.item} onClick={() => navigate('/guideReport')}>
           <FaStar style={styles.icon} />
           <span className="label" style={styles.label}>
             Reviews
           </span>
         </div>
-      
-      
      
       </div>
     {/* Edit Profile Modal */}
