@@ -152,14 +152,21 @@ const Products = () => {
       setLoading(false);
     }
   };
-  const handleSearchProduct = (productName) => {
-    const lowercasedProductName = productName.toLowerCase(); // Case-insensitive search
 
+  const handleSearchProduct = (productName) => {
+    if (!productName || productName.trim() === "") {
+      setErrorMessage("No product name was provided.");
+      setProducts([]); // Optionally clear the products if the input is invalid
+      return; // Return early to prevent further execution
+    }
+  
+    const lowercasedProductName = productName.toLowerCase(); // Case-insensitive search
+  
     // Filter the products based on the search query
     const filteredProducts = originalProducts.filter((product) =>
       product.productName.toLowerCase().includes(lowercasedProductName)
     );
-
+  
     if (filteredProducts.length > 0) {
       setProducts(filteredProducts); // Set the filtered products to display
       setErrorMessage(""); // Clear any previous error messages
@@ -168,7 +175,7 @@ const Products = () => {
       setErrorMessage("No product found with that name.");
     }
   };
-
+  
   const handleProfileRedirect = () => {
     const context = localStorage.getItem("context");
 

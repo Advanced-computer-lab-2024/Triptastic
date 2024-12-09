@@ -42,18 +42,18 @@ const BookTransportation = () => {
     fetchTransportations();
   }, []);
 
-  // Handle the book button click
   const handleBook = () => {
     if(localStorage.getItem('context') === 'guest') {
       alert('Please login to book transportation');
       return;
     }
-    setSuccessMessage('Transportation has been booked successfully!');
+    alert('Transportation booked successfully');
   };
 
   const handleCurrencyChange = (event) => {
     fetchConversionRate(event.target.value);
   };
+
   const handleProfileRedirect = () => {
     const context = localStorage.getItem('context');
 
