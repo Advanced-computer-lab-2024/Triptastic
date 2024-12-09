@@ -222,11 +222,6 @@ return (
             </div>
             <h1 style={styles.title}>Admin Report</h1>
             <div style={styles.headerIcons}>
-                <FaUserCircle
-                    alt="Profile Icon"
-                    style={styles.profileIcon}
-                    onClick={() =>  navigate('/adminPage')}
-                />
             </div>
         </header>
         <div
