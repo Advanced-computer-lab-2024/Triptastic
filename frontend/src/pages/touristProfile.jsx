@@ -601,6 +601,17 @@ const handleOpenCancelPopup2 = (itineraryId) => {
     }
     setLoading(false);
   };
+  const handleLogout = () => {
+    const confirmLogout = window.confirm("Are you sure you want to logout?");
+
+    if (confirmLogout) {
+      // Proceed with logout, navigate to '/Guest'
+      navigate('/Guest');
+    } else {
+      // Do nothing if the user cancels the logout
+      console.log("Logout cancelled");
+    }
+  };
   const submitUpdatedPreferences = async () => {
     try {
       const username = localStorage.getItem("Username");
@@ -2095,9 +2106,10 @@ return (
             <ShoppingCartOutlinedIcon style={styles.cartIcon} />
           </div>
           {/* Logout Icon */}
-          <div style={styles.logoutButton} onClick={() => navigate("/Guest")}>
-            <LogoutOutlinedIcon style={styles.logoutIcon} />
-          </div>
+          <LogoutOutlinedIcon
+      style={{ cursor: 'pointer',marginLeft:'0px' }} // You can adjust your styles here
+      onClick={handleLogout}
+    />
         </div>
       </header>
       
