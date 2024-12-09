@@ -259,8 +259,9 @@ const styles = {
   },
  
   logo: {
-    height: '50px',
-    width: '50px',
+    height: "60px",
+    width: "70px",
+    borderRadius: "10px",
   },
   profileIcon: {
     fontSize: '40px',
