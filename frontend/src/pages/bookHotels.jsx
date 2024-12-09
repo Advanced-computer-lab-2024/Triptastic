@@ -23,7 +23,7 @@ import MuseumIcon from '@mui/icons-material/Museum';
 import HotelIcon from '@mui/icons-material/Hotel';
 
 import logo from "../images/image.png"; // Adjust the path as necessary
-import hotel from "../images/hotel.jpg"; // Adjust the path as necessary
+import hotel from "../images/hotel5.jpg"; // Adjust the path as necessary
 
 import { useNavigate } from "react-router-dom";
 import { Tooltip } from "react-tooltip"; // Updated import
