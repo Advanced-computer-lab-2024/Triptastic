@@ -30,7 +30,7 @@ import {
   FaUserShield,
   FaCircle,
 } from "react-icons/fa";
-import activity from "../images/shopping.jpg";
+import activity from "../images/shop7.jpg";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
@@ -832,7 +832,7 @@ const styles = {
   },
   priceRangeDisplay: {
     fontSize: "16px",
-    color: "#333",
+    color: "white",
     fontWeight: "bold",
   },
   productCard: {
