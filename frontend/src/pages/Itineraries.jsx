@@ -8,7 +8,7 @@ import { FaBell,FaGlobe, FaUniversity, FaBox, FaMap, FaRunning, FaBus, FaPlane, 
   FaClipboardList,
   FaStar, } from "react-icons/fa";
 import logo from '../images/image.png';
-import itineraries from '../images/it.png';
+import itineraries from '../images/iten.jpg';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import { FiCopy } from 'react-icons/fi'; // Import a copy icon
