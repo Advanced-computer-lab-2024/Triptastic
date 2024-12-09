@@ -20,7 +20,6 @@ import shopping from '../images/shopping.jpg';
 import HotelIcon from '@mui/icons-material/Hotel';
 import MuseumIcon from '@mui/icons-material/Museum';
 
-
 const TouristOrders = () => {
   const { selectedCurrency, conversionRate, fetchConversionRate } =
     useContext(CurrencyContext);

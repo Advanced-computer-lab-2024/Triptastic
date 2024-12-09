@@ -7,7 +7,7 @@ import { FaBus, FaPlane,FaCar,FaShip, FaTrain, FaMoneyBillWave, FaMapMarkerAlt, 
   FaStar, } from 'react-icons/fa'; // Icons for transport types
 import { AiOutlineCheckCircle, AiOutlineWarning } from 'react-icons/ai'; // Icons for messages
 import logo from '../images/image.png';
-import bus from '../images/transportation.webp';
+import bus from '../images/rans4.jpg';
 import MuseumIcon from '@mui/icons-material/Museum';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import HotelIcon from '@mui/icons-material/Hotel';

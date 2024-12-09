@@ -137,22 +137,20 @@ const Productssel = () => {
       setLoading(false);
     }
   };
+
   const fetchProducts = async (minPrice = "", maxPrice = "") => {
     setLoading(true);
     setError("");
     try {
-      let url = "http://localhost:8000/viewProductsTourist"; // Default URL to fetch all products
-
+      let url = "http://localhost:8000/viewProductsTourist"; // Default URL to fetch all products                                                        
       // If price filters are applied, modify the URL
       if (minPrice || maxPrice) {
         url = `http://localhost:8000/filterProductsByPriceRange?minPrice=${minPrice}&maxPrice=${maxPrice}`;
       }
-
       const response = await fetch(url); // Fetch either all or filtered products based on the URL
       if (!response.ok) {
         throw new Error("Failed to fetch products");
       }
-
       const data = await response.json();
       setProducts(data); // Set all fetched products
       setOriginalProducts(data); // Store original products for search functionality
@@ -162,14 +160,24 @@ const Productssel = () => {
       setLoading(false);
     }
   };
-  const handleSearchProduct = (productName) => {
-    const lowercasedProductName = productName.toLowerCase(); // Case-insensitive search
 
+
+  const handleSearchProduct = (productName) => {
+    // Check if productName is undefined or empty
+    if (!productName || !productName.trim()) {
+      setErrorMessage("Please enter a product name to search.");
+      setProducts([]); // Clear the products if no input is provided
+      return; // Exit the function
+    }
+  
+    // Convert input to lowercase for case-insensitive search
+    const lowercasedProductName = productName.toLowerCase();
+  
     // Filter the products based on the search query
     const filteredProducts = originalProducts.filter((product) =>
       product.productName.toLowerCase().includes(lowercasedProductName)
     );
-
+  
     if (filteredProducts.length > 0) {
       setProducts(filteredProducts); // Set the filtered products to display
       setErrorMessage(""); // Clear any previous error messages
@@ -178,7 +186,8 @@ const Productssel = () => {
       setErrorMessage("No product found with that name.");
     }
   };
-
+  
+  
   const handleProfileRedirect = () => {
     const context = localStorage.getItem("context");
 
