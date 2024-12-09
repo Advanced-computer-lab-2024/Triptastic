@@ -2097,9 +2097,6 @@ return (
     </motion.div>
   </div>
 )}
-
-
-
    
           {/* Cart Icon */}
           <div style={styles.cartButton} onClick={() => navigate("/Cart")}>
@@ -2112,8 +2109,6 @@ return (
     />
         </div>
       </header>
-      
-    
 
       {/* Notification Dropdown */}
       {showNotifications && (
