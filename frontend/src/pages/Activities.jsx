@@ -18,6 +18,9 @@ import activity from '../images/cyc.jpg';
 import HotelIcon from '@mui/icons-material/Hotel';
 import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
 
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+
+
 import MuseumIcon from '@mui/icons-material/Museum';
 import { FaTimes,FaSort,FaFilter } from 'react-icons/fa'; // Icons for transport types
 const Activities = () => {
@@ -939,12 +942,18 @@ const Activities = () => {
                       <p style={{ fontSize: '14px', color: '#555', marginBottom: '8px' }}>
                         <strong>Booking Open:</strong> {activity.bookingOpen ? 'Yes' : 'No'}
                         {!activity.bookingOpen && (
+                              <>
                           <FaBell
                             style={styles.bellIcon}
                             onClick={() => handleNotificationRequest(activity._id)}
+                                 data-tooltip-id="booking-bookings-tooltip"
                           />
+                          <ReactTooltip id="booking-bookings-tooltip" content="Booking closed. Click to be notified." />
+                          </>
                         )}
                       </p>
+
+  
 
                     </div>
                     <a
