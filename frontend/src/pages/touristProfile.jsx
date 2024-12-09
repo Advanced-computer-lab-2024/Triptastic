@@ -706,8 +706,17 @@ const TouristProfile = () => {
     fetchComplaints(); // Fetch complaints when the component loads
   }, []);
 
+  useEffect(() => {
+    if (touristInfo) {
+      setFormData(touristInfo);
+    }
+  }, [touristInfo]);
+  
+
   const handleUpdate = async () => {
     setUpdating(true);
+    console.log("Submitting data:", formData); // Debugging line
+
     try {
       const response = await fetch("http://localhost:8000/updateTourist", {
         method: "PATCH",
@@ -1154,6 +1163,7 @@ const TouristProfile = () => {
       [name]: value,
     }));
   };
+  
 
   const fetchAddresses = async () => {
     const Username = localStorage.getItem("Username");
