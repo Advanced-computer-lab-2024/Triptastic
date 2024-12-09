@@ -1626,7 +1626,7 @@ loadingText: {
           style={{
             position: 'absolute',
             top: 0,
-            right: 10,
+            right: 60,
             backgroundColor: 'red',
             color: 'white',
             borderRadius: '50%',
