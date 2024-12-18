@@ -44,6 +44,41 @@
 
 ![Screenshot](README_screenshots/4.png)
 
+![Screenshot](README_screenshots/5.png)
+
+![Screenshot](README_screenshots/6.png)
+
+![Screenshot](README_screenshots/7.png)
+
+![Screenshot](README_screenshots/8.png)
+
+![Screenshot](README_screenshots/9.png)
+
+![Screenshot](README_screenshots/10.png)
+
+![Screenshot](README_screenshots/11.png)
+
+![Screenshot](README_screenshots/12.png)
+
+![Screenshot](README_screenshots/13.png)
+
+![Screenshot](README_screenshots/14.png)
+
+![Screenshot](README_screenshots/15.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -195,6 +230,24 @@ Follow these steps to set up the project locally:
   npm i
   ```
 Now you will have installed the project along with its necessary dependancies
+
+4. **Set Up Environment Variables**
+   Create a .env and add the uri to your mongo cluster and any API keys you will need
+5. **Run the Application**  
+   To run this application after you have installed all necessary dependancies you need to open 2 terminals in the first one you will run the server by running 
+   ```bash
+   cd backend
+   ```
+   ```bash
+   nodemon server.js
+   ```
+   Then in the 2nd terminal to run the application itself run
+   ```bash
+   cd frontend
+   ```
+   ```bash
+   npm start
+   ```
     
 
 
@@ -239,24 +292,25 @@ GET:http://localhost:8000/getPreferences?username=${username}
 
 
 ## How to Use
-1. **Set Up Environment Variables**
-   Create a .env and add the uri to your mongo cluster and any API keys you will need
-2. **Run the Application**  
-   To run this application after you have installed all necessary dependancies you need to open 2 terminals in the first one you will run the server by running 
-   ```bash
-   cd backend
-   ```
-   ```bash
-   nodemon server.js
-   ```
-   Then in the 2nd terminal to run the application itself run
-   ```bash
-   cd frontend
-   ```
-   ```bash
-   npm start
-   ```
-   you should now have the application up and running you can test all different functionalities like signing up logging in booking flights etc.
+### 1. **Tourist**
+After signing up or logging in as a tourist you will be met with your main profile page where you have access to a number of different functionalities you can navigate seemlessly through pages to view different activities or itineraries,book flights or hotels,edit your profile information all with backtracking to your home page to not get stuck in one of the pages.
+
+### 2. **Seller**
+After signing up or logging in as a seller your main dashboard will appear where you can view the products you posted,post another product and view your sales reports
+
+### 3. **Advertiser**
+After signing up or logging in as an advertiser you will be met with your main dashboard where you will be able to view yoour profits as well as navigate to view the activities and transportations you posted or to post a new activity or transportation
+
+### 4. **Admin**
+After signing up or logging in as an admin you will be met with your main dashboard where you can view all sales statistics from there you can navigate to a multitude of pages iincluding viewing issued complaints,products,altering or deleting user profiles
+
+### 5. **Tour guide**
+After signing up or logging in as a tour guide you will be met with your main profile page where you can view your sales reports from there you can navigate to view your posted itineraries or add a new one.
+
+### 5. **Tourism governor**
+As a tourism governer your home page includes are your posted historical locations from there you can  navigate to posting a new one.
+
+
 
 
 ## Contribute
