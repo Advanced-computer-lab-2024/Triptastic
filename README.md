@@ -286,7 +286,25 @@ PATCH:http://localhost:8000/updateProductQuantityInCart
 
 GET:http://localhost:8000/getPreferences?username=${username}
 
+GET:http://localhost:8000/searchActivities?name=brgr
 
+POST:http://localhost:8000/createHistoricalLocation
+
+PATCH:http://localhost:8000/updateTourist
+
+GET:http://localhost:8000/filterProductsByPriceRange?minPrice=30&maxPrice=40
+
+POST:http://localhost:8000/signup
+
+POST:http://localhost:8000/loginTourist
+
+PATCH:http://localhost:8000/updateSeller
+
+GET:http://localhost:8000/getHistoricalLocationByName?Name=The%20Great%20Pyramid%20of%20Giza
+
+GET:http://localhost:8000/getActivityByname?name=ruby%20concert
+
+POST:http://localhost:8000/addItinerary
 
 
 
